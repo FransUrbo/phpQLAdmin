@@ -1,7 +1,7 @@
 <?php
 // Convert the old ways of storing 'user template' information
 // 
-// $Id: update_templates.php,v 1.7 2006-12-16 12:03:09 turbo Exp $
+// $Id: update_templates.php,v 1.8 2007-02-15 12:08:14 turbo Exp $
 
 // {{{ Setup session etc
 require("../include/pql_session.inc");
@@ -12,7 +12,7 @@ require($_SESSION["path"]."/include/pql_templates.inc");
 // }}}
 
 // {{{ Load templates.
-$templates = pql_get_templates($_pql->ldap_linkid);
+$templates = pql_get_templates();
 // }}}
 
 // If there are templates (which there SHOULD be since we're called),
@@ -24,7 +24,7 @@ if(is_array($templates)) {
 	$dn = urlencode($templates[$i]["dn"]);
 
 	foreach($templates[$i]["oldformat"] as $attrib => $value) {
-	  if(pql_modify_attribute($_pql->ldap_linkid, $templates[$i]["dn"], $attrib, '', $value))
+	  if(pql_modify_attribute($templates[$i]["dn"], $attrib, '', $value))
 		$success[] = $attrib;
 	  else
 		$failed["add"][] = $attrib;
@@ -35,7 +35,7 @@ if(is_array($templates)) {
   // {{{ Remove the value(s) from the root DN.
   if(is_array($success)) {
 	for($i=0; $i < count($success); $i++) {
-	  if(!pql_modify_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], $success[$i], '', ''))
+	  if(!pql_modify_attribute($_SESSION["BASE_DN"][0], $success[$i], '', ''))
 		$failed["rem"][] = $attrib;
 	}
   }

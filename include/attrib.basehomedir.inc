@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basehomedir.inc,v 2.13 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.basehomedir.inc,v 2.14 2007-02-15 12:07:17 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -73,7 +73,7 @@ function attribute_save($type) {
 			break;
     	}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST["basehomedir"]))
+		if(pql_modify_attribute($_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST["basehomedir"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('Path'),
 											 'new'  => $_REQUEST["basehomedir"]));

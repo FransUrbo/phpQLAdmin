@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.24 2007-02-15 12:08:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -113,7 +113,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAILHOST"),
+		if(pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_MAILHOST"),
 								'', $_REQUEST["mailhost"])) {
 		    if(empty($_REQUEST["mailhost"]))
 			  $_REQUEST["mailhost"] = $LANG->_('None');
@@ -134,12 +134,12 @@ function attribute_save($type) {
 		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
 
 		// Retreive all users in this branch/domain.
-	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
+	    $users   = $_pql->get_dn($_REQUEST["domain"], $filter);
 		if(is_array($users)) {
 			foreach($users as $user) {
 				// Retreive the old value from the object
-				$old = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILHOST"));
-				$return[] = pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILHOST"),
+				$old = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_MAILHOST"));
+				$return[] = pql_modify_attribute($user, pql_get_define("PQL_ATTR_MAILHOST"),
 												 $old, $_REQUEST["mailhost"]);
 			}
 			

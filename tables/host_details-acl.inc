@@ -15,12 +15,12 @@
 $row = 'c1'; $i=0;
 foreach($hosts as $host_dn) {
   // {{{ Retreive values from this host
-  $host   = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_CN"));
-  $hostIP = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_IPHOSTNUMBER"));
+  $host   = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_CN"));
+  $hostIP = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_IPHOSTNUMBER"));
 // }}}
 
   // {{{ Retreive uniqueMember from this host
-  $host_users = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
+  $host_users = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
   if($host_users) {
 	if(!is_array($host_users))
 	  $host_users = array($host_users);
@@ -78,7 +78,7 @@ foreach($hosts as $host_dn) {
 <?php	}
 
 		for($j=0; $j < count($host_users); $j++) {
-		  $user = pql_get_attribute($_pql->ldap_linkid, $host_users[$j], pql_get_define("PQL_ATTR_UID"));
+		  $user = $_pql->get_attribute($host_users[$j], pql_get_define("PQL_ATTR_UID"));
 ?>
              &nbsp;&nbsp;&nbsp;
              <img src="images/navarrow.png" width="9" height="9" border="0">&nbsp;<?=$user."\n"?>

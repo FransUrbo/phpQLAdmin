@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.42 2006-12-16 12:02:09 turbo Exp $
+// $Id: user_add_attribute.php,v 2.43 2007-02-15 12:07:13 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -54,13 +54,13 @@ function attribute_forward($msg) {
 
 // {{{ Get some default values
 // ... domain name
-$defaultdomain = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+$defaultdomain = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 
 // ... user name
-$username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
+$username = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
 if(!$username) {
     // No common name, use uid field
-    $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"));
+    $username = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_UID"));
 }
 if($username and is_array($username)) {
   $username = $username[0];

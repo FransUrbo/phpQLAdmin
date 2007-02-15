@@ -85,7 +85,7 @@
 		foreach($seealso as $sa) {
 			$sa = pql_maybe_encode($sa);
 
-			$username = pql_get_attribute($_pql->ldap_linkid, $sa, pql_get_define("PQL_ATTR_CN"));
+			$username = $_pql->get_attribute($sa, pql_get_define("PQL_ATTR_CN"));
 			if(!$username)
 			  $username = $sa;
 			elseif(is_array($username))

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.25 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.26 2007-02-15 12:08:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -62,10 +62,10 @@ function attribute_print_form() {
           <?php echo pql_format_error_span($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value="">
         </td>
       </tr>
-<?php $modes = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
+<?php $modes = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
       if(!is_array($modes)) $modes = array($modes);
 
-      $dotmode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
+      $dotmode = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
       if(!is_array($dotmode)) $dotmode = array($dotmode);
 
       if(!in_array('noprogram', $modes) and !in_array('none', $dotmode)) {
@@ -105,7 +105,7 @@ function attribute_save($type) {
 
 	switch($type) {
 	  case "add":
-		if(pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_FORWARDS"),
+		if(pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_FORWARDS"),
 									'', $_REQUEST["mailforwardingaddress"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully added %what% %new%'),
 									   array('what' => $LANG->_('forwarding address'),
@@ -115,8 +115,8 @@ function attribute_save($type) {
 									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_format_error(0);
 		
 		if($_REQUEST["force_no_local_delivery"] == 'on') {
-		  pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_MODE"), '', 'noprogram');
-		  pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_DOTMODE"), '', 'none');
+		  pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_MODE"), '', 'noprogram');
+		  pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_DOTMODE"), '', 'none');
 		}
 		break;
 
@@ -130,7 +130,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_FORWARDS"),
+		if(pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_FORWARDS"),
 									$_REQUEST["oldvalue"], $email))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('forwarding address'),

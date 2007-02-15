@@ -3,7 +3,7 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.22 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.23 2007-02-15 12:07:19 turbo Exp $
 
 // {{{ defaultdomain_check(type)
 function defaultdomain_check($type) {
@@ -43,11 +43,11 @@ function defaultdomain_init($host) {
 					 "plusdomain"    => pql_get_define("PQL_ATTR_PLUSDOMAIN"));
 	if($host == "Global") {
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		$_REQUEST[$key] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
 	} else {
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
+		$_REQUEST[$key] = $_pql_control->get_attribute($host, $attrib);
 	}
 
 }
@@ -60,7 +60,7 @@ function defaultdomain_print_view($host) {
 
 	// init data
 	defaultdomain_init($host);
-	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
+	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)
@@ -150,16 +150,16 @@ function defaultdomain_save($type, $host) {
 		  if(!@empty($_REQUEST[$key])) {
 			if($host == "Global") {
 			  // Get all QLC host
-			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 								 '(&(cn=*)(objectclass=qmailControl))');
 			  
 			  $success = 1;
 			  foreach($qlcs as $host) {
-				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST[$key]))
+				if(!pql_modify_attribute($host, $attrib, '', $_REQUEST[$key]))
 				  $success = 0;
 			  }
 			} else {
-			  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			  if(pql_modify_attribute($host,
 									  $attrib, 1, $_REQUEST[$key]))
 				$success = 1;
 			}

@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.32 2006-12-16 12:02:09 turbo Exp $
+// $Id: user_sendmail.php,v 2.33 2007-02-15 12:07:14 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -12,7 +12,7 @@ include($_SESSION["path"]."/header.html");
   <span class="title1"><?=$LANG->_('Send testmail')?></span>
   <br><br>
 <?php
-if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["user"], '(objectclass=*)', 'BASE')) {
+if(!$_pql->get_dn($_REQUEST["user"], '(objectclass=*)', 'BASE')) {
     echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user', $_REQUEST["user"]));
     exit();
 }
@@ -28,12 +28,12 @@ $vars['MAIL'] = $email;
 $vars['UID'] = $_REQUEST["user"];
 $vars['VERSION'] = $_SESSION["VERSION"];
 
-$cn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
+$cn = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
 $vars['CN'] = $cn[0];
-$sn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"));
+$sn = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_SN"));
 $vars['SN'] = $sn[0];
 
-$quota = pql_user_get_quota($_pql->ldap_linkid, $_REQUEST["user"]);
+$quota = pql_user_get_quota($_REQUEST["user"]);
 
 // Does the user have an individual mailbox quota?
 if (is_array($quota)) {
@@ -49,7 +49,7 @@ if (is_array($quota)) {
 	require($_SESSION["path"]."/include/pql_control.inc");
 	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	
-	$quota = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	$quota = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 				   pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
 	if($quota)
 	  $vars['QUOTA'] = pql_ldap_mailquota($quota);

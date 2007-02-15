@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.40 2006-12-16 12:02:09 turbo Exp $
+// $Id: search.php,v 2.41 2007-02-15 12:07:12 turbo Exp $
 //
 // {{{ Includes
 require("./include/pql_session.inc");
@@ -127,13 +127,13 @@ if(!$_SESSION["SINGLE_USER"]) {
   <p>
 <?php	}
 
-		$enrs = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'SUBTREE');
+		$enrs = $_pql->get_dn($dn, $filter, 'SUBTREE');
 		if(!empty($enrs)) {
 		  for($i=0; $i < count($enrs); $i++) {
 			$is_group = 0;
 			
 			// Check if this object is a (posix)Group object.
-			$ocs = pql_get_attribute($_pql->ldap_linkid, $enrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
+			$ocs = $_pql->get_attribute($enrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 			for($j=0; $j < count($ocs); $j++) {
 				if(eregi('group', $ocs[$j]))
 				  $is_group = 1;
@@ -160,13 +160,13 @@ if(!$_SESSION["SINGLE_USER"]) {
 	}
 
 	// Search for the user below this DN
-	$enrs = pql_search($_pql->ldap_linkid, $dn, $filter);
+	$enrs = $_pql->search($dn, $filter);
 	if(!empty($enrs)) {
 	  for($i=0; $i < count($enrs); $i++) {
 		$is_group = 0;
 		
 		// Check if this object is a (posix)Group object.
-		$ocs = pql_get_attribute($_pql->ldap_linkid, $enrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
+		$ocs = $_pql->get_attribute($enrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 		for($j=0; $j < count($ocs); $j++) {
 			if(eregi('group', $ocs[$j]))
 			  $is_group = 1;
@@ -219,25 +219,25 @@ if(!$_SESSION["SINGLE_USER"]) {
 		  if(($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) and
 			 ($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_ARECORD"))) {
 			// {{{ NOT DNS hostname
-			$uid    = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_UID"));
+			$uid    = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_UID"));
 
 			// DLW: I think displayname would be a better choice.
-			$cn     = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_CN"));
+			$cn     = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_CN"));
 			if(is_array($cn)) $cn = $cn[0];
-			$mail   = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_MAIL"));
+			$mail   = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_MAIL"));
 			
-			$status = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_ISACTIVE"));
+			$status = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_ISACTIVE"));
 			$status = pql_ldap_accountstatus($status);
 // }}}
 		  } else {
 			// {{{ Look for a DNS hostname or IP address
-			$host   = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"));
-			$ip     = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_ARECORD"));
+			$host   = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"));
+			$ip     = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_ARECORD"));
 
 			if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) {
 			  // Looking for hostname - special case regarding IP
 			  if(empty($ip)) {
-				$ip   = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_CNAMERECORD"));
+				$ip   = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_CNAMERECORD"));
 				if(empty($ip))
 				  $ip = '<b>unknown</b>';
 			  }
@@ -248,7 +248,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			  // Looking for IP address - special case regarding hostname
 			  if($host == '@')
 				// The SOA -> Replace with zoneName
-				$host   = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_ZONENAME"));
+				$host   = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_ZONENAME"));
 			  else
 				// This is a hostname. Add the domainname to the end to create a FQDN.
 				$host  .= '.'.$dns_domain_name;
@@ -258,7 +258,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			  $ip = '<b>round robin</b>';
 			
 			// Get the zone name
-			$dns_domain_name = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_ZONENAME"));
+			$dns_domain_name = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_ZONENAME"));
 			$dns_domain_name = urlencode($dns_domain_name);
 
 			if(empty($domain)) {
@@ -266,7 +266,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			  // 1. Find the SOA record
 			  // ldapsearch -LLL -b c=se '(&(zoneName=bayour.com)(relativeDomainName=@))'
 			  $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME").'='.$dns_domain_name.')('.pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
-			  $soa    = pql_get_dn($_pql->ldap_linkid, $rootdn, $filter, 'SUBTREE');
+			  $soa    = $_pql->get_dn($rootdn, $filter, 'SUBTREE');
 			  if(!empty($soa))
 				$soa  = $soa[0];
 			  

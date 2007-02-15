@@ -1,6 +1,6 @@
 <?php
 // Add physical host
-// $Id: host_add.php,v 2.1 2006-12-02 13:06:31 turbo Exp $
+// $Id: host_add.php,v 2.2 2007-02-15 12:07:11 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -14,7 +14,7 @@ if(isset($_REQUEST['action'])) {
     $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = 'organizationalUnit';
     $entry[pql_get_define("PQL_ATTR_OU")] = 'Computers';
 
-    if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'unit', 'host_add')) {
+    if($_pql->add($dn, $entry, 'unit', 'host_add')) {
       // Set USER_SEARCH_DN_CTR
       $_SESSION["USER_SEARCH_DN_CTR"] = $dn;
 
@@ -39,7 +39,7 @@ if(isset($_REQUEST['action'])) {
       $error_text["hostname"] = $LANG->_("Invalid hostname");
     } else {
       // Inputs look good, lets add them
-      if(pql_add_computer($_pql->ldap_linkid, $_REQUEST['hostname'], $_REQUEST['hostip'])) {
+      if(pql_add_computer($_REQUEST['hostname'], $_REQUEST['hostip'])) {
 	$msg = pql_complete_constant($LANG->_("Host %host% added successfully."), array('host' => $_REQUEST['hostname']));
 	$url = 'host_detail.php?host=' . urlencode(pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST['hostname'] . "," . $_SESSION["USER_SEARCH_DN_CTR"]).
 	  "&msg=$msg&rlnb=1";
@@ -70,7 +70,7 @@ if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
   // Not set - find it.
   foreach($_pql->ldap_basedn as $dn)  {
     $dn = pql_format_normalize_dn($dn);
-    $tmp = pql_get_dn($_pql->ldap_linkid, $dn,
+    $tmp = $_pql->get_dn($dn,
 		      '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))',
 		      'ONELEVEL');
     if(@$tmp[0]) {
@@ -80,7 +80,7 @@ if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
   }
 } else {
   // Make sure that the object really exists...
-  $tmp = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+  $tmp = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 		    '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))',
 		    'BASE');
   if(@$tmp[0])

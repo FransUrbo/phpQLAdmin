@@ -1,5 +1,5 @@
-<?php $email   = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MAIL"));
-      $aliases = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
+<?php $email   = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_MAIL"));
+      $aliases = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
 
 	  $tmp     = split('@', $email);
 	  $mail	   = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);

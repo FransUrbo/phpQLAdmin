@@ -1,6 +1,6 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.5 2007-02-02 15:54:55 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.6 2007-02-15 12:08:17 turbo Exp $
 
 // {{{ Possibly show some debugging
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
@@ -20,7 +20,7 @@ if(($_REQUEST["host"] == 'Global') or $_REQUEST["global"]) {
 	foreach($physical_data as $tmp_container_dn => $virt_hosts) {
 	  if($_REQUEST["host"] == 'Global') {
 		// Save the first values for later
-		$server_name = pql_get_attribute($_pql->ldap_linkid, $tmp_container_dn, pql_get_define("PQL_ATTR_CN"));
+		$server_name = $_pql->get_attribute($tmp_container_dn, pql_get_define("PQL_ATTR_CN"));
 
 		if(!@$_REQUEST["global"]) {
 		  // Overwrite the host/server values for code below.
@@ -60,7 +60,7 @@ if(($_REQUEST["host"] == 'Global') or $_REQUEST["global"]) {
 
   if(!@$_REQUEST["server"]) {
 	foreach($physical_data as $container_dn => $virt_hosts) {
-	  $server_name = pql_get_attribute($_pql->ldap_linkid, $container_dn, pql_get_define("PQL_ATTR_CN"));
+	  $server_name = $_pql->get_attribute($container_dn, pql_get_define("PQL_ATTR_CN"));
 	  break;
 	}
 	
@@ -80,7 +80,7 @@ if(($_REQUEST["host"] == 'Global') or $_REQUEST["global"]) {
 // else called with virtual host (nothing special needed)
 }
 
-$server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+$server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 // }}}
 
 // {{{ Possibly show some debugging
@@ -128,7 +128,7 @@ if(is_array($physical_data) and count($physical_data)) {
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
 <?php foreach($physical_data as $tmp_container_dn => $tmp_virt_hosts) {
-		$server_name = pql_get_attribute($_pql->ldap_linkid, $tmp_container_dn, pql_get_define("PQL_ATTR_CN"));
+		$server_name = $_pql->get_attribute($tmp_container_dn, pql_get_define("PQL_ATTR_CN"));
 
 		if($tmp_container_dn == $_REQUEST["server"]) {
 		  $mark = "&mark=yes";
@@ -153,7 +153,7 @@ if(is_array($physical_data) and count($physical_data)) {
 	$server_reference = $server_reference . " => " . $_REQUEST["virthost"];
 
 	// {{{ Get virtual host directories
-	$virt_host_dirs = pql_websrv_get_virtual_host_directories($_pql->ldap_linkid, $container_dn, $_REQUEST["virthost"]);
+	$virt_host_dirs = pql_websrv_get_virtual_host_directories($container_dn, $_REQUEST["virthost"]);
 	if(count($virt_host_dirs) >= 1) {
 	  // NOTE: We should NOT have a default virtual host location!
 	  //	   If we did, it wouldn't be possible to access the actual
@@ -258,7 +258,7 @@ if($_REQUEST["virthost"] == 'acl') {
   require($_SESSION["path"]."/tables/host_details-websrv_virtdir.inc");
 } else {
   // Get the virtual host data
-  $virthost = pql_search($_pql->ldap_linkid, $VIRTHOST, 'objectClass=*', 'BASE');
+  $virthost = $_pql->search($VIRTHOST, 'objectClass=*', 'BASE');
   require($_SESSION["path"]."/tables/host_details-websrv_virthost.inc");
 }
 ?>
@@ -287,7 +287,7 @@ if($_REQUEST["virthost"] == 'acl') {
 // {{{ Table footer (Inc. 'Add ... links')
 if(($_REQUEST["virthost"] != 'acl') and
    ($_SESSION["ALLOW_BRANCH_CREATE"] or 
-	pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"])))
+	pql_validate_administrator($_REQUEST["server"], pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"])))
 {
 ?>
   <p>

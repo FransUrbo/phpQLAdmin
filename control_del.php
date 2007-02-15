@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.27 2006-12-18 12:47:25 turbo Exp $
+// $Id: control_del.php,v 2.28 2007-02-15 12:07:09 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -10,18 +10,20 @@ require($_SESSION["path"]."/include/pql_config.inc");
 // will take place.
 // Therefor a little function here to simplify, and avoid duplication.
 // I'm lazy, so sue me! :)
-function control_del_find_users($link, $host) {
-	// See if there's any users that have this host as mailHost
-	$filter = pql_get_define("PQL_ATTR_MAILHOST").'='.$host;
-	foreach($_SESSION["BASE_DN"] as $dn) {
-		$usrs = pql_search($link->ldap_linkid, $dn, $filter);
-		if(is_array($usrs)) {
-			for($i=0; $i < count($usrs); $i++)
-			  $users[] = $usrs[$i];
-		}
-	}
+function control_del_find_users($host) {
+  global $_pql;
 
-	return($users);
+  // See if there's any users that have this host as mailHost
+  $filter = pql_get_define("PQL_ATTR_MAILHOST").'='.$host;
+  foreach($_SESSION["BASE_DN"] as $dn) {
+	$usrs = $_pql->search($dn, $filter);
+	if(is_array($usrs)) {
+	  for($i=0; $i < count($usrs); $i++)
+		$users[] = $usrs[$i];
+	}
+  }
+  
+  return($users);
 }
 // }}}
 
@@ -35,6 +37,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		include($_SESSION["path"]."/header.html");
 		
 		// Check to see if this object exists
+		// TODO: Replace with '$_pql_control->search()'
 		$filter = "(".pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . ")";
 		$sr = ldap_search($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter,
 						  array(pql_get_define("PQL_ATTR_MAILHOST")), "BASE");
@@ -43,14 +46,13 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			$dn = ldap_get_dn($_pql_control->ldap_linkid,
 							  ldap_first_entry($_pql_control->ldap_linkid, $sr));
 
-			$users = control_del_find_users($_pql, $_REQUEST["mxhost"]);
+			$users = control_del_find_users($_REQUEST["mxhost"]);
 			if(is_array($users)) {
 				// There's users - get MX and QmailLDAP/Controls objects
-				$result = pql_get_dn($_pql_control->ldap_linkid,
-									 $_SESSION["USER_SEARCH_DN_CTR"],
-									 '(&(cn=*)(objectclass=qmailControl))');
+				$result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
+												'(&(cn=*)(objectclass=qmailControl))');
 				for($i=0; $i < count($result); $i++)
-				  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+				  $hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
     <input type="hidden" name="oldmx"  value="<?=$_REQUEST["mxhost"]?>">
@@ -102,10 +104,10 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 			case "delete":
 			  // {{{ 1. Delete all users
-			  $users = control_del_find_users($_pql, $_REQUEST["oldmx"]);
+			  $users = control_del_find_users($_REQUEST["oldmx"]);
 			  if(is_array($users)) {
 				  for($i=0; $i < count($users); $i++)
-					pql_user_del($_pql, $_REQUEST["domain"], $users[$i], 1);
+					pql_user_del($_REQUEST["domain"], $users[$i], 1);
 			  }
 			  // }}}
 
@@ -138,10 +140,10 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					  else
 						$host = $_REQUEST["newmx"];
 
-					  $users = control_del_find_users($_pql, $_REQUEST["oldmx"]);
+					  $users = control_del_find_users($_REQUEST["oldmx"]);
 					  if(is_array($users)) {
 						  for($i=0; $i < count($users); $i++) {
-							  pql_modify_attribute($_pql->ldap_linkid, $users[$i],
+							  pql_modify_attribute($users[$i],
 												   pql_get_define("PQL_ATTR_MAILHOST"),
 												   '', $host);
 						  }
@@ -170,7 +172,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 		die("I'm debugging, so '<b>$dn</b>' isn't deleted!");
 	  else {
-		if(! pql_write_del($_pql_control->ldap_linkid, $dn)) {
+		if(! $_pql_control->delete($dn)) {
 		  // Could not delete object
 		  $url = "control_detail.php?mxhost=".$mxhost."&msg=";
 		  $url .= urlencode(pql_complete_constant($LANG->_("Failed to delete mailserver %host%.",

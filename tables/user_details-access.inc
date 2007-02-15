@@ -8,13 +8,13 @@ foreach($_pql->ldap_basedn as $dn)  {
   $dn = pql_format_normalize_dn($dn);
 
   // {{{ Check the top-most (namingContexts) DN(s) if the user is super admin 
-  if(pql_validate_administrator($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_GET["user"])) {
+  if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_GET["user"])) {
 	$super_admin = 1;
   }
 // }}}
   
   // {{{ Find all branches the user is admin of
-  $dom = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$_GET["user"]);
+  $dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$_GET["user"]);
   if($dom) {
 	foreach($dom as $d) {
 	  // Filter out the RootDN
@@ -25,7 +25,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 // }}}
   
   // {{{ Find all branches the user is mailinglist admin of
-  $dom = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_GET["user"]);
+  $dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_GET["user"]);
   if($dom) {
 	foreach($dom as $d)
 	  $domains_ezmlm[] = $d;
@@ -33,7 +33,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 // }}}
 
   // {{{ Find all branches the user is webserver admin of
-  $dom = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV").'='.$_GET["user"]);
+  $dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV").'='.$_GET["user"]);
   if($dom) {
 	foreach($dom as $d)
 	  $domains_websrv[] = $d;
@@ -41,7 +41,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 // }}}
 
   // {{{ Find all branches the user is DNS admin of
-  $dom = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9").'='.$_GET["user"]);
+  $dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9").'='.$_GET["user"]);
   if($dom) {
 	foreach($dom as $d)
 	  $domains_dns[] = $d;
@@ -65,7 +65,7 @@ if(isset($domains_admins)) {
 				   'del' => $LANG->_('Disallow user administrator access to domain'));
   $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
 				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
-  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domains_admins,
+  pql_format_table_single($tbl_txt, $tbl_url, $domains_admins,
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR"), $class);
 }
 // }}}
@@ -84,7 +84,7 @@ if(isset($domains_ezmlm)) {
 				   'del' => $LANG->_('Disallow user mailinglist administrator access to domain'));
   $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
 				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
-  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domains_ezmlm,
+  pql_format_table_single($tbl_txt, $tbl_url, $domains_ezmlm,
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $class);
 }
 // }}}
@@ -103,7 +103,7 @@ if(isset($domains_websrv)) {
 				   'del' => $LANG->_('Disallow user webserver administrator access to domain'));
   $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
 				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
-  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domains_websrv,
+  pql_format_table_single($tbl_txt, $tbl_url, $domains_websrv,
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $class);
 }
 // }}}
@@ -122,7 +122,7 @@ if(isset($domains_dns)) {
 				   'del' => $LANG->_('Disallow user DNS administrator access to domain'));
   $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
 				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
-  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domains_dns,
+  pql_format_table_single($tbl_txt, $tbl_url, $domains_dns,
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV_BIND9"), $class);
 }
 // }}}

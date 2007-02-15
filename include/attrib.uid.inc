@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.27 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.uid.inc,v 2.28 2007-02-15 12:08:09 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type){
@@ -21,7 +21,7 @@ function attribute_check($type){
 
 	// if type is modify, check existance of old value, else the new one
 	$filter = "uid=".pql_maybe_encode($_REQUEST["uid"], "uid", $_pql->ldap_linkid);
-	if($_REQUEST["oldvalue"] != $_REQUEST["uid"] and pql_search($_pql->ldap_linkid, $_REQUEST["domain"], $filter)) {
+	if($_REQUEST["oldvalue"] != $_REQUEST["uid"] and $_pql->search($_REQUEST["domain"], $filter)) {
 		$error["uid"] = $LANG->_('Already exists');
 		return false;
 	}
@@ -88,7 +88,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"), '', $_REQUEST["uid"])) {
+		if(pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_UID"), '', $_REQUEST["uid"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
 										 array('what' => $LANG->_('username'),
 											   'old'  => $_REQUEST["oldvalue"],

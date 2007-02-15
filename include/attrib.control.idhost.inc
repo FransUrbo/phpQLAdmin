@@ -2,7 +2,7 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.24 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.25 2007-02-15 12:07:21 turbo Exp $
 
 // {{{ idhost_check(type)
 function idhost_check($type) {
@@ -25,10 +25,10 @@ function idhost_init($host) {
 	
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["idhost"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["idhost"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 											  pql_get_define("PQL_ATTR_IDHOST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["idhost"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_IDHOST"));
+	  $_REQUEST["idhost"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_IDHOST"));
 	
 	if(@is_null($_REQUEST["idhost"]))
 	  return true;
@@ -42,7 +42,7 @@ function idhost_print_view($host) {
 
 	// init data
 	idhost_init($host);
-	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
+	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">idhost (<?=$LANG->_('Host name for Message-ID\'s')?>)</th>
@@ -99,17 +99,17 @@ function idhost_save($type, $host) {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_IDHOST"), '', $_REQUEST["idhost"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_IDHOST"), '', $_REQUEST["idhost"]))
 			$success = 0;
 		}

@@ -1,6 +1,6 @@
   <!-- advanced delivery options -->
-<?php $qmaildotmode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
-      $deliveryprogrampath = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"));
+<?php $qmaildotmode = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
+      $deliveryprogrampath = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"));
 
       if($qmaildotmode == "") {
 		  $qmaildotmode = $LANG->_('Default');

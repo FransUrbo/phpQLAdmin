@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.32 2007-02-02 15:40:42 turbo Exp $
+// $Id: bind9_add.php,v 2.33 2007-02-15 12:07:08 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -51,14 +51,14 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 // }}}
   } else {
 	// {{{ Add bind9 zone
-	if(pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["domainname"])) {
+	if(pql_bind9_add_zone($_REQUEST["domain"], $_REQUEST["domainname"])) {
 	  $msg = "Successfully added domain ".$_REQUEST["domainname"];
 
 	  // {{{ Update additional domain name(s) and QLC object(s)
 	  if($_REQUEST["qlc"] and pql_get_define("PQL_CONF_CONTROL_USE")) {
 		// {{{ Fetch old (attrib) values from DB
 		unset($entry);
-		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+		$oldvalues = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 		if($oldvalues) {
 		  if(!is_array($oldvalues))
 			$oldvalues = array($oldvalues);
@@ -70,7 +70,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  $entry[pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")][] = $_REQUEST["domainname"];
 		// }}}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry)) {
+		if(pql_modify_attribute($_REQUEST["domain"], '', '', $entry)) {
 		  $msg .= "<br>".pql_complete_constant($LANG->_('Successfully changed %what%'),
 											   array('what' => $LANG->_('Additional domain name')));
 		  
@@ -83,7 +83,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			  $entry = array('', $_REQUEST["domainname"]);
 		  }
 		  
-		  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
+		  pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
 		  // }}}
 		} else
 		  $msg .= "<br>".pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -269,14 +269,14 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	  break;
 	}
 	
-	$dn = pql_bind9_add_host($_pql->ldap_linkid, $_REQUEST["domain"], $entry);
+	$dn = pql_bind9_add_host($_REQUEST["domain"], $entry);
 	if($dn) {
 	  $msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
 
 	  if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 		// We can't do this if we're debuging. The object don't exists in the db, hence
 		// we can't figure out zone name etc...
-		if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
+		if(!pql_bind9_update_serial($dn))
 		  die("failed to update SOA serial number");
 	  } else
 		echo $LANG->_("\bCan't update SOA since we're running in DEBUG_ME mode!\B");

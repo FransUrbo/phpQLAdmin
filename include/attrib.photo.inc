@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // jpegPhoto
-// $Id: attrib.photo.inc,v 2.5 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.photo.inc,v 2.6 2007-02-15 12:08:08 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -101,7 +101,7 @@ function attribute_save($type) {
 			}
 		}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', 1, $entry))
+		if(pql_modify_attribute($_REQUEST["user"], '', 1, $entry))
 		  $msg = $LANG->_('Successfully changed JPEG photo');
 		else
 		  $msg = $LANG->_('Failed to change JPEG photo');

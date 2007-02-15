@@ -4,7 +4,7 @@
 // simScanSpamAssassin, simScanClamAntiVirus, simScanTrophie,
 // useSudo, useAutoMount, lockUserName, lockEmailAddress,
 // lockDomainAddress, lockPassword and lockAccountType
-// $Id: attrib.domaintoggle.inc,v 2.16 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.domaintoggle.inc,v 2.17 2007-02-15 12:08:06 turbo Exp $
 
 // {{{ attribute_save(void)
 // It's a toggle. Change value directly.
@@ -17,7 +17,7 @@ function attribute_save() {
 	else
 	  $newval = 'TRUE';
 
-	if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, 1, $newval))
+	if(pql_modify_attribute($_REQUEST["domain"], $attrib, 1, $newval))
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 								   array('what' => $attrib, 'domain' => urldecode(pql_format_urls($_REQUEST["domain"]))));
 	else

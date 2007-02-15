@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.101 2007-02-12 15:53:55 turbo Exp $
+// $Id: user_detail.php,v 2.102 2007-02-15 12:07:13 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -28,7 +28,7 @@ if(!$_GET and ($_REQUEST["view"] == "antispam")) {
 }
 
 // Check if user exists
-if(!pql_get_dn($_pql->ldap_linkid, $_GET["user"], '(objectclass=*)', 'BASE')) {
+if(!$_pql->get_dn($_GET["user"], '(objectclass=*)', 'BASE')) {
     echo pql_complete_constant($LANG->_('User \u%user%\U does not exist'), array('user' => $_GET["user"]));
     exit();
 }
@@ -43,7 +43,7 @@ $url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 
 // Get default domain name for this domain
 if($_GET["domain"]) {
-	$defaultdomain = pql_get_attribute($_pql->ldap_linkid, $url["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = $_pql->get_attribute($url["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 }
 
 include($_SESSION["path"]."/header.html");
@@ -82,10 +82,10 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 // }}}
 
 // {{{ Retreive and show username etc
-$username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_CN"));
+$username = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_CN"));
 if(!$username) {
     // No common name, use uid field
-    $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_UID"));
+    $username = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_UID"));
 }
 if($username and is_array($username)) {
 	$username = $username[0];
@@ -142,7 +142,7 @@ foreach($attribs as $key => $attrib) {
 	if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]))
 	  $got_user_reference_attribute = 1;
 
-    $value = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $attrib);
+    $value = $_pql->get_attribute($_GET["user"], $attrib);
 	if(is_array($value) and ($attrib != 'cn'))
 	  // Only 'cn' is allowed to be multi-valued
 	  $value = $value[0];
@@ -168,11 +168,11 @@ foreach($attribs as $key => $attrib) {
 	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
     $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value&view=" . $_GET["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
-$quota = pql_user_get_quota($_pql->ldap_linkid, $_GET["user"]);
+$quota = pql_user_get_quota($_GET["user"]);
 
 if(!$got_user_reference_attribute) {
 	$key = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]);
-	$$key = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $key);
+	$$key = $_pql->get_attribute($_GET["user"], $key);
 
 	if(!$$key) {
 		$$key = "<i>You're referencing users with the attribute <u>$key</u>, but it's not in the object</i>";
@@ -201,7 +201,7 @@ if(empty($mailhost)) {
 
 if($_REQUEST["view"] == 'access') {
   // Check if user is mailserver admin
-  $controladmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
+  $controladmins = $_pql->get_attribute($_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
   if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
 	  if($admin == $_GET["user"])
@@ -213,7 +213,7 @@ if($_REQUEST["view"] == 'access') {
   }
 
   // Check if user is webserver admin
-  $websrvadmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
+  $websrvadmins = $_pql->get_attribute($_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
   if(is_array($websrvadmins)) {
 	foreach($websrvadmins as $admin)
 	  if($admin == $_GET["user"])
@@ -233,9 +233,7 @@ if(!empty($uid)) {
 	$memberuid = array();
 	foreach($_SESSION["BASE_DN"] as $base) {
 		$base = urldecode($base);
-		$tmp  = pql_search($_pql->ldap_linkid, $base,
-						   pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid);
-
+		$tmp  = $_pql->search($base, pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid);
 		if(!empty($tmp) and is_array($tmp)) {
 		  if(empty($tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")]) and !empty($tmp[0])) {
 			// Multidimensional array
@@ -254,7 +252,7 @@ if(!empty($uid)) {
 
 // {{{ Get the object classes of this user
 // If anyone of them is 'qmailGroup', then it's a Group object!
-$objectclasses = pql_get_attribute($_pql->ldap_linkid, $_GET["user"],
+$objectclasses = $_pql->get_attribute($_GET["user"],
 								   pql_get_define("PQL_ATTR_OBJECTCLASS"));
 if($objectclasses and !is_array($objectclasses)) {
   // Make it an array for the following foreach() to work..

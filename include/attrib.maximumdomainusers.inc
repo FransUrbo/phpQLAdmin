@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximumdomainusers.inc,v 2.18 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.maximumdomainusers.inc,v 2.19 2007-02-15 12:08:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -72,7 +72,7 @@ function attribute_save($type) {
 			$_REQUEST[$attrib] = '';
 		}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
+		if(pql_modify_attribute($_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 									   array('what'   => $LANG->_('maximum allowed users'),
 											 'domain' => pql_maybe_decode($_REQUEST["domain"])));

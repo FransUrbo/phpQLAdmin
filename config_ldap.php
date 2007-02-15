@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.22 2006-12-16 12:02:08 turbo Exp $
+// $Id: config_ldap.php,v 1.23 2007-02-15 12:07:09 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -10,7 +10,7 @@ include($_SESSION["path"]."/header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-$ldap = pql_get_subschemas($_pql->ldap_linkid);
+$ldap = pql_get_subschemas();
 if($_REQUEST["type"]) {
   $type = $_REQUEST["type"];
   $tmp = $ldap; unset($ldap);

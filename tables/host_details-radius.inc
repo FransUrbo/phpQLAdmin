@@ -1,6 +1,6 @@
 <?php
 // View RADIUS details about/for a physical host
-// $Id: host_details-radius.inc,v 1.2 2006-12-02 13:07:07 turbo Exp $
+// $Id: host_details-radius.inc,v 1.3 2007-02-15 12:08:17 turbo Exp $
 
 // {{{ Include RADIUS API etc
 //require($_SESSION["path"]."/include/pql_radius.inc");
@@ -12,11 +12,11 @@ if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 // }}}
 
 // {{{ Get all needed RADIUS values for this physical host
-$server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+$server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 
 $attribs = array("radiusfilterid"	=> pql_get_define("PQL_ATTR_RADIUS_FILTERID"));
 foreach($attribs as $key => $attrib) {
-	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], $attrib);
+	$value = $_pql->get_attribute($_REQUEST["host"], $attrib);
 	if(is_array($value))
 	  $value = $value[0];
 	$$key = $value;

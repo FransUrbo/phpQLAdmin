@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.24 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.mail.inc,v 2.25 2007-02-15 12:08:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -28,7 +28,7 @@ function attribute_check($type) {
     }
     
     // if type is modify, check existance of old value, else the new one
-    if($_POST["oldvalue"] != $mail and pql_email_exists($_pql, $mail)) {
+    if($_POST["oldvalue"] != $mail and pql_email_exists($mail)) {
 		$error[pql_get_define("PQL_ATTR_MAIL")] = $LANG->_('Already exists');
 		return false;
     }
@@ -104,7 +104,7 @@ function attribute_save($type) {
       case "modify":
 		$user = urldecode($_POST["user"]);
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"),
+		if(pql_modify_attribute($user, pql_get_define("PQL_ATTR_MAIL"),
 									$_POST["oldvalue"], $_POST["mail"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('main address'),
@@ -115,7 +115,7 @@ function attribute_save($type) {
 
 		if($_POST["keepold"]) {
 			// Put the old primary email address as an alias.
-			if(pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"),
+			if(pql_modify_attribute($user, pql_get_define("PQL_ATTR_MAILALTERNATE"),
 										'', $_POST["oldvalue"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										   array('what' => $LANG->_('main address'),

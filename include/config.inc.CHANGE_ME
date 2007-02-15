@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.77 2007-01-08 03:25:11 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.78 2007-02-15 12:08:11 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -91,7 +91,6 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // when creating a new user. 
 // You may add some code here or just uncomment one of the examples below. 
 // Input parameters:
-// (object)		ldap		 	-	A LDAP link
 // (string)		email			-	local part of the email-address
 // (string)		domain			-	domain in which you create the user
 // (array)		entry			-	Associative array with all attributes phpQLAdmin is about
@@ -121,14 +120,15 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // If this function is keept undefined, phpQLAdmin will try to generate
 // a mail directory value based on the 'Base home directory for users' which
 // is set in the branch object 'Default domain values' page...
-//function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
+//function user_generate_mailstore($email, $dn, $entry, $type) {
+//  global $_pql;
 //	$mailstore = '';
 //
 	// -------------- Debugging 1:
 	// If you suspect that this function isn't doing what it's supposed to do,
 	// uncomment the next few lines. This can also be used in bugtracker or the
 	// mailinglist for help...
-//	echo "user_generate_mailstore('<i>linkid</i>', '$email', '$dn', '<i>array</i>', '$type')<br>";
+//	echo "user_generate_mailstore('$email', '$dn', '<i>array</i>', '$type')<br>";
 //	echo "The entry array: "; printr($entry);
 //	
 	// -------------- Template 1: domains baseMailDir/uid
@@ -136,10 +136,10 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //		// We're called with a dn of a branch object.
 //
 //		// ... retreive the 'baseMailDir' attribute value from the branch object.
-//		$mailstore = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
+//		$mailstore = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
 //
 //		// ... retreive the 'defaultDomainName' attribute value from the branch object.
-//		$domain    = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//		$domain    = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 //	} else {
 //		// Default base directory
 //		$mailstore = "/var/mail";
@@ -174,11 +174,11 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //	//
 //	// -------------- example: domains baseMailDir/uid
 //	if($dn) {
-//		$mailstore = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
+//		$mailstore = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
 //		if(is_array($mailstore))
 //		  $mailstore = $mailstore[0];
 //
-//		$domain    = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//		$domain    = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 //		if(is_array($domain))
 //		  $domain = $domain[0];
 //	} else {
@@ -238,9 +238,7 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //	// generate another random number.
 // 	// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
 // 	$filter = pql_get_define("PQL_ATTR_MAILSTORE") . "=" . pql_maybe_encode($mailstore,
-// 																				 pql_get_define("PQL_ATTR_MAILSTORE"),
-// 																				 $ldap);
-// 	if(!pql_search($ldap, $ldap_basedn, $filter)) {
+// 	if(!$_pql->search($ldap_basedn, $filter)) {
 // 		break;
 // 	}
 // }
@@ -261,9 +259,8 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //
 //	// ----------------------------------------------
 //	// Add a trailing slash for Maildir's.
-//	if(! ereg("/$", $mailstore)) {
+//	if(! ereg("/$", $mailstore))
 //		$mailstore .= "/";
-//	}
 //
 //	// Substitue the '%X%' values with real values...
 //	$mailstore = pql_complete_constant($mailstore, array("d" => pql_format_international($domain), 
@@ -279,13 +276,15 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //
 // See information about function user_generate_mailstore() above.
 // Exact same options and restrictions apply!
-//function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
+//function user_generate_homedir($email, $dn, $entry, $type) {
+//  global $_pql;
+//
 //	if($dn) {
-//		$homedir = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
+//		$homedir = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
 //		if(is_array($homedir))
 //		  $homedir = $homedir[0];
 //
-//		$domain  = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//		$domain  = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 //		if(is_array($domain))
 //		  $domain = $domain[0];
 //	} else {
@@ -321,7 +320,6 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // This function is called to suggest a value for the uid when you add an user.
 // You may add some code here or just uncomment one of the examples below. 
 // Input parameters:
-// (resource)	ldap		 	-	A LDAP resource identifier 
 // (string)		surname 		- 	surname  
 // (string)		name	 		- 	name
 // (string)		email			-	complete email-address
@@ -329,8 +327,8 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // (string)		account_type	-	Chosen account type; "mail" or "forward"  
 //
 // Returns: (string) suggested uid; may be changed by the user
-function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_type) {
-	//	return(pql_get_next_username($ldap, $domain));	// Use prefix from branch to generate UID.
+function user_generate_uid($surname, $name, $email, $domain, $account_type) {
+	//	return(pql_get_next_username($domain));			// Use prefix from branch to generate UID.
 	//	return($email);									// Complete email address
 	//	return(eregi_replace('@', '%',$email));			// complete email-address but '%' instead of '@'
 	//	return(eregi_replace('@', '_',$email));			// complete email-address but '_' instead of '@'
@@ -345,7 +343,6 @@ function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_typ
 // This function is called to create a value for the email address when
 // you add a user. You may add some code here or just uncomment one of the examples below.
 // Input parameters:
-// (resource)	ldap		 	-	A LDAP resource identifier 
 // (string)		surname 		- 	surname  
 // (string)		lastname 		- 	lastname
 // (string)		domainname		-	A domain name in the form 'domain.tld'
@@ -353,7 +350,7 @@ function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_typ
 // (string)		account_type	-	Chosen account type; "mail" or "forward"  
 //
 // Returns: (string) suggested email address
-function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $domain, $account_type) {
+function user_generate_email($surname, $lastname, $domainname, $domain, $account_type) {
 	// Compose the username in the form 'firstname.lastname@domain.tld'.
 	// Compose the username with first+last name with dot in between.
 	if(!empty($surname))
@@ -375,7 +372,6 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 // This function is called to create an list of ACI's that should be added
 // to an object as it is created.
 // Input parameters:
-// (resource)	ldap		 	-	A LDAP resource identifier 
 // (string)		user	 		- 	The DN of the user adding/creating the
 //									object (or to have the access specified)
 // (string)		type			-	Type of object being created. Currently one of:
@@ -392,8 +388,8 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //
 // These are the ACI's that I use in my development system. Might not be
 // perfect, but it works for me...
-//function user_generate_aci($ldap_linkid, $user, $type) {
-//	global $_SESSION;
+//function user_generate_aci($user, $type) {
+//	global $_pql; $_SESSION;
 //	$i = 0;
 //
 //	// Public entries
@@ -441,11 +437,11 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //	$aci[$i] = "$i#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
 //
 //	// Get all the super admins with full access.
-//	$root_admins = pql_get_attribute($ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+//	$root_admins = $_pql->get_attribute(urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 //
 //	// Add all domain/branch administrators
 //	if(@$_REQUEST["domain"])
-//	  $base_admins = pql_get_attribute($ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+//	  $base_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 //
 //	// Merge the two values and unique them
 //	$admins = pql_add2array($root_admins, $base_admins);

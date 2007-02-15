@@ -37,7 +37,7 @@
 		     'add' => $LANG->_('Deny access'));
 	$link_url = array('add' => $url_tmp."&action=add");
       }
-      pql_format_table_single($_pql->ldap_linkid, $txt, $link_url,
+      pql_format_table_single($txt, $link_url,
 			      $virt_host_object[pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_DENY")],
 			      pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_DENY"), $class);
 ?>
@@ -58,7 +58,7 @@
 		     'add' => $LANG->_('Allow access'));
 	$link_url = array('add' => $url_tmp."&action=add");
       }
-      pql_format_table_single($_pql->ldap_linkid, $txt, $link_url,
+      pql_format_table_single($txt, $link_url,
 			      $virt_host_object[pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ALLOW")],
 			      pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ALLOW"), $class);
 ?>

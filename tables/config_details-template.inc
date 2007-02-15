@@ -1,6 +1,6 @@
 <?php 
 require($_SESSION["path"]."/include/pql_templates.inc");
-$templates = pql_get_templates($_pql->ldap_linkid);
+$templates = pql_get_templates();
 ?>
   <br>
 
@@ -41,7 +41,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 				$txt = array('tit' => $LANG->_('Allowed password encryption scheme'));
 				$url = array();
 			  }
-			  pql_format_table_single($_pql->ldap_linkid, $txt, $url, $templates[$i]["passwordscheme"],
+			  pql_format_table_single($txt, $url, $templates[$i]["passwordscheme"],
 									  pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"), $class);
 			}
 ?>
@@ -60,23 +60,23 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 			  $txt = array('tit' => $LANG->_('Allowed user objectclasses'));
 			  $url = array();
 			}
-			pql_format_table_single($_pql->ldap_linkid, $txt, $url, $templates[$i]["userobjectclass"],
+			pql_format_table_single($txt, $url, $templates[$i]["userobjectclass"],
 									pql_get_define("PQL_ATTR_OBJECTCLASS_USER"), $class);
 ?>
 
       <!-- -------------------- -->
-<?php		$attribs = pql_templates_attributes($_pql->ldap_linkid, $templates[$i]["userobjectclass"]);
+<?php		$attribs = pql_templates_attributes($templates[$i]["userobjectclass"]);
 			if(!is_array($attribs["must"]))
 			  $attribs["must"] = array("<i>None</i>");
 			if(!is_array($attribs["may"]))
 			  $attribs["may"]  = array("<i>None</i>");
 
 			// Show the list of required attributes. It's always read only, so no frills.
-			pql_format_table_single($_pql->ldap_linkid, array('tit' => $LANG->_('Required attributes')),
+			pql_format_table_single(array('tit' => $LANG->_('Required attributes')),
 									array(), $attribs["must"], '', pql_format_table(0));
 
 			// Show the list of allowed attributes. Also read only.
-			pql_format_table_single($_pql->ldap_linkid, array('tit' => $LANG->_('Allowed attributes')),
+			pql_format_table_single(array('tit' => $LANG->_('Allowed attributes')),
 									array(), $attribs["may"], '', pql_format_table(0));
 
 			if($templates[$i]["name"] != 'internal_group') {
@@ -104,7 +104,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 <?php		}
 
 			if(!empty($templates[$i+1])) {
-				pql_format_table_empty();
+				pql_format_table_empty(3);
 			}
 		} // for(templates)
 ?>

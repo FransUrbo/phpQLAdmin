@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.20 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.21 2007-02-15 12:08:06 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -21,7 +21,7 @@ function attribute_check($type) {
 function attribute_init() {
     global $_pql;
 
-    $deliveryprogrampath = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"));
+    $deliveryprogrampath = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"));
 	$_REQUEST["deliveryprogrampath"] = $deliveryprogrampath[0];
 
     // DLW: Why is "oldvalue" getting assigned a value here?
@@ -82,7 +82,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"),
+		if(pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"),
 								'', $_REQUEST["deliveryprogrampath"])) {
 			if($_REQUEST["deliveryprogrampath"] == "")
 			  $_REQUEST["deliveryprogrampath"] = $LANG->_('None');
@@ -97,7 +97,7 @@ function attribute_save($type) {
 
 		// DLW: This shouldn't care if deliveryprogrampath gets set to None.
 		// check if qmaildotmode is set to 'both' or 'ldapwithprog'
-		$qmaildotmode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
+		$qmaildotmode = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
 		$qmaildotmode = $qmaildotmode[0];
 
 		if($qmaildotmode != "both" and $qmaildotmode != "ldapwithprog")

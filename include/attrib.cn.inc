@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.30 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.cn.inc,v 2.31 2007-02-15 12:07:17 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -68,7 +68,7 @@ function attribute_save($type) {
     switch($type) {
       case "add":
 		// {{{ Add a value
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST["cn"]))
+		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST["cn"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully added %what%'),
 									   array('what' => $LANG->_('Common name')));
 		else
@@ -98,7 +98,7 @@ function attribute_save($type) {
 		  $old = 1;
 		
 		// {{{ Replace the specified attribute
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["cn"]))
+		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["cn"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('Common name'),
 											 'new'  => $_REQUEST["cn"]));
@@ -109,25 +109,25 @@ function attribute_save($type) {
 		// }}}
 
 		// {{{ Replace the 'gecos' value
-		$gecos = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GECOS"));
+		$gecos = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_GECOS"));
 		if($gecos)
-		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GECOS"), 1, $_REQUEST["cn"]);
+		  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_GECOS"), 1, $_REQUEST["cn"]);
 		// }}}
 
 		// {{{ Replace the 'givenName' (first name)
-		$givenname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"));
+		$givenname = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"));
 		if($givenname) {
 		  // Get first and last name from the 'CN'.
 		  $name = split(" ", $_REQUEST["cn"]);
 		  
-		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $old, $name[0]);
+		  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $old, $name[0]);
 		}
 		// }}}
 
 		// {{{ Replace the 'sn' (last name)
-		$sn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"));
+		$sn = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_SN"));
 		if($sn)
-		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"), $old, $name[1]);
+		  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_SN"), $old, $name[1]);
 		// }}}
 
 		attribute_forward($msg, true);
@@ -136,7 +136,7 @@ function attribute_save($type) {
 
 	  case "del":
 		// {{{ Delete a value
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["cn"], ''))
+		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["cn"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully deleted %what%'),
 									   array('what' => $LANG->_('Common name')));
 		else

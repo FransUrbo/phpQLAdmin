@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.39 2006-12-18 12:47:27 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.40 2007-02-15 12:08:05 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -46,10 +46,10 @@ function attribute_print_form() {
 	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		
       // Get all QmailLDAP/Control hosts.
-      $result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+      $result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
                            '(&(cn=*)(objectclass=qmailControl))');
       for($i=0; $i < count($result); $i++)
-        $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+        $hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
 
 	  if(is_array($hosts)) {
 ?>
@@ -136,7 +136,7 @@ function attribute_save($type) {
   switch($type) {
   case "add":
   case "modify":
-	if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $defaultdomain)) {
+	if(pql_modify_attribute($_REQUEST["domain"], $_REQUEST["attrib"], 1, $defaultdomain)) {
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 								   array('what' => $LANG->_('Default domainname', 4),
 										 'new'  => $defaultdomain));
@@ -161,15 +161,15 @@ function attribute_save($type) {
 				foreach($hosts as $host) {
 				  $hostdn = pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"];
 
-				  pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, '', $defaultdomain);
+				  pql_modify_attribute($hostdn, $attrib, '', $defaultdomain);
 				}
 			  }
 			} else {
 			  // Change all hosts
 			  if($type == 'delete')
-				pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, $oldvalue, '');
+				pql_modify_attribute($hostdn, $attrib, $oldvalue, '');
 			  else
-				pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, '', $defaultdomain);
+				pql_modify_attribute($hostdn, $attrib, '', $defaultdomain);
 			}
 		  } else {
 			// We have not gone through the form for adding defaultDomain nor additionalDomainName.
@@ -186,7 +186,7 @@ function attribute_save($type) {
 		}
 	  }
 
-	  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
+	  pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
 	  // }}}
 	} else
 	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

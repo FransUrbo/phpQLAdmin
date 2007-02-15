@@ -2,7 +2,7 @@
 // control attribute plugin for
 // Non-Primary MX host values
 //
-// $Id: attrib.control.nonprimmx.inc,v 2.6 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.nonprimmx.inc,v 2.7 2007-02-15 12:07:38 turbo Exp $
 
 // {{{ nonprimaryrcpthosts_check(type)
 function nonprimaryrcpthosts_check($type) {
@@ -19,10 +19,10 @@ function nonprimaryrcpthosts_init($host) {
   
   // Fetch data from ldap server
   if($host == "Global")
-	$_REQUEST["nonprimaryrcpthosts"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	$_REQUEST["nonprimaryrcpthosts"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 														 pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
   else
-	$_REQUEST["nonprimaryrcpthosts"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
+	$_REQUEST["nonprimaryrcpthosts"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
   
   if(!@empty($_REQUEST["nonprimaryrcpthosts"]))
 	return true;
@@ -51,7 +51,7 @@ function nonprimaryrcpthosts_print_view($host) {
 
 	$tbl_txt = array('tit' => $LANG->_('Domains'), 'add' => $LANG->_('Add domain'), 'del' => $LANG->_('Remove domain'));
 	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
-	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["nonprimaryrcpthosts"],
+	pql_format_table_single( $tbl_txt, $tbl_url, $_REQUEST["nonprimaryrcpthosts"],
 							pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"), $class);
 ?>
       </th>
@@ -98,17 +98,17 @@ function nonprimaryrcpthosts_save($type, $host) {
 		// {{{ Add entry
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 $_REQUEST["attrib"], '', $_REQUEST["nonprimaryrcpthosts"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  $_REQUEST["attrib"], '', $_REQUEST["nonprimaryrcpthosts"]))
 			$success = 1;
 		}
@@ -128,7 +128,7 @@ function nonprimaryrcpthosts_save($type, $host) {
 
       case "del":
 		// {{{ remove specified domain from locals, redirect back to host details
-		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		if(pql_modify_attribute($host,
 								$_REQUEST["attrib"], $_REQUEST["nonprimaryrcpthosts"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => $_REQUEST["attrib"],

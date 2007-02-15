@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.34 2006-12-16 12:02:08 turbo Exp $
+// $Id: control_add_server.php,v 2.35 2007-02-15 12:07:09 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -21,15 +21,15 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	  if($_REQUEST["fqdn"]) {
 		// Retreive the DN of the 'original' (object to be cloned).
 		$filter = '(&('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["cloneserver"].')('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=qmailControl))';
-		$dn = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+		$dn = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter);
 		if($dn[0])
 		  $dn = $dn[0];
 
 		// Get the whole object
-		$object = pql_search($_pql_control->ldap_linkid, $dn, 'objectclass=*', 'BASE');
+		$object = $_pql_control->search($dn, 'objectclass=*', 'BASE');
 		if($object) {
 		  if($object[0])
-			// pql_search() is retreiving a too deep array. The one we're looking for is at 'position' 0
+			// search() is retreiving a too deep array. The one we're looking for is at 'position' 0
 			$object = $object[0];
 		  
 		  // Create an 'LDIF' for the new object, that we can add to the databaes.
@@ -77,7 +77,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		
 		// Add the new object to the database.
 		$dn	= pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["fqdn"].','.$_REQUEST["host"];
-		if(pql_write_add($_pql_control->ldap_linkid, $dn, $entry, 'qmail', 'control_add_server.php')) {
+		if($_pql_control->add($dn, $entry, 'qmail', 'control_add_server.php')) {
 		  $msg  = urlencode("Successfully created mailserver ".pql_maybe_idna_decode($_REQUEST["fqdn"]).".");
 		  $link = "control_detail.php?mxhost=".urlencode($dn)."&msg=$msg&rlnb=2";
 		  
@@ -123,7 +123,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		  $entry[pql_get_define("PQL_ATTR_LDAPREBIND")]				= '1';
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]				= 'qmailControl';
 		
-		if(pql_write_add($_pql_control->ldap_linkid, $dn, $entry, 'qmail', 'control_add_server.php')) {
+		if($_pql_control->add($dn, $entry, 'qmail', 'control_add_server.php')) {
 		  $msg  = urlencode("Successfully created mailserver ".$_REQUEST["fqdn"].".");
 		  $link = "control_detail.php?mxhost=".urlencode($dn)."&msg=$msg&rlnb=2";
 		  
@@ -149,7 +149,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
   }
 
   // Retreive the FQDN of physical host
-  $server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+  $server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 
   // {{{ Create the 'Clone mail server' form
 ?>
@@ -181,11 +181,11 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
           <td>
 <?php
   // Get all QmailLDAP/Control hosts.
-  $result = pql_get_dn($_pql_control->ldap_linkid,
+  $result = $_pql_control->get_dn(
 					   $_SESSION["USER_SEARCH_DN_CTR"],
 					   '(&(cn=*)(objectclass=qmailControl))');
   for($i=0; $i < count($result); $i++)
-	$hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+	$hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
 
   if(!is_array($hosts)) {
 ?>

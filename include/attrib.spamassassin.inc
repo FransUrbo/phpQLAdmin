@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for spamAssassin
-// $Id: attrib.spamassassin.inc,v 2.6 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.spamassassin.inc,v 2.7 2007-02-15 12:08:09 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -158,7 +158,7 @@ function attribute_save($request) {
 	// ------------------------------------
 	if($_REQUEST["attrib"] == 'add_header') {
 	  // Get the old values from LDAP
-	  $entry = pql_get_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]),
+	  $entry = $_pql->get_attribute(urldecode($_REQUEST["user"]),
 								 pql_get_define("PQL_ATTR_SPAMASSASSIN"));
 
 	  if($request == 'modify') {
@@ -176,7 +176,7 @@ function attribute_save($request) {
 
 	  // Replace the old value (_REQUEST[oldvalue]) with the
 	  // new value (_REQUEST[spamassassin]).
-	  if(pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]),
+	  if(pql_modify_attribute(urldecode($_REQUEST["user"]),
 							  pql_get_define("PQL_ATTR_SPAMASSASSIN"), 1,
 							  $entry))
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
@@ -188,7 +188,7 @@ function attribute_save($request) {
 	} else {
 	  // Update the user object, replacing the whole
 	  // attribute set.
-	  if(pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), '', '', $new))
+	  if(pql_modify_attribute(urldecode($_REQUEST["user"]), '', '', $new))
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									 array('what' => $LANG->_('Antispam configuration')));
 	  else

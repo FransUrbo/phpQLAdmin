@@ -19,7 +19,7 @@
 				else
 				  $val = $d;
 
-				if(pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+				if($_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							  "(&(cn=*)(objectclass=qmailControl)($attrib=$val))")) {
 					$DEFINED[$attrib][$d] = $LANG->_('Yes');
 

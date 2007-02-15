@@ -1,6 +1,6 @@
 <?php
 // View and manage web servers accessible from this domain/branch.
-// $Id: domain_details-websrv.inc,v 1.23 2006-12-16 12:03:12 turbo Exp $
+// $Id: domain_details-websrv.inc,v 1.24 2007-02-15 12:08:16 turbo Exp $
 
 // This view is different from 'host_details-websrv.inc' in the way that
 // domain/branch (admins etc) is/should be more interested in the virtual
@@ -19,14 +19,14 @@ require($_SESSION["path"]."/include/pql_websrv.inc");
 // }}}
 
 // {{{ Get all domain names - primary and additional - this domain 'own'
-$domain_additional = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+$domain_additional = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 if(is_array($domain_additional)) {
   $domains = $domain_additional;
 } elseif($domain_additional) {
   $domains = array($domain_additional);
 }
 
-$domain_default    = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+$domain_default    = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 if($domain_default) {
   $domains[] = $domain_default;
 }
@@ -38,7 +38,7 @@ for($i=0; $domains[$i]; $i++) {
   $filter .= "(".pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")."=*".$domains[$i].")";
 }
 $filter .= ")";
-$virt_hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+$virt_hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter);
 // }}}
 
 // {{{ Setup a virtual host array
@@ -103,7 +103,7 @@ if(count($VIRTHOSTS)) {
 
   // {{{ Setup the virtual host directory buttons
   // Find any virtual host locations for this virtual host
-  $locations = pql_websrv_get_virtual_host_directories($_pql->ldap_linkid, '', '', $virt_host_dn);
+  $locations = pql_websrv_get_virtual_host_directories('', '', $virt_host_dn);
 
   if(count($locations) >= 1) {
 ?>
@@ -131,7 +131,7 @@ if(count($VIRTHOSTS)) {
 	// Called with a virtual host location. Add that at the beginning of the virtual host DN.
 	$virt_host_dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_IP").'='.$_REQUEST["hostdir"].','.$virt_host_dn;
 
-  $virt_host_object = pql_websrv_get_virtual_host($_pql->ldap_linkid, $virt_host_dn);
+  $virt_host_object = pql_websrv_get_virtual_host($virt_host_dn);
 // }}}
 
   // {{{ Include tables/host_details-websrv_virt{dir,host}.inc
@@ -154,8 +154,8 @@ if($_REQUEST["hostdir"]) {
 }
 
 // {{{ If Branch/Domain or SUPER admin - Show 'Add virtual host' link
-if((pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]) or
-	pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]) or
+if((pql_validate_administrator($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]) or
+	pql_validate_administrator($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]) or
 	$_SESSION["ALLOW_BRANCH_CREATE"]) and $_SESSION["ADVANCED_MODE"])
 {
 ?>

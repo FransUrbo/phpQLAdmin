@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.22 2006-12-16 12:02:09 turbo Exp $
+// $Id: websrv_add.php,v 2.23 2007-02-15 12:07:14 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -81,7 +81,7 @@ if($_REQUEST["submit"]) {
 
 	if($_REQUEST["type"] == "vrtsrv") {
 	  // Last, but not least, check to see that the virtual host doesn't already exist
-	  $dn = pql_get_dn($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_WEBSRV_SRV_URL").'='.$_REQUEST["serverurl"]);
+	  $dn = $_pql->get_dn($_REQUEST["server"], pql_get_define("PQL_ATTR_WEBSRV_SRV_URL").'='.$_REQUEST["serverurl"]);
 	  if($dn[0]) {
 		$error = true;
 		$error_text["serverurl"] = $LANG->_('Already exists');
@@ -112,7 +112,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a virtual host location for %virthost%'), array('virthost' => $_REQUEST["virthost"])); ?></span>
 <?php
   } elseif($_REQUEST["server"]) {
-	$server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_CN"));
+	$server_reference = $_pql->get_attribute($_REQUEST["server"], pql_get_define("PQL_ATTR_CN"));
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a virtual host for %server%'), array('server' => $server_reference)); ?></span>
 <?php }
@@ -182,7 +182,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		// {{{ Input for Virtual Host Object
 		if(empty($_REQUEST["serverip"])) {
 		  // Get the IP from the physical server
-		  $serverip = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_IPHOSTNUMBER"));
+		  $serverip = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_IPHOSTNUMBER"));
 
 		  // Extract port (if any) from the webserver
 		  $port = preg_replace('/.*:/', '', $server_reference);
@@ -199,12 +199,12 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
 		  // Super admin in advanced mode - First get all physical servers
 		  $filter = '(&(cn=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-		  $physical = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+		  $physical = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 		  if(is_array($physical)) {
 			// For each physical host, get all its web servers
 			$servers = array();
 			for($i=0; $physical[$i]; $i++) {
-			  $tmp = pql_websrv_find_servers($_pql->ldap_linkid, $physical[$i]);
+			  $tmp = pql_websrv_find_servers($physical[$i]);
 			  if(is_array($tmp))
 				$servers = $servers + $tmp;
 			}
@@ -228,7 +228,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
           <td><?=$LANG->_('The IP:PORT input is ignore if \imore\I than one\n\bAdd to existing server\B option below is selected!')?></td>
         </tr>
 
-        <tr><td></td></tr>
+        <?=pql_format_table_empty(2)?>
 <?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -305,7 +305,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		  $_REQUEST["serverport"] = 80;
 
 		// Retreive the FQDN of physical host
-		$server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+		$server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('web server'))); ?>
         <tr class="<?php pql_format_table(); ?>">
@@ -387,7 +387,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	  
 	  // {{{ Add the web server object
 	  $dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$fqdn.",".$hosts[$i];
-	  if(pql_websrv_add_server($_pql->ldap_linkid, $dn, $entry, $_REQUEST["type"]))
+	  if(pql_websrv_add_server($dn, $entry, $_REQUEST["type"]))
 		$msg = "Successfully added webserver configuration ".$_REQUEST["serverurl"];
 	  else
 		$msg = "Failed to add webserver configuration ".$_REQUEST["serverurl"];
@@ -407,7 +407,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	  
 	  // Find out which domain/branch that have this zone (if any).
 	  $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$domainname)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")."=@))";
-	  $soadn = pql_get_dn($_pql->ldap_linkid, $rootdn, $filter);
+	  $soadn = $_pql->get_dn($rootdn, $filter);
 	  if(@soadn and is_array($soadn)) {
 		// soa => 'dNSTTL=3600 relativeDomainName=@,dc=bayour,dc=com,ou=DNS,o=Bayour.COM,c=SE'
 		$soadn = $soadn[0];
@@ -444,7 +444,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 			$entry[pql_get_define("PQL_ATTR_ARECORD")][]		= $IPs[$i];
 		}
 		
-		$dn = pql_bind9_add_host($_pql->ldap_linkid, $branch, $entry);
+		$dn = pql_bind9_add_host($branch, $entry);
 		if($dn) {
 		  $msg .= "<br>Successfully added host $hostname to DNS";
 
@@ -452,7 +452,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		  if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 			// We can't do this if we're debuging. The object don't exists in the db, hence
 			// we can't figure out zone name etc...
-			if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
+			if(!pql_bind9_update_serial($dn))
 			  die("failed to update SOA serial number");
 		  } else
 			echo $LANG->_("\bCan't update SOA since we're running in DEBUG_ME mode!\B")."<p>";
@@ -471,7 +471,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 
 	  // {{{ Fetch old (attrib) values from DB
 	  unset($entry);
-	  $oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	  $oldvalues = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 	  if($oldvalues) {
 		if(!is_array($oldvalues))
 		  $oldvalues = array($oldvalues);
@@ -483,7 +483,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		$entry[pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")][] = $server_domain;
 	  // }}}
 
-	  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry)) {
+	  if(pql_modify_attribute($_REQUEST["domain"], '', '', $entry)) {
 		$msg .= "<br>".pql_complete_constant($LANG->_('Successfully changed %what%'),
 											 array('what' => $LANG->_('Additional domain name')));
 	  
@@ -496,7 +496,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 			$entry = array('', $server_domain);
 		}
 
-		pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
+		pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
 		// }}}
 	  } else
 		$msg .= "<br>".pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -520,7 +520,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["serverurl"];
 	// }}}
 
-	if(pql_websrv_add_server($_pql->ldap_linkid, $dn, $entry, $_REQUEST["type"]))
+	if(pql_websrv_add_server($dn, $entry, $_REQUEST["type"]))
 	  $msg = "Successfully added webserver configuration ".$_REQUEST["serverurl"];
 	else
 	  $msg = "Failed to add webserver configuration ".$_REQUEST["serverurl"];
@@ -593,7 +593,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	// }}}
 	// }}}
 
-	if(pql_websrv_add_server($_pql->ldap_linkid, $dn, $entry, $_REQUEST["type"]))
+	if(pql_websrv_add_server($dn, $entry, $_REQUEST["type"]))
 	  $msg = "Successfully added the virtual host location ".$_REQUEST["mountpoint"];
 	else
 	  $msg = "Failed to add webserver configuration ".$_REQUEST["mountpoint"];

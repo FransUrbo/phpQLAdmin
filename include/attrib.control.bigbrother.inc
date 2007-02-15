@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.12 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.13 2007-02-15 12:07:18 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -20,10 +20,10 @@ function bigbrother_init($host) {
 
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["bigbrother"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["bigbrother"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 												  pql_get_define("PQL_ATTR_BIGBROTHER"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["bigbrother"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_BIGBROTHER"));
+	  $_REQUEST["bigbrother"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_BIGBROTHER"));
 
 	if(!@$_REQUEST["bigbrother"])
 	  return true;
@@ -129,17 +129,17 @@ function bigbrother_save($type, $host)  {
 
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_BIGBROTHER"), '', $entry))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_BIGBROTHER"), 1, $entry))
 			$success = 1;
 		}
@@ -158,7 +158,7 @@ function bigbrother_save($type, $host)  {
 
 	  case "del":
 		// {{{ delete value
-		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		if(pql_modify_attribute($host,
 								pql_get_define("PQL_ATTR_BIGBROTHER"), $_REQUEST["bigbrother"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Blocking list')));

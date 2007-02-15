@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.36 2006-12-16 12:02:09 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.37 2007-02-15 12:07:11 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -20,14 +20,14 @@ if(isset($_REQUEST["msg"])){
 
 if($_REQUEST["domain"]) {
 	// Get base directory for mails
-	if(!($basemaildir = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
+	if(!($basemaildir = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 		die(pql_complete_constant($LANG->_("Can't get %attribute% for domain '%domain%'",
 										   array('attribute' => pql_get_define("PQL_ATTR_BASEMAILDIR"),
 												 'domain'    => $_REQUEST["domainname"])))."!<br>");
 	}
 
 	// Initialize and load list of mailinglists
-	$user  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+	$user  = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 	$ezmlm = new ezmlm($user, $basemaildir);
 	
 	include($_SESSION["path"]."/header.html");

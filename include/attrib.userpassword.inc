@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.40 2006-12-28 02:19:37 aaron Exp $
+// $Id: attrib.userpassword.inc,v 2.41 2007-02-15 12:08:11 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -80,7 +80,7 @@ function attribute_print_form() {
 	global $error, $_pql, $LANG;
 
 	// Get current password
-	$principal = kadmin_get_principal($_pql->ldap_linkid, $_REQUEST["user"]);
+	$principal = pql_kadmin_get_principal($_REQUEST["user"]);
 	if($principal)
 	  unset($password);
 
@@ -88,7 +88,7 @@ function attribute_print_form() {
 	  $defaultpasswordscheme = 'KERBEROS';
 	else
 	  // Get the default password scheme for branch
-	  $defaultpasswordscheme = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
+	  $defaultpasswordscheme = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -191,7 +191,7 @@ function attribute_save($type) {
 		// TODO: Perhaps we should give the admin the choice of weather or
 		//       not we should use lanman since it's so insecure.
 		//       -> Thoughts anyone?
-		$objectclasses = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+		$objectclasses = $_pql->get_attribute($_REQUEST["user"],
 										   pql_get_define("PQL_ATTR_OBJECTCLASS"));
 		if($objectclasses and !is_array($objectclasses))
 		  // Make it an array for the following foreach() to work..
@@ -204,26 +204,26 @@ function attribute_save($type) {
 		
 		if($USER_IS_SAMBA){
 		  $nt = pql_password_hash($_REQUEST["userpassword"], '{ntpasswd}');
-		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+		  pql_modify_attribute($_REQUEST["user"],
 							   pql_get_define("PQL_ATTR_SAMBANTPASSWORD"), 1, $nt);
 		}
 
 		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == '{KERBEROS}')) {
-		  if(kadmin_cpw($_pql->ldap_linkid, $_REQUEST["principal"], $_REQUEST["userpassword"]))
+		  if(kadmin_cpw($_REQUEST["principal"], $_REQUEST["userpassword"]))
 			$success = 1;
 		} else {
 		  // Change an 'ordinary' LDAP password
 		  $pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 	
-		  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw))
-			$expiredays = pql_get_attribute($_pql->ldap_linkid, $_REQUEST['rootn'], pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"));
+		  if(pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw))
+			$expiredays = $_pql->get_attribute($_REQUEST['rootn'], pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"));
                         //Since Password is changeing, I better update the shadowstuff also
                         if(isset($expiredays)){
                                 $today = floor(time() * (1/60) * (1/60) * (1/24) );
                                 $next = $today + $expiredays;
-                                pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+                                pql_modify_attribute($_REQUEST["user"],
                                    pql_get_define("PQL_ATTR_EXPIRATION"), 1, $next);
-                                pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+                                pql_modify_attribute($_REQUEST["user"],
                                    pql_get_define("PQL_ATTR_PASSWORD_LASTCHANGED"), 1, $today);
                         }
 

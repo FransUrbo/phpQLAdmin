@@ -1,7 +1,7 @@
 <?php
 // This creates a script to be executed on the new mailserver,
 // and configures all the nessesary files for QmailLDAP/Controls.
-// $Id: installmailserver.php,v 1.13 2006-12-16 12:03:17 turbo Exp $
+// $Id: installmailserver.php,v 1.14 2007-02-15 12:08:23 turbo Exp $
 //
 // Creates the following files
 //	ldapserver
@@ -25,7 +25,7 @@ $attribs = array("ldapserver"	=> pql_get_define("PQL_ATTR_LDAPSERVER"),
 		 "ldaplogin"	=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
 		 "ldappassword"	=> pql_get_define("PQL_ATTR_LDAPPASSWORD"));
 foreach($attribs as $key => $attrib) {
-    $value = pql_get_attribute($ldap, $cn, $attrib);
+    $value = $ldap->get_attribute($cn, $attrib);
     if(!$value)
       $unset = 1;
     $$key = $value;

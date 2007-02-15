@@ -1,13 +1,13 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.15 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.16 2007-02-15 12:07:16 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
     global $_pql, $LANG;
 
 	// Get the UID value for this user
-	$uid = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], lc(pql_get_define("PQL_ATTR_UID")));
+	$uid = $_pql->get_attribute($_REQUEST["user"], lc(pql_get_define("PQL_ATTR_UID")));
 
 	if(!isset($_REQUEST["uid"])){
 		$_REQUEST["uid"] = $uid[0];
@@ -41,7 +41,7 @@ function attribute_print_form() {
 
 	foreach($_SESSION["BASE_DN"] as $base) {
 		// Get all the groups in this root DN.
-		$grps = pql_search($_pql->ldap_linkid, $base, $filter);
+		$grps = $_pql->search($base, $filter);
 		if(is_array($grps)) {
 			for($i=0; $i < count($grps); $i++) {
 				$is_member = 0;
@@ -139,7 +139,7 @@ function attribute_save($action) {
 		}
 
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST['group'], $attrib_name, $_REQUEST["uid"], ''))
+		if(pql_modify_attribute($_REQUEST['group'], $attrib_name, $_REQUEST["uid"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %user% from %what% %group%'),
 									   array('what'  => $LANG->_('additional group'),
 											 'user'  => $_REQUEST["uid"],
@@ -167,7 +167,7 @@ function attribute_save($action) {
 
 		$msg = '';
 		for($i=0; $i< count($groups); $i++) {
-			if(pql_modify_attribute($_pql->ldap_linkid, $groups[$i], $attrib_name, '', $_REQUEST["uid"])) {
+			if(pql_modify_attribute($groups[$i], $attrib_name, '', $_REQUEST["uid"])) {
 				$msg .= pql_complete_constant($LANG->_('Successfully added user %user% to group %group%\n'),
 											  array('user' => $_REQUEST["uid"], 'group' => $groups[$i]));
 			} else {

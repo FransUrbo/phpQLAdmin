@@ -1,12 +1,12 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.18 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.19 2007-02-15 12:08:08 turbo Exp $
 
-// {{{ attribute_setup_aci(linkid, dn, old, new)
-function attribute_setup_aci($linkid, $dn, $old, $new) {
+// {{{ attribute_setup_aci(dn, old, new)
+function attribute_setup_aci($dn, $old, $new) {
 	// Get the old ACI's for this object
-	$old_acis = pql_aci_get($linkid, $dn);
+	$old_acis = pql_aci_get($dn);
 
 	// Look for the user
 	for($i=0, $oid=0; $i < count($old_acis); $i++, $oid++) {
@@ -85,7 +85,7 @@ function attribute_print_form() {
     <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="rdn"      value="<?=$rdn?>">
-    <img src="images/info.png" width="16" height="16" border="0">&nbsp;It is only possible to change the RDN within the same base.
+    <img src="images/info.png" width="16" height="16" border="0">&nbsp;<?=$LANG->_('It is only possible to change the RDN within the same base')?>.
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -110,7 +110,7 @@ function attribute_save($type) {
 	$user = $dnattr[0]."=".$_REQUEST["user"];
 
 	// {{{ Rename the RDN
-	if(pql_write_ren($_pql->ldap_linkid, $_REQUEST["oldvalue"], $_REQUEST["rdn"], $user, $keepold)) {
+	if($_pql->rename($_REQUEST["oldvalue"], $_REQUEST["rdn"], $user, $keepold)) {
 	  $msg = pql_complete_constant($LANG->_('Successfully renamed RDN %old% to %new%'),
 								   array('old' => $_REQUEST["oldvalue"],
 										 'new' => $user));
@@ -128,18 +128,18 @@ function attribute_save($type) {
 
 		// Replace all administrator/seealso attributes that reference the old
 		// user DN with the new DN.
-		pql_replace_values($_pql, $attribs, $_REQUEST["oldvalue"], $user);
+		pql_replace_values($attribs, $_REQUEST["oldvalue"], $user);
 		// }}}
 		
 		// {{{ Change all ACI's in all the objects in all the base DN's.
 		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
 			foreach($_SESSION["BASE_DN"] as $dn) {
-				$objects = pql_get_dn($_pql->ldap_linkid, $dn, 'objectClass=*');
+				$objects = $_pql->get_dn($dn, 'objectClass=*');
 				for($i=0; $i < count($objects); $i++) {
-					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $_REQUEST["oldvalue"], $user);
+					$ACIs = attribute_setup_aci($objects[$i], $_REQUEST["oldvalue"], $user);
 
 					// Modify this object. BUG: Should we care about failure/successes?!
-					pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+					pql_modify_attribute($objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 				}
 			}
 		}

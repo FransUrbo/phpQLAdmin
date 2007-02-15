@@ -115,7 +115,7 @@
         <td><?php if($defaultaccounttype) {
 		  // Retreive the short name of the account type (template name)
 		  require($_SESSION["path"]."/include/pql_templates.inc");
-		  $template = pql_get_template($_pql->ldap_linkid, $defaultaccounttype);
+		  $template = pql_get_template($defaultaccounttype);
 		  echo $template["short"];}else{echo $LANG->_('No default');} ?></td>
         <td><?=$defaultaccounttype_link?></td>
       </tr>

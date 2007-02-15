@@ -7,7 +7,7 @@ if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_sudo_role') {
   if(isset($_REQUEST['role']) && $_REQUEST['role'] == '') {
 	pql_format_status_msg($LANG->_("Failed To Add New Sudo Role, Must Define The Role."));
   } else {
-	if(pql_add_sudo_role($_pql->ldap_linkid, $domain, $_REQUEST['role'], $_REQUEST['userdn'],
+	if(pql_add_sudo_role($domain, $_REQUEST['role'], $_REQUEST['userdn'],
 						 $_REQUEST['command'], $_REQUEST['runas'], $_REQUEST['computer'] )) {
 	  pql_format_status_msg(pql_complete_constant($LANG->_("New Sudo Role: %role% Has Been Added Successfully"),
 												  array('role' => $_REQUEST['role'])));
@@ -20,7 +20,7 @@ if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_sudo_role') {
 } elseif(isset($_REQUEST['action']) && $_REQUEST['action'] == 'remove_attribute_from_sudoRole') {
   // {{{ Remove attribute from sudo role
   //print_r($_REQUEST);
-  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST['sudodn'], $_REQUEST['attribute'], 
+  if(pql_modify_attribute($_REQUEST['sudodn'], $_REQUEST['attribute'], 
 						  $_REQUEST[$_REQUEST['attribute']], '')){
 	pql_format_status_msg(pql_complete_constant($LANG->_("Successfully removed %what% from %where%"),
 												array('what'  => $_REQUEST[$_REQUEST['attribute']],
@@ -35,10 +35,10 @@ if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_sudo_role') {
   // {{{ Update sudo role
   $dn = $_REQUEST['roledn'];
   
-  pql_update_sudo($_pql->ldap_linkid, $dn, 'userdn',   pql_get_define("PQL_ATTR_SUDOUSER"));
-  pql_update_sudo($_pql->ldap_linkid, $dn, 'command',  pql_get_define("PQL_ATTR_SUDOCOMMAND"));
-  pql_update_sudo($_pql->ldap_linkid, $dn, 'user',     pql_get_define("PQL_ATTR_SUDORUNAS"));
-  pql_update_sudo($_pql->ldap_linkid, $dn, 'computer', pql_get_define("PQL_ATTR_SUDOHOST"));
+  pql_update_sudo($dn, 'userdn',   pql_get_define("PQL_ATTR_SUDOUSER"));
+  pql_update_sudo($dn, 'command',  pql_get_define("PQL_ATTR_SUDOCOMMAND"));
+  pql_update_sudo($dn, 'user',     pql_get_define("PQL_ATTR_SUDORUNAS"));
+  pql_update_sudo($dn, 'computer', pql_get_define("PQL_ATTR_SUDOHOST"));
   // }}}
 }
 
@@ -48,10 +48,10 @@ if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 }
 $userdn = $subrdn . $_GET["domain"];
 $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
-$users = pql_get_dn($_pql->ldap_linkid, $userdn, $filter);
+$users = $_pql->get_dn($userdn, $filter);
 
 // Extract 'human readable' name from the user DN's found
-$user_results = pql_left_htmlify_userlist($_pql->ldap_linkid, $_REQUEST["rootdn"], $_REQUEST["domain"],
+$user_results = pql_left_htmlify_userlist($_REQUEST["rootdn"], $_REQUEST["domain"],
 										  $userdn, $users, ($links = NULL));
 // }}}
 
@@ -61,7 +61,7 @@ if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS")) {
 }
 $computerdn = $subrdn . $_GET["domain"];
 $filter = "(&(objectClass=ipHost)(cn=*))";
-$computer_results = pql_search($_pql->ldap_linkid, $computerdn, $filter);
+$computer_results = $_pql->search($computerdn, $filter);
 if(is_array($computer_results)) {
   asort($computer_results);
 }
@@ -73,7 +73,7 @@ if(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")) {
 }
 $sudodn = $subrdn . $_REQUEST["domain"];
 $filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=sudoRole';
-$sudo_results = pql_search($_pql->ldap_linkid, $sudodn, $filter);
+$sudo_results = $_pql->search($sudodn, $filter);
 if(is_array($sudo_results)) {
   asort($sudo_results);
 }

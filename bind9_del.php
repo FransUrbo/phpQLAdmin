@@ -1,6 +1,6 @@
 <?php
 // remove a domain from a bind9 ldap db
-// $Id: bind9_del.php,v 2.12 2006-12-16 12:02:08 turbo Exp $
+// $Id: bind9_del.php,v 2.13 2007-02-15 12:07:09 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -15,7 +15,7 @@ include($_SESSION["path"]."/header.html");
 <?php
 if(($_REQUEST["action"] == 'del') and ($_REQUEST["type"] == 'domain') and $_REQUEST["dns_domain_name"] and $_REQUEST["domain"]) {
     if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
-		if(pql_bind9_del_zone($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["dns_domain_name"])) {
+		if(pql_bind9_del_zone($_REQUEST["domain"], $_REQUEST["dns_domain_name"])) {
 			$msg = $LANG->_('Successfully removed DNS zone') . ": <b>" . $cn . "</b>";
 		} else {
 			$msg .= "<br>".$LANG->_('Sorry, could not delete zone');

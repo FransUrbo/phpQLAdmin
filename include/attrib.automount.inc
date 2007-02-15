@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for automount maps
-// $Id: attrib.automount.inc,v 2.5 2006-12-18 13:03:17 turbo Exp $
+// $Id: attrib.automount.inc,v 2.6 2007-02-15 12:07:17 turbo Exp $
 
 // {{{ attribute_setup(void)
 function attribute_setup() {
@@ -161,17 +161,17 @@ function attribute_init() {
 
   // Find the physical host DN
   $filter = '(&('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-  $physical_host_dn = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+  $physical_host_dn = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 
   // {{{ Get all base mountpoints
   $dn = "ou=auto.master,".$physical_host_dn[0];
   $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(objectClass=autoMount))';
   if(!ereg('^/', $dn))
-	$DNs = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'ONELEVEL');
+	$DNs = $_pql->get_dn($dn, $filter, 'ONELEVEL');
 	
   // Make sure we only get base mounts that are LDAP links
   for($i=0; $DNs[$i]; $i++) {
-	$info = pql_get_attribute($_pql->ldap_linkid, $DNs[$i], pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
+	$info = $_pql->get_attribute($DNs[$i], pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
 	if(!eregi('ldap', $info))
 	  unset($DNs[$i]);
   }
@@ -190,7 +190,7 @@ function attribute_init() {
 	$MOUNT_POINT = ereg_replace(pql_get_define("PQL_ATTR_CN").'=', '', $tmp[0]);
 
 	// Retreive autoMount maps for this host
-	$automounts = pql_get_automount_maps($_pql->ldap_linkid, $_REQUEST["host"]);
+	$automounts = pql_get_automount_maps($_REQUEST["host"]);
 
 	// Find the automount map object for the specified mountpoint to modify
 	// Also find the base mountpoint for that mountpoint.
@@ -372,7 +372,7 @@ function attribute_print_form() {
             <select name="basemount" onChange="submit()">
 <?php
 	foreach($_REQUEST["DNs"] as $dn) {
-	  $cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_CN"));
+	  $cn = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_CN"));
 	  echo "              <option value=\"$cn\"";
 	  if($_REQUEST["basemount"] == "$cn") {
 		echo " SELECTED";
@@ -1087,7 +1087,7 @@ function attribute_print_form() {
                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;manually (using the manpage(s)<br>
                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for your filesystem).<br>
 
-                           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Some day, I'll add radio buttons for<br>
+                           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Some day, I''ll add radio buttons for<br>
                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;you to click here...<br>
 
                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Please separate your options with comma.
@@ -1141,10 +1141,10 @@ function attribute_save($type) {
 		// {{{ Setup DN
 		// Find the physical host DN
 		$filter = '(&('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-		$physical_host_dn = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+		$physical_host_dn = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 
 		$dn  = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["basemount"].",ou=auto.master,".$physical_host_dn[0];
-		$info = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
+		$info = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
 		if(eregi('ldap ', $info)) {
 		  // info => 'ldap ldapi://%2fvar%2frun%2fslapd%2fldapi.main:ou=auto.mnt,cn=pumba.bayour.com,ou=Computers,c=SE'
 		  // An LDAP link - asume that the DN is in this server
@@ -1157,7 +1157,7 @@ Sorry, this base mount is a <b>file</b> link and I don't know how to follow that
 <?php
 		} else {
 		  // Don't know what to do now... Die!
-		  $object = pql_search($_pql->ldap_linkid, $dn, 'objectClass=*', BASE);
+		  $object = $_pql->search($dn, 'objectClass=*', BASE);
 ?>
 Sorry, this base mount is not an LDAP link. Don't know what to do now...<br>
 Please report this to either to the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>
@@ -1194,12 +1194,12 @@ Make sure you include this object information (I'm mostly interested in the <b><
 		}
 
 		// Get the ACI's of this object
-		$object[pql_get_define("PQL_ATTR_LDAPACI")] = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPACI"), 1);
+		$object[pql_get_define("PQL_ATTR_LDAPACI")] = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_LDAPACI"), 1);
 		// }}}
 
 		// {{{ Add object to LDAP server
 		// The ':_add' is only so that pql_create_ldif() will not put the 'replace: ...' lines in the LDIF.
-		if(pql_write_add($_pql->ldap_linkid, $object["dn"], $object, 'automount', 'attrib.automount.inc:attribute_save_add'))
+		if($_pql->add($object["dn"], $object, 'automount', 'attrib.automount.inc:attribute_save_add'))
 		  $msg = $LANG->_('Successfully added automount');
 		else
 		  $msg = $LANG->_('Failed to add automount').": ".ldap_error($_pql->ldap_linkid);
@@ -1222,7 +1222,7 @@ Make sure you include this object information (I'm mostly interested in the <b><
 			// Don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Automount information')));
 		else {
-			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), 1, $automount))
+			if(pql_modify_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), 1, $automount))
 				$msg = pql_complete_constant($LANG->_('Successfully changed %what% to SMB mount %new%'),
 											 array('what' => $LANG->_('path'),
 												   'new'  => $_REQUEST["mountpoint"]));
@@ -1238,7 +1238,7 @@ Make sure you include this object information (I'm mostly interested in the <b><
 
       case "delete":
 		// {{{ Delete the automount information in $_REQUEST["mount"]
-		if(pql_write_del($_pql->ldap_linkid, $_REQUEST["mount"]))
+		if($_pql->delete($_REQUEST["mount"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed mountpoint %mount%'),
 									   array('mount' => $_REQUEST["mount"]));
 		else

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.31 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.32 2007-02-15 12:08:06 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -22,7 +22,7 @@ function attribute_init() {
     global $_pql;
 
 	// initialize values directly from ldap
-	$mode = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MODE"));
+	$mode = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_MODE"));
 
 	// delivery profile
 	if(is_array($mode)) {
@@ -43,7 +43,7 @@ function attribute_init() {
 		$_REQUEST["noprogram"] = "ok";
 	}
 	
-	$_REQUEST["mailreplytext"] = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
+	$_REQUEST["mailreplytext"] = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 }
 // }}}
 
@@ -52,15 +52,15 @@ function attribute_print_form($type = "modify") {
     global $error, $LANG, $_pql;
 
 	// {{{ Retreive old value(s)
-	$deliverymode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
+	$deliverymode = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
 	if(!is_array($deliverymode))
 	  $deliverymode = array($deliverymode);
 
 	if(in_array('nolocal', $deliverymode) and !$_REQUEST["programpath"])
-	  $_REQUEST["programpath"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"));
+	  $_REQUEST["programpath"] = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"));
 
 	if(in_array('reply', $deliverymode) and !$_REQUEST["mailreplytext"])
-	  $_REQUEST["mailreplytext"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
+	  $_REQUEST["mailreplytext"] = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 	// }}}
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
@@ -199,7 +199,7 @@ function attribute_save($type) {
 		$entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = pql_maybe_encode($tmp, 'mailreplytext', $_pql->ldap_linkid);
 	} elseif($type != "fulldomain")
 	  // Delete the old value from the database
-	  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"), '', '');
+	  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"), '', '');
 
 	switch($type) {
 	  case "fulldomain":
@@ -208,10 +208,10 @@ function attribute_save($type) {
 		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
 
 		// Retreive all users in this branch/domain.
-	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
+	    $users   = $_pql->get_dn($_REQUEST["domain"], $filter);
 		if(is_array($users)) {
 			foreach($users as $user)
-			  $return[] = pql_modify_attribute($_pql->ldap_linkid, $user, '', '', $entry);
+			  $return[] = pql_modify_attribute($user, '', '', $entry);
 
 			if(in_array(false, $return))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -225,7 +225,7 @@ function attribute_save($type) {
 		break;
 
 	  case "modify":
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $entry))
+		if(pql_modify_attribute($_REQUEST["user"], '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('successfully changed %what%'),
 									   array('what' => $LANG->_('delivery mode')));
 		else

@@ -89,7 +89,7 @@ $tbl_txt = array('tit' => $LANG->_('Domain address'),
 $tbl_url = array('add' => $url_tmp."&action=add",
                  'del' => $url_tmp."&action=del",
 				 'mod' => $url_tmp."&action=modify");
-pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url,
+pql_format_table_single($tbl_txt, $tbl_url,
 						$zones[$dns_domain_name]['@']['A'],
 						"a", $class, 4);
 // }}}
@@ -107,7 +107,7 @@ $tbl_txt = array('tit' => $LANG->_('Name servers'),
 $tbl_url = array('add' => $url_tmp."&action=add",
                  'del' => $url_tmp."&action=del",
 				 'mod' => $url_tmp."&action=modify");
-pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url,
+pql_format_table_single($tbl_txt, $tbl_url,
 						$zones[$dns_domain_name]['@']['NS'],
 						"ns", $class, 4);
 // }}}
@@ -125,7 +125,7 @@ $tbl_txt = array('tit' => $LANG->_('Mail exchangers'),
 $tbl_url = array('add' => $url_tmp."&action=add",
                  'del' => $url_tmp."&action=del",
 				 'mod' => $url_tmp."&action=modify");
-pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url,
+pql_format_table_single($tbl_txt, $tbl_url,
 						$zones[$dns_domain_name]['@']['MX'],
 						"mx", $class, 4);
 // }}}
@@ -143,7 +143,7 @@ $tbl_txt = array('tit' => $LANG->_('AFS Database servers'),
 $tbl_url = array('add' => $url_tmp."&action=ADD",
                  'del' => $url_tmp."&action=del",
 				 'mod' => $url_tmp."&action=modify");
-pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url,
+pql_format_table_single($tbl_txt, $tbl_url,
 						$zones[$dns_domain_name]['@']['AFSDB'],
 						"afsdb", $class, 4);
 // }}}

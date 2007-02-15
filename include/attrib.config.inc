@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.56 2007-02-12 15:32:09 turbo Exp $
+// $Id: attrib.config.inc,v 1.57 2007-02-15 12:07:17 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -94,7 +94,7 @@ function attribute_print_form() {
 
 	// Now, get the old values from the LDAP database,
 	// overwriting the defines if existing in db.
-	$value = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+	$value = $_pql->get_attribute($dn, $attrib);
 
 	// If it's an array, make it a comma separated list
 	if(is_array($value)) {
@@ -145,7 +145,7 @@ function attribute_print_form() {
 		  // {{{ Changing the RADIUS identity
 		  // Find all 'simpleSecurityObject' or 'account' objects
 		  $filter = '(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=simpleSecurityObject)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=account))';
-		  $dns = pql_get_dn($_pql->ldap_linkid, $dn, $filter);
+		  $dns = $_pql->get_dn($dn, $filter);
 		  if(is_array($dns)) {
 			$checked = 0;
 ?>
@@ -165,7 +165,7 @@ function attribute_print_form() {
 
 			// Find all 'organizationalUnit's for direction on WHERE to put the new user
 			$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
-			$ous = pql_get_dn($_pql->ldap_linkid, $dn, $filter);
+			$ous = $_pql->get_dn($dn, $filter);
 			asort($ous);
 ?>
           </td>
@@ -222,7 +222,7 @@ function attribute_print_form() {
 				 else
 				 $existing = array();
 				 
-				 $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
+				 $objectclasses = pql_get_subschema("objectclasses");
 				 if(is_array($objectclasses)) {
 				   $i = 0; $new_tr = 0;
 				   $div_counter = 10; // Initialize the global counter
@@ -393,9 +393,9 @@ function attribute_save() {
 
 	  // We don't know the previous value, fetch it.
 	  if($dn)
-		$oldvalue = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+		$oldvalue = $_pql->get_attribute($dn, $attrib);
 	  else
-		$oldvalue = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], $attrib);
+		$oldvalue = $_pql->get_attribute($_SESSION["BASE_DN"][0], $attrib);
 	}
 
 	// Check again (this time falling back to defaults set in include/{defaults,config}.inc etc)
@@ -431,9 +431,9 @@ function attribute_save() {
 
 	// {{{ Retreive the old value(s).
 	if($dn)
-	  $oldvalue = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+	  $oldvalue = $_pql->get_attribute($dn, $attrib);
 	else
-	  $oldvalue = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], $attrib);
+	  $oldvalue = $_pql->get_attribute($_SESSION["BASE_DN"][0], $attrib);
 
 	if($oldvalue) {
 	  if(!is_array($oldvalue))
@@ -481,7 +481,7 @@ function attribute_save() {
   // {{{ Do the actual modification(s)
   if(!empty($rootdn) and $toggle) {
 	// {{{ One place where this could happen: 'tables/config_details-template.inc->Generate uid and gid numbers [y/n]'
-	if(!pql_modify_attribute($_pql->ldap_linkid, $dn, '', 1, $entry))
+	if(!pql_modify_attribute($dn, '', 1, $entry))
 	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 								   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 	else
@@ -492,7 +492,7 @@ function attribute_save() {
 	// {{{ We don't have a DN, we're changing controlsAdministrator OR it's a toggle.
 	// This means it's a global variable, and should be set in every namingContexts
 	foreach($_SESSION["BASE_DN"] as $dn) {
-	  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, '', 1, $entry))
+	  if(!pql_modify_attribute($dn, '', 1, $entry))
 		$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									 array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 	  else
@@ -502,13 +502,13 @@ function attribute_save() {
 	// }}}
   } else {
 	// {{{ Have a DN
-	if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', 1, $entry)) {
+	if(pql_modify_attribute($rootdn, '', 1, $entry)) {
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 								   array('what' => $attrib));
 
 	  if($attrib == pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")) {
 		// Check to see if the choosen DN exists
-		$dn = pql_get_dn($_pql->ldap_linkid, $entry[$attrib][0], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
+		$dn = $_pql->get_dn($entry[$attrib][0], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
 		if(!@$dn) {
 		  // Does not exists - create a simpleSecurityObject/account object
 
@@ -523,7 +523,7 @@ function attribute_save() {
 		  $entry[pql_get_define("PQL_ATTR_PASSWD")]			= $password;
 
 		  // Add object to LDAP database
-		  if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'radius', 'attrib.config.inc:radius_add'))
+		  if($_pql->add($dn, $entry, 'radius', 'attrib.config.inc:radius_add'))
 			$msg .= '<br>'.pql_complete_constant($LANG->_('Successfully added %what%'), array('what' => $dn));
 		  else
 			$msg .= '<br>'.pql_complete_constant($LANG->_('Failed to add %what%'), array('what' => $dn));

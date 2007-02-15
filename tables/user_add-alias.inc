@@ -1,6 +1,6 @@
-<?php /* $Id: user_add-alias.inc,v 1.9 2006-12-16 12:03:12 turbo Exp $ */
+<?php /* $Id: user_add-alias.inc,v 1.10 2007-02-15 12:08:18 turbo Exp $ */
       // Retreive domain branches for this domain (for the subbranch value below)
-      $branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+      $branches = pql_unit_get($_REQUEST["domain"]);
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -38,7 +38,7 @@
           <td>
             <?php echo pql_format_error_span($error_text["destination"]); ?>
 <?php // This is the ugly part (see include/attrib.administrator.inc).
-	  $domains = pql_get_domains($_pql);
+	  $domains = pql_get_domains();
 	  if(isset($domains)) {
 		foreach($domains as $key => $domain) {
 			// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
@@ -72,13 +72,13 @@
 			$filter .= pql_get_define("PQL_ATTR_MAIL")."=*)(sambaSID=*)))";
 
 			// Retreive all users in this branch/domain.
-			$users   = pql_get_dn($_pql->ldap_linkid, $domain, $filter);
+			$users   = $_pql->get_dn($domain, $filter);
 			if(is_array($users)) {
 				// Zero out the variables, othervise we won't get users in
 				// specified domain, but also in the PREVIOUS domain shown!
 				unset($cns);
 				foreach($users as $username) {
-					$cn = pql_get_attribute($_pql->ldap_linkid, $username, pql_get_define("PQL_ATTR_CN"));
+					$cn = $_pql->get_attribute($username, pql_get_define("PQL_ATTR_CN"));
 					if(is_array($cn))
 					  $cns[$username] = $cn[0];
 					elseif($cn)

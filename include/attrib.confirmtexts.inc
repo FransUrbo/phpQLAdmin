@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // confirmText and moderatorText (Qmail-GROUP object texts)
-// $Id: attrib.confirmtexts.inc,v 2.6 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.confirmtexts.inc,v 2.7 2007-02-15 12:07:17 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -68,7 +68,7 @@ function attribute_save($type) {
 		$msg = $LANG->_('Moderator confirmation text');
 	}
 
-	if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $entry)) 
+	if(pql_modify_attribute($_REQUEST["user"], '', '', $entry)) 
 	  $msg = pql_complete_constant($LANG->_('successfully changed %what%'),
 								   array('what' => $msg));
 	else

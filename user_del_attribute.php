@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.40 2006-12-16 12:02:09 turbo Exp $
+// $Id: user_del_attribute.php,v 2.41 2007-02-15 12:07:13 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -61,23 +61,23 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	if($_REQUEST["attrib"] == 'add_header')
 	  $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_SPAMASSASSIN");
 
-    if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["oldvalue"], '')) {
+    if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["oldvalue"], '')) {
 	  $msg = pql_complete_constant($LANG->_('Successfully removed %what% %oldvalue%'), array("what" => $what, "oldvalue" => pql_maybe_idna_decode($_REQUEST["oldvalue"])));
 	  $success = true;
 
 	  if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_MAILALTERNATE")) {
 		// {{{ Make sure we enable local delivery (again).
 		// Retreive the 'deliveryMode attribute(s) and remove the 'noprogram' value if it's there
-		$modes = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
+		$modes = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
 		if(!is_array($modes)) $modes = array($modes);
 		if(in_array('noprogram', $modes))
-		  pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_MODE"), 'noprogram', '');
+		  pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_MODE"), 'noprogram', '');
 		
 		// Retreive the 'qmailDotMode' attribute(s) and remove the 'none' value if it's there
-		$dotmode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
+		$dotmode = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
 		if(!is_array($dotmode)) $dotmode = array($dotmode);
 		if(in_array('none', $dotmode))
-		  pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_DOTMODE"), 'none', '');
+		  pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_DOTMODE"), 'none', '');
 // }}}
 	  }
     } else {

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.27 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.28 2007-02-15 12:07:17 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 
@@ -45,10 +45,10 @@ function badmailfrom_init($host) {
     
     // fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["badmailfrom"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["badmailfrom"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_BADMAILFROM"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["badmailfrom"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_BADMAILFROM"));
+	  $_REQUEST["badmailfrom"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_BADMAILFROM"));
     
     if(!@$_REQUEST["badmailfrom"])
 	  return true;
@@ -85,7 +85,7 @@ function badmailfrom_print_view($host) {
 
 	$tbl_txt = array('tit' => $LANG->_('Email'), 'add' => $LANG->_('Add address'), 'del' => $LANG->_('Remove address'));
 	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
-	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["badmailfrom"],
+	pql_format_table_single( $tbl_txt, $tbl_url, $_REQUEST["badmailfrom"],
 							pql_get_define("PQL_ATTR_BADMAILFROM"), $class);
 ?>
     </th>
@@ -143,17 +143,17 @@ function badmailfrom_save($type, $host) {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_BADMAILFROM"), '', $_REQUEST["badmailfrom"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+		  if(pql_modify_attribute(
 								  pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
 								  pql_get_define("PQL_ATTR_BADMAILFROM"), '', $_REQUEST["badmailfrom"]))
 			$success = 1;
@@ -173,7 +173,7 @@ function badmailfrom_save($type, $host) {
 
 	  case "del":
 		// {{{ delete entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		if(pql_modify_attribute($host,
 								pql_get_define("PQL_ATTR_BADMAILFROM"), $_REQUEST["badmailfrom"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Bad mail from options')));

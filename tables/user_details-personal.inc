@@ -1,4 +1,4 @@
-<?php $photo = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_PHOTO")); ?>
+<?php $photo = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_PHOTO")); ?>
   <table cellspacing="0" cellpadding="0" border="0">
     <th>
       <tr>

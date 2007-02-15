@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.31 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.32 2007-02-15 12:07:16 turbo Exp $
 
 /* DLW:   When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *        I think it's having problems with time zones.  Look into it.
@@ -146,7 +146,7 @@ function attribute_save($type) {
 			// Set the shadowExpire attribute for this user
 			
 			// Get the objectClasses of this user
-			$entry = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], 'objectclass');
+			$entry = $_pql->get_attribute($_REQUEST["user"], 'objectclass');
 
 			// Make sure that the user have the 'shadowAccount' objectclass
 			for($i=0; $i < count($entry); $i++) {
@@ -164,7 +164,7 @@ function attribute_save($type) {
 			$new_entry[pql_get_define("PQL_ATTR_EXPIRATION")] = $_REQUEST["days"];
 
 			// Modify the object
-			if(!pql_write_mod($_pql->ldap_linkid, $_REQUEST["user"], $new_entry, "attrib.accountstatus.inc:attribute_save()/1"))
+			if(!$_pql->modify($_REQUEST["user"], $new_entry, "attrib.accountstatus.inc:attribute_save()/1"))
 			  $msg  = $LANG->_('Failed to set account expiration date') . ": " . pql_format_error(0);
 			else
 			  $msg = $LANG->_('Successfully set account expiration date');
@@ -174,10 +174,10 @@ function attribute_save($type) {
 			$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
 			
 			// Retreive all users in this branch/domain.
-			$users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
+			$users   = $_pql->get_dn($_REQUEST["domain"], $filter);
 			if(is_array($users)) {
 				foreach($users as $user)
-				  if(!pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"),
+				  if(!pql_modify_attribute($user, pql_get_define("PQL_ATTR_ISACTIVE"),
 										   '', $_REQUEST["set"])) {
 					  $msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
 													array('what' => $LANG->_('Status')));
@@ -195,7 +195,7 @@ function attribute_save($type) {
 		
       case "set":
 		// {{{ set
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ISACTIVE"),
+		if(pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_ISACTIVE"),
 								1, $_REQUEST["set"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('Status'),
@@ -206,12 +206,12 @@ function attribute_save($type) {
 				// Convert YYYYMMDD to epoc
 				$epoc = pql_format_timestamp_unixtime($_REQUEST["date"]);
 				
-				pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"), 1,$epoc);
+				pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"), 1,$epoc);
 			  } else {
 				// Everything exept deletion - if we have a qmailAccountPurge attribute, this MUST be deleted.
-				$date = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"));
+				$date = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"));
 				if($date)
-				  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"), 1, '');
+				  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"), 1, '');
 			  }
 			}
 		} else

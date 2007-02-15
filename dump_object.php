@@ -1,6 +1,6 @@
 <?php
 // Dump either a specific object or a specific LDAP branch
-// $Id: dump_object.php,v 1.5 2006-12-16 12:02:09 turbo Exp $
+// $Id: dump_object.php,v 1.6 2007-02-15 12:07:10 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -16,7 +16,7 @@ if(empty($_REQUEST["submit"])) {
       <input type="hidden" name="dn"    value="<?=urlencode($_REQUEST["dn"])?>">
 
       <span class="title3"><?=$LANG->_('Search options')?></span><br>
-      <!-- The code to follow referrals isn't implemented in 'include/pql_search.inc:pql_search()', so disable this -->
+      <!-- The code to follow referrals isn't implemented in 'include/pql.inc:search()', so disable this -->
       <!-- <input type="checkbox" name="referrals"> <?=$LANG->_('Follow referrals')?><br> -->
       <input type="checkbox" name="operationals" CHECKED> <?=$LANG->_('Include operational attributes')?><br>
 
@@ -48,12 +48,12 @@ if(empty($_REQUEST["submit"])) {
 	// scope=subtree. Search and retreive object(s).
 
 	// Get the non-operational attributes for all objects below DN.
-	$objects1 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "SUBTREE", $_REQUEST["referrals"]);
+	$objects1 = $_pql->search($_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "SUBTREE", $_REQUEST["referrals"]);
 	
 	for($i=0; $i < count($objects1); $i++) {
 	  if($_REQUEST["operationals"])
 		// Get the operational attributes for each object
-		$objects2 = pql_search($_pql->ldap_linkid, $objects1[$i]["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", $_REQUEST["referrals"],
+		$objects2 = $_pql->search($objects1[$i]["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", $_REQUEST["referrals"],
 							   array('structuralObjectClass', 'entryUUID', 'creatorsName', 'createTimestamp', 'OpenLDAPaci', 'entryCSN', 'modifiersName',
 									 'modifyTimestamp', 'subschemaSubentry', 'hasSubordinates', 'aci'));
 	  
@@ -75,11 +75,11 @@ if(empty($_REQUEST["submit"])) {
 	}
   } elseif($_REQUEST["scope"] == "base") {
 	// Get the non-operational attributes
-	$objects1 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE");
+	$objects1 = $_pql->search($_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE");
 	
 	if($_REQUEST["operationals"]) {
 	  // Get the operational attributes
-	  $objects2 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", 0,
+	  $objects2 = $_pql->search($_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", 0,
 							   array('structuralObjectClass', 'entryUUID', 'creatorsName', 'createTimestamp', 'OpenLDAPaci', 'entryCSN', 'modifiersName',
 									 'modifyTimestamp', 'subschemaSubentry', 'hasSubordinates', 'aci'));
 	  

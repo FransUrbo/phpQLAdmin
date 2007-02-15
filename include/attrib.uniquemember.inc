@@ -1,6 +1,6 @@
 <?php
 // Manage the uniqueMember attribute
-// $Id: attrib.uniquemember.inc,v 2.1 2006-12-02 13:06:50 turbo Exp $
+// $Id: attrib.uniquemember.inc,v 2.2 2007-02-15 12:08:11 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -28,7 +28,7 @@ function attribute_check() {
 function attribute_print_form() {
   global $_pql, $LANG, $error_text;
 
-  $host_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+  $host_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 
   $attrib = $_REQUEST["attrib"];
 ?>
@@ -50,7 +50,7 @@ function attribute_print_form() {
   $i = 0; $div_counter = 0;
   
   // Get all domains in the database.
-  $domains = pql_get_domains($_pql);
+  $domains = pql_get_domains();
   if(isset($domains)) {
 	// Need some java stuff since I'm showing foldable branches etc.
 	require("./left-head.html");
@@ -67,13 +67,13 @@ function attribute_print_form() {
 	  $filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
 	  
 	  // Retreive all users in this branch/domain.
-	  $users   = pql_get_dn($_pql->ldap_linkid, $domain, $filter);
+	  $users   = $_pql->get_dn($domain, $filter);
 	  if(is_array($users)) {
 		// Zero out the variables, othervise we won't get users in
 		// specified domain, but also in the PREVIOUS domain shown!
 		unset($cns); $links = array();
 		foreach($users as $dn) {
-		  $tmp = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_CN"));
+		  $tmp = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_CN"));
 		  if(is_array($tmp))
 			$cns[$dn] = $tmp[0];
 		  else
@@ -132,7 +132,7 @@ function attribute_save($type) {
   $attrib = $_REQUEST["attrib"];
 
   // {{{ Retreive old values
-  $members = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
+  $members = $_pql->get_attribute($_REQUEST["server"], pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
   if(!@$members) {
 	$members = array();
   } elseif(@$members and !is_array($members)) {
@@ -168,7 +168,7 @@ function attribute_save($type) {
   }
 
   // {{{ Do modification
-  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], '', '', $entry)) {
+  if(pql_modify_attribute($_REQUEST["server"], '', '', $entry)) {
 	$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 								 array('what'  => $attrib));
   } else

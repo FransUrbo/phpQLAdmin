@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.11 2006-12-26 20:50:39 aaron Exp $
+// $Id: host_modify.php,v 2.12 2007-02-15 12:07:12 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -17,7 +17,7 @@ if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 }
 $userdn = $subrdn . $_GET["domain"];
 $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
-$users = pql_get_dn($_pql->ldap_linkid, $userdn, $filter);
+$users = $_pql->get_dn($userdn, $filter);
 if($users) {
   sort($users);
 } else {
@@ -25,16 +25,15 @@ if($users) {
 }
 
 // Extract 'human readable' name from the user DN's found
-$user_results = pql_left_htmlify_userlist($_pql->ldap_linkid, $_REQUEST["rootdn"],
-					  $_REQUEST["domain"], $userdn, $users,
-					  ($links = NULL));
+$user_results = pql_left_htmlify_userlist($_REQUEST["rootdn"], $_REQUEST["domain"],
+					  $userdn, $users, ($links = NULL));
 if($user_results) {
   asort($user_results);
 }
 // }}}
 
 // {{{ Retreive all physical computers
-$computer_results = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+$computer_results = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 			       '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))');
 if($computer_results) {
   sort($computer_results);
@@ -52,7 +51,7 @@ if(isset($_REQUEST['action'])) {
     for($i=0; $computer_results[$i]; $i++) {
       if(lc($computer_results[$i]) == lc($_REQUEST["host"])) {
 	// Retreive uniqueMember from this host
-	$host_users = pql_get_attribute($_pql->ldap_linkid, $computer_results[$i], pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
+	$host_users = $_pql->get_attribute($computer_results[$i], pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
 	
 	$count = count($host_users);
 	$computer_number = $i; // Needed to manual remove below.
@@ -62,12 +61,12 @@ if(isset($_REQUEST['action'])) {
     
     if($count > 1)
       // There's more than one uniqueMember value, remove the requested one.
-      $msg = pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["host"],
+      $msg = pql_modify_attribute($_REQUEST["host"],
 				  pql_get_define("PQL_ATTR_UNIQUE_GROUP"),
 				  $_REQUEST["userdn"], '');
     else
       // This IS the last uniqueMember value, remove the whole object.
-      $msg = pql_write_del($_pql->ldap_linkid, $_REQUEST["host"]);
+      $msg = $_pql->delete($_REQUEST["host"]);
     
     if(isset($msg) && ($msg == 1))
       $msg = pql_complete_constant($LANG->_("Host ACL Updated Successfully. Removed: %what% From: %where%"),
@@ -87,7 +86,7 @@ if(isset($_REQUEST['action'])) {
 
   } elseif($_REQUEST['action'] == 'add_user_to_host') {
     // {{{ Add user to host
-    if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST['computer'], pql_get_define('PQL_ATTR_UNIQUE_GROUP'), '', $_REQUEST['userdn'])) {
+    if(pql_modify_attribute($_REQUEST['computer'], pql_get_define('PQL_ATTR_UNIQUE_GROUP'), '', $_REQUEST['userdn'])) {
       pql_format_status_msg(pql_complete_constant($LANG->_("Successfully added %user% to host ACL"), array('user' => $_REQUEST['userdn'])));
       
       // Since we've already retreived all hosts, we must manually add the user to the correct part of the array(s).
@@ -144,7 +143,7 @@ if(is_array($computer_results)) {
             <select name="computer">
 <?php
   foreach($computer_results as $host_dn) {
-    $host = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_CN"));
+    $host = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_CN"));
     print "              <option value='" . $host_dn . "'>" . $host . "</option>\n";
   }
 ?>
@@ -183,7 +182,7 @@ foreach($users as $user) {
 }
 $filter .= '))';
 
-$hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+$hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter);
 if($hosts) {
   if(!is_array($hosts)) 
     $hosts = array($hosts);

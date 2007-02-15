@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.32 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.33 2007-02-15 12:08:08 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -133,19 +133,19 @@ function attribute_save($type) {
 			  // (phpQLAdminInfo) but also in other schemas (which takes precedene).
 
 			  // Check if the 'phpQLAdminInfo' object class exists in the domain object.
-			  $ocs = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_OBJECTCLASS"));
+			  $ocs = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 			  if($ocs and !in_array('phpQLAdminInfo', $ocs)) {
-				pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_OBJECTCLASS"),
+				pql_modify_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_OBJECTCLASS"),
 									 '', 'phpQLAdminInfo');
 				// If it fails, it fails ... and so will pql_modify_attribute() below.
 			  }
 			}
 
-			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
+			if(pql_modify_attribute($_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
 			  $success = 1;
 		} elseif($_REQUEST["user"]) {
 			// Save a user attribute
-			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
+			if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
 			  $success = 1;
 		}
 
@@ -160,11 +160,11 @@ function attribute_save($type) {
       case "delete":
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Delete a domain attribute
-			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, '', ''))
+			if(pql_modify_attribute($_REQUEST["domain"], $attrib, '', ''))
 			  $success = 1;
 		} elseif($_REQUEST["user"] and !$_REQUEST["domain"]) {
 			// Delete a user attribute
-			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib, '', ''))
+			if(pql_modify_attribute($_REQUEST["user"], $attrib, '', ''))
 			  $success = 1;
 		}
 

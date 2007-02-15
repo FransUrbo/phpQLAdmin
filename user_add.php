@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.140 2007-01-08 03:25:06 turbo Exp $
+// $Id: user_add.php,v 2.141 2007-02-15 12:07:13 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -17,7 +17,7 @@ $url["user"]		= pql_format_urls($_REQUEST["user"]);
 // }}}
 
 // {{{ Get the organization name, or the DN if it's unset
-$orgname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
+$orgname = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
 } elseif(is_array($orgname)) {
@@ -27,14 +27,14 @@ $_REQUEST["orgname"] = $orgname;
 // }}}
 
 // {{{ Check if domain exist
-if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
+if(!$_pql->get_dn($_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
 	echo "Domain &quot;".$_REQUEST["domain"]."&quot; does not exists";
 	exit();
 }
 // }}}
 
 // {{{ Get default domain values for this domain
-$additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+$additionaldomainname = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 if($additionaldomainname and !is_array($additionaldomainname)) {
 	$additionaldomainname = array($additionaldomainname);
 }
@@ -51,7 +51,7 @@ $attribs = array("defaultdomain"		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
 				 "lockaccounttype"		=> pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
-	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+	$value = $_pql->get_attribute($_REQUEST["domain"], $attrib);
 	if(is_array($value))
 	  $value = $value[0];
 
@@ -85,15 +85,15 @@ if(empty($_REQUEST["page_next"])) {
 
 // {{{ Retreive the template definition
 if(!empty($_REQUEST["template"]) and !@is_array($template)) {
-  $template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
+  $template = pql_get_template($_REQUEST["template"]);
 } else {
-  $templates = pql_get_templates($_pql->ldap_linkid);
+  $templates = pql_get_templates();
 }
 // }}}
 
 // {{{ Retreive password encryption schemes
-function pql_user_add_retreive_encryption_schemes($linkid, $template, $rootdn) {
-  if(pql_templates_check_attribute($linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
+function pql_user_add_retreive_encryption_schemes($template, $rootdn) {
+  if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"))) {
 	if(is_array($template["passwordscheme"])) {
 	  // There's schemes specified in the template we're using - use them!
 	  $schemes = $template["passwordscheme"];
@@ -138,7 +138,7 @@ switch($_REQUEST["page_curr"]) {
 						 "autocreatepassword"	 => pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"));
 		foreach($attribs as $key => $attrib) {
 			// Get default value
-			$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+			$value = $_pql->get_attribute($_REQUEST["domain"], $attrib);
 			$$key  = pql_format_bool($value);
 		}
 		// }}}
@@ -149,15 +149,14 @@ switch($_REQUEST["page_curr"]) {
 		// 2. We have set autoCreateUserName to TRUE for this branch/domain
 		// 3. The function 'user_generate_uid()' is defined in include/config.inc.
 		// 4. At least one of the objects we've choosen to use when creating users MAY or MUST the 'uid' attribute..
-		if(empty($_REQUEST["uid"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
+		if(empty($_REQUEST["uid"]) and pql_templates_check_attribute($template, 'uid')) {
 		  if(function_exists('user_generate_uid') and empty($_REQUEST["uid"]) and
-			 (($autocreateusername and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid', 'MUST'))
+			 (($autocreateusername and pql_templates_check_attribute($template, 'uid', 'MUST'))
 			  or
 			  (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == 'uid')))
 		  {
 			// Generate the username
-			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql,
-															(empty($_REQUEST["surname"]) ? '' : $_REQUEST["surname"]),
+			$_REQUEST["uid"] = strtolower(user_generate_uid((empty($_REQUEST["surname"]) ? '' : $_REQUEST["surname"]),
 															(empty($_REQUEST["name"]) ? '' : $_REQUEST["name"]),
 															(empty($email) ? '' : $email),
 															(empty($_REQUEST["domain"]) ? '' : $_REQUEST["domain"]),
@@ -168,7 +167,7 @@ switch($_REQUEST["page_curr"]) {
 			if(empty($_REQUEST["uid"])) {
 				$error = true;
 
-				if(pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid', 'MUST'))
+				if(pql_templates_check_attribute($template, 'uid', 'MUST'))
 				  $error_text["uid"] = "&nbsp;&nbsp;".$LANG->_("Can't autogenerate, but this value is required.");
 				else
 				  $error_text["uid"] = $LANG->_("Can't autogenerate.");
@@ -184,10 +183,10 @@ switch($_REQUEST["page_curr"]) {
 		
 		// {{{ Verify/Create email address
 		if(empty($_REQUEST["mail"]) and $autocreatemailaddress and function_exists('user_generate_email') and
-		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
+		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL")))
 		{
 			// It's not supplied - generate one
-			$_REQUEST["mail"] = strtolower(user_generate_email($_pql, $_REQUEST["uid"], "", "",
+			$_REQUEST["mail"] = strtolower(user_generate_email($_REQUEST["uid"], "", "",
 																$_REQUEST["domain"], $_REQUEST["template"]));
 			
 			if(ereg(" ", $_REQUEST["mail"]))
@@ -197,9 +196,9 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Get the default password scheme for branch
-		$_REQUEST["defaultpasswordscheme"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+		$_REQUEST["defaultpasswordscheme"] = $_pql->get_attribute($_REQUEST["domain"],
 															   pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
-		$schemes = pql_user_add_retreive_encryption_schemes($_pql->ldap_linkid, $template, $_REQUEST["rootdn"]);
+		$schemes = pql_user_add_retreive_encryption_schemes($template, $_REQUEST["rootdn"]);
 		// }}}
 
 		// {{{ Generate a password
@@ -207,7 +206,7 @@ switch($_REQUEST["page_curr"]) {
 		if(($_REQUEST["template"] != "internal_group") and empty($_REQUEST["password"]) and
 		   ($autocreatepassword or (!$schemes[1] and ($schemes[0] == 'KERBEROS'))) and
 		   function_exists('pql_generate_password') and
-		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD")))
+		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD")))
 		{
 		  // If we only have one password scheme, and it's a Kerberos V scheme, then we generate a Kerberos V
 		  // principal and generate a password which we put in the clear_text_password value.
@@ -266,7 +265,7 @@ switch($_REQUEST["page_curr"]) {
 	  //             in at least ONE object class we've choosen to use when creating users...
 	  $attrib_is_availible = 0;
 	  for($i=0; $i < count($templates); $i++) {
-		if(pql_templates_check_attribute($_pql->ldap_linkid, $templates[$i],
+		if(pql_templates_check_attribute($templates[$i],
 										 pql_get_define("PQL_CONF_REFERENCE_USERS_WITH",
 														$_REQUEST["rootdn"])))
 		{
@@ -300,7 +299,7 @@ switch($_REQUEST["page_curr"]) {
 		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
 
 		// Retreive all users in this branch/domain.
-	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
+	    $users   = $_pql->get_dn($_REQUEST["domain"], $filter);
 		if(count($users) >= $maxusers) {
 			// We have reached the maximum amount of users.
 			include($_SESSION["path"]."/header.html");
@@ -339,7 +338,7 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["user"] .= "," . $_REQUEST["subbranch"];
 
 			// Now when we have the RDN, double check that it doesn't already exists!
-			if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["user"], '(objectclass=*)', 'BASE')) {
+			if($_pql->get_dn($_REQUEST["user"], '(objectclass=*)', 'BASE')) {
 				$error = true;
 				$error_text["source"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $_REQUEST["user"])) . "<br>";
 			} else {
@@ -353,7 +352,7 @@ switch($_REQUEST["page_curr"]) {
 				$entry["ref"] = $host[0]."/".urlencode($_REQUEST["destination"]);
 				
 				// Add the object to the database
-				if(!pql_write_add($_pql->ldap_linkid, $_REQUEST["user"], $entry, 'alias', 'user_add.php')) {
+				if(!$_pql->add($_REQUEST["user"], $entry, 'alias', 'user_add.php')) {
 					// failed to add user
 					pql_format_error(1);
 					die($LDIF);
@@ -374,7 +373,7 @@ switch($_REQUEST["page_curr"]) {
 		// ------------------------
 
 		// {{{ Verify surname
-		if(empty($_REQUEST["surname"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn', 'MUST')) {
+		if(empty($_REQUEST["surname"]) and pql_templates_check_attribute($template, 'sn', 'MUST')) {
 			$error = true;
 			$error_text["surname"] = $LANG->_('Missing');
 		}
@@ -382,7 +381,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Verify lastname
-		if(empty($_REQUEST["name"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn', 'MUST')) {
+		if(empty($_REQUEST["name"]) and pql_templates_check_attribute($template, 'sn', 'MUST')) {
 			$error = true;
 			$error_text["name"] = $LANG->_('Missing');
 		}
@@ -391,14 +390,14 @@ switch($_REQUEST["page_curr"]) {
 
 		// {{{ Verify username
 		unset($filter);
-		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn') and
+		if(pql_templates_check_attribute($template, 'sn') and
 		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")))
 		{
 			// 1. Template allows attribute 'sn'
 			// 2. 'sn' is used to reference users
 			$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))";
 			$error_user = $user;
-		} elseif(pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid') and
+		} elseif(pql_templates_check_attribute($template, 'uid') and
 		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
 		{
 			// 1. Template allows attribute 'uid'
@@ -407,7 +406,7 @@ switch($_REQUEST["page_curr"]) {
 			$error_user = $_REQUEST['uid'];
 		}
 
-		if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter)) {
+		if($_pql->get_dn($_REQUEST["domain"], $filter)) {
 			$error = true;
 			$error_text["uid"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $error_user));
 			unset($_REQUEST['uid']);
@@ -419,10 +418,10 @@ switch($_REQUEST["page_curr"]) {
 		// or:
 		// If email isn't set but is required.
 		if(($_REQUEST["mail"] and
-			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
+			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL")))
 		   or
 		   (empty($_REQUEST["mail"]) and
-			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"), 'MUST')))
+			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL"), 'MUST')))
 		{
 		  if(!ereg("@", $_REQUEST["mail"])) {
 			if($_REQUEST["email_domain"])
@@ -442,7 +441,7 @@ switch($_REQUEST["page_curr"]) {
 		  }
 		
 		  // It exists, it's valid. Does it already exists in the database?
-		  if(empty($error_text["mail"]) and pql_email_exists($_pql, $_REQUEST["mail"])) {
+		  if(empty($error_text["mail"]) and pql_email_exists($_REQUEST["mail"])) {
 			$error = true;
 			$error_text["mail"] = pql_complete_constant($LANG->_('Mail address %address% already exists'),
 														 array("address" => '<i>'.$_REQUEST["mail"].'</i>'));
@@ -464,13 +463,13 @@ switch($_REQUEST["page_curr"]) {
 		// or:
 		// If password isn't set, we have been asked to autogenerate one AND it's allowed.
 		if(($_REQUEST["password"] and
-			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD")))
+			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD")))
 		   or
 		   (empty($_REQUEST["password"]) and
-            pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"), 'MUST'))
+            pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"), 'MUST'))
 		   or
 		   (empty($_REQUEST["password"]) and ($_REQUEST["autogenerate"] == "on") and
-			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))))
+			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"))))
 		{
 			// Only forward and group accounts is ok without password
 			if(empty($_REQUEST["password"])) {
@@ -519,13 +518,13 @@ switch($_REQUEST["page_curr"]) {
 			}
 
 			if($error and $error_text["password"])
-			  $schemes = pql_user_add_retreive_encryption_schemes($_pql->ldap_linkid, $template, $_REQUEST["rootdn"]);
+			  $schemes = pql_user_add_retreive_encryption_schemes($template, $_REQUEST["rootdn"]);
 		}
 		// }}}
 
 		// {{{ Verify mail forwarding address
 		// If it's a forwarding accounts (allowing 'mailForwardingAddress') make sure the forwarding mail address is ok
-		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_FORWARDS"), "MUST")) {
+		if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_FORWARDS"), "MUST")) {
 			if(!pql_check_email($_REQUEST["forwardingaddress"])) {
 				$error = true;
 				$error_text["forwardingaddress"] = $LANG->_('Invalid');
@@ -540,7 +539,7 @@ switch($_REQUEST["page_curr"]) {
 
 		// {{{ Generate the mailHost attribute/value
 		if($_REQUEST["mail"] and
-		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
+		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST")))
 		{
 			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
 			$mx = pql_get_mx($_REQUEST["email_domain"]);
@@ -563,9 +562,9 @@ switch($_REQUEST["page_curr"]) {
 		// or
 		// If email set and mailMessageStore is required
 		if($_REQUEST["mail"] and
-		   (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE"))
+		   (pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILSTORE"))
 			or
-			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE"), 'MUST')))
+			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILSTORE"), 'MUST')))
 		{
 		  if(!empty($basemaildir)) {
 			if(function_exists("user_generate_mailstore")) {
@@ -584,7 +583,7 @@ switch($_REQUEST["page_curr"]) {
 				$reference = $reference[0];
 			  }
 			  
-			  $_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["mail"], $_REQUEST["domain"],
+			  $_REQUEST["maildirectory"] = user_generate_mailstore($_REQUEST["mail"], $_REQUEST["domain"],
 																   array(pql_get_define("PQL_ATTR_UID") => $reference),
 																   'user');
 			  // }}}
@@ -630,7 +629,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate the home directory value
-		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_HOMEDIR"), 'MUST')) {
+		if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_HOMEDIR"), 'MUST')) {
 		  if(!empty($basehomedir)) {
 			if(function_exists("user_generate_homedir")) {
 			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
@@ -647,7 +646,7 @@ switch($_REQUEST["page_curr"]) {
 				$reference = $reference[0];
 			  }
 			  
-			  $_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["mail"], $_REQUEST["domain"],
+			  $_REQUEST["homedirectory"] = user_generate_homedir($_REQUEST["mail"], $_REQUEST["domain"],
 																 array(pql_get_define("PQL_ATTR_UID") => $reference),
 																 'user');
 			} else {
@@ -699,7 +698,7 @@ switch($_REQUEST["page_curr"]) {
   // {{{ 'two': Tripplecheck the mail host value
   case "two":
 	if($_REQUEST["mail"] and ($_REQUEST["page_next"] == 'save') and !isset($_REQUEST["host"]) and
-	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
+	   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST")))
 	{
 	  $error = true;
 	  $error_text["userhost"] = $LANG->_('Missing');
@@ -727,7 +726,7 @@ if(!empty($_SESSION["ADVANCED_MODE"]) and @is_array($template)) {
   echo ': '.$template["short"];
 } elseif(!empty($template) and !@is_array($template)) {
   // Retreive template we're using
-  $template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
+  $template = pql_get_template($_REQUEST["template"]);
   echo ': '.$template["short"];
 } else {
   echo '.';

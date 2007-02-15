@@ -4,11 +4,11 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.24 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_websrv.inc,v 1.25 2007-02-15 12:08:13 turbo Exp $
 //
 
-// {{{ pql_websrv_add_server(linkid, dn, entry, type)
-function pql_websrv_add_server($linkid, $dn, $entry, $type) {
+// {{{ pql_websrv_add_server(dn, entry, type)
+function pql_websrv_add_server($dn, $entry, $type) {
 	if($type == "vrtsrv") {
 	  // This is a virtual host object
 	  $entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
@@ -21,35 +21,28 @@ function pql_websrv_add_server($linkid, $dn, $entry, $type) {
 	  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "ApacheSectionObj";
 	  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "ApacheDirectoryObj";
 	  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "ApacheModAccessObj";
-	} elseif($type == "websrv") {
+	} elseif($type == "websrv")
 	  // A server object
 	  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = "device";
-	} else {
+	else
 	  die("pql_websrv_add_server(): Wrong type.");
-	}
 
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_websrv_add_server", $dn, $entry);
-	if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV"))
-	  echo $LDIF;
-	else {
-	  // {{{ Add the server configuration to the database
-	  if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/2')) {
-		// failed to add configuration
-		pql_format_error(1);
-		echo "Can't add webserver object ".$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]."<p>";
-		die("$LDIF");
-	  }
-	  // }}}
+	// Add the server configuration to the database
+	if(!$_pql->add($dn, $entry, 'websrv', 'pql_websrv_add_server/2')) {
+	  // Failed to add configuration
+	  echo "Can't add webserver object ".$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]."<p>";
+	  die();
 	}
 
 	return true;
 }
 // }}}
 
-// {{{ pql_websrv_find_servers(linkid, dn)
-function pql_websrv_find_servers($linkid, $dn) {
-  $temp = pql_get_dn($linkid, $dn, "objectClass=device", "ONELEVEL");
+// {{{ pql_websrv_find_servers(dn)
+function pql_websrv_find_servers($dn) {
+  global $_pql;
+
+  $temp = $_pql->get_dn($dn, "objectClass=device", "ONELEVEL");
   if(is_array($temp)) {
 	foreach($temp as $s) {
 	  $servers[] = $s;
@@ -92,8 +85,10 @@ function pql_websrv_find_servers($linkid, $dn) {
 }
 // }}}
 
-// {{{ pql_websrv_get_virtual_host_objects(linkid, server)
-function pql_websrv_get_virtual_host_objects($linkid, $server) {
+// {{{ pql_websrv_get_virtual_host_objects(server)
+function pql_websrv_get_virtual_host_objects($server) {
+  global $_pql;
+
   // Setup the object class filter
   $filter = '(&(objectClass=ApacheSectionObj)(objectClass=ApacheVirtualHostObj))';
 
@@ -104,7 +99,7 @@ function pql_websrv_get_virtual_host_objects($linkid, $server) {
 				   pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS"));
   
   // Retreive the Apache web server virtual host object(s)
-  $result = pql_search($linkid, $server, $filter, "ONELEVEL");
+  $result = $pql->search($server, $filter, "ONELEVEL");
   if($result["dn"]) {
 	// Oups, flat object - i.e. only ONE object
 	$tmp = $result;		// Save the array
@@ -138,8 +133,10 @@ function pql_websrv_get_virtual_host_objects($linkid, $server) {
 }
 // }}}
 
-// {{{ pql_websrv_get_virtual_host_directories(linkid, server, virtualhost, virthost_dn)
-function pql_websrv_get_virtual_host_directories($linkid, $server = '', $virtualhost = '', $virthost_dn = '') {
+// {{{ pql_websrv_get_virtual_host_directories(server, virtualhost, virthost_dn)
+function pql_websrv_get_virtual_host_directories($server = '', $virtualhost = '', $virthost_dn = '') {
+  global $_pql;
+
   // Setup the object class filter
   $filter = '(&(objectClass=ApacheSectionObj)(objectClass=ApacheDirectoryObj))';
 
@@ -151,7 +148,7 @@ function pql_websrv_get_virtual_host_directories($linkid, $server = '', $virtual
 	// AND empty virthost_dn!
 	die("BUG: pql_websrv_get_virtual_host_directories(linkid, $server, $virtualhost, $virthost_dn)");
 
-  $result = pql_search($linkid, $virthost_dn, $filter, "ONELEVEL");
+  $result = $_pql->search($virthost_dn, $filter, "ONELEVEL");
   if($result["dn"]) {
 	// Oups, flat object - i.e. only ONE object
 	$tmp = $result;		// Save the array
@@ -173,9 +170,11 @@ function pql_websrv_get_virtual_host_directories($linkid, $server = '', $virtual
 }
 // }}}
 
-// {{{ pql_websrv_get_virtual_host(linkid, virtualhost)
-function pql_websrv_get_virtual_host($linkid, $virtualhost) {
-  $object = pql_search($linkid, $virtualhost, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE');
+// {{{ pql_websrv_get_virtual_host(virtualhost)
+function pql_websrv_get_virtual_host($virtualhost) {
+  global $_pql;
+
+  $object = $_pql->search($virtualhost, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE');
   if(is_array($object)) {
 	// Remove some crud...
 	unset($object[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
@@ -189,10 +188,12 @@ function pql_websrv_get_virtual_host($linkid, $virtualhost) {
 }
 // }}}
 
-// {{{ pql_websrv_get_data(_pql)
-function pql_websrv_get_data($_pql) {
+// {{{ pql_websrv_get_data()
+function pql_websrv_get_data() {
+  global $_pql;
+
   // {{{ Get all physical hosts
-  $hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 					  '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))',
 					  'ONELEVEL');
   // }}}
@@ -201,10 +202,10 @@ function pql_websrv_get_data($_pql) {
   $controls_admin = 0;
   foreach($_pql->ldap_basedn as $dn)  {
 	$dn = pql_format_normalize_dn($dn);
-	if(pql_validate_administrator($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
+	if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
 	  $controls_admin = 1;
   }
-// }}}
+  // }}}
 
   // {{{ Add a 'Global' branch as first branch
   if($_SESSION["ALLOW_BRANCH_CREATE"] or $controls_admin) {
@@ -222,25 +223,24 @@ function pql_websrv_get_data($_pql) {
   foreach($hosts as $host_dn) {
 	// Get web containers for this physical host
 	if($host_dn != 'Global') {
-	  $web_containers = pql_get_dn($_pql->ldap_linkid, $host_dn, '(&(cn=*)(objectclass=device))', 'ONELEVEL');
+	  $web_containers = $_pql->get_dn($host_dn, '(&(cn=*)(objectclass=device))', 'ONELEVEL');
 	  if(!$web_containers)
 		$web_containers = array();
-	} else {
+	} else
 	  $web_containers = array('Global'); // Fake this so that the foreach() won't complain.
-	}
 
 	foreach($web_containers as $container_dn) {
 	  // Retreive virtual hosts for each web container
 	  if($container_dn != 'Global') {
-		$tmp = pql_get_dn($_pql->ldap_linkid, $container_dn,
-						  '(&(objectClass=ApacheVirtualHostObj)(objectClass=ApacheSectionObj))',
-						  'ONELEVEL');
+		$tmp = $_pql->get_dn($container_dn,
+							 '(&(objectClass=ApacheVirtualHostObj)(objectClass=ApacheSectionObj))',
+							 'ONELEVEL');
 		
 		for($i=0; $tmp[$i]; $i++) {
 		  $virthost_dn = $tmp[$i];
 		  
 		  // Get the virtual host name (FQDN)
-		  $virthost_name = pql_get_attribute($_pql->ldap_linkid, $virthost_dn, pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
+		  $virthost_name = $_pql->get_attribute($virthost_dn, pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
 		  
 		  $HOSTS[$host_dn][$container_dn][$virthost_dn] = $virthost_name;
 		}
@@ -256,7 +256,7 @@ function pql_websrv_get_data($_pql) {
 	$dn = pql_format_normalize_dn($dn);
 	
 	$filter = pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV").'='.$_SESSION["USER_DN"];
-	$tmp = pql_get_dn($_pql->ldap_linkid, $dn, $filter);
+	$tmp = $_pql->get_dn($dn, $filter);
 	pql_add2array($branches, $tmp);
   }
   
@@ -264,14 +264,14 @@ function pql_websrv_get_data($_pql) {
   $domains = array();
   for($i=0; $branches[$i]; $i++) {
 	// Get the default domain name
-	$tmp = pql_get_attribute($_pql->ldap_linkid, $branches[$i], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$tmp = $_pql->get_attribute($branches[$i], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 	pql_add2array($domains, $tmp);
 	
 	// Get the additional domain name(s)
-	$tmp = pql_get_attribute($_pql->ldap_linkid, $branches[$i], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	$tmp = $_pql->get_attribute($branches[$i], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 	pql_add2array($domains, $tmp);
   }
-// }}}
+  // }}}
 
   // ---------------------------------------------------------------------
 
@@ -281,7 +281,7 @@ function pql_websrv_get_data($_pql) {
 	  $container_admin = 0;
 	  foreach($host_data as $container_dn => $virt_hosts) {
 		if($host_dn != 'Global') {
-		  if(pql_validate_administrator($_pql->ldap_linkid, $container_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"]))
+		  if(pql_validate_administrator($container_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"]))
 			$container_admin = 1;
 		}
 

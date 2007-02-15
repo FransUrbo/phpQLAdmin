@@ -7,7 +7,7 @@
 // ldapgrouplogin (dn of a database user - used by qmail-group)
 // ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.24 2007-02-15 12:07:29 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -106,11 +106,11 @@ function ldapserver_init($host) {
 					 "ldapgrouppassword"=> pql_get_define("PQL_ATTR_GROUP_PASSWD"));
 	if($host == "Global")
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		$_REQUEST[$key] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
+		$_REQUEST[$key] = $_pql_control->get_attribute($host, $attrib);
 	
 	// init checkbox
 	if(@$_REQUEST["ldaplogin"])
@@ -156,7 +156,7 @@ function ldapserver_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Server connection options')?></th>
-<?php pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["ldapserver"], pql_get_define("PQL_ATTR_LDAPSERVER"), $class); ?>
+<?php pql_format_table_single( $tbl_txt, $tbl_url, $_REQUEST["ldapserver"], pql_get_define("PQL_ATTR_LDAPSERVER"), $class); ?>
 <?php $class=pql_format_table(0); ?>
       <tr class="<?=$class?>">
         <td class="title"><?=$LANG->_('Base DN')?></td>
@@ -314,16 +314,16 @@ function ldapserver_save($type, $host) {
 		  // {{{ save entries
 		  if($host == "Global") {
 			// Get all QLC host
-			$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			$qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							   '(&(cn=*)(objectclass=qmailControl))');
 			
 			$success = 1;
 			foreach($qlcs as $host) {
-			  if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST[$attrib]))
+			  if(!pql_modify_attribute($host, $attrib, '', $_REQUEST[$attrib]))
 				$success = 0;
 			}
 		  } else {
-			if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(pql_modify_attribute($host,
 									$attrib, $old, $_REQUEST[$attrib]))
 			  $success = 1;
 		  }

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.24 2007-02-15 12:08:04 turbo Exp $
 
 // {{{ quotawarning_check(type)
 function quotawarning_check($type) {
@@ -25,10 +25,10 @@ function quotawarning_init($host) {
 
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["quotawarning"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["quotawarning"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_QUOTA_WARNING"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["quotawarning"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_QUOTA_WARNING"));
+	  $_REQUEST["quotawarning"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_QUOTA_WARNING"));
 
 	// initialize radio button
 	if(!@$_REQUEST["quotawarning"])
@@ -108,17 +108,17 @@ function quotawarning_save($type, $host) {
 		
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_QUOTA_WARNING"), '', $_REQUEST["quotawarning"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_QUOTA_WARNING"), 1, $_REQUEST["quotawarning"]))
 			$success = 1;
 		}

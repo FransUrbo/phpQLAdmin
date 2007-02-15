@@ -3,185 +3,14 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.45 2006-12-18 12:53:10 turbo Exp $
+// $Id: pql_write.inc,v 2.46 2007-02-15 12:08:13 turbo Exp $
 //
-
-// ------------------------------------------------
-// WRITE API functions - Core
-// ------------------------------------------------
-
-// {{{ pql_write_add(linkid, dn, entry, type, caller)
-// ADD an object - called with an 'ldif' for modification.
-function pql_write_add($linkid, $dn, $entry, $type, $caller) {
-	if(!eregi("^dNSTTL=", $dn))
-	  $dn = pql_maybe_encode(urldecode($dn));
-
-	// Verify that the object have what it needs to be able to be added
-	$entry = pql_validate_object($linkid, $dn, $entry, $type);
-
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif($caller, $dn, $entry);
-	if(pql_get_define("PQL_CONF_DEBUG_ME"))
-	  echo $LDIF;
-	else {
-		// Add this object to the database
-		if(@$entry["dn"])
-		  unset($entry["dn"]);
-
-		if(! ldap_add($linkid, $dn, $entry)) {
-			// Failed!
-			$errno = ldap_errno($linkid);
-			$error = ldap_error($linkid);
-
-			// TODO: Error checking. Some problems might be salvable...
-			switch($errno) {
-			  case 68:
-				// Already exists. Fine, return true (?)
-				return(true);
-				break;
-			}
-			
-			pql_format_error(1);
-			echo "Error: #$errno ($error)<p>";
-			die($LDIF);
-		}
-
-		// Cache this object
-		pql_cache_add($entry);
-	}
-
-	pql_flush();
-	return(true);
-}
-// }}}
-
-// {{{ pql_write_mod(linkid, dn, entry, caller)
-// MODIFY an object - called with an 'ldif' for modification.
-function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
-	$dn = urldecode($dn);
-	if(eregi("^dNSTTL=", $dn))
-	  $dn = pql_recreate_dnsttl($dn);
-	$dn = pql_maybe_encode($dn);
-
-	$count++;
-
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif($caller, $dn, $entry);
-	if(pql_get_define("PQL_CONF_DEBUG_ME"))
-	  echo $LDIF;
-	else {
-		// Modify this object
-		if(!ldap_mod_replace($linkid, $dn, $entry)) {
-			// Modify failed. Why? Can't support every single
-			// failure, but some I CAN rectify (I think :).
-
-			// TODO: In some cases I've ldap_mod_del() the attribute
-			//       and then ldap_mod_add() it...
-
-			$errno = ldap_errno($linkid);
-			switch($errno) {
-			  case "65":
-				// Object class violation - try to add (the) missing objectclass(es).
-				
-				// Get the current object classes in this object
-				$old = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS"));
-				if($old and !is_array($old))
-				  $old = array($old);
-				
-				// Try to find which object classes to ADD.
-				$new = pql_missing_objectclasses($linkid, $dn, $entry);
-				if($new and !is_array($new))
-				  $new = array($new);
-
-				// Combine the old with the new.
-				pql_add2array($old, $new);
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($old);
-				
-				// Recursion... Only try five times...
-				if($count >= 6) { // The very first time $count=1, so...
-					$msg = "<p>We're looping in pql_write.inc:pql_write_mod()";
-					if($caller)
-					  $msg .= " (from $caller)";
-					$msg .= ". No point in trying again. I've got errno=65 (Object class violation) every time...<br>";
-					$msg .= "This is the LDIF I'm trying to write to the LDAP server. Please report this problem at the ";
-					$msg .= '<a href="http://bugs.bayour.com/" target="_new">bugtracker</a>.';
-
-					die("$msg<p>".$LDIF);
-				} else
-				  pql_write_mod($linkid, $dn, $entry, $caller, $count);
-				break;
-				
-//		  case "17": // Undefined attribute type
-//			break;
-//
-// Found these in ldap.h. Don't seem to be correct, or the ldap API have
-// changed the return values - '41' is oc violation!
-//		  case "20": // LDAP_NO_SUCH_OBJECT
-//		  case "22": // LDAP_INVALID_DN_SYNTAX
-//		  case "31": // LDAP_INVALID_CREDENTIALS
-//		  case "32": // LDAP_INSUFFICIENT_ACCESS
-//		  case "41": // LDAP_OBJECT_CLASS_VIOLATION
-//			break;
-				
-			  default:
-				pql_format_error(1);
-				die($LDIF);
-			}
-		}
-
-		// Remove this cached object so it's loaded fresh next time around.
-		pql_cache_remove($dn);
-	}
-
-	return(true);
-}
-// }}}
-
-// {{{ pql_write_ren(linkid, old, parent, new, keepold)
-function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
-  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-	echo "Renaming DN: '<b>$old</b>' to '<b>$new,$parent</b>'<br>";
-	return true;
-  } else {
-	$old = pql_maybe_encode($old);
-	$new = pql_maybe_encode($new);
-	$parent = pql_maybe_encode($parent);
-
-	if(ldap_rename($linkid, $old, $new, $parent, $keepold)) {
-	  // Remove this cached object so it's loaded fresh next time around.
-	  pql_cache_remove($dn);
-
-	  return true;
-	}
-  }
-
-  return false;
-}
-// }}}
-
-// {{{ pql_write_del(linkid, dn)
-function pql_write_del($linkid, $dn) {
-  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-	echo "Removing DN: '<b>$dn</b>'<br>";
-	return true;
-  } else {
-	if(ldap_delete($linkid, $dn)) {
-	  // Remove this cached object.
-	  pql_cache_remove($dn);
-
-	  return true;
-	}
-  }
-
-  return false;
-}
-// }}}
 
 // ------------------------------------------------
 // WRITE API functions - Support
 // ------------------------------------------------
 
-// {{{ pql_replace_values(ldap, attribs, old, new)
+// {{{ pql_replace_values(attribs, old, new)
 // Look for attribs=old,
 // - replace with attribs=new
 // - or (if 'new' is empty/null), remove the value.
@@ -192,7 +21,9 @@ function pql_write_del($linkid, $dn) {
 // It's primary design/goal was to modify the administrator
 // (ezmlmAdministrator, controlsAdministrator and seeAlso) value(s)
 // when a user is deleted or renamed.
-function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
+function pql_replace_values($attribs, $old, $new = NULL) {
+	global $_pql;
+
 	// Setup the search filter
 	$filter = '(|';
 	if(is_array($attribs)) {
@@ -203,9 +34,10 @@ function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 	$filter .= ')';
 
 	// Go through the namingContexts one by one
+	$error = 0;
 	foreach($_SESSION["BASE_DN"] as $dn) {
 		// Get all objects that have this object ($old) in any of the $attribs attributes.
-		$result = pql_search($ldap->ldap_linkid, $dn, $filter);
+		$result = $_pql->search($dn, $filter);
 		for($i=0; $i < count($result); $i++) {
 			unset($dn); unset($entry); unset($LDIF);
 			
@@ -228,14 +60,20 @@ function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 				  $entry[$attrib][] = $result[$i][$attrib];
 			}
 			
-			pql_write_mod($ldap->ldap_linkid, $result[$i]["dn"], $entry, "pql_replace_values");
+			if(!$_pql->modify($result[$i]["dn"], $entry, "pql_replace_values"))
+			  $error = 1;
 		}
 	}
+
+	if($error)
+	  die();
+	else
+	  return true;
 }
 
 // }}}
 
-// {{{ pql_modify_attribute(linkid, dn, attrib, old, new)
+// {{{ pql_modify_attribute(dn, attrib, old, new)
 // Delete, Replace or Add a value to an attribute list
 // * If $old != '' && $new != '' -> replace $old with $new
 // * If $old != '' && $new == '' -> delete $old
@@ -245,7 +83,9 @@ function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 // * If $old == 1  && $new == '' -> delete whole attribute
 // * If $new == array            -> called with 'ldif', replace
 //   + In this case, it is _a must_ (!) with an empty '$attrib' value.
-function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
+function pql_modify_attribute($dn, $attrib, $old, $new) {
+	global $_pql, $pql_cache;
+
 	if(!is_array($new)) {
 		$attrib = lc($attrib);
 		$object[$attrib] = array();
@@ -260,7 +100,7 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 		  $object = $new;
 	} else {
 		// Get all the old attribute values first.
-		$entry = pql_get_attribute($linkid, $dn, $attrib);
+		$entry = $_pql->get_attribute($dn, $attrib);
 		if($entry) {
 			if(!$old and $new) {
 				// Add old values to the new array.
@@ -316,7 +156,7 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 	// }}}
 
 	// {{{ Do modifications
-	if(pql_write_mod($linkid, $dn, $object, 'pql_modify_attribute')) {
+	if($_pql->modify($dn, $object, 'pql_modify_attribute')) {
  		if((lc($dn) == lc($_SESSION["USER_DN"])) and ($attrib == pql_get_define("PQL_ATTR_PASSWD"))) {
 		  // Object has changed && we've changed our own password -> update the password in the session!
 		  $_SESSION["USER_PASS"] = $_SESSION["NEW_PASS"];
@@ -324,12 +164,7 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 		}
 
 		// Object has changed -> remove the cached version
-		//pql_cache_remove($dn);
-
-		// What's the Root DN (namingContexts) of this user
-		//$rootdn = pql_get_rootdn($dn, 'pql_modify_attribute'); $rootdn = urldecode($rootdn);
-		//if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn))
-		//  pql_cache_remove($dn);
+		$pql_cache->del($dn);
 		
 		return true;
 	}
@@ -338,11 +173,14 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 }
 // }}}
 
-// {{{ pql_user_add(ldap_linkid, domain, dn, entry, type, branch)
+// {{{ pql_user_add(domain, dn, entry, type, branch)
 // Add a user to the LDAP database
-function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
+function pql_user_add($domain, $dn, $entry, $type, $branch) {
+	global $_pql;
+
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($domain, 'pql_user_add'); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($domain, 'pql_user_add');
+	$rootdn = urldecode($rootdn);
 
 	// {{{ Setup the objectclasses
 	if(empty($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")])) {
@@ -370,7 +208,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	// }}}
 
     // {{{ Add the user to the database
-    if(!pql_write_add($ldap_linkid, $dn, $entry, $type, 'pql_user_add - user creation/1')) {
+    if(!$_pql->add($dn, $entry, $type, 'pql_user_add - user creation/1')) {
 		// failed to add user
 		$failed = 1; pql_format_error(1);
 
@@ -388,7 +226,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 			$ou_entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'organizationalUnit';
 			
 			// Create a LDIF object to print in case of error
-			if(!pql_write_add($ldap_linkid, $ou_rdn, $ou_entry, '', 'pql_user_add - user creation/ou')) {
+			if(!$_pql->add($ou_rdn, $ou_entry, '', 'pql_user_add - user creation/ou')) {
 				echo "I've tried to add the user object, but that failed because of error 32 - No such object. ";
 				echo "The idea was that it was missing the organizational unit container preceding it in the path. ";
 				echo "That didn't work either. I'm stumped...<br>";
@@ -397,7 +235,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 			} else {
 				// Adding the ou container worked! Try adding the user again.
 				$failed = 0;
-				if(!pql_write_add($ldap_linkid, $dn, $entry, $type, 'pql_user_add - user creation/2'))
+				if(!$_pql->add($dn, $entry, $type, 'pql_user_add - user creation/2'))
 				  $failed = 1;
 			}
 		}
@@ -431,7 +269,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 		$groupdn = pql_get_define("PQL_ATTR_CN")."=$rdnattr".$subrdn.','.urldecode($domain);
 
 		// --------------------------
-		if(!pql_write_add($ldap_linkid, $groupdn, $entry, 'group', 'pql_user_add - group creation')) {
+		if(!$_pql->add($groupdn, $entry, 'group', 'pql_user_add - group creation')) {
 			// failed to add user
 			pql_format_error(1);
 			die();
@@ -446,8 +284,10 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 
 // }}}
 
-// {{{ pql_add_computer(linkid, hostname, ip)
-function pql_add_computer($linkid, $hostname, $ip) {
+// {{{ pql_add_computer(hostname, ip)
+function pql_add_computer($hostname, $ip) {
+  global $_pql;
+
   $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $_SESSION["USER_SEARCH_DN_CTR"];
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'ipHost';
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
@@ -458,7 +298,7 @@ function pql_add_computer($linkid, $hostname, $ip) {
   //uniqueMember to satisfy the must requirements of groupofuniquenames
   $entry[pql_get_define("PQL_ATTR_UNIQUE_GROUP")] = $_SESSION['USER_DN'];
   
-  if(!pql_write_add($linkid, $dn, $entry, 'host', 'pql_add_computer')) {
+  if(!$_pql->add($dn, $entry, 'host', 'pql_add_computer')) {
 	// Failed to add user
 	$failed = 1;
 	pql_format_error(1);
@@ -473,14 +313,16 @@ function pql_add_computer($linkid, $hostname, $ip) {
 }
 // }}}
 
-// {{{ pql_add_sudo_role(linkid, domain, rolename, user, command, runas, host)
-function pql_add_sudo_role($linkid, $domain, $rolename, $user, $command, $runas, $host) {
+// {{{ pql_add_sudo_role(domain, rolename, user, command, runas, host)
+function pql_add_sudo_role($domain, $rolename, $user, $command, $runas, $host) {
+  global $_pql;
+
   if(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"))
 	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_SUDOERS") . ",";
   
   $dn = "cn=" . $rolename . "," . $subrdn . $domain;
   
-  $user = pql_get_attribute($linkid, $user,	pql_get_define("PQL_ATTR_UID"));
+  $user = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_UID"));
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'top';
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'sudoRole';
   $entry[pql_get_define("PQL_ATTR_CN")] = $rolename;
@@ -497,11 +339,11 @@ function pql_add_sudo_role($linkid, $domain, $rolename, $user, $command, $runas,
   if(isset($host) && $host != 'none')
 	$entry[pql_get_define("PQL_ATTR_SUDOHOST")] = $host;
   
-  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_sudo_role')) {
+  if(!$_pql->add($dn, $entry, $type, 'pql_add_sudo_role')) {
 	// Failed to add user
 	$failed = 1; pql_format_error(1);
 	
-	$errno = ldap_errno($ldap_linkid);
+	$errno = ldap_errno($_pql->ldap_linkid);
 	
 	if($failed) {
 	  pql_format_error(1);
@@ -518,29 +360,28 @@ function pql_add_sudo_role($linkid, $domain, $rolename, $user, $command, $runas,
 // They're WAY to complicated!
 // ------------------------------------------------
 
-// {{{ pql_user_del(ldap, domain, user, delete_forwards)
-
+// {{{ pql_user_del(domain, user, delete_forwards)
 // Delete a user from the LDAP database
-function pql_user_del($ldap, $domain, $user, $delete_forwards) {
-	$linkid = $ldap->ldap_linkid;
+function pql_user_del($domain, $user, $delete_forwards) {
+	global $_pql, $pql_cache;
 
 	// Normalize the User and Domain DN
 	$user = pql_format_normalize_dn($user);
 	$domain = pql_format_normalize_dn($domain);
 
-	if(!pql_get_dn($ldap->ldap_linkid, $user, '(objectclass=*)', 'BASE'))
+	if(!$_pql->get_dn($user, '(objectclass=*)', 'BASE'))
 	  // user does not exist
 	  return false;
 
 	// Remove all administrator entries which contain the user DN
 	foreach($_SESSION["BASE_DN"] as $dn) {
-		$sr = ldap_search($linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=$user");
-		$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
+		$sr = ldap_search($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=$user");
+		$info = ldap_get_entries($_pql->ldap_linkid, $sr) or pql_format_error(1);
 		for($i=0; $i < $info["count"]; $i++) {
 			unset($entry); unset($adms);
 
 			// Get administrator attributes for this domain/branch DN
-			$admins	= pql_get_attribute($ldap->ldap_linkid, $info[$i]["dn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+			$admins	= $_pql->get_attribute($info[$i]["dn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 			for($j=0; $j < count($admins); $j++) {
 				if($admins[$j] != $user)
 				  $adms[] = $admins[$j];
@@ -549,39 +390,41 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 			if(is_array($adms)) {
 				// Add the administrators that's left to the DN
 				$entry[pql_get_define("PQL_ATTR_ADMINISTRATOR")] = $adms;
-				if(! ldap_mod_replace($linkid, $info[$i]["dn"], $entry))
+				if(! ldap_mod_replace($_pql->ldap_linkid, $info[$i]["dn"], $entry))
 				  pql_format_error(1);
 			}
 		}
 	}
 
 	// Get uidnr of user
-	$uidnr = pql_get_attribute($linkid, $user, pql_get_define("PQL_ATTR_QMAILUID"));
+	$uidnr = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_QMAILUID"));
 	$uidnr = $uidnr[0];
     
 	// Delete the group object if it exists
+	// TODO: Replace with '$_pql->search()'
 	$filter = "(&(".pql_get_define("PQL_ATTR_QMAILGID")."=$uidnr)(objectclass=posixGroup))";
-	$sr = ldap_search($linkid, $domain, $filter);
-	if(ldap_count_entries($linkid, $sr) > 0){
-		$ed = ldap_first_entry($linkid, $sr);
-		$dn = ldap_get_dn($linkid, $ed);
+	$sr = ldap_search($_pql->ldap_linkid, $domain, $filter);
+	if(ldap_count_entries($_pql->ldap_linkid, $sr) > 0){
+		$ed = ldap_first_entry($_pql->ldap_linkid, $sr);
+		$dn = ldap_get_dn($_pql->ldap_linkid, $ed);
 		
 		// delete the group
 		if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 		  echo "delete (group): '$dn'<br>";
 		  return TRUE;
-		} else
-		  pql_write_del($linkid, $dn);
+		} else {
+		  if(!$_pql->delete($dn))
+			return false;
 	}
 
-    // we delete the forwards to this user as they don't really make sense anymore
-    if ($delete_forwards) {
+    // We delete the forwards to this user as they don't really make sense anymore
+    if($delete_forwards) {
 		// does another account forward to this one?
-		$forwarders = pql_search_forwarders($ldap, $user);
+		$forwarders = pql_search_forwarders($user);
 		if ($forwarders) {
 			// someone forwards to this user. Now we need to know which addresses we're removing
-			$email = pql_get_attribute($linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
-			$aliases = pql_get_attribute($linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
+			$email = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_MAIL"));
+			$aliases = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
 			
 			$addresses[] = $email[0];
 			if(is_array($aliases)){
@@ -590,32 +433,30 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		}
     }
     
-    // delete the user
+    // Delete the user
 	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  echo "delete (user): '$user'<br>";
 	  return TRUE;
 	} else {
-	  if(!pql_write_del($linkid, $user)) {
-		pql_format_error(1);
+	  if(!$_pql->delete($user))
 		return false;
-	  }
 	}
     
     // user entry has been removed -> remove the cached version
-    //pql_cache_remove($user);
+    $pql_cache->del($user);
     
     // delete forwards to this account?
-    if ($delete_forwards and $forwarders) {
+    if($delete_forwards and $forwarders) {
 		foreach($forwarders as $forward) {
 			// get the forwarding addresses of this user
-			$fwd_addresses = pql_get_attribute($linkid, $forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"));
+			$fwd_addresses = $_pql->get_attribute($forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"));
 			if(@$fwd_addresses and is_array($fwd_addresses)) {
 				foreach($addresses as $address) {
 					// does this user forward to the removed user or one of his aliases?
 					$rem_key = array_search($address, $fwd_addresses);
 					if ($rem_key !== false) {
 						// we found a forward -> remove it 
-						pql_modify_attribute($linkid, $forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"), '',
+						pql_modify_attribute($forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"), '',
 											 $fwd_addresses[$rem_key]);
 					}
 				}
@@ -625,15 +466,15 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 
     return true;
 }
-
 // }}}
 
-// {{{ pql_domain_del(ldap, domain, delete_forwards)
+// {{{ pql_domain_del(domain, delete_forwards)
 // Removes a domain with all listed users
-function pql_domain_del($ldap, $domain, $delete_forwards) {
+function pql_domain_del($domain, $delete_forwards) {
+	global $_pql;
+
 	// Normalize the Domain DN
 	$domain = pql_format_normalize_dn($domain);
-	$linkid = $ldap->ldap_linkid;
 
 	// {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
 	if(eregi("^dNSTTL=", $domain))
@@ -643,29 +484,29 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 
 	// {{{ Make sure that the logged in user isn't located under the domain/branch being deleted...
 	if(eregi($domain, $_SESSION["USER_DN"])) {
-		$msg=urlencode(pql_format_error_span("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
+		$msg = urlencode(pql_format_error_span("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
 		pql_header("domain_detail.php?domain=$domain&msg=$msg");
 	}
 	// }}}
 
 	// {{{ Searching for sub entries
-	$sr   = ldap_list($linkid, $domain, pql_get_define("PQL_ATTR_OBJECTCLASS")."=*");
+	// TODO: Replace with '$_pql->search()'
+	$sr = ldap_list($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_OBJECTCLASS")."=*");
 	if($sr) {
-	  $info = ldap_get_entries($linkid, $sr);
+	  $info = ldap_get_entries($_pql->ldap_linkid, $sr);
 	  for($i=0; $i < $info['count']; $i++){
 		// Deleting recursively this sub entry
-		$result = pql_domain_del($ldap, $info[$i]['dn'], $delete_forwards);
-		if(!$result) {
+		$result = pql_domain_del($info[$i]['dn'], $delete_forwards);
+		if(!$result)
 		  // Return result code if delete fails
 		  return($result);
-		}
 	  }
 	  
 	  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 		echo "delete (domain): '$domain'<br>";
 		return TRUE;
 	  } else
-		return(pql_write_del($linkid, $domain));
+		return($_pql->delete($domain));
 	}
 	// }}}
 }

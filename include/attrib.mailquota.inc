@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.35 2006-12-18 12:47:27 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.36 2007-02-15 12:08:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -66,7 +66,7 @@ function attribute_check($type) {
 function attribute_init() {
     global $_pql;
 
-    $quota = pql_user_get_quota($_pql->ldap_linkid, $_REQUEST["user"]);
+    $quota = pql_user_get_quota($_REQUEST["user"]);
 	if(is_array($quota)) {
 		$_REQUEST["maxmails"] = $quota["maxmails"];
 		$_REQUEST["maxsize"]  = $quota["maxsize"];
@@ -200,10 +200,10 @@ function attribute_save($type) {
 			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 			// Get all QmailLDAP/Control hosts.
-			$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			$result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 								 '(&(cn=*)(objectclass=qmailControl))');
 			for($i=0; $i < count($result); $i++)
-			  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+			  $hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
 
 			if(is_array($hosts)) {
 				foreach($hosts as $host) {
@@ -243,10 +243,10 @@ function attribute_save($type) {
 		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
 
 		// Retreive all users in this branch/domain.
-	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
+	    $users   = $_pql->get_dn($_REQUEST["domain"], $filter);
 		if(is_array($users)) {
 			foreach($users as $user)
-			  $return[] = pql_modify_attribute($_pql->ldap_linkid, $user, '', '', $mailquota);
+			  $return[] = pql_modify_attribute($user, '', '', $mailquota);
 
 			if(in_array(false, $return)) 
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -267,14 +267,14 @@ function attribute_save($type) {
 			$entry['objectClass'][] = 'phpQLAdminConfig';
 
 			// We're setting default quota for domain, not user.
-			if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], 'baseQuota', '', $entry))
+			if(!pql_modify_attribute($_REQUEST["domain"], 'baseQuota', '', $entry))
 			  // Failed
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what% for domain %domain%'),
 										   array('what'   => $LANG->_('default quota'),
 												 'domain' => $domaindn)) . ": " . pql_ldap_error(0);
 			// The success msg is set above (in the switch($type) code).
 		} else {
-			if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $mailquota))
+			if(!pql_modify_attribute($_REQUEST["user"], '', '', $mailquota))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
 		}

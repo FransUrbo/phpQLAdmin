@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpclustercookie (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclustercookie.inc,v 2.12 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.ldapclustercookie.inc,v 2.13 2007-02-15 12:07:22 turbo Exp $
 
 // {{{ smtpclustercookie_check(type)
 function smtpclustercookie_check($type) {
@@ -20,10 +20,10 @@ function smtpclustercookie_init($host) {
 
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["smtpclustercookie"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["smtpclustercookie"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 														 pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["smtpclustercookie"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"));
+	  $_REQUEST["smtpclustercookie"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"));
 
 	if(@is_null($_REQUEST["smtpclustercookie"]))
 	  return true;
@@ -90,17 +90,17 @@ function smtpclustercookie_save($type, $host)  {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"), '', $_REQUEST["smtpclustercookie"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"), '', $_REQUEST["smtpclustercookie"]))
 			$success = 1;
 		}

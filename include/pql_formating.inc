@@ -3,12 +3,12 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.67 2007-02-12 15:22:14 turbo Exp $
+// $Id: pql_formating.inc,v 2.68 2007-02-15 12:08:12 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
 function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
-  global $account_type;
+  global $account_type; // TODO: This is ugly (and undocumented!!)
   $command = 0; $LDIF = '';
   
   if($extra_newline)
@@ -18,7 +18,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
   
   if($func)
 	$LDIF .= "<br>\n<pre>\n";
-
+  
   if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF"))
 	$LDIF .= "--- DEBUG: $func($account_type) ---$nl\n";
   
@@ -26,7 +26,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 	$LDIF .= "dn: ".pql_maybe_decode($dn)."$nl\n";
   elseif($entry["dn"])
 	$LDIF .= "dn: ".pql_maybe_decode($entry["dn"])."$nl\n";
-
+  
   if(is_array($entry)) {
 	foreach($entry as $key => $e) {
 	  if(is_array($entry[$key])) {
@@ -81,7 +81,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
   
   if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF"))
 	$LDIF .= "--- DEBUG ---\n";
-
+  
   if($func)
 	$LDIF .= "</pre>\n";
   
@@ -106,7 +106,7 @@ function pql_complete_constant($text, $replacement) {
 // {{{ pql_generate_button(button array)
 function pql_generate_button($buttons, $link = '', $url = '') {
   global $LANG, $_REQUEST;
-
+  
   if(empty($url))
 	$url = $_SERVER["PHP_SELF"] . "?";
   else
@@ -121,30 +121,30 @@ function pql_generate_button($buttons, $link = '', $url = '') {
   if(!empty($_REQUEST["domain"])) {
 	$url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
   }
-?>
-
-    <table cellspacing="0" border="0" width="50%" cellpadding="0">
-      <th align="left" valign="top">
-<?php
-  $i=0; // A button counter.
+	?>
+									
+									<table cellspacing="0" border="0" width="50%" cellpadding="0">
+									   <th align="left" valign="top">
+									   <?php
+									   $i=0; // A button counter.
   foreach($buttons as $view => $text) {
 	// Generate the button link etc
 	if(($view == $_REQUEST["view"]) or ($text == $_REQUEST["cat"]))
 	  $mark = "&mark=yes";
 	else
 	  unset($mark);
-?>
-      <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="// <?=$LANG->_($text)?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
-<?php
-	// Increase button counter"
-	$i++;
+		?>
+		<a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="// <?=$LANG->_($text)?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
+		   <?php
+		   // Increase button counter"
+		   $i++;
   }
-?>
-      </th>
-    </table>
-
-<?php
-}
+	?>
+										</th>
+											</table>
+											
+											<?php
+											}
 // }}}
 
 // {{{ pql_format_error(output)
@@ -164,10 +164,12 @@ function pql_format_error($output) {
 	$comment  = "This error is caused by an invalid schema. Have you updated them recently? If not, copy the new schema ";
 	$comment .= "that defines this attribute, and restart your LDAP server.";
 	break;
+	
   case 18:
 	// Inappropriate matching --> invalid schema
 	$comment = "This error is caused by an invalid schema file.";
 	break;
+	
   case 21:
 	// Invalid syntax
 	$comment  = "This error is caused because an attribute is used, but there is no <i>value</i> for it (i.e. an empty ";
@@ -175,6 +177,7 @@ function pql_format_error($output) {
 	$comment .= "The attribute is most likley <b>objectClass</b> and is usually caused because you're missing ";
 	$comment .= "objectclasses for this type of object. Go to $url and setup the appropriate <b>objectclasses</b>.";
 	break;
+	
   case 41:
 	// Object Class Violation
 	$comment  = "This error is caused because you're using an attribute but haven't included the correct object class.";
@@ -203,28 +206,28 @@ function pql_format_error_span($msg) {
 // dir option is for tools/update_translations.php
 // which need 'img src="../images/info.png"'...
 function pql_format_status_msg($msg, $dir = NULL) {
-?>
-  <table cellpadding="3" cellspacing="0" border="0" width="100%">
+  ?>
+ <table cellpadding="3" cellspacing="0" border="0" width="100%">
     <th colspan="3" align="left">
-      <tr class="message">
-        <td colspan="2" class="message">
-          <img src="<?=$dir?>images/info.png" width="16" height="16" border="0" align="left">
+	<tr class="message">
+	<td colspan="2" class="message">
+	<img src="<?=$dir?>images/info.png" width="16" height="16" border="0" align="left">
+	</td>
+	
+	<td colspan="2" class="message">
+	<table>
+	<th align="left">
+	<?php echo stripslashes($msg) . "\n"; ?>
+	</th>
+		</table>
         </td>
-
-        <td colspan="2" class="message">
-          <table>
-            <th align="left">
-              <?php echo stripslashes($msg) . "\n"; ?>
-            </th>
-          </table>
-        </td>
-      </tr>
-    </th>
-  </table>
-
-  <br><br>
-<?php
-}
+		</tr>
+		</th>
+		</table>
+		
+		<br><br>
+		<?php
+		}
 // }}}
 
 // {{{ pql_format_table(echo = 1)
@@ -247,22 +250,24 @@ function pql_format_table($echo = 1) {
 }
 // }}}
 
-// {{{ pql_format_table_single(linkid, text, url, array, attribute, class, spaces)
-function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class = 0, $spaces = 0) {
+// {{{ pql_format_table_single(text, url, array, attribute, class, spaces)
+function pql_format_table_single($text, $url, $array, $attrib, $class = 0, $spaces = 0) {
+  global $_pql;
+  
   // Stop PHP for nagging about undefined index.
   $url["mod"] = (isset($url["mod"])) ? $url["mod"] : 0;
   $url["del"] = (isset($url["del"])) ? $url["del"] : 0;
   $url["add"] = (isset($url["add"])) ? $url["add"] : 0;
-
+  
   if(!empty($array) and !is_array($array))
 	$array = array($array);
-
+  
   $space = "";
   if($spaces > 0) {
 	for($i=0; $i < $spaces; $i++)
 	  $space .= "&nbsp;";
   }
-
+  
   if(is_array($array)) { 
 	$new_tr = 0;
 	asort($array);
@@ -272,7 +277,7 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 	  
 	  if(eregi('[a-z]=[a-z]', $value)) {
 		// Hopfully this is a DN
-		$username = pql_get_attribute($linkid, $value, pql_get_define("PQL_ATTR_CN"));
+		$username = $_pql->get_attribute($value, pql_get_define("PQL_ATTR_CN"));
 		if(!$username[0])
 		  $username = $value;
 		elseif(is_array($username))
@@ -281,53 +286,58 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 		$username = $value;
 	  
 	  if($new_tr) {
-?>
-
-      <tr class="<?=$class?>">
-        <td class="title"></td>
-<?php } else { ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$text["tit"]?>:</td>
-<?php }
-
+  ?>
+ 
+ <tr class="<?=$class?>">
+	<td class="title"></td>
+	<?php } else { ?>
+ <tr class="<?=$class?>">
+	<td class="title"><?=$text["tit"]?>:</td>
+	<?php }
+	  
 	  $new_tr = 1;
-?>
+		?>
         <td class="<?=$class?>"><?=$space?><?=$username?></td>
-        <td class="<?=$class?>" align="right">
-          <?php if($url["mod"]) { ?><a href="<?=$url["mod"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a><?php } ?>
-          <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
-        </td>
-      </tr>
-<?php
-    }
+		   <td class="<?=$class?>" align="right">
+		   <?php if($url["mod"]) { ?><a href="<?=$url["mod"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a><?php } ?>
+		   <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
+			   </td>
+				   </tr>
+				   <?php
+				   }
   }
-?>
-
-<?php if(!$class) { ?>
-      <tr class="<?=pql_format_table(0)?>">
-<?php } else { ?>
-      <tr class="<?=$class?>">
-<?php } ?>
-<?php if(!is_array($array)) { ?>
-        <td class="title"><?=$text["tit"]?>:</td>
-<?php } else { ?>
-        <td class="title"></td>
-<?php } ?>
-        <td colspan="2"><?=$space?><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
-      </tr>
-<?php
-}
+	?>
+						 
+						 <?php if(!$class) { ?>
+ <tr class="<?=pql_format_table(0)?>">
+	<?php } else { ?>
+ <tr class="<?=$class?>">
+	<?php } ?>
+							 <?php if(!is_array($array)) { ?>
+ <td class="title"><?=$text["tit"]?>:</td>
+	<?php } else { ?>
+ <td class="title"></td>
+	<?php } ?>
+								 <td colspan="2"><?=$space?><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
+																																					</tr>
+																																					<?php
+																																					}
 // }}}
 
-// {{{ pql_format_table_empty()
-function pql_format_table_empty() {
-  echo "<th><td><h5>&nbsp</h5></td><td><h5>&nbsp</h5></td><td><h5>&nbsp</h5></td></th>";
+// {{{ pql_format_table_empty(tds)
+function pql_format_table_empty($tds) {
+  for($i=0; $i < $tds; $i++) {
+	echo "<th>\n";
+	echo "  <tr>\n";
+	echo "  </tr>\n";
+	echo "</th>\n\n";
+  }
 }
 // }}}
 
 // {{{ pql_format_tree(text, url, links, level)
 function pql_format_tree($text, $url, $links = '', $level = 0) {
-  global $div_counter;
+  global $div_counter; // TODO: This is ugly (and undocumented!!)
   
   if(empty($div_counter))
 	$div_counter = 0;
@@ -358,25 +368,25 @@ function pql_format_tree($text, $url, $links = '', $level = 0) {
 // array...
 function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
   $nbsp = '';
-
+  
   if(is_array($child)) {
 	$child_nr = ($child[0] * 2) + 1;
-
+	
 	$cnt1 = $cnt+1;
 	$mouse["click"] = 'onclick="';
 	for($i=1; $child[$i]; ) {
 	  $mouse["click"] .= 'showhide(el' . $cnt.$child[$i] . ', el' . $cnt.$child[$i+1];
 	  if($noicon)
-		  $mouse["click"] .= ', true';
+		$mouse["click"] .= ', true';
 	  $mouse["click"] .= ');';
-
+	  
 	  if($child[$i+2])
-		  $mouse["click"] .= ' ';
-
+		$mouse["click"] .= ' ';
+	  
 	  $i += 2;
 	}
 	$mouse["click"] .= '"';
-
+	
 	$mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\'); hilightBase(\'el'.$cnt1.'\', \'#CCFFCC\')}"';
 	$mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\'); hilightBase(\'el'.$cnt1.'\', \'#D0DCE0\')}"';
   } else {
@@ -384,29 +394,29 @@ function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
 	$mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
 	$mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
   }
-
+  
   if($level) {
 	for($i=0; $i < ($level * 4); $i++) 
 	  $nbsp .= "&nbsp;";
   }
-?>
-          <div id="el<?=$cnt?><?=$parent?>" class="parent"<?="\n\t\t".$mouse["over"]."\n\t\t".$mouse["out"]."\n\t\t".$mouse["click"]?>>
-<?php if(is_array($child)) { ?>
-            <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt.$child[$child_nr+1]?>">
-<?php } else { ?>
-            <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
-<?php } ?>
-            <?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
-
-          </div>
-
-<?php if(is_array($child)) { ?>
-          <span id="el<?=$cnt.$child[$child_nr]?>" style="display:''">
-<?php } else { ?>
-          <span id="el<?=$child?>" style="display:''">
-<?php } ?>
-<?php	
-}
+	?>
+			   <div id="el<?=$cnt?><?=$parent?>" class="parent"<?="\n\t\t".$mouse["over"]."\n\t\t".$mouse["out"]."\n\t\t".$mouse["click"]?>>
+				  <?php if(is_array($child)) { ?>
+											   <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt.$child[$child_nr+1]?>">
+											   <?php } else { ?>
+ <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
+	  <?php } ?>
+				  <?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
+																	  
+																	  </div>
+																		  
+																		  <?php if(is_array($child)) { ?>
+ <span id="el<?=$cnt.$child[$child_nr]?>" style="display:''">
+	<?php } else { ?>
+ <span id="el<?=$child?>" style="display:''">
+	<?php } ?>
+																		  <?php	
+																			  }
 // }}}
 
 // {{{ pql_format_tree_other(counter, text, url, level, parent, child)
@@ -418,38 +428,38 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
   
   if(is_array($child))
 	$child_nr = ($child[0] * 2) + 1;
-
+  
   if($level) {
 	for($i=0; $i < ($level * 4); $i++) 
 	  $nbsp .= "&nbsp;";
   }
-
+  
   if($url) {
 	if(eregi('^http', $url))
 	  $url = "href=\"$url\" target=\"_top\"";
 	else
 	  $url = "href=\"$url\"";
   }
-?>
-  <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
-    <nobr>
-      <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
-        <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
-      </a>
-
-      <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
-        <span class="heada"><?=$text?></span>
-      </a>
-    </nobr>
-  </div>
-
-<?php if(is_array($child)) { ?>
-  <div id="el<?=$child[$child_nr]?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
-<?php } else { ?>
-  <div id="el<?=$child?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
-<?php } ?>
-<?php	
-}
+	?>
+			 <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
+				<nobr>
+				<a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
+				<?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
+				</a>
+				
+				<a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
+				<span class="heada"><?=$text?></span>
+				</a>
+				</nobr>
+				</div>
+				
+				<?php if(is_array($child)) { ?>
+											 <div id="el<?=$child[$child_nr]?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+											 <?php } else { ?>
+ <div id="el<?=$child?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+	<?php } ?>
+				<?php	
+					}
 // }}}
 
 // {{{ pql_format_tree_span(text, links, level)
@@ -461,7 +471,7 @@ function pql_format_tree_span($text, $links, $level) {
   $count = count($links); $counter = 0;
   foreach($links as $text => $link) {
 	// If it's a user, we want an icon before the list...
-	// DIRTY HACK: An option to the function instead?
+	// TODO: An option to the function instead?
 	$icon = 0;
 	if(eregi("user_detail\.php", $link) or eregi("ezmlm_detail\.php", $link))
 	  $icon = 1;
@@ -470,44 +480,44 @@ function pql_format_tree_span($text, $links, $level) {
 	  // {{{ $text is set
 	  if($link) {
 		// {{{ $link is set
-?>
-            <nobr>
-              <?=$nbsp?>
-
-<?php	if(is_array($link)) { ?>
-              <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
-<?php	} else { ?>
-              <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
-<a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
-<?php	} ?>
-            </nobr>
-            <br />
-<?php
-// }}}
-	  } else {
-		// {{{ $link unset
-?>
-          <nobr>
-            <?=$nbsp?>
-            <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
-            <?=$text?>
-          </nobr>
-          <br />
-<?php }
-// }}}
-// }}}
+  ?>
+ <nobr>
+	<?=$nbsp?>
+	
+	<?php	if(is_array($link)) { ?>
+								  <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
+								  <?php	} else { ?>
+ <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
+	 <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
+																																									<?php	} ?>
+	</nobr>
+		<br />
+		<?php
+		// }}}
+		} else {
+		  // {{{ $link unset
+  ?>
+ <nobr>
+	<?=$nbsp?>
+	<?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
+	<?=$text?>
+		 </nobr>
+		 <br />
+		 <?php }
+	  // }}}
+	  // }}}
 	} else {
 	  // {{{ $text UNSET
-?>
-          <nobr>
-            <?=$nbsp?>
-            ---------------
-          </nobr>
-          <br />
-<?php
-// }}}
+  ?>
+ <nobr>
+	<?=$nbsp?>
+	---------------
+	</nobr>
+	<br />
+	<?php
+	// }}}
 	}
-
+	
 	$counter++;
   }
 }
@@ -515,22 +525,24 @@ function pql_format_tree_span($text, $links, $level) {
 
 // {{{ pql_format_tree_end(void)
 function pql_format_tree_end() {
-	if($_SESSION["opera"])
-	  echo "          </span>\n";
-	else
-	  echo "          </div>\n";
+  if($_SESSION["opera"])
+	echo "          </span>\n";
+  else
+	echo "          </div>\n";
 }
 // }}}
 
-// {{{ pql_left_htmlify_userlist(linkid, rootdn, domain, subbranch, users, &links)
-function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$links) {
+// {{{ pql_left_htmlify_userlist(rootdn, domain, subbranch, users, &links)
+function pql_left_htmlify_userlist($rootdn, $domain, $subbranch, $users, &$links) {
+  global $_pql;
+  
   // {{{ Iterate trough all users in this domain/branch to find a suitable reference value
   for($i=0; $i < count($users); $i++) {
 	$dn = $users[$i];
 	unset($cn); unset($sn); unset($gecos);
 	
 	// {{{ 1. Get the commonName
-	$cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_CN"));
+	$cn = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_CN"));
 	if($cn) {
 	  // We have a commonName - split it up into two parts (which should be first and last name)
 	  if(is_array($cn))
@@ -570,8 +582,8 @@ function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users
 	  // }}}
 	  
 	  // {{{ 2. No commonnName. Get the givenName and SN.
-	  $cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
-	  $sn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_SN"));
+	  $cn = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_GIVENNAME"));
+	  $sn = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_SN"));
 	  if($cn && $sn) {
 	    // We have a givenName (first name) and a surName (last name) - combine the two
 	    if($sn != '_') {
@@ -586,7 +598,7 @@ function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users
 	    // }}}
 		
 		// {{{ 3. No givenName, surName or commonName. Get the gecos
-	    $gecos = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
+	    $gecos = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_GECOS"));
 	    if($gecos)
 	      // We have a gecos - use that as is
 	      $cns[$dn] = $gecos;
@@ -595,7 +607,7 @@ function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users
 		  
 		  // {{{ 4. No gecos either. Last chance - use the user reference attribute
 	      $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
-	      $cns[$dn] = pql_get_attribute($linkid, $dn, $ref);
+	      $cns[$dn] = $_pql->get_attribute($dn, $ref);
 	    }
 	  }
 	}
@@ -605,12 +617,12 @@ function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users
   
   if(is_array($cns)) {
 	asort($cns);
-
+	
 	if($links != NULL) {
 	  foreach($cns as $dn => $cn) {
 		// Only get these two so that we don't show root user(s)!
-		$uid   = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
-		$uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
+		$uid   = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_UID"));
+		$uidnr = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_QMAILUID"));
 		
 		if(($uid != 'root') or ($uidnr != '0')) {
 		  // Do NOT show root user(s) here! This should (for safty's sake)
@@ -625,7 +637,7 @@ function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users
 		}
 	  }
 	}
-
+	
 	return($cns);
   }
 }
@@ -633,66 +645,67 @@ function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users
 
 // {{{ pql_format_timestamp_human(beg, end)
 function pql_format_timestamp_human($beg, $end) {
-    global $LANG;
-
-    $seconds         = $end - $beg;
-
-	// -------------------------
-	// Get number of DAYS of uptime
-    $tmp  = $seconds / 86400;
-	if(ereg('\.', $tmp)) {
-		$tmp = split('\.', $tmp);
-		$uptime['days'] = $tmp[0];
-	} else
-	  $uptime['days'] = $tmp;
-
-	$uptime['weeks'] = round($uptime['days'] / 7);
-	$uptime['years'] = round($uptime['weeks'] / 52);
-
-	// -------------------------
-	// Get number of HOURS of uptime
-	$tmp = $seconds / 3600;
-	if(ereg('\.', $tmp)) {
-		$tmp = split('\.', $tmp);
-		$uptime['hour'] = $tmp[0];
-	} else
-	  $uptime['hour'] = $tmp;
-
-	// Take into account that we might have days as well.
-	// Othervise we'll get '1 day, 24 hours, -1374 minutes'
-	// when it's actually '1 day, 7 minutes'
-	$uptime['hour'] = $uptime['hour'] - ($uptime['days'] * 24);
-
-	// -------------------------
-	// Get number of MINUTES of uptime
-    $uptime['min']   = round( ($seconds - (($uptime['days'] * 86400) + ($uptime['hour'] * 3600))) / 60);
-	if($uptime['min'] < 0) {
-		$uptime['min']--;
-		$uptime['min'] = 60 + $uptime['min'];
-	}
-
-	// -------------------------
-	// Get number of SECONDS of uptime
-    $uptime['sec']   = $seconds - (($uptime['days'] * 86400) + ($uptime['hour'] * 3600) + ($uptime['min'] * 60));
-	if($uptime['sec'] < 0) {
-		$uptime['min']--;
-		$uptime['sec']--;
-
-		$uptime['sec'] = 60 + $uptime['sec'];
-	}
-    
-	// -------------------------
-	// Prettify the uptime
-	$uptime_string['years']   = ($uptime['years']) ? $uptime['years']." ".$LANG->_('years').", " : "";
-	$uptime_string['weeks']   = ($uptime['weeks']) ? $uptime['weeks']." ".$LANG->_('weeks').", " : "";
-	$uptime_string['days']    = ($uptime['days'])  ? $uptime['days']." ".$LANG->_('days').", "   : "";
-	$uptime_string['hours']   = ($uptime['hour'])  ? $uptime['hour']." ".$LANG->_('hours').", " : "";
-	$uptime_string['minutes'] = ($uptime['min'])   ? $uptime['min']." ".$LANG->_('minutes').", " : "";
-	$uptime_string['seconds'] = ($uptime['sec'])   ? $uptime['sec']." ".$LANG->_('seconds')."." : "";
-
-	$string  = $uptime_string['years'].$uptime_string['weeks'].$uptime_string['days'];
-	$string .= $uptime_string['hours'].$uptime_string['minutes'].$uptime_string['seconds']."\n";
-	return($string);
+  global $LANG;
+  
+  $seconds = $end - $beg;
+  
+  // {{{ Get number of DAYS of uptime
+  $tmp  = $seconds / 86400;
+  if(ereg('\.', $tmp)) {
+	$tmp = split('\.', $tmp);
+	$uptime['days'] = $tmp[0];
+  } else
+	$uptime['days'] = $tmp;
+  // }}}
+  
+  $uptime['weeks'] = round($uptime['days'] / 7);
+  $uptime['years'] = round($uptime['weeks'] / 52);
+  
+  // {{{ Get number of HOURS of uptime
+  $tmp = $seconds / 3600;
+  if(ereg('\.', $tmp)) {
+	$tmp = split('\.', $tmp);
+	$uptime['hour'] = $tmp[0];
+  } else
+	$uptime['hour'] = $tmp;
+  // }}}
+  
+  // Take into account that we might have days as well.
+  // Othervise we'll get '1 day, 24 hours, -1374 minutes'
+  // when it's actually '1 day, 7 minutes'
+  $uptime['hour'] = $uptime['hour'] - ($uptime['days'] * 24);
+  
+  // {{{ Get number of MINUTES of uptime
+  $uptime['min']   = round( ($seconds - (($uptime['days'] * 86400) + ($uptime['hour'] * 3600))) / 60);
+  if($uptime['min'] < 0) {
+	$uptime['min']--;
+	$uptime['min'] = 60 + $uptime['min'];
+  }
+  // }}}
+  
+  // {{{ Get number of SECONDS of uptime
+  $uptime['sec']   = $seconds - (($uptime['days'] * 86400) + ($uptime['hour'] * 3600) + ($uptime['min'] * 60));
+  if($uptime['sec'] < 0) {
+	$uptime['min']--;
+	$uptime['sec']--;
+	
+	$uptime['sec'] = 60 + $uptime['sec'];
+  }
+  // }}}
+  
+  // {{{ Prettify the uptime
+  $uptime_string['years']   = ($uptime['years']) ? $uptime['years']." ".$LANG->_('years').", " : "";
+  $uptime_string['weeks']   = ($uptime['weeks']) ? $uptime['weeks']." ".$LANG->_('weeks').", " : "";
+  $uptime_string['days']    = ($uptime['days'])  ? $uptime['days']." ".$LANG->_('days').", "   : "";
+  $uptime_string['hours']   = ($uptime['hour'])  ? $uptime['hour']." ".$LANG->_('hours').", " : "";
+  $uptime_string['minutes'] = ($uptime['min'])   ? $uptime['min']." ".$LANG->_('minutes').", " : "";
+  $uptime_string['seconds'] = ($uptime['sec'])   ? $uptime['sec']." ".$LANG->_('seconds')."." : "";
+  
+  $string  = $uptime_string['years'].$uptime_string['weeks'].$uptime_string['days'];
+  $string .= $uptime_string['hours'].$uptime_string['minutes'].$uptime_string['seconds']."\n";
+  // }}}
+  
+  return($string);
 }
 // }}}
 
@@ -712,81 +725,81 @@ function pql_format_return_unixtime() {
 // {{{ pql_format_timestamp_unixtime(date)
 // Input: YYYYMMDD[[HHMM]SS]
 function pql_format_timestamp_unixtime($date) {
-	$date = preg_replace('/Z$/', '', $date);
-
-	$year   = $date[0].$date[1].$date[2].$date[3];
-	$month  = $date[4].$date[5];
-	$day    = $date[6].$date[7];
-
-	if(isset($date[8]) and isset($date[9]))
-	  $hour   = $date[8].$date[9];
-	else
-	  $hour   = "00";
-
-	if(isset($date[10]) and isset($date[11]))
-	  $minute = $date[10].$date[11];
-	else
-	  $minute = "00";
-
-	if(isset($date[12]) and isset($date[13]))
-	  $second = $date[12].$date[13];
-	else
-	  // Not called with seconds, fake it.
-	  $second = "00";
-
-	return(mktime($hour, $minute, $second, $month, $day, $year));
+  $date = preg_replace('/Z$/', '', $date);
+  
+  $year   = $date[0].$date[1].$date[2].$date[3];
+  $month  = $date[4].$date[5];
+  $day    = $date[6].$date[7];
+  
+  if(isset($date[8]) and isset($date[9]))
+	$hour   = $date[8].$date[9];
+  else
+	// Not called with hour, fake it.
+	$hour   = "00";
+  
+  if(isset($date[10]) and isset($date[11]))
+	$minute = $date[10].$date[11];
+  else
+	// Not called with minute, fake it.
+	$minute = "00";
+  
+  if(isset($date[12]) and isset($date[13]))
+	$second = $date[12].$date[13];
+  else
+	// Not called with seconds, fake it.
+	$second = "00";
+  
+  return(mktime($hour, $minute, $second, $month, $day, $year));
 }
 // }}}
 
 // {{{ pql_format_timestamp(timestamp)
 function pql_format_timestamp($timestamp) {
-	$date   = date("r", pql_format_timestamp_unixtime($timestamp));
-	return($date);
+  $date   = date("r", pql_format_timestamp_unixtime($timestamp));
+  return($date);
 }
 // }}}
 
 // {{{ pql_format_urls(string)
 function pql_format_urls(&$string) {
-	if(ereg('%3D', $string)) {
-		// The original string should be URL decoded
-		$string = urldecode($string);
-	}
-	$tmp = $string;
-
-	// Make sure we can have a ' in branch (also affects the user DN).
-	if(ereg("\'", $tmp)) {
-		if(ereg("\\\'", $tmp)) {
-			// The string already contains \', remove it
-			$tmp = ereg_replace("\\\'", "'", $tmp);
-		} else {
-			$tmp = ereg_replace("\'", "'", $tmp);
-		}
-
-		// Update the ORIGINAL string!
-		$string = $tmp;
-	}
-
-	// URL encode the value
-	$tmp = urlencode($tmp);
-
-	return($tmp);
+  if(ereg('%3D', $string))
+	// The original string should be URL decoded
+	$string = urldecode($string);
+  $tmp = $string;
+  
+  // Make sure we can have a ' in branch (also affects the user DN).
+  if(ereg("\'", $tmp)) {
+	if(ereg("\\\'", $tmp))
+	  // The string already contains \', remove it
+	  $tmp = ereg_replace("\\\'", "'", $tmp);
+	else
+	  $tmp = ereg_replace("\'", "'", $tmp);
+	
+	// Update the ORIGINAL string!
+	$string = $tmp;
+  }
+  
+  // URL encode the value
+  $tmp = urlencode($tmp);
+  
+  return($tmp);
 }
 // }}}
 
 // {{{ pql_format_bool(string)
 function pql_format_bool(&$value) {
-	if(($value == 'TRUE') or ($value == 'true')) {
-		settype($value, "boolean");
-		$value = '1';
-	} elseif(($value == 'FALSE') or ($value == 'false')) {
-		settype($value, "boolean");
-		$value = '0';
-	} elseif($value == '1') {
-		settype($value, "boolean");
-		$value = 'TRUE';
-	}
-
-	return($value);
+  if(($value == 'TRUE') or ($value == 'true')) {
+	settype($value, "boolean");
+	$value = '1';
+  } elseif(($value == 'FALSE') or ($value == 'false')) {
+	settype($value, "boolean");
+	$value = '0';
+  } elseif($value == '1') {
+	settype($value, "boolean");
+	$value = 'TRUE';
+  }
+  
+  return($value);
 }
 // }}}
 
@@ -803,30 +816,30 @@ function pql_format_normalize_dn($dn) {
   $dn = strtolower($dn);
   $dn = preg_replace('/, /', ',', $dn);
   $dn = pql_maybe_encode($dn);
-
+  
   return($dn);
 }
 // }}}
 
 // {{{ pql_parse_quota(quota_string)
 function pql_parse_quota($quota_string) {
-	$quota = '';
-
-	// get max bytes
-	preg_match("/([0-9]*)S/", $quota_string, $matches);
-	if(isset($matches[1])) {
-		$quota["maxsize"] = intval($matches[1] / 1024);
-		
-		// get max mails
-		preg_match("/([0-9]*)C/", $quota_string, $matches);
-		$quota["maxmails"] =  $matches[1];
-	} else
-	  // The quota value isn't correct. Whing it!
-	  // Asume that the value in there is SIZE, and set AMOUNT to 0
-	  // ('should mean' unlimited if I remember correctly).
-	  return(array($quota_string, "0"));
+  $quota = '';
+  
+  // get max bytes
+  preg_match("/([0-9]*)S/", $quota_string, $matches);
+  if(isset($matches[1])) {
+	$quota["maxsize"] = intval($matches[1] / 1024);
 	
-	return $quota;
+	// get max mails
+	preg_match("/([0-9]*)C/", $quota_string, $matches);
+	$quota["maxmails"] =  $matches[1];
+  } else
+	// The quota value isn't correct. Whing it!
+	// Asume that the value in there is SIZE, and set AMOUNT to 0
+	// ('should mean' unlimited if I remember correctly).
+	return(array($quota_string, "0"));
+  
+  return $quota;
 }
 // }}}
 
@@ -839,49 +852,49 @@ function pql_parse_quota($quota_string) {
 // UPDATE: Right! It's when the message "Successfully changed quota ..."
 //		   is shown. Then we want a comma instead...
 function pql_ldap_mailquota($quota, $newline = 1) {
-    global $LANG;
-
-    if($quota["maxmails"] == "")
-	  $txt = $LANG->_('Unlimited amount');
-	else
-	  $txt = pql_complete_constant($LANG->_('Max %maxmails% mails'), array("maxmails" => $quota["maxmails"]));
-
-	// The HTML newline
-	if($newline)
-	  $txt .= "<br>";
-	else
-	  $txt .= ", ";
-    
-    if($quota["maxsize"] == "")
-	  $txt .= $LANG->_('Unlimited size');
-	else
-	  $txt .= pql_complete_constant($LANG->_('Max %maxsize% KB'), array("maxsize" => $quota["maxsize"]));
-    
-    return $txt;
+  global $LANG;
+  
+  if($quota["maxmails"] == "")
+	$txt = $LANG->_('Unlimited amount');
+  else
+	$txt = pql_complete_constant($LANG->_('Max %maxmails% mails'), array("maxmails" => $quota["maxmails"]));
+  
+  // The HTML newline
+  if($newline)
+	$txt .= "<br>";
+  else
+	$txt .= ", ";
+  
+  if($quota["maxsize"] == "")
+	$txt .= $LANG->_('Unlimited size');
+  else
+	$txt .= pql_complete_constant($LANG->_('Max %maxsize% KB'), array("maxsize" => $quota["maxsize"]));
+  
+  return $txt;
 }
 // }}}
 
 // {{{ pql_strip_domain(email)
 // Get the username of an email address
 function pql_strip_domain($email) {
-    $email = split("@", $email);
-    
-    if(count($email) == 2)
-	  return $email[0];
-    
-    return false;
+  $email = split("@", $email);
+  
+  if(count($email) == 2)
+	return $email[0];
+  
+  return false;
 }
 // }}}
 
 // {{{ pql_strip_username(email)
 // Get the domainname of an email address
 function pql_strip_username($email) {
-    $email = split("@", $email);
-    
-    if(count($email) == 2)
-	  return $email[1];
-    
-    return false;
+  $email = split("@", $email);
+  
+  if(count($email) == 2)
+	return $email[1];
+  
+  return false;
 }
 // }}}
 
@@ -904,39 +917,39 @@ function pql_separate_host_domain($fqdn) {
 	if($tmp[$i+1])
 	  $hostname .= ".";
   }
-
+  
   return(array($hostname, $domainname));
 }
 // }}}
 
 // {{{ pql_uniq(array)
 function pql_uniq($array) {
-	if(is_array($array)) {
-		$array = array_values(array_unique($array));
-		asort($array);
-	}
-
-	return($array);
+  if(is_array($array)) {
+	$array = array_values(array_unique($array));
+	asort($array);
+  }
+  
+  return($array);
 }
 // }}}
 
 // {{{ printr(string)
 function printr($string) {
-	echo "<pre>\n";
-
-	if(is_array($string))
-	  print_r($string);
-	else
-	  echo "$string<br>";
-
-	echo "</pre><p>\n";
+  echo "<pre>\n";
+  
+  if(is_array($string))
+	print_r($string);
+  else
+	echo "$string<br>";
+  
+  echo "</pre><p>\n";
 }
 // }}}
 
 // {{{ lc(string)
 // I'm a perlhacker really, does it show!? :)
 function lc($string) {
-	return(strtolower($string));
+  return(strtolower($string));
 }
 // }}}
 
@@ -948,73 +961,73 @@ function lc($string) {
 // Force a non-internationalization of a string
 // (for directories and files for example)
 function pql_format_international($string) {
-	$new = strtr($string,
-				 "ÁÉÍÓÚÑÀÈÌÒÙÅÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùåäëïöüâêîôûç",
-				 "AEIOUNAEIOUAAEIOYAEIOUaeiounaeiouaaeioyaeiouc");
-	return($new);
+  $new = strtr($string,
+			   "ÁÉÍÓÚÑÀÈÌÒÙÅÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùåäëïöüâêîôûç",
+			   "AEIOUNAEIOUAAEIOYAEIOUaeiounaeiouaaeioyaeiouc");
+  return($new);
 }
 // }}}
 
 // {{{ pql_maybe_encode(string, attrib, linkid)
 // Check if we SHOULD encode the string...
 function pql_maybe_encode($string, $attrib = '', $linkid = '') {
-	$old = $string;
-
-	$new = pql_format_international($old);
-	if($old != $new) {
-		// The two strings isn't equal -> something have been replaced
-
-		if(($attrib != '') && ($linkid != '')) {
-			// Retreive all EXISTING attributes the LDAP server knows about
-			$ldap_attribs = pql_get_subschema($linkid, "attributetypes");
-			
-			// Find the syntax for the attribute (or it's superior attribute)
-			if($ldap_attribs[$attrib]["SYNTAX"]) {
-				$syntax = $ldap_attribs[$attrib]["SYNTAX"];
-			} else {
-				// No syntax, check the SUP if that have a SYNTAX
-				// TODO: Be recursive!
-				if($ldap_attribs[$attrib]["SUP"] && $ldap_attribs[$ldap_attribs[$attrib]["SUP"]]["SYNTAX"]) {
-					$syntax = $ldap_attribs[$ldap_attribs[$attrib]["SUP"]]["SYNTAX"];
-				}
-			}
-		
-			// Does this attribute allow a UTF-8 encoded string?
-			// 1.3.6.1.4.1.1466.115.121.1.15	UTF-8 encoded string
-			// 1.3.6.1.4.1.1466.115.121.1.41	? - not listed...
-			//		Only attributes that uses .41 are:
-			//		postalAddress, registeredAddress and homePostalAddress
-			//		-> I hope that it's ok to UTF-8 encode these values.
-			//		   The database (OpenLDAP 2.0) accepts it anyway.
-			if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax) or
-			   eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.41', $syntax))
-			  return(utf8_encode($string));
-			else
-			  // Oups, no! Replace any national character with it's
-			  // international (ie US char) counter part...
-			  return($new);
-		} else
-		  return(utf8_encode($string));
-	}
-
-	return($string);
+  $old = $string;
+  
+  $new = pql_format_international($old);
+  if($old != $new) {
+	// The two strings isn't equal -> something have been replaced
+	
+	if(($attrib != '') && ($linkid != '')) {
+	  // Retreive all EXISTING attributes the LDAP server knows about
+	  $ldap_attribs = pql_get_subschema("attributetypes");
+	  
+	  // Find the syntax for the attribute (or it's superior attribute)
+	  if($ldap_attribs[$attrib]["SYNTAX"]) {
+		$syntax = $ldap_attribs[$attrib]["SYNTAX"];
+	  } else {
+		// No syntax, check the SUP if that have a SYNTAX
+		// TODO: Be recursive!
+		if($ldap_attribs[$attrib]["SUP"] && $ldap_attribs[$ldap_attribs[$attrib]["SUP"]]["SYNTAX"]) {
+		  $syntax = $ldap_attribs[$ldap_attribs[$attrib]["SUP"]]["SYNTAX"];
+		}
+	  }
+	  
+	  // Does this attribute allow a UTF-8 encoded string?
+	  // 1.3.6.1.4.1.1466.115.121.1.15	UTF-8 encoded string
+	  // 1.3.6.1.4.1.1466.115.121.1.41	? - not listed...
+	  //		Only attributes that uses .41 are:
+	  //		postalAddress, registeredAddress and homePostalAddress
+	  //		-> I hope that it's ok to UTF-8 encode these values.
+	  //		   The database (OpenLDAP 2.0) accepts it anyway.
+	  if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax) or
+		 eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.41', $syntax))
+		return(utf8_encode($string));
+	  else
+		// Oups, no! Replace any national character with it's
+		// international (ie US char) counter part...
+		return($new);
+	} else
+	  return(utf8_encode($string));
+  }
+  
+  return($string);
 }
 // }}}
 
 // {{{ pql_maybe_decode(string)
 // Check if we SHOULD decode the string...
 function pql_maybe_decode($string) {
-	if(eregi("\=$", $string))
-	  // It's a BASE64 string, decode it
-	  $decoded = base64_decode($string);
-	else
-	  // It seems quite safe to UTF8 decode a non UTF8 string
-	  $decoded = utf8_decode($string);
-
-	if($decoded)
-	  return($decoded);
-	else
-	  return($string);
+  if(eregi("\=$", $string))
+	// It's a BASE64 string, decode it
+	$decoded = base64_decode($string);
+  else
+	// It seems quite safe to UTF8 decode a non UTF8 string
+	$decoded = utf8_decode($string);
+  
+  if($decoded)
+	return($decoded);
+  else
+	return($string);
 }
 // }}}
 
@@ -1044,7 +1057,7 @@ function pql_maybe_idna_encode($string) {
 
 // {{{ pql_maybe_idna_decode(string)
 function pql_maybe_idna_decode($string) {
-  if(eregi("xn--", $string) and function_exists("idn_to_utf8")) {
+  if(eregi("^xn--", $string) and function_exists("idn_to_utf8")) {
 	// It's an IDNA string, and we have the IDN module loaded
 	
 	// Catch email addresses (can't decode the @)

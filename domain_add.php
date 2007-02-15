@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.70 2007-01-08 03:33:11 turbo Exp $
+// $Id: domain_add.php,v 2.71 2007-02-15 12:07:09 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -53,7 +53,7 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc
 // {{{ Check if domain exist
 $filter  = '(&(objectclass=*)('.pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]);
 $filter .= '='.$_REQUEST["domain"].'))';
-if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["rootdn"], $filter, 'ONELEVEL')) {
+if($_pql->get_dn($_REQUEST["rootdn"], $filter, 'ONELEVEL')) {
 	$msg = urlencode($LANG->_('This domain already exists'));
 	pql_header("home.php?msg=$msg");
 }
@@ -83,7 +83,7 @@ $entry["BRANCH_NAME"] = $_REQUEST["domain"];
 
 // Add default home directory to the object
 if(function_exists("user_generate_homedir")) {
-  $defaulthomedir = pql_format_international(user_generate_homedir('', '', '', $entry, 'branch'));
+  $defaulthomedir = pql_format_international(user_generate_homedir('', '', $entry, 'branch'));
   if($defaulthomedir) {
 	$defaulthomedir = preg_replace('/ /', '_', $defaulthomedir);
 	$defaulthomedir = preg_replace('/&_/', '', $defaulthomedir);
@@ -95,7 +95,7 @@ if(function_exists("user_generate_homedir")) {
 
 // Add default mail directory to the object
 if(function_exists("user_generate_mailstore")) {
-  $defaultmaildir = pql_format_international(user_generate_mailstore('', '', '', $entry, 'branch'));
+  $defaultmaildir = pql_format_international(user_generate_mailstore('', '', $entry, 'branch'));
   if($defaultmaildir) {
 	$defaultmaildir = preg_replace('/ /', '_', $defaultmaildir);
 	$defaultmaildir = preg_replace('/&_/', '', $defaultmaildir);
@@ -106,7 +106,7 @@ if(function_exists("user_generate_mailstore")) {
 }
 
 // Add all the super admins with full access.
-$admins = pql_get_attribute($_pql->ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+$admins = $_pql->get_attribute(urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 if(is_array($admins)) {
 	for($i=0; $i < count($admins); $i++)
 	  $entry[pql_get_define("PQL_ATTR_ADMINISTRATOR")][] = $admins[$i];
@@ -119,23 +119,23 @@ unset($entry["BRANCH_NAME"]);
 // }}}
 
 // Add the branch/domain to the database
-if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
+if($_pql->add($dn, $entry, 'branch', 'domain_add.php')) {
     // {{{ Add the USER subtree if defined
     if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
-		pql_unit_add($_pql->ldap_linkid, $dn, pql_get_define("PQL_CONF_SUBTREE_USERS"));
+		pql_unit_add($dn, pql_get_define("PQL_CONF_SUBTREE_USERS"));
     }
 // }}}
 
     // {{{ Add the GROUPS subtree if defined
     if(pql_get_define("PQL_CONF_SUBTREE_GROUPS")) {
-		pql_unit_add($_pql->ldap_linkid, $dn, pql_get_define("PQL_CONF_SUBTREE_GROUPS"));
+		pql_unit_add($dn, pql_get_define("PQL_CONF_SUBTREE_GROUPS"));
     }
 // }}}
 
 	// {{{ Update locals if control patch is enabled
 	if(($_REQUEST["defaultdomain"] != "") and pql_get_define("PQL_CONF_CONTROL_USE") and
 	   pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
-		pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+		pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 								   '*', array('', $_REQUEST["defaultdomain"]));
 	}
 // }}}
@@ -146,7 +146,7 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 	if($_REQUEST["template"] && $_REQUEST["defaultdomain"] && pql_get_define("PQL_CONF_BIND9_USE")) {
 		require($_SESSION["path"]."/include/pql_bind9.inc");
 
-		if(! pql_bind9_add_zone($_pql->ldap_linkid, $dn, $_REQUEST["defaultdomain"]))
+		if(! pql_bind9_add_zone($dn, $_REQUEST["defaultdomain"]))
 		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $_REQUEST["defaultdomain"]));
 	}
 // }}}

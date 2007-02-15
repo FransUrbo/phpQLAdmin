@@ -3,7 +3,7 @@
 // http://www.pipegrep.net/webuserprefs/
 //
 // Retreive existing user values from the LDAP server.
-$spamassassin = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_SPAMASSASSIN"));
+$spamassassin = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_SPAMASSASSIN"));
 if(is_array($spamassassin)) {
 	// Avoid duplicates (additions to the array) when we've submitted (and
 	// the page is reloaded). The _REQUEST array is filled in correctly with

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.19 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.20 2007-02-15 12:08:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -32,7 +32,7 @@ function attribute_print_form() {
 	$shells[] = '/bin/false';
 
 	// Get the users existing shell
-    $existing_shell = pql_get_attribute($_pql->ldap_linkid, $_GET["user"],
+    $existing_shell = $_pql->get_attribute($_GET["user"],
 										pql_get_define("PQL_ATTR_LOGINSHELL"));
 	if(!empty($existing_shell[0])) {
 		$existing_shell = $existing_shell[0];
@@ -97,7 +97,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST["loginshell"])) {
+		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST["loginshell"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('login shell'),
 											   'new'  => $_REQUEST["loginshell"]));

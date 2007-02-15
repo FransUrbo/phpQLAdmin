@@ -12,7 +12,7 @@ $tbl_txt = array('tit' => $LANG->_('Branch administrators'),
 		 'del' => $LANG->_('Remove domain administrator'));
 $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
 		 'del' => $url_tmp."&submit=4&action=delete");
-pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domain_admins,
+pql_format_table_single($tbl_txt, $tbl_url, $domain_admins,
 			pql_get_define("PQL_ATTR_ADMINISTRATOR"), $class);
 // }}}
 
@@ -27,7 +27,7 @@ if(pql_get_define("PQL_CONF_EZMLM_USE")) {
 		   'del' => $LANG->_('Remove list administrator'));
   $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
 		   'del' => $url_tmp."&submit=4&action=delete");
-  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $mailinglist_admins,
+  pql_format_table_single($tbl_txt, $tbl_url, $mailinglist_admins,
 			  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $class);
 }
 // }}}
@@ -43,7 +43,7 @@ if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
 		   'del' => $LANG->_('Remove webserver administrator'));
   $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
 		   'del' => $url_tmp."&submit=4&action=delete");
-  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $websrv_admins,
+  pql_format_table_single($tbl_txt, $tbl_url, $websrv_admins,
 			  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $class);
 }
 // }}}
@@ -59,7 +59,7 @@ if(pql_get_define("PQL_CONF_BIND9_USE")) {
 		   'del' => $LANG->_('Remove DNS administrator'));
   $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
 		   'del' => $url_tmp."&submit=4&action=delete");
-  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $bind9_admins,
+  pql_format_table_single($tbl_txt, $tbl_url, $bind9_admins,
 			  pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $class);
 }
 // }}}

@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 2.1 2006-12-02 13:06:31 turbo Exp $
+// $Id: host_detail.php,v 2.2 2007-02-15 12:07:12 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -12,13 +12,13 @@ require($_SESSION["path"]."/left-head.html");
 
 // {{{ Retreive and setup physical hosts array
 if($_REQUEST["host"] == 'Global') {
-  $hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 					  '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))',
 					  'ONELEVEL');
   $host = 'Global';
 } else {
   $hosts = array($_REQUEST["host"]);
-  $host = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+  $host = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 }
 // }}}
 
@@ -57,14 +57,14 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
     <p>
 <?php
 // Retreive all necessary web server information (including access control)
-$DATA = pql_websrv_get_data($_pql);
+$DATA = pql_websrv_get_data();
 
 // {{{ Access Control checks
 // Check if user is controls admin in any of the root DN's
 $controls_admin = 0;
 foreach($_pql->ldap_basedn as $dn)  {
   $dn = pql_format_normalize_dn($dn);
-  if(pql_validate_administrator($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
+  if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
 	$controls_admin = 1;
 }
 // }}}

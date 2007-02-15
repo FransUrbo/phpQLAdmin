@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.12 2007-02-02 15:59:10 turbo Exp $
+// $Id: pql_templates.inc,v 2.13 2007-02-15 12:08:13 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -30,10 +30,12 @@ function pql_templates_group() {
 }
 // }}}
 
-// {{{ pql_get_templates(linkid)
-function pql_get_templates($linkid) {
+// {{{ pql_get_templates()
+function pql_get_templates() {
+  global $_pql;
+
   $filter    = '(&(objectClass=phpQLAdminUserTemplate)('.pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME").'=*))';
-  $templates = pql_get_dn($linkid, 'ou=Templates,'.$_SESSION["BASE_DN"][0], $filter, 'ONELEVEL');
+  $templates = $_pql->get_dn('ou=Templates,'.$_SESSION["BASE_DN"][0], $filter, 'ONELEVEL');
 
   // {{{ Setup attributes to retreive.
   $attribs = array("name"            		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME"),
@@ -50,7 +52,7 @@ function pql_get_templates($linkid) {
     
     // {{{ Get all information of interest about this template
     foreach($attribs as $key => $attrib) {
-      $value = pql_get_attribute($linkid, $templates[$i], $attrib);
+      $value = $_pql->get_attribute($templates[$i], $attrib);
 	  if($value) {
 		if(!is_array($value) and ($key != "name") and ($key != "short") and ($key != "long") and
 		   ($key != "reference") and ($key != "autocreateugidnumber"))
@@ -76,7 +78,7 @@ function pql_get_templates($linkid) {
 	// {{{ The old way (pre 2.1.4) of doing it was to have the values in the root DN(s).
 	// Look for the password scheme
 	if(!@$TEMPLATE[$i]["passwordscheme"]) {
-	  $passwordscheme = pql_get_attribute($linkid, $_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"));
+	  $passwordscheme = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"));
 	  if($passwordscheme) {
 		$TEMPLATE[$i]["passwordscheme"] = $passwordscheme;
 		$TEMPLATE[$i]["oldformat"][pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")] = $passwordscheme;
@@ -85,7 +87,7 @@ function pql_get_templates($linkid) {
 	
 	// Look for the user object class
 	if(!$TEMPLATE[$i]["userobjectclass"]) {
-	  $userobjectclass = pql_get_attribute($linkid, $_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_OBJECTCLASS_USER"));
+	  $userobjectclass = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_OBJECTCLASS_USER"));
 	  if($userobjectclass) {
 		$TEMPLATE[$i]["userobjectclass"] = $userobjectclass;
 		$TEMPLATE[$i]["oldformat"][pql_get_define("PQL_ATTR_OBJECTCLASS_USER")] = $userobjectclass;
@@ -94,38 +96,37 @@ function pql_get_templates($linkid) {
 	// }}}
   }
   
-  // {{{ Add the group template to the list of templates
+  // Add the group template to the list of templates
   $TEMPLATE[$i] = pql_templates_group();
-  // }}}
 
   return($TEMPLATE);
 }
 // }}}
 
-// {{{ pql_get_template(linkid, name)
-function pql_get_template($linkid, $name) {
+// {{{ pql_get_template(name)
+function pql_get_template($name) {
   if($name == 'group') {
 	return pql_templates_group();
   } else {
-  // Get ALL templates
-  $templates = pql_get_templates($linkid);
-
-  // Get the one we where asked for
-  for($i=0; $i < count($templates); $i++) {
-  	if($templates[$i]["name"] == lc($name)) {
-	  return $templates[$i];
+	// Get ALL templates
+	$templates = pql_get_templates();
+	
+	// Get the one we where asked for
+	for($i=0; $i < count($templates); $i++) {
+	  if($templates[$i]["name"] == lc($name)) {
+		return $templates[$i];
+	  }
 	}
+	
+	return false;
   }
-
-  return false;
-}
 }
 // }}}
 
-// {{{ pql_templates_attributes(linkid, objectclasses)
-function pql_templates_attributes($linkid, $objectclasses) {
+// {{{ pql_templates_attributes(objectclasses)
+function pql_templates_attributes($objectclasses) {
   // Get all objectclasses the LDAP server understand
-  $schema = pql_get_subschema($linkid, 'objectclasses');
+  $schema = pql_get_subschema('objectclasses');
   
   // Get all the MUST attributes for all the included object classes
   for($j=0; $j < count($objectclasses); $j++) {
@@ -154,14 +155,14 @@ function pql_templates_attributes($linkid, $objectclasses) {
 }
 // }}}
 
-// {{{ pql_templates_check_attribute(linkid, template, attribute, type)
+// {{{ pql_templates_check_attribute(template, attribute, type)
 // Template can be either the template array OR a template name
 // Returns '1' if it's a MUST and '2' if it's a MAY.
 //
 // TODO (if/when '$type' is set):
 //	* If looking for a MUST, then return '1' if it's a MUST and '0' if it's a MAY
 //	* If looking for a MAY,  then return '1' if it's a MAY  and '0' if it's a MUST
-function pql_templates_check_attribute($linkid, $template, $attribute, $type = NULL) {
+function pql_templates_check_attribute($template, $attribute, $type = NULL) {
   // This is quite ugly and maybe a little 'fuzzy'. But we're always (?) called from within
   // (or between) forms where the root DN is specified in the request so it should be safe
   // to do it this way...
@@ -173,10 +174,10 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
 	$template_def = $template;
   else
 	// Retreive the user template we've choosen to use when creating this user
-	$template_def = pql_get_template($linkid, $template);
+	$template_def = pql_get_template($template);
 
   // For each of the userObjectClass'es in the template, get required attributes 
-  $attribs = pql_templates_attributes($linkid, $template_def["userobjectclass"]);
+  $attribs = pql_templates_attributes($template_def["userobjectclass"]);
 
   if(!$type or (lc($type) == "must")) {
 	for($i=0; $i < count($attribs['must']); $i++) {

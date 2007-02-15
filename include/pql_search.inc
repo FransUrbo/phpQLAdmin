@@ -3,285 +3,18 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.70 2007-02-12 15:32:09 turbo Exp $
+// $Id: pql_search.inc,v 2.71 2007-02-15 12:08:13 turbo Exp $
 //
-
-// ------------------------------------------------
-// Core SEARCH API functions
-// ------------------------------------------------
-
-// {{{ pql_search(linkid, dn, filter, level, referrals, operational)
-// Lock for object(s) which match the filter.
-// Level can be:
-//		SUBTREE		=> default!
-//		ONELEVEL
-//		BASE
-function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
-  global $_SESSION;
-
-  // Normalize the DN
-  $dn = pql_format_normalize_dn($dn);
-  
-  // {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
-  if(eregi("^dNSTTL=", $dn))
-	// FROM: dNSTTL=3600 relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
-	// TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,,o=Branch,c=SE
-	$dn = pql_recreate_dnsttl($dn);
-  // }}}
-  
-  // {{{ Which ldap_{search,list,read}() function to use and should cache be used?
-  switch($level) {
-    case "SUBTREE":		$func = "ldap_search";	break;
-    case "ONELEVEL":	$func = "ldap_list";	break;
-    default:			$func = "ldap_read";	break;
-  }
-  
-  $subschema_dn = 0; // Can't be NULL (''). Then the 'check if enable cache' don't work...
-  if($operational) {
-	// This works with OpenLDAP at least!!
-	$op = array('+');
-
-	// If '$operational' != integer then it's the subschema DN
-	// This is done in only ONE place: pql_get_subschema().
-	// We need this to know if we should cache the schemas (which
-	// we should - it doesn't have any non-operational attributes
-	// of interest).
-	if(!is_numeric($operational)) {
-		$subschema_dn = $operational;
-		$operational = 1;
-    }
-  } else
-	$op = array();
-
-  $enable_cache = 0;
-  if(($level == "BASE") and
-	 (!$operational or
-	  ((lc($dn) == lc($subschema_dn)) and ($level == 'BASE'))) and
-	 @$_SESSION["USER_DN"])
-	// Check for/retreive cached object if:
-	// 1. level == BASE
-	// 2. not operational
-	// 3. looking (BASE) in 'cn=Subschema' (or whatever subschemaSubentry points to in base NULL).
-	// 4. We're logged in!
-	$enable_cache = 1;
-  // }}}
-  
-  // {{{ Try to find object in the cache
-  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-	echo "<br>";
-	if($level == 'BASE')
-	  echo "pql_search(): Looking for '<b>$dn</b>': ";
-	else
-	  echo "pql_search(): Looking below '<b>$dn</b>':<br>";
-  }
-
-  if($enable_cache and pql_cache_get($dn, $object)) {
-	// The object is cached -> return this (don't look for it in LDAP).
-	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-	  echo "<font size=\"+1\">Returning cached object '$dn':</font>";
-	  printr($object);
-	}
-	
-	return($object);
-  } // not BASE, is operational or not cached => fall through.
-
-  // It's either not a ONE level search or it doesn't exist in the
-  // cache. Fetch it...
-  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-	echo "Searching with: <b>$func(linkid, '$dn', '$filter', ";
-	if(is_array($op)) {
-	  echo "array(";
-	  for($i=0; $op[$i]; $i++) {
-	    echo $op[$i];
-	    if($op[$i+1])
-	      echo ", ";
-	  }
-	  echo ")";
-	} else
-	  echo "$op";
-	echo ")</b><br>";
-  }	
-  // }}}
-
-  // {{{ Not found in cache, retreive from LDAP
-  $sr = @$func($linkid, $dn, $filter, $op);
-  if(!$sr)
-	// No such object - problem with the search string?
-	return false;
-  
-  // Get number of objects found.
-  $nr_entries = ldap_count_entries($linkid, $sr);
-  if(!$nr_entries)
-	// No objects found.
-	return false;
-  // }}}
-
-  // {{{ Get ALL hits and rearrange the array.
-  // Initialize the resulting array.
-  $entry = array();
-
-  $entries = 0; // Counter to keep tab on how many entries to return
-  $object = ldap_first_entry($linkid, $sr) or pql_format_error(1);
-  do {
-	// Get the DN of the object
-	$dn = ldap_get_dn($linkid, $object);
-
-	// Get all attributes in this object
-	$attributes = ldap_get_attributes($linkid, $object);
-	  
-	// Go through all attributes in the object and retreive
-	// the value(s). Ignore the 'count' part and values with
-	// a number (remnants from the ldap_get_attributes() call)..
-	for($i=0; $i < $attributes['count']; $i++) {
-	  $key   = lc($attributes[$i]); // Save some typing
-	  $value = ldap_get_values_len($linkid, $object, $attributes[$i]);
-	  
-	  if(eregi('^[a-z]', $key) and ($key != 'count')) {
-		if($key == pql_get_define("PQL_ATTR_PHOTO")) {
-		  // A jpegPhoto. Save it in the resulting array as-is.
-		  if($nr_entries > 1)
-			$entry[$entries][$key] = $value[0];
-		  else
-			$entry[$key] = $value[0];
-		} elseif(is_array($value) and !empty($value[1])) {
-		  // A multi value - such as 'mailAlternateAddress'
-		  // or 'objectClass' etc. Take ALL values, ignoring
-		  // any empty values that might exists.
-		  for($j=0; $j < $value["count"]; $j++) {
-			if($nr_entries > 1)
-			  $entry[$entries][$key][$j] = pql_maybe_decode($value[$j]);
-			else
-			  $entry[$key][$j] = pql_maybe_decode($value[$j]);
-		  }
-		} else
-		  // Single valued such as 'uid' and 'mail' etc...
-		  // Just take the ONE value
-		  if($nr_entries > 1)
-			$entry[$entries][$key] = pql_maybe_decode($value[0]);
-		  else
-			$entry[$key] = pql_maybe_decode($value[0]);
-	  }
-	}
-	
-	// Save the DN in the resulting array.
-	if($nr_entries > 1)
-	  $entry[$entries]["dn"] = $dn;
-	else
-	  $entry["dn"] = $dn;
-	
-	// -------------
-	if($enable_cache and ($attributes['count'] > 1)) {
-	  // Cache this object
-	  if($nr_entries > 1)
-		pql_cache_add($entry[$entries]);
-	  else
-		pql_cache_add($entry);
-	}
-
-	$entries++;
-  } while($object = ldap_next_entry($linkid, $object));
-  // }}}
-  
-  // {{{ Chase referals
-  // TODO: Finish this, it's taken directly from (the now deleted) function pql_user_get().
-  //	if($referrals) {
-  //		// Get any referrals in this branch
-  //		$resource = ldap_first_reference($linkid, $sr);
-  //		if($resource) {
-  //			ldap_parse_reference($linkid, $resource, $referrals);
-  //			
-  //			while($resource = ldap_next_reference($linkid, $resource)) {
-  //				if($resource) {
-  //					ldap_parse_reference($linkid, $resource, $new);
-  //					$referrals = array_merge($referrals, $new);
-  //				}
-  //			}
-  //		}
-  //		
-  //		// Add all referral references to the user array
-  //		if(is_array($referrals)) {
-  //			$host = split(';', $_SESSION["USER_HOST"]);
-  //			
-  //			foreach($referrals as $ref) {
-  //				// Remove the LDAP host from the reference.
-  //				// TODO: What if it's a referral to outside this host!?!?
-  //				$reference = eregi_replace($host[0]."/", "", $ref);
-  //				
-  //				// Store the URL DEcoded value in the array.
-  //				$users[] = urldecode($reference);
-  //			}
-  //		}
-  //	}
-  // }}}
-
-  if(!empty($entry))
-	return($entry);
-  else
-	return false;
-}
-// }}}
-
-// {{{ pql_get_attribute(linkid, dn, attribute, operational, filter)
-// Return only a subset of an object (retreived with pql_search()).
-function pql_get_attribute($linkid, $dn, $attribute, $operational = 0, $filter = NULL) {
-  $attribute = lc($attribute);
-
-  if(!$filter) {
-	$filter = "(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=*)";
-	$scope = "BASE";
-  } else {
-	$scope = "SUBTREE";
-  }
-  
-  // Get the (WHOLE) object but only return only the attributes of interest.
-  $object = pql_search($linkid, $dn, $filter, $scope, 1, $operational);
-  if(!empty($object)) {
-	if(!empty($object[0])) {
-	  if(!empty($object[0][$attribute]))
-		return($object[0][$attribute]);
-	} elseif(!empty($object[$attribute]))
-	  // Most likley returned from a cached object...
-	  return($object[$attribute]);
-  }
-  
-  return(false);
-}
-// }}}
 
 // ------------------------------------------------
 // Support SEARCH API functions
 // ------------------------------------------------
 
-// {{{ pql_get_dn(linkid, dn, filter, level)
-// This function returns the DN of each object if finds.
-// Basically a simplified version of pql_search() - one that only returns
-// the DN's of the matches...
-function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
-  unset($entry);
-  
-  // NOTE:
-  // This function is VERY UNLIKLEY to do a ONE level search,
-  // so I'm not going to bother to check for cached objects.
-  // Besides, pql_search() is quite clever about that...
-  
-  $objects = pql_search($linkid, $dn, $filter, $level, 1);
-  if(!empty($objects[0])) {
-	for($i=0; $i < count($objects); $i++)
-	  $entry[] = pql_maybe_idna_decode(pql_format_normalize_dn($objects[$i]['dn']));
-  } elseif($objects and $objects['dn'])
-	$entry[] = pql_maybe_idna_decode(pql_format_normalize_dn($objects['dn']));
-  
-  if(@is_array($entry))
-	return($entry);
-  else
-	return false;
-}
-// }}}
-
-// {{{ pql_get_domains(ldap)
+// {{{ pql_get_domains()
 // Get all domains listed in ldap-tree (ou|dc-records)
-function pql_get_domains($ldap) {
-  global $_SESSION;
+function pql_get_domains() {
+  global $_pql, $_SESSION;
+
   $domains = array();
   
   foreach($_SESSION["BASE_DN"] as $TOP_DN)  {
@@ -290,38 +23,44 @@ function pql_get_domains($ldap) {
 	// to use the following object classeses when creating branches,
 	// AND all those object classes doesn't already exists in the branch
 	// object(s), no branches will be found!
-	// $ocs = '(objectClass=phpQLAdminBranch)(objectClass=phpQLAdminInfo)'
+	//$ocs = '(objectClass=phpQLAdminBranch)(objectClass=phpQLAdminInfo)'
 	// But only the first (or none of them) exists -> no branches!!
-	//$ocs    = pql_setup_branch_objectclasses(1, $TOP_DN);
+	//$ocs = pql_setup_branch_objectclasses(1, $TOP_DN);
 	
 	if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 	  // There's a subtree defined - look if it's there
 	  $dn = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
 	  
 	  $filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=*';
-	  $result = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'BASE');
+	  $result = $_pql->get_dn($dn, $filter, 'BASE');
 	  if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
-		echo "pql_get_domains(): result"; printr($result);
+		echo "pql_get_domains(): result";
+		printr($result);
 	  }
+
 	  if(is_array($result)) {
 		// The PQL_CONF_SUBTREE_USERS,TOP_DN exists
 		
 		// Is there any users just below that?
 		$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
-		$new = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
+		$new = $_pql->get_dn($dn, $filter, 'ONELEVEL');
 		if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
-		  echo "pql_get_domains(): new(1)"; printr($new);
+		  echo "pql_get_domains(): new(1)";
+		  printr($new);
 		}
+
 		if(is_array($new)) {
 		  // Yes, there are users here. Add this DN to the domains list
 		  pql_add2array($domains, $TOP_DN);
 		  
 		  // Just to be safe - is there any branches here?
 		  $filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
-		  $new    = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
+		  $new    = $_pql->get_dn($dn, $filter, 'ONELEVEL');
 		  if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
-			echo "pql_get_domains(): new (2)"; printr($new);
+			echo "pql_get_domains(): new (2)";
+			printr($new);
 		  }
+
 		  if(is_array($new))
 			pql_add2array($domains, $new);
 		}
@@ -344,29 +83,35 @@ function pql_get_domains($ldap) {
 	else
 	  // User reference for this branch/domain not specified. Use default...
 	  $filter = 'uid=*';
-	$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+	$new    = $_pql->get_dn($TOP_DN, $filter, 'ONELEVEL');
 	if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
-	  echo "pql_get_domains(): new(3)"; printr($new);
+	  echo "pql_get_domains(): new(3)";
+	  printr($new);
 	}
+
 	if(is_array($new))
 	  pql_add2array($domains, $new);
 	
 	// Just to be safe - is there any branches here?
 	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
-	$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+	$new    = $_pql->get_dn($TOP_DN, $filter, 'ONELEVEL');
 	if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
-	  echo "pql_get_domains(): new(4)"; printr($new);
+	  echo "pql_get_domains(): new(4)";
+	  printr($new);
 	}
+
 	if(is_array($new))
 	  pql_add2array($domains, $new);
 
 	// Now, if the base/root DN is a 'dc' object and domain/branch reference
 	// is 'ou', we MUST use 'organizationalUnit' in the object class filter...
 	$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
-	$new    = pql_unit_get($ldap->ldap_linkid, $TOP_DN, $filter);
+	$new    = pql_unit_get($TOP_DN, $filter);
 	if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
-	  echo "pql_get_domains(): new(5)"; printr($new);
+	  echo "pql_get_domains(): new(5)";
+	  printr($new);
 	}
+
 	if(is_array($new)) {
 	  for($i=0; $new[$i]; $i++)
 		pql_add2array($domains, $new);
@@ -412,13 +157,15 @@ function pql_get_domains($ldap) {
 }
 // }}}
 
-// {{{ pql_get_branch_domains(ldap)
-function pql_get_branch_domains($ldap) {
+// {{{ pql_get_branch_domains()
+function pql_get_branch_domains() {
+  global $_pql;
+
   // Get all branches in the database
-  $branches = pql_get_domains($ldap);
+  $branches = pql_get_domains();
   foreach($branches as $branch) {
 	// {{{ Get default domain name for this domain/branch
-	$default_domain = pql_get_attribute($ldap->ldap_linkid, $branch, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$default_domain = $_pql->get_attribute($branch, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 	if($default_domain) {
 	  if(!is_array($default_domain))
 		$default_domain = array($default_domain);
@@ -428,7 +175,7 @@ function pql_get_branch_domains($ldap) {
 	// }}}
 	
 	// {{{ Get additional domain name(s)
-	$additional = pql_get_attribute($ldap->ldap_linkid, $branch, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	$additional = $_pql->get_attribute($branch, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 	if($additional) {
 	  if(!is_array($additional))
 		$additional = array($additional);
@@ -453,11 +200,13 @@ function pql_get_branch_domains($ldap) {
 }
 // }}}
 
-// {{{ pql_get_email_domains(linkid, host)
-function pql_get_email_domains($linkid, $host) {
+// {{{ pql_get_email_domains(host)
+function pql_get_email_domains($host) {
+  global $_pql;
+
   // {{{ Go through each base DN, retreive mail and mail aliases
   foreach($_SESSION["BASE_DN"] as $base) {
-	$users = pql_search($linkid, $base, pql_get_define("PQL_ATTR_MAIL").'=*', "SUBTREE");
+	$users = $_pql->search($base, pql_get_define("PQL_ATTR_MAIL").'=*', "SUBTREE");
 	for($i=0; $i < count($users); $i++) {
 	  $mails[] = $users[$i][pql_get_define("PQL_ATTR_MAIL")];
 	  
@@ -483,20 +232,22 @@ function pql_get_email_domains($linkid, $host) {
 }
 // }}}
 
-// {{{ pql_get_automount_maps(linkid, $computerdn)
+// {{{ pql_get_automount_maps($computerdn)
 // Retreive ALL automount maps (recursivly) for a specific host in a specific domain
-function pql_get_automount_maps($linkid, $computerdn) {
+function pql_get_automount_maps($computerdn) {
+  global $_pql;
+
   // {{{ Retreive the base mount points
   // Find the auto.master object
   $filter = '(&(objectClass=autoMountMap)(|('.pql_get_define("PQL_ATTR_CN").'=auto.master)('.pql_get_define("PQL_ATTR_OU").'=auto.master)))';
-  $auto_master = pql_search($linkid, $computerdn, $filter); $auto_master = $auto_master["dn"];
+  $auto_master = $_pql->search($computerdn, $filter); $auto_master = $auto_master["dn"];
 
   if(isset($auto_master))
 	// Get automount maps below auto.master
-	$maps = pql_get_automount_map($linkid, $auto_master);
+	$maps = pql_get_automount_map($auto_master);
   else
 	// Get automount maps below computer DN
-	$maps = pql_get_automount_map($linkid, $computerdn);
+	$maps = pql_get_automount_map($computerdn);
   // }}}
 
   if(empty($maps))
@@ -506,14 +257,14 @@ function pql_get_automount_maps($linkid, $computerdn) {
 }
 // }}}
 
-// {{{ pql_get_automount_map(linkid, dn)
+// {{{ pql_get_automount_map(dn)
 // Retreive automount maps below a specific mountpoint
-function pql_get_automount_map($linkid, $dn) {
-  global $_SESSION;
+function pql_get_automount_map($dn) {
+  global $_pql, $_SESSION;
 
   // Retreive all automountMap(s) directly below the DN
   $filter = '(&(objectClass=automount)(|('.pql_get_define("PQL_ATTR_CN").'=*)('.pql_get_define("PQL_ATTR_OU").'=*)))';
-  $maps = pql_search($linkid, $dn, $filter, 'ONELEVEL');
+  $maps = $_pql->search($dn, $filter, 'ONELEVEL');
 
   if(file_exists($_SESSION["path"]."/.DEBUG_AUTOMOUNT")) {
 	echo "pql_get_automount_map(): Maps for DN '<b>$dn</b>': ";
@@ -542,7 +293,7 @@ function pql_get_automount_map($linkid, $dn) {
 		$dn = preg_replace('/.*:/', '', $maps[$i][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
 
 		// Call ourselfs recursivly to get automount maps below this mountpoint.
-		$AUTOMASTER[$cn] = pql_get_automount_map($linkid, $dn);
+		$AUTOMASTER[$cn] = pql_get_automount_map($dn);
 	  } else {
 		if($maps[$i][pql_get_define("PQL_ATTR_DESCRIPTION")])
 		  $AUTOMASTER[$cn][pql_get_define("PQL_ATTR_DESCRIPTION")] = $maps[$i][pql_get_define("PQL_ATTR_DESCRIPTION")];
@@ -564,15 +315,15 @@ function pql_get_automount_map($linkid, $dn) {
 }
 // }}}
 
-// {{{ pql_search_forwarders($ldap, user)
+// {{{ pql_search_forwarders(user)
 // Search all accounts with forwarders to $user@$domain
-function pql_search_forwarders($ldap, $user) {
+function pql_search_forwarders($user) {
+  global $_pql;
   $return = '';
-  $linkid = $ldap->ldap_linkid;
   
   // get all email addresses of a user
-  $email   = pql_get_attribute($linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
-  $aliases = pql_get_attribute($linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
+  $email   = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_MAIL"));
+  $aliases = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
   
   $addresses[] = $email;
   if(is_array($aliases))
@@ -581,7 +332,7 @@ function pql_search_forwarders($ldap, $user) {
   // create filter
   $filter = "(|";
   foreach($addresses as $add)
-	$filter .= "(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $add . ")";
+	$filter .= "(" . pql_get_define("PQL_ATTR_FORWARDS") . "=" . $add . ")";
   $filter .= ")";
   
   // Go through each base DN in the database, looking
@@ -590,13 +341,13 @@ function pql_search_forwarders($ldap, $user) {
 	$ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn);
 	
 	// Get all users that refere/forwards to this ($dn) object.
-	$results = pql_get_dn($linkid, $dn, $filter);
+	$results = $_pql->get_dn($dn, $filter);
 	for($i=0; $i < count($results); $i++) {
 	  // Retreive this object.
-	  $object = pql_search($linkid, $results[$i], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE');
+	  $object = $_pql->search($results[$i], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE');
 	  
 	  $return[] = array("reference" => $object[0]['dn'],
-						$ref		  => $object[0][$ref],
+						$ref		=> $object[0][$ref],
 						"email"     => $object[0][pql_get_define("PQL_ATTR_MAIL")]);
 	  
 	} // end foreach results
@@ -606,13 +357,14 @@ function pql_search_forwarders($ldap, $user) {
 }
 // }}}
 
-// {{{ pql_email_exists(ldap, email)
+// {{{ pql_email_exists(email)
 // Check if any mail or mailalternateaddress record with this email exists in the ldap tree
-function pql_email_exists($ldap, $email) {
+function pql_email_exists($email) {
+  global $_pql;
+
   $filter = "(|(" . pql_get_define("PQL_ATTR_MAIL") . "=" . $email . ")(" . pql_get_define("PQL_ATTR_MAILALTERNATE") . "=" . $email . "))";
-  
   foreach($_SESSION["BASE_DN"] as $dn) {
-	$results = pql_get_dn($ldap->ldap_linkid, $dn, $filter);
+	$results = $_pql->get_dn($dn, $filter);
 	if(is_array($results))
 	  return true;
   }
@@ -621,9 +373,11 @@ function pql_email_exists($ldap, $email) {
 }
 // }}}
 
-// {{{ pql_validate_administrator(linkid, dn, attrib, admin)
-function pql_validate_administrator($linkid, $dn, $attrib, $admin) {
-  $result = pql_get_attribute($linkid, $dn, $attrib);
+// {{{ pql_validate_administrator(dn, attrib, admin)
+function pql_validate_administrator($dn, $attrib, $admin) {
+  global $_pql;
+
+  $result = $_pql->get_attribute($dn, $attrib);
   if(!$result)
 	return(false);
   
@@ -638,14 +392,14 @@ function pql_validate_administrator($linkid, $dn, $attrib, $admin) {
 }
 // }}}
 
-// {{{ pql_validate_object(linkid, dn, object, type)
+// {{{ pql_validate_object(dn, object, type)
 // Verify that the object have what it needs to be added:
 // 1. All object classes choosen have their MUST attributes defined.
 // 2. All attributes have a object class specified (TODO).
 // 3. The ACI attribute is defined in the object
 // Returns a new, improved/correct object.
 // NOTE: $dn and $type is only used/needed for the ACI's...
-function pql_validate_object($linkid, $dn, $object, $type) {
+function pql_validate_object($dn, $object, $type) {
   // {{{ Encode values that needs to encoded and extract the object classes
   foreach($object as $key => $value) {
 	// Check if we have a MUST in the objectclasses choosen
@@ -668,9 +422,8 @@ function pql_validate_object($linkid, $dn, $object, $type) {
   }
   // }}}
   
-  // {{{ Retreive all objectclasses the LDAP server knows about
-  $ldap = pql_get_subschema($linkid, "objectclasses");
-  // }}}
+  // Retreive all objectclasses the LDAP server knows about
+  $ldap = pql_get_subschema("objectclasses");
   
   // {{{ Go through the WANTED objectclasses, checking for a MUST attribute we don't have
   if(is_array($ocs)) {
@@ -749,28 +502,28 @@ function pql_validate_object($linkid, $dn, $object, $type) {
   foreach($object as $attrib => $value) {
 	$attrib = lc($attrib);
 	
-	if(!eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $attrib)) {
-	  // This is a non-object class attribute
-	  
-	  // TODO: How do we check that this attribute have a object class specified in $entry!?
-	}
+//	if(!eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $attrib)) {
+//	  // This is a non-object class attribute
+//
+//	  // TODO: How do we check that this attribute have a object class specified in $entry!?
+//	}
   }
   // }}}
   
   // {{{ Add the OpenLDAPaci attribute (maybe)
   if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and empty($entry[pql_get_define("PQL_ATTR_LDAPACI")]))
-	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $dn, $type);
+	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($dn, $type);
   // }}}
   
   return($entry);
 }
 // }}}
 
-// {{{ pql_get_subschemas(ldap_linkid)
-function pql_get_subschemas($ldap_linkid) {
+// {{{ pql_get_subschemas()
+function pql_get_subschemas() {
   $attribs = array("ldapsyntaxes", "matchingrules", "attributetypes", "objectclasses");
   foreach($attribs as $attrib) {
-	$result = pql_get_subschema($ldap_linkid, $attrib);
+	$result = pql_get_subschema($attrib);
 	if($result)
 	  $entry[$attrib] = $result;
   }
@@ -784,19 +537,21 @@ function pql_get_subschemas($ldap_linkid) {
 }
 // }}}
 
-// {{{ pql_get_subschema(ldap_linkid, attrib)
-function pql_get_subschema($ldap_linkid, $attrib) {
+// {{{ pql_get_subschema(attrib)
+function pql_get_subschema($attrib) {
+  global $_pql;
+
   $attrib = lc($attrib);
   
   // Get the DN for the subSchema
   // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
   //
   // TODO: Reuse the $this->_find_base_option() function here!
-  $entry = pql_get_attribute($ldap_linkid, NULL, 'subschemaSubentry', 1);
+  $entry = $_pql->get_attribute(NULL, 'subschemaSubentry', 1);
   if($entry) {
 	// Get the (operational) attribute subSchemaAttributes from the subSchema
 	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=subSchema' $attrib
-	$entry = pql_search($ldap_linkid, $entry, pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', 'BASE', 0, $entry);
+	$entry = $_pql->search($entry, pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', 'BASE', 0, $entry);
 	if(!empty($entry)) {
 	  // Catch a flat object - i.e. only ONE domain
 	  if(empty($entry[0])) {
@@ -847,11 +602,10 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 	  //	objectclasses: ( 2.5.6.6 NAME 'person' DESC 'Standard LDAP objectclass' 
 	  //		SUP top STRUCTURAL MUST ( sn $ cn ) MAY ( description $ seeAlso $ 
 	  //		telephoneNumber $ userPassword ) X-ORIGIN 'RFC 2256' )
-// }}}
+	  // }}}
 
 	  for($i=0; $i < count($entry[0][$attrib]); $i++) {
-		// ------------------------
-		// Retreive NAME
+		// {{{ Retreive NAME
 		$words = split("NAME", $entry[0][$attrib][$i]);
 		if(!empty($words[1])) {
 		  if(ereg("^ \(", $words[1])) {
@@ -878,14 +632,14 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		  $words = split(" ", $entry[0][$attrib][$i]);
 		  $name  = lc($words[1]);
 		}
+		// }}}
 
-		// ------------------------
-		// Get the OID number
+		// {{{ Get the OID number
 		$words = split(" ", $entry[0][$attrib][$i]);
 		$VALUE[$name]["OID"] = $words[1];
+		// }}}
 		
-		// ------------------------
-		// Retreive DESC
+		// {{{ Retreive DESC
 		$words = split("DESC", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
 		  $words = split("\' ", $words[1]);
@@ -893,9 +647,9 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		  
 		  $VALUE[$name]["DESC"] = $words[1];
 		}
+		// }}}
 		
-		// ------------------------
-		// Retreive MAY's
+		// {{{ Retreive MAY's
 		$words = split("MAY", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
 		  if(ereg("\(", $words[1])) {
@@ -916,9 +670,9 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		  }
 		  $VALUE[$name]["MAY"]["count"] = $j;
 		}
+		// }}}
 		
-		// ------------------------
-		// Retreive MUST's
+		// {{{ Retreive MUST's
 		$words = split("MUST", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
 		  if(ereg("^ \(", $words[1])) {
@@ -941,33 +695,33 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		  }
 		  $VALUE[$name]["MUST"]["count"] = $j;
 		}
+		// }}}
 		
-		// ------------------------
-		// Retreive EQUALITY
+		// {{{ Retreive EQUALITY
 		$words = split("EQUALITY", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
 		  $words = split(" ", $words[1]);
 		  $VALUE[$name]["EQUALITY"] = $words[1];
 		}
+		// }}}
 		
-		// ------------------------
-		// Retreive SYNTAX
+		// {{{ Retreive SYNTAX
 		$words = split("SYNTAX", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
 		  $words = split(" ", $words[1]);
 		  $VALUE[$name]["SYNTAX"] = $words[1];
 		}
-		
-		// ------------------------
-		// Retreive USAGE
+		// }}}
+
+		// {{{ Retreive USAGE
 		$words = split("USAGE", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
 		  $words = split(" ", $words[1]);
 		  $VALUE[$name]["USAGE"] = $words[1];
 		}
+		// }}}
 		
-		// ------------------------
-		// Retreive SUP
+		// {{{ Retreive SUP
 		if(eregi("SUP", $entry[0][$attrib][$i])) {
 		  $words = split("SUP", $entry[0][$attrib][$i]);
 		  if(! empty($words[1])) {
@@ -989,9 +743,9 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			}
 		  }
 		}
+		// }}}
 		
-		// ------------------------
-		// Retreive X-ORIGIN (Fedora Directory Server)
+		// {{{ Retreive X-ORIGIN (Fedora Directory Server)
 		$words = split("X-ORIGIN", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
 		  $words = split("\' ", $words[1]);
@@ -999,26 +753,27 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		  
 		  $VALUE[$name]["X-ORIGIN"] = $words[1];
 		}
+		// }}}
 
-		// ------------------------
-		// Retreive SINGLE-VALUE
+		// {{{ Retreive SINGLE-VALUE
 		if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["SINGLE-VALUE"] = 'TRUE';
+		// }}}
 		
-		// ------------------------
-		// Retreive NO-USER-MODIFICATION
+		// {{{ Retreive NO-USER-MODIFICATION
 		if(eregi("NO-USER-MODIFICATION", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["NO-USER-MODIFICATION"] = 'TRUE';
+		// }}}
 		
-		// ------------------------
-		// Retreive X-BINARY-TRANSFER-REQUIRED
+		// {{{ Retreive X-BINARY-TRANSFER-REQUIRED
 		if(eregi("X-BINARY-TRANSFER-REQUIRED", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["X-BINARY-TRANSFER-REQUIRED"] = 'TRUE';
+		// }}}
 		
-		// ------------------------
-		// Retreive X-NOT-HUMAN-READABLE
+		// {{{ Retreive X-NOT-HUMAN-READABLE
 		if(eregi("X-NOT-HUMAN-READABLE", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'TRUE';
+		// }}}
 	  }
 	}
 	
@@ -1032,7 +787,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 	  if($attrib == 'objectclasses') {
 		// There might be aliases, so we must retreive all attribute types...
 		// All attribute(s) that have aliases is in $ATTRS["ALIAS"].
-		$ATTRS = pql_get_subschema($ldap_linkid, 'attributeTypes');
+		$ATTRS = pql_get_subschema('attributeTypes');
 		
 		if(!empty($VALUE["ALIAS"])) {
 		  // Save this so it doesn't interfere
@@ -1090,6 +845,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 // {{{ pql_get_rootdn(dn)
 function pql_get_rootdn($dn, $function = '') {
   global $_pql, $_SESSION;
+
   $tracker = 'Please report this at the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>.<br>';
   
   if($function)
@@ -1189,7 +945,7 @@ function pql_get_rootdn($dn, $function = '') {
 }
 // }}}
 
-// {{{ pql_setup_branch_objectclasses(filter = 0, dn, linkid = '')
+// {{{ pql_setup_branch_objectclasses(filter, dn, linkid)
 // Setup object class entry for a domain/branch with all
 // necessary objectclasses
 function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {

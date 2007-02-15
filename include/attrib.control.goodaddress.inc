@@ -2,7 +2,7 @@
 // control attribute plugin for
 // goodmailaddr (max number of bytes in message)
 //
-// $Id: attrib.control.goodaddress.inc,v 2.11 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.goodaddress.inc,v 2.12 2007-02-15 12:07:20 turbo Exp $
 
 // {{{ goodmailaddr_check(type)
 function goodmailaddr_check($type) {
@@ -20,10 +20,10 @@ function goodmailaddr_init($host) {
 
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["goodmailaddr"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["goodmailaddr"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_GOODADDRESS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["goodmailaddr"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_GOODADDRESS"));
+	  $_REQUEST["goodmailaddr"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_GOODADDRESS"));
 
 	if(!@$_REQUEST["goodmailaddr"])
 	  return true;
@@ -52,7 +52,7 @@ function goodmailaddr_print_view($host) {
 
 	$tbl_txt = array('tit' => $LANG->_('Addresses'), 'add' => $LANG->_('Add address'), 'del' => $LANG->_('Remove address'));
 	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
-	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["goodmailaddr"],
+	pql_format_table_single( $tbl_txt, $tbl_url, $_REQUEST["goodmailaddr"],
 							pql_get_define("PQL_ATTR_GOODADDRESS"), $class);
 ?>
     </th>
@@ -107,17 +107,17 @@ function goodmailaddr_save($type, $host)  {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_GOODADDRESS"), '', $_REQUEST["goodmailaddr"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_GOODADDRESS"), '', $_REQUEST["goodmailaddr"]))
 			$success = 1;
 		}
@@ -136,7 +136,7 @@ function goodmailaddr_save($type, $host)  {
 
 	  case "del":
 		// {{{ delete value
-		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		if(pql_modify_attribute($host,
 								pql_get_define("PQL_ATTR_GOODADDRESS"), $_REQUEST["goodmailaddr"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapclusterhosts options')));

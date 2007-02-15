@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.56 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_control.inc,v 2.57 2007-02-15 12:08:12 turbo Exp $
 //
 
 // {{{ control connection class
@@ -24,10 +24,12 @@ class pql_control extends pql {
 // PQL - Control - API functions
 // ------------------------------------------------
 
-// {{{ pql_control_update_domains(ldap, rootdn, dn, host, domain = "", type = "")
+// {{{ pql_control_update_domains(rootdn, dn, host, domain = "", type = "")
 // Replicate all registred domains to locals
 // domain is array as: 'oldvalue', 'newvalue'
-function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $type = "") {
+function pql_control_update_domains($rootdn, $dn, $host, $domain = "", $type = "") {
+  global $_pql;
+
   if(!pql_get_define("PQL_CONF_CONTROL_USE"))
 	// control patch is not enabled
 	return false;
@@ -45,15 +47,15 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 	  // {{{ Do a MANUAL replication for ONE specific QLC host
 
 	  // Get all default and additinal domain name(s)
-	  $entry = pql_get_branch_domains($ldap);
+	  $entry = pql_get_branch_domains();
 
 	  // Get all email address domains for users which have this host as MX
-	  $tmp = pql_get_email_domains($ldap->ldap_linkid, $host);
+	  $tmp = pql_get_email_domains($host);
 	  pql_add2array($entry, $tmp);
 	  
 	  // {{{ If we're replicating rcptHosts, get all non-primary MX host value(s) in this MX/QLC object
 	  if($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
-		$nonprimmx = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
+		$nonprimmx = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
 		if($nonprimmx) {
 		  if(!is_array($nonprimmx))
 			$nonprimmx = array($nonprimmx);
@@ -80,7 +82,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 	  // }}}
 
 	  // Send modifications to the LDAP server
-	  if(pql_modify_attribute($ldap->ldap_linkid, $dn, $type, 1, $entry))
+	  if(pql_modify_attribute($dn, $type, 1, $entry))
 		return true;
 	  // }}}
 	} else {
@@ -97,7 +99,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 	  }
 	  // }}}
 	  
-	  if(pql_modify_attribute($ldap->ldap_linkid, $dn, $type, '', $entry))
+	  if(pql_modify_attribute($dn, $type, '', $entry))
 		return true;
 	  // }}}
 	}
@@ -113,7 +115,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 	//	NOTE: BOTH can be set but not NULL!
 	
 	// {{{ Retreive and go through each QmailLDAP control object
-	$hosts = pql_get_dn($ldap->ldap_linkid, $dn, '(&(cn=*)(objectclass=qmailControl))');
+	$hosts = $_pql->get_dn($dn, '(&(cn=*)(objectclass=qmailControl))');
 	if($hosts) {
 	  if(!is_array($hosts))
 		$hosts = array($hosts);
@@ -128,7 +130,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 		foreach($attribs as $key => $attrib) {
 		  if(($type == $attrib) or !$type) {
 			// Get current 'attrib' value for this QLC object
-			$values = pql_get_attribute($ldap->ldap_linkid, $host, $attrib);
+			$values = $_pql->get_attribute($host, $attrib);
 			if($values) {
 			  if(!is_array($values))
 				$values = array($values);
@@ -143,9 +145,8 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 					  echo "pql_control_update_domains(): Replacing '<b>$value</b>' with '<b>".$domain[1]."</b>' in QLC '$host:$key'<br>";
 
 					$entry[$key][] = $domain[1];
-				  } else {
+				  } else
 					$entry[$key][] = $value;
-				  }
 				  // }}}
 				} elseif($domain[0] and !$domain[1]) {
 				  // {{{ We're REMOVING a domainname
@@ -173,10 +174,11 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 				echo "pql_control_update_domains(): Adding domain '<b>".$domain[1]."</b>' to QLC '$host:$key'<br>";
 			  
 			  $entry[$key][] = $domain[1];
-			} else
+			} else {
 			  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 				echo "pql_control_update_domains(): Domain '<b>".$domain[1]."</b>' already exists in QLC '$host:$key'<br>";
-			  
+			}
+
 			// NOTE: If there is no previous values and we want to REMOVE a domain, then we
 			//       don't need to do anything (can't delete something that isn't there! :).
 		  }
@@ -200,7 +202,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 
 		// {{{ Do modification
 		if(($entry["locals"][0] or $entry["rcpthosts"][0]) and !$domain_to_add_already_exists)
-		  pql_modify_attribute($ldap->ldap_linkid, $host, '', '', $entry);
+		  pql_modify_attribute($host, '', '', $entry);
 		// }}}
 	  }
 	}

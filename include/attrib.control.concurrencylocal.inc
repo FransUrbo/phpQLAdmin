@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.25 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.26 2007-02-15 12:07:19 turbo Exp $
 
 // {{{ concurrencylocal_check(type)
 function concurrencylocal_check($type) {
@@ -40,11 +40,11 @@ function concurrencylocal_init($host) {
 					 "concurrencyremote" => pql_get_define("PQL_ATTR_CONCURRENCYREMOTE"));
 	if($host == "Global") {
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		$_REQUEST[$key] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
 	} else {
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
+		$_REQUEST[$key] = $_pql_control->get_attribute($host, $attrib);
 	}
 }
 // }}}
@@ -139,16 +139,16 @@ function concurrencylocal_save($type, $host) {
 		  if(@isset($_REQUEST[$key])) {
 			if($host == "Global") {
 			  // Get all QLC host
-			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 								 '(&(cn=*)(objectclass=qmailControl))');
 			  
 			  $success = 1;
 			  foreach($qlcs as $host) {
-				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST[$key]))
+				if(!pql_modify_attribute($host, $attrib, '', $_REQUEST[$key]))
 				  $success = 0;
 			  }
 			} else {
-			  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			  if(pql_modify_attribute($host,
 									  $attrib, 1, $_REQUEST[$key]))
 				$success = 1;
 			}

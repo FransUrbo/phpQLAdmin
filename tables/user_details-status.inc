@@ -1,6 +1,6 @@
 <?php
 // Retreive 'days from Jan 1, 1970'
-$tmp  = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_EXPIRATION"));
+$tmp  = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_EXPIRATION"));
 if($tmp) {
 	$tmp++;
 	// Convert to UNIX timestamp
@@ -13,9 +13,9 @@ if($tmp) {
 }
 
 // Retreive the accountStatus attribute
-$status = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ISACTIVE"));
+$status = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_ISACTIVE"));
 if($status == "deleted") {
-  $date = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"));
+  $date = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"));
   if($date)
 	$date = date("M j, Y", $date);
 }

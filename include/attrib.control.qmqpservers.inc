@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.25 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.26 2007-02-15 12:08:01 turbo Exp $
 
 // {{{ qmqpservers_check(type)
 function qmqpservers_check($type) {
@@ -57,10 +57,10 @@ function qmqpservers_init($host) {
 
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["qmqpservers"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["qmqpservers"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_QMQPSERVERS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["qmqpservers"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_QMQPSERVERS"));
+	  $_REQUEST["qmqpservers"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_QMQPSERVERS"));
 
 	if(!@$_REQUEST["qmqpservers"])
 	  return true;
@@ -89,7 +89,7 @@ function qmqpservers_print_view($host) {
 
 	$tbl_txt = array('tit' => $LANG->_('Servers'), 'add' => $LANG->_('Add server'), 'del' => $LANG->_('Remove server'));
 	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
-	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["qmqpservers"],
+	pql_format_table_single( $tbl_txt, $tbl_url, $_REQUEST["qmqpservers"],
 							pql_get_define("PQL_ATTR_QMQPSERVERS"), $class);
 ?>
     </th>
@@ -144,17 +144,17 @@ function qmqpservers_save($type, $host)  {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_QMQPSERVERS"), '', $_REQUEST["qmqpservers"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_QMQPSERVERS"), 1, $_REQUEST["qmqpservers"]))
 			$success = 1;
 		}
@@ -172,7 +172,7 @@ function qmqpservers_save($type, $host)  {
 		// }}}
 
 	  case "del":
-		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		if(pql_modify_attribute($host,
 								pql_get_define("PQL_ATTR_QMQPSERVERS"), $_REQUEST["qmqpservers"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('QMQP Server options')));

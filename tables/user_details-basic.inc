@@ -80,7 +80,7 @@
 					'del' => $tmp."&submit=1&type=del",
 					'mod' => $tmp); unset($tmp);
 
-	  pql_format_table_single($_pql->ldap_linkid, $txt, $link, $cn,
+	  pql_format_table_single($txt, $link, $cn,
 							  pql_get_define("PQL_ATTR_CN"), $class);
 // }}}
 
@@ -130,7 +130,7 @@
 							  'del' => $tmp."&submit=4&action=delete");
 				unset($tmp);
 				
-				pql_format_table_single($_pql->ldap_linkid, $txt, $link, $memberuid,
+				pql_format_table_single($txt, $link, $memberuid,
 										pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"),
 										$class);
 			}

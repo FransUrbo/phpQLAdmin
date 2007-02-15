@@ -76,7 +76,7 @@ function attribute_save($type) {
 		  $old = 1;
 		
 		// {{{ Replace the specified attribute
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["sambasid"]))
+		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["sambasid"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('Samba SID'),
 											 'new'  => $_REQUEST["sambasid"]));

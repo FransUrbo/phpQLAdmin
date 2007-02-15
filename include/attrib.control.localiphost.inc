@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.24 2007-02-15 12:07:34 turbo Exp $
 
 // {{{ ocaliphost_check(type)
 function localiphost_check($type) {
@@ -25,10 +25,10 @@ function localiphost_init($host) {
 	
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["localiphost"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["localiphost"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_LOCALIPHOST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["localiphost"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LOCALIPHOST"));
+	  $_REQUEST["localiphost"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_LOCALIPHOST"));
 	
 	if(@is_null($_REQUEST["localiphost"]))
 	  return true;
@@ -42,7 +42,7 @@ function localiphost_print_view($host) {
 	
 	// init data
 	localiphost_init($host);
-	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
+	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
@@ -99,17 +99,17 @@ function localiphost_save($type, $host) {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_LOCALIPHOST"), '', $_REQUEST["localiphost"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_LOCALIPHOST"), 1, $_REQUEST["localiphost"]))
 			$success = 1;
 		}

@@ -1,6 +1,6 @@
 <?php
 // Add a user template
-// $Id: config_template_add.php,v 2.8 2006-12-16 12:02:08 turbo Exp $
+// $Id: config_template_add.php,v 2.9 2007-02-15 12:07:09 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -89,7 +89,7 @@ if(($error == 'true')) {
 // }}}
 } else {
   // {{{ No errors. We're good to go!
-  $templates = pql_get_dn($_pql->ldap_linkid, 'ou=Templates,'.$_SESSION["BASE_DN"][0],
+  $templates = $_pql->get_dn('ou=Templates,'.$_SESSION["BASE_DN"][0],
 						  '(&(objectClass=organizationalUnit)(ou=*))', 'BASE');
   if(!is_array($templates)) {
 	// Create the organizationalUnit leading up to the templates...
@@ -98,7 +98,7 @@ if(($error == 'true')) {
 	$entry[pql_get_define("PQL_ATTR_OU")] = "Templates";
 
 	$dn = "ou=Templates,".$_REQUEST["rootdn"];
-	if(!pql_write_add($_pql->ldap_linkid, $dn, $entry, 'template', 'config_template_add/ou'))
+	if(!$_pql->add($dn, $entry, 'template', 'config_template_add/ou'))
 	  die("pql_write_add(ou): failure<br>");
   }
 
@@ -114,7 +114,7 @@ if(($error == 'true')) {
   $dn .= ",ou=Templates,".$_REQUEST["rootdn"];
 
   // Add the template to the database.
-  if(!pql_write_add($_pql->ldap_linkid, $dn, $entry, 'template', 'config_template_add/template'))
+  if(!$_pql->add($dn, $entry, 'template', 'config_template_add/template'))
 	die("pql_write_add(template): failure<br>");
 
   $url =  "config_detail.php?view=template";

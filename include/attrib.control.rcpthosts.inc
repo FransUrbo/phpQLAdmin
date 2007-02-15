@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.34 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.35 2007-02-15 12:08:04 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 function rcpthosts_check($type) {
@@ -35,10 +35,10 @@ function rcpthosts_init($host) {
 
     // fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["rcpthosts"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["rcpthosts"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_RCPTHOSTS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["rcpthosts"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_RCPTHOSTS"));
+	  $_REQUEST["rcpthosts"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_RCPTHOSTS"));
 
     if(!@$_REQUEST["rcpthosts"])
 	  return true;
@@ -56,7 +56,7 @@ function rcpthosts_print_view($host) {
     rcpthosts_init($host);
 
 	$_REQUEST["rootdn"] = pql_get_rootdn(pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"]);
-	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
+	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left" colspan="3"><?=pql_complete_constant($LANG->_('Allowed %attrib% for host %host%'), array('host' => $cn, 'attrib' => pql_get_define("PQL_ATTR_RCPTHOSTS")))?>
@@ -70,7 +70,7 @@ function rcpthosts_print_view($host) {
 
 	$tbl_txt = array('tit' => $LANG->_('Domains'), 'add' => $LANG->_('Add domain'), 'del' => $LANG->_('Remove domain'));
 	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
-	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["rcpthosts"],
+	pql_format_table_single( $tbl_txt, $tbl_url, $_REQUEST["rcpthosts"],
 							pql_get_define("PQL_ATTR_RCPTHOSTS"), $class);
 ?>
       <tr class="subtitle">
@@ -143,8 +143,7 @@ function rcpthosts_save($type, $host) {
     switch($type) {
       case "replicate":
 		// {{{ Start replication manually
-		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $host,
-									  $host, '', pql_get_define("PQL_ATTR_RCPTHOSTS")))
+		if(pql_control_update_domains($_REQUEST["rootdn"], $host, $host, '', pql_get_define("PQL_ATTR_RCPTHOSTS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_RCPTHOSTS")));
 		else
@@ -158,7 +157,7 @@ function rcpthosts_save($type, $host) {
 
       case "del":
 		// {{{ remove specified domain from rcpthosts in host object
-		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		if(pql_modify_attribute($host,
 								pql_get_define("PQL_ATTR_RCPTHOSTS"), $host, ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
@@ -176,17 +175,17 @@ function rcpthosts_save($type, $host) {
 		// {{{ adding specified domain to rcpthosts in host object
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 $_REQUEST["attrib"], '', $_REQUEST["set"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  $_REQUEST["attrib"], '', $_REQUEST["set"]))
 			$success = 1;
 		}

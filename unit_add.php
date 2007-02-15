@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.29 2006-12-16 12:02:09 turbo Exp $
+// $Id: unit_add.php,v 2.30 2007-02-15 12:07:12 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -20,7 +20,7 @@ include($_SESSION["path"]."/header.html");
 // }}}
 
 // {{{ Check if domain exist
-if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
+if(!$_pql->get_dn($_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
 	echo "Domain &quot;".$_REQUEST["domain"]."&quot; does not exists";
 	exit();
 }
@@ -32,7 +32,7 @@ if($_REQUEST["unit"]) {
       $filter = "(&(dc=".$_REQUEST["unit"].")(objectclass=domain))";
     else
       $filter = "(&(ou=".$_REQUEST["unit"].")(objectclass=organizationalUnit))";
-    if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'ONELEVEL')) {
+    if($_pql->get_dn($_REQUEST["domain"], $filter, 'ONELEVEL')) {
 	$msg = urlencode($LANG->_('This sub unit already exists'));
 	pql_header("home.php?msg=$msg");
     }
@@ -49,7 +49,7 @@ if($_REQUEST["unit"]) {
 // }}}
 
     // {{{ Add unit to database
-    if(pql_unit_add($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["unit"])) {
+    if(pql_unit_add($_REQUEST["domain"], $_REQUEST["unit"])) {
       if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 	// Redirect to domain-details
 	pql_header($url);

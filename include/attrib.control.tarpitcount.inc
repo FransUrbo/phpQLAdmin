@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.24 2007-02-15 12:08:05 turbo Exp $
 
 // {{{ tarpitcount_check(type)
 function tarpitcount_check($type) {
@@ -58,11 +58,11 @@ function tarpitcount_init($host) {
 					 "tarpitdelay" => pql_get_define("PQL_ATTR_TARPITDELAY"));
 	if($host == "Global")
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		$_REQUEST[$key] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
+		$_REQUEST[$key] = $_pql_control->get_attribute($host, $attrib);
 }
 // }}}
 
@@ -149,16 +149,16 @@ function tarpitcount_save($type, $host) {
 		  if(@isset($_REQUEST[$key])) {
 			if($host == "Global") {
 			  // Get all QLC host
-			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 								 '(&(cn=*)(objectclass=qmailControl))');
 			  
 			  $success = 1;
 			  foreach($qlcs as $host) {
-				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST[$key]))
+				if(!pql_modify_attribute($host, $attrib, '', $_REQUEST[$key]))
 				  $success = 0;
 			  }
 			} else {
-			  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			  if(pql_modify_attribute($host,
 									  $attrib, 1, $_REQUEST[$key]))
 				$success = 1;
 			}

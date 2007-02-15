@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // simScanSpamAssassinHits
-// $Id: attrib.sahits.inc,v 2.3 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.sahits.inc,v 2.4 2007-02-15 12:08:08 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -63,7 +63,7 @@ function attribute_save($type) {
 		if($type == 'delete')
 		  $_REQUEST[$attrib] = '';
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
+		if(pql_modify_attribute($_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('number of SA points'),
 											 'new'  => $_REQUEST[$attrib]));

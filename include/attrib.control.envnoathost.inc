@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.24 2007-02-15 12:07:20 turbo Exp $
 
 // {{{ envnoathost_check(type)
 function envnoathost_check($type) {
@@ -31,10 +31,10 @@ function envnoathost_init($host) {
 
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["envnoathost"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["envnoathost"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_ENVNOATHOST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["envnoathost"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_ENVNOATHOST"));
+	  $_REQUEST["envnoathost"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_ENVNOATHOST"));
 
 	if(@is_null($_REQUEST["envnoathost"]))
 	  return true;
@@ -48,7 +48,7 @@ function envnoathost_print_view($host) {
 
 	// init data
 	envnoathost_init($host);
-	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
+	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">envnoathost (<?=$LANG->_('Default domain for addresses without @')?>)</th>
@@ -105,17 +105,17 @@ function envnoathost_save($type, $host) {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_ENVNOATHOST"), '', $_REQUEST["envnoathost"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_ENVNOATHOST"), 1, $_REQUEST["envnoathost"]))
 			$success = 1;
 		}

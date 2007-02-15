@@ -1,4 +1,4 @@
-<?php $forwarders = pql_search_forwarders($_pql, $_GET["user"]); ?>
+<?php $forwarders = pql_search_forwarders($_GET["user"]); ?>
   <!-- forwarders in other accounts to this user  -->
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?=$LANG->_('Forwarders from other accounts to this user')?></th>

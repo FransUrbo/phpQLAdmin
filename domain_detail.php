@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.110 2007-01-08 03:24:58 turbo Exp $
+// $Id: domain_detail.php,v 2.111 2007-02-15 12:07:10 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -39,7 +39,7 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 // }}}
 
 // {{{ Check if domain exist
-if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
+if(!$_pql->get_dn($_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
     echo "Domain &quot;" . $_REQUEST["domain"] . "&quot; does not exists<br><br>";
 	echo "Is this perhaps a Top Level DN (namingContexts), and you haven't configured ";
 	echo "how to reference domains/branches in this database!?<br><br>";
@@ -50,7 +50,7 @@ if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE
 // }}}
 
 // {{{ Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+$domainname = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 if(!$domainname) {
   // TODO: Resonable default!
   $domainname = '';				// DLW: Just to shut off some warnings.
@@ -99,7 +99,7 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "lockaccounttype"			=> pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
-	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+	$value = $_pql->get_attribute($_REQUEST["domain"], $attrib);
 	if(is_array($value) and ($key != 'simscanattachmentsuffix'))
 	  $value = $value[0];
 	$$key = $value;
@@ -158,14 +158,14 @@ foreach($attribs as $key => $attrib) {
 }
 if($_REQUEST["view"] == 'access') {
   // Get domain administrators
-  $domain_admins      = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+  $domain_admins      = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
   if($domain_admins and !is_array($domain_admins)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
 	$domain_admins = array($domain_admins);
   }
   
   // Get mailinglist administrators
-  $mailinglist_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+  $mailinglist_admins = $_pql->get_attribute($_REQUEST["domain"],
 										  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
   if($mailinglist_admins and !is_array($mailinglist_admins)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
@@ -173,7 +173,7 @@ if($_REQUEST["view"] == 'access') {
   }
 
   // Get webserver administrators
-  $websrv_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+  $websrv_admins = $_pql->get_attribute($_REQUEST["domain"],
 									 pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
   if($websrv_admins and !is_array($websrv_admins)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
@@ -181,7 +181,7 @@ if($_REQUEST["view"] == 'access') {
   }
 
   // Get DNS administrators
-  $bind9_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+  $bind9_admins = $_pql->get_attribute($_REQUEST["domain"],
 									pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"));
   if($bind9_admins and !is_array($bind9_admins)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
@@ -190,7 +190,7 @@ if($_REQUEST["view"] == 'access') {
 
 }
 
-$seealso            = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
+$seealso            = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
 if($seealso and !is_array($seealso)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
 	$seealso = array($seealso);
@@ -211,7 +211,7 @@ if($basequota) {
   $basequota		 = pql_ldap_mailquota($quota);
 }
 
-$additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+$additionaldomainname = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 // }}}
 
 // {{{ Setup the buttons
@@ -228,7 +228,7 @@ $new = array('users'	=> 'Registred Users',
 $buttons = $buttons + $new;
 
 if($_SESSION["ADVANCED_MODE"]) {
-	if(pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
+	if(pql_validate_administrator($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
 	   $_SESSION["ALLOW_BRANCH_CREATE"])
 	{
 		$new = array('dnsinfo'	=> 'MX Information');
@@ -247,8 +247,8 @@ if($_SESSION["ADVANCED_MODE"]) {
 	}
 
 	if(pql_get_define("PQL_CONF_BIND9_USE") and
-	   (pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
-		pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"])))
+	   (pql_validate_administrator($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
+		pql_validate_administrator($_REQUEST["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"])))
 	{
 		// * DNS administration is enabled
 		// * User is either webSrvAdministrator for domain OR:
@@ -258,8 +258,8 @@ if($_SESSION["ADVANCED_MODE"]) {
 	}
 
 	if(pql_get_define("PQL_CONF_WEBSRV_USE") and
-	   (pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]) or
-		pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"])))
+	   (pql_validate_administrator($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]) or
+		pql_validate_administrator($_REQUEST["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"])))
 	{
 		// * Webserver administration is enabled
 		// * User is either webSrvAdministrator for domain OR:
@@ -319,7 +319,7 @@ if($_REQUEST["view"] == 'owner') {
 	include("./tables/domain_details-users_chval.inc");
 } elseif($_REQUEST["view"] == 'users') {
 	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(mail=*))";
-	$users = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
+	$users = $_pql->get_dn($_REQUEST["domain"], $filter);
 	include("./tables/domain_details-users.inc");
 } elseif($_REQUEST["view"] == 'action') {
 	include("./tables/domain_details-action.inc");

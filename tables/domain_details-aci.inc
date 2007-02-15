@@ -6,12 +6,12 @@ $URL .= "&attrib=".pql_get_define("PQL_ATTR_LDAPACI")."&view=" . $_REQUEST["view
 // We can be called either from either domain_detail.php or tables/user_details-aci.inc
 if(!@empty($_REQUEST["user"])) {
     // Get the ACIs in this user object
-    $aci = pql_aci_get($_pql->ldap_linkid, $_REQUEST["user"]);
+    $aci = pql_aci_get($_REQUEST["user"]);
 
 	$URL .= "user=".$url["user"];
 } else {
     // Get the ACIs in this branch object
-    $aci = pql_aci_get($_pql->ldap_linkid, $url["domain"]);
+    $aci = pql_aci_get($url["domain"]);
 }
 
 if(!is_array($aci)) {

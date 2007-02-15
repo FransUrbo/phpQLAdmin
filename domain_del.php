@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.42 2006-12-16 12:02:08 turbo Exp $
+// $Id: domain_del.php,v 2.43 2007-02-15 12:07:10 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -28,12 +28,12 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 
 	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
 	// and smtpRoutes value(s) so that we can remove it from the QmailLDAP/Controls object(s)
-	$domainname  = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-	$additionals = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
-	$routes		 = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_SMTPROUTES"));
+	$domainname  = $_pql->get_attribute($domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$additionals = $_pql->get_attribute($domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	$routes		 = $_pql->get_attribute($domain, pql_get_define("PQL_ATTR_SMTPROUTES"));
 
 	// Delete the domain
-	if(pql_domain_del($_pql, $domain, $delete_forwards)) {
+	if(pql_domain_del($domain, $delete_forwards)) {
 	    // {{{ Deletion of the branch was successfull - Update the QmailLDAP/Controls object(s)
 		if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			// Include control API
@@ -46,24 +46,24 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 			// ... remove the domain name
 			if($domainname)
 			  // NOTE: Even if autoreplication is disabled, this should still be done!
-			  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+			  pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 										 '*', array($domainname, ''));
 			
 			// ... remove the additional domain name(s)
 			if($additionals) {
 			  if(is_array($additionals)) {
 				foreach($additionals as $additional)
-				  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+				  pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 											 '*', array($additional, ''));
 			  } else
-				pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+				pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 										   '*', array($additional, ''));
 			}
 			
 			// ... remove the SMTP route(s)
 			if(is_array($routes)) {
 				foreach($routes as $route)
-				  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+				  pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 											 '*', array($route, ''));
 			}
 		}

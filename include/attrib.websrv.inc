@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.18 2007-02-02 15:50:43 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.19 2007-02-15 12:08:11 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -117,7 +117,7 @@ function attribute_save($action) {
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("attrib.websrv.inc", $dn, $entry);
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry))
+		if(pql_modify_attribute($dn, '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully added %what%'),
 									   array('what' => $_REQUEST[$attrib])).".";
 		else
@@ -137,7 +137,7 @@ function attribute_save($action) {
 			$_REQUEST[$attrib] = 'ldapi://' . urlencode($uri);
 		}
 
- 		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, 1, $_REQUEST[$attrib]))
+ 		if(pql_modify_attribute($dn, $attrib, 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
 		else
@@ -173,7 +173,7 @@ function attribute_save($action) {
 		elseif($oldvalue == 'off')
 		  $newvalue = 'on';
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, $oldvalue, $newvalue))
+		if(pql_modify_attribute($dn, $attrib, $oldvalue, $newvalue))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
 		else

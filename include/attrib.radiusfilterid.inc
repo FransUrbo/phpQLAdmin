@@ -1,6 +1,6 @@
 <?php
 // Manage the radiusFilterID attribute
-// $Id: attrib.radiusfilterid.inc,v 2.1 2006-12-02 13:06:50 turbo Exp $
+// $Id: attrib.radiusfilterid.inc,v 2.2 2007-02-15 12:08:08 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -26,7 +26,7 @@ function attribute_check() {
 function attribute_print_form() {
   global $_pql, $LANG, $error_text;
 
-  $host_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+  $host_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 
   $attrib = $_REQUEST["attrib"];
   if(@$_REQUEST[$attrib]) {
@@ -92,7 +92,7 @@ function attribute_save($type) {
   if(!@$_REQUEST[oldvalue])
 	$_REQUEST[$attrib] = '<i>NULL</i>';
 	 
-  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["host"], $_REQUEST["attrib"], 1, $newvalue)) {
+  if(pql_modify_attribute($_REQUEST["host"], $_REQUEST["attrib"], 1, $newvalue)) {
 	$msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
 	array('what' => $_REQUEST["attrib"],
 		  'old'  => $_REQUEST["oldvalue"],

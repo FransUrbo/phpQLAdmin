@@ -1,8 +1,8 @@
 <?php
-// $Id: host_details-websrv_access.inc,v 1.2 2006-12-02 13:07:07 turbo Exp $
+// $Id: host_details-websrv_access.inc,v 1.3 2007-02-15 12:08:18 turbo Exp $
 
 // {{{ Get container access
-$members = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
+$members = $_pql->get_attribute($_REQUEST["server"], pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
 if(!@$members) {
   $members = '';
 } elseif(@$members and !is_array($members)) {
@@ -28,7 +28,7 @@ if(isset($members)) {
 				   'del' => $LANG->_('Disallow user administrator access to webserver'));
   $tbl_url = array('add' => $url_tmp."&action=add",
 				   'del' => $url_tmp."&action=del");
-  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $members,
+  pql_format_table_single($tbl_txt, $tbl_url, $members,
 						  pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $class);
 ?>
     </th>

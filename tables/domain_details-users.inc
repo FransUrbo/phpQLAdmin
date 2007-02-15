@@ -20,14 +20,14 @@
 				$urldet = "user_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=$userdn";
 				$urledit= "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=$userdn";
 
-				$uid    = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_UID"));
+				$uid    = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_UID"));
 
 				// DLW: This should be sorted on DisplayName, not cn.
-				$cn     = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN"));
+				$cn     = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_CN"));
 				if(is_array($cn)) $cn = $cn[0];
 
-				$uidnr  = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_QMAILUID"));
-				$status = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"));
+				$uidnr  = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_QMAILUID"));
+				$status = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_ISACTIVE"));
 				$status = pql_ldap_accountstatus($status);
 
 				if(($uid != 'root') or ($uidnr != '0')) {
@@ -35,7 +35,7 @@
 					// not be availible to administrate through phpQLAdmin!
 
 					// Get registered addresses for this user
-					$email   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
+					$email   = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_MAIL"));
 					$tmp     = split('@', $email);
 					$mail    = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 
@@ -45,7 +45,7 @@
 					  $links = array();
 
 					// Get any mail aliases for this user
-					$aliases = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
+					$aliases = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
 					if($aliases and !is_array($aliases))
 					  $aliases = array($aliases);
 
@@ -70,7 +70,7 @@
 					}
 
 					// See if the attribute mailForwardingAddress is there
-					$forwards = pql_get_attribute($_pql->ldap_linkid, $user,
+					$forwards = $_pql->get_attribute($user,
 												  pql_get_define("PQL_ATTR_FORWARDS"));
 					if($forwards) {
 						if(!is_array($forwards))

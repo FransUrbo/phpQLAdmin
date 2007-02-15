@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.52 2006-12-16 12:02:08 turbo Exp $
+// $Id: control_detail.php,v 1.53 2007-02-15 12:07:09 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -22,10 +22,10 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// {{{ Retreive the actual QLC object if we're called with a physical host (as in via host_detail.php).
 	if($_REQUEST["ref"]) {
 	  // Get the FQDN of the host
-	  $cn = pql_get_attribute($_pql_control->ldap_linkid, $_REQUEST["mxhost"], pql_get_define("PQL_ATTR_CN"));
+	  $cn = $_pql_control->get_attribute($_REQUEST["mxhost"], pql_get_define("PQL_ATTR_CN"));
 
 	  $filter = "(&(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=qmailControl)(cn=$cn))";
-	  $result = pql_get_dn($_pql_control->ldap_linkid, $_REQUEST["mxhost"], $filter, 'ONELEVEL');
+	  $result = $_pql_control->get_dn($_REQUEST["mxhost"], $filter, 'ONELEVEL');
 	  if(is_array($result))
 		$_REQUEST["mxhost"] = $result[0];
 	  elseif(@$result)
@@ -52,7 +52,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
 					 "cn"					=> pql_get_define("PQL_ATTR_CN"));
 	foreach($attribs as $key => $attrib) {
-		$value = pql_get_attribute($_pql_control->ldap_linkid, $_REQUEST["mxhost"], $attrib);
+		$value = $_pql_control->get_attribute($_REQUEST["mxhost"], $attrib);
 		if($value) {
 			if($key == "locals") {
 				if(!is_array($value))

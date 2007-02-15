@@ -1,6 +1,6 @@
 <?php
 // delete a physical host
-// $Id: host_del.php,v 2.1 2006-12-02 13:06:31 turbo Exp $
+// $Id: host_del.php,v 2.2 2007-02-15 12:07:12 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -14,12 +14,12 @@ if(!$_REQUEST["dns"]) {
   if(@$_REQUEST["hostdir"]) {
 	// {{{ Remove a virtual host location
 	// Find the DN of this virtual host
-	$virt_host = pql_get_dn($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")."=".$_REQUEST["virthost"]);
+	$virt_host = $_pql->get_dn($_REQUEST["server"], pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")."=".$_REQUEST["virthost"]);
 	if(is_array($virt_host)) {
 	  $virt_host = $virt_host[0];
 	  
 	  // Find the DN of this virtual host location
-	  $location =  pql_get_dn($_pql->ldap_linkid, $virt_host, pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")."=".$_REQUEST["hostdir"]);
+	  $location =  $_pql->get_dn($virt_host, pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")."=".$_REQUEST["hostdir"]);
 	  if(is_array($location)) {
 ?>
   <span class="title1"><?=pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'host location'))?>: <?=$_REQUEST["virthost"]?></span>
@@ -34,7 +34,7 @@ if(!$_REQUEST["dns"]) {
   } elseif(@$_REQUEST["virthost"]) {
 	// {{{ Remove a virtual host
 	// Find the DN of this virtual host
-	$virt_host = pql_get_dn($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")."=".$_REQUEST["virthost"]);
+	$virt_host = $_pql->get_dn($_REQUEST["server"], pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")."=".$_REQUEST["virthost"]);
 	if(is_array($virt_host)) {
 	  $virt_host = $virt_host[0];
 ?>
@@ -42,7 +42,7 @@ if(!$_REQUEST["dns"]) {
 <?php
 	  
 	  // Find all objects below this virtual host
-	  $dns = pql_get_dn($_pql->ldap_linkid, $virt_host, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
+	  $dns = $_pql->get_dn($virt_host, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
 	} else
 	  die("Can't figure out the DN of the virtual host '".$_REQUEST["virthost"]."' (below web server '".$_REQUEST["server"]."')");
 // }}}
@@ -50,23 +50,23 @@ if(!$_REQUEST["dns"]) {
   } elseif(@$_REQUEST["server"]) {
 	// {{{ Delete a web server container
 	// Get the server reference for this web server
-	$server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_CN"));
+	$server_reference = $_pql->get_attribute($_REQUEST["server"], pql_get_define("PQL_ATTR_CN"));
 ?>
   <span class="title1"><?=pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'web server'))?>: <?=$server_reference?></span>
 <?php
 	// Find all objects below this web server
-	$dns = pql_get_dn($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
+	$dns = $_pql->get_dn($_REQUEST["server"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
 // }}}
 
   } elseif(@$_REQUEST["host"]) {
 	// {{{ Delete a physical host
 	// Get the server reference for this physical server
-	$server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+	$server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 ?>
   <span class="title1"><?=pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'physical host'))?>: <?=$server_reference?></span>
 <?php
 	// Find all objects below this physical host
-	$dns = pql_get_dn($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
+	$dns = $_pql->get_dn($_REQUEST["host"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
 // }}}
   }
 
@@ -89,7 +89,7 @@ if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
   // {{{ Delete the FIRST DN recursivly
-  if(pql_domain_del($_pql, $_REQUEST["dn_0"], 0)) {
+  if(pql_domain_del($_REQUEST["dn_0"], 0)) {
 	$msg = urlencode(pql_complete_constant($LANG->_('Successfully removed %what%'), array('what' => $_REQUEST["dn_0"])));
 
 	// {{{ Delete any DNS host entries that pointed to this <whatever>
@@ -97,9 +97,9 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 	if($_REQUEST["virthost"])
 	  $server_reference = $_REQUEST["virthost"];
 	elseif($_REQUEST["server"]) {
-	  $server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_CN"));
+	  $server_reference = $_pql->get_attribute($_REQUEST["server"], pql_get_define("PQL_ATTR_CN"));
 	} elseif($_REQUEST["host"]) {
-	  $server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+	  $server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 	}
 	$tmp = pql_separate_host_domain($server_reference);
 	$hostname = $tmp[0]; $domainname = $tmp[1];
@@ -107,12 +107,12 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
   
 	// {{{ Find this host entry in the DNS
 	$filter = '(&('.pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")."=$hostname)(".pql_get_define("PQL_ATTR_ZONENAME")."=$domainname))";
-	$dns_entry = pql_get_dn($_pql->ldap_linkid, $rootdn, $filter);
+	$dns_entry = $_pql->get_dn($rootdn, $filter);
 // }}}
 
 	// {{{ Delete the DNS record
 	if(@$dns_entry[0]) {
-	  if(pql_write_del($_pql->ldap_linkid, $dns_entry[0]))
+	  if($_pql->delete($dns_entry[0]))
 		$msg .= "<br>".urlencode(pql_complete_constant($LANG->_('Successfully removed %what%'), array('what' => $dns_entry[0])));
 	}
 // }}}

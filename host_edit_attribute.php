@@ -1,6 +1,6 @@
 <?php
 // Edit attribute of a physical host
-// $Id: host_edit_attribute.php,v 2.2 2006-12-18 12:50:09 turbo Exp $
+// $Id: host_edit_attribute.php,v 2.3 2007-02-15 12:07:12 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -17,7 +17,7 @@ function attribute_forward($msg) {
 
 	// Find the physical host DN
 	$filter = '(&('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-	$physical_host_dn = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+	$physical_host_dn = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 
 	$link = "host_detail.php?host=".urlencode($physical_host_dn[0])."&view=".$_REQUEST["view"]."&msg=$msg";
 	if($_REQUEST["server"])

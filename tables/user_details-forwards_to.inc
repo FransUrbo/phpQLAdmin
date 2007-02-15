@@ -1,4 +1,4 @@
-<?php $forwarders = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_FORWARDS"));
+<?php $forwarders = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_FORWARDS"));
 	  if(!is_array($forwarders) and $forwarders)
 		$forwarders = array($forwarders);
 ?>

@@ -3,20 +3,20 @@
 // pql_hostctrl.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_hostctrl.inc,v 1.5 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_hostctrl.inc,v 1.6 2007-02-15 12:08:12 turbo Exp $
 
 $LANG = new pql_lang($_pql) or die("Couldn't make a new LANG object");
 require($_SESSION["path"]."/left-head.html");
 
-// {{{ pql_update_sudo(ldap, dn, type, attribute)
-function pql_update_sudo($ldap, $dn, $type, $attribute) {
+// {{{ pql_update_sudo(dn, type, attribute)
+function pql_update_sudo($dn, $type, $attribute) {
   global $_REQUEST, $LANG;
 
   if(isset($_REQUEST[$type]) && (($_REQUEST[$type] == '') or ($_REQUEST[$type] == 'none')))
     return;
 
   if(isset($_REQUEST[$type]) && ($_REQUEST[$type] != 'none') &&
-     pql_modify_attribute($ldap, $dn, $attribute, '', $_REQUEST[$type] ))
+     pql_modify_attribute($dn, $attribute, '', $_REQUEST[$type] ))
     pql_format_status_msg(pql_complete_constant($LANG->_('Added %type%=%value% to sudo role %role%'),
 						array('type' => $type, 'value' => $_REQUEST[$type],
 						      'role' => $dn)));
@@ -87,3 +87,10 @@ function pql_array_push_associative(&$arr) {
 }
 // }}}
 
+/*
+ * Local variables:
+ * mode: php
+ * tab-width: 4
+ * End:
+ */
+?>

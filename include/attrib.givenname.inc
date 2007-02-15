@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // givenname (First name)
-// $Id: attrib.givenname.inc,v 1.3 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.givenname.inc,v 1.4 2007-02-15 12:08:06 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -76,7 +76,7 @@ function attribute_save($type) {
 		  $old = 1;
 		
 		// {{{ Replace the specified attribute
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $old, $_REQUEST["givenname"]))
+		if(pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $old, $_REQUEST["givenname"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('First name'),
 											 'new'  => $_REQUEST["givenname"]));

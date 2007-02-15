@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.24 2007-02-15 12:08:05 turbo Exp $
 
 // {{{ smtpgreeting_check(type)
 function smtpgreeting_check($type) {
@@ -20,10 +20,10 @@ function smtpgreeting_init($host) {
     
     // fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["smtpgreeting"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["smtpgreeting"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_SMTPGREETING"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["smtpgreeting"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_SMTPGREETING"));
+	  $_REQUEST["smtpgreeting"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_SMTPGREETING"));
     
     if(@is_null($_REQUEST["smtpgreeting"]))
 	  return true;
@@ -37,7 +37,7 @@ function smtpgreeting_print_view($host) {
     
     // init data
     smtpgreeting_init($host);
-	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
+	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
@@ -94,17 +94,17 @@ function smtpgreeting_save($type, $host) {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_SMTPGREETING"), '', $_REQUEST["smtpgreeting"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_SMTPGREETING"), 1, $_REQUEST["smtpgreeting"]))
 			$success = 1;
 		}

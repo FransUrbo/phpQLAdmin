@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.18 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.homedirectory.inc,v 2.19 2007-02-15 12:08:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -74,7 +74,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], 1, $_REQUEST["homedirectory"]))
+		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], 1, $_REQUEST["homedirectory"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('Home directory', 4),
 											 'new'  => $_REQUEST["homedirectory"]));

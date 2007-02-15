@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.48 2006-12-16 12:02:09 turbo Exp $
+// $Id: user_del.php,v 2.49 2007-02-15 12:07:13 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -18,13 +18,13 @@ $url["user"]		= pql_format_urls($_REQUEST["user"]);
 // }}}
 
 // {{{ Get organization name for domain and common name of user
-$o = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
+$o = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$o) {
 	// No 'organization' attribute (or it's not configured - 0)
 	// Use the RDN
 	$o = $_REQUEST["domain"];
 }
-$cn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
+$cn = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
@@ -38,15 +38,15 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	$unsubscribe     = (isset($_REQUEST["unsubscribe"])     || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 
 	// {{{ Get the user principal
-	$principal = kadmin_get_principal($_pql->ldap_linkid, $_REQUEST["user"]);
+	$principal = pql_kadmin_get_principal($_REQUEST["user"]);
 	if($principal)
-	  kadmin_delprinc($_pql->ldap_linkid, $principal);
+	  pql_kadmin_delprinc($principal);
 // }}}
 
 	// {{{ Get the users mail addresses before the object gets deleted
 	if($_REQUEST["unsubscribe"]) {
-		$mails   = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAIL"));
-		$aliases = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
+		$mails   = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_MAIL"));
+		$aliases = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
 		if($mails and !is_array($mails))
 		  $mails = array($mails);
 
@@ -59,7 +59,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 // }}}
 
 	// {{{ Delete the user
-	if(pql_user_del($_pql, $_REQUEST["domain"], $_REQUEST["user"], $delete_forwards)) {
+	if(pql_user_del($_REQUEST["domain"], $_REQUEST["user"], $delete_forwards)) {
 		$msg = $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
 		$rlnb = "&rlnb=1";
 
@@ -72,20 +72,20 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 							 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 							 pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
 							 pql_get_define("PQL_ATTR_SEEALSO"));
-			pql_replace_values($_pql, $attribs, $_REQUEST["user"]);
+			pql_replace_values($attribs, $_REQUEST["user"]);
 		}
 		// }}}
 
 		// {{{ Unsubscribe user from all mailinglists (on this host naturaly :)
 		if($_REQUEST["unsubscribe"]) {
 			// Get all domains, looking for mailing lists
-			$domains = pql_get_domains($_pql);
+			$domains = pql_get_domains();
 			if(is_array($domains)) {
 				foreach($domains as $key => $this_domain) {
 					// Get base directory for mails in all domains
-					if(($basemaildir = pql_get_attribute($_pql->ldap_linkid, $this_domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
+					if(($basemaildir = $_pql->get_attribute($this_domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 						// Get the lists in this directory
-						$user  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+						$user  = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 						$ezmlm = new ezmlm($user, $basemaildir);
 						if(is_array($ezmlm->mailing_lists[0])) {
 							// Go through each list in this domain

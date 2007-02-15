@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbscachesize (max number of bytes in message)
 //
-// $Id: attrib.control.pbscachesize.inc,v 2.11 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.pbscachesize.inc,v 2.12 2007-02-15 12:07:39 turbo Exp $
 
 // {{{ pbscachesize_check(type)
 function pbscachesize_check($type) {
@@ -20,10 +20,10 @@ function pbscachesize_init($host) {
 
 	// fetch data from ldap server
 	if($host == "Global")
-	  $_REQUEST["pbscachesize"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+	  $_REQUEST["pbscachesize"] = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_PBS_CACHESIZE"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 	else
-	  $_REQUEST["pbscachesize"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_PBS_CACHESIZE"));
+	  $_REQUEST["pbscachesize"] = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_PBS_CACHESIZE"));
 
 	if(@is_null($_REQUEST["pbscachesize"]))
 	  return true;
@@ -90,17 +90,17 @@ function pbscachesize_save($type, $host)  {
 		// {{{ save entries
 		if($host == "Global") {
 		  // Get all QLC host
-		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			if(!pql_modify_attribute($host,
 									 pql_get_define("PQL_ATTR_PBS_CACHESIZE"), '', $_REQUEST["pbscachesize"]))
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+		  if(pql_modify_attribute($host,
 								  pql_get_define("PQL_ATTR_PBS_CACHESIZE"), 1, $_REQUEST["pbscachesize"]))
 			$success = 1;
 		}

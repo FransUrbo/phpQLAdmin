@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.32 2006-12-22 19:47:09 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.33 2007-02-15 12:08:05 turbo Exp $
 
 // {{{ smtproutes_check(type)
 
@@ -57,10 +57,10 @@ function smtproutes_init($host) {
 	if(!empty($host)) {
 		// fetch data from ldap server
 		if($host == "Global")
-		  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		  $value = $_pql_control->get_attribute($_SESSION["USER_SEARCH_DN_CTR"],
 									 pql_get_define("PQL_ATTR_SMTPROUTES"), 0, pql_get_define("PQL_ATTR_CN")."=*");
 		else
-		  $value = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_SMTPROUTES"));
+		  $value = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_SMTPROUTES"));
 
 		if(empty($value))
 		  return true;
@@ -207,14 +207,14 @@ function smtproutes_print_form() {
 	if($_REQUEST["type"] != 'del') {
 		if(@empty($_REQUEST["mxhost"])) {
 			// Get all QmailLDAP/Control hosts.
-			$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			$result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 								 '(&(cn=*)(objectclass=qmailControl))');
 			for($i=0; $i < count($result); $i++)
-			  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+			  $hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
 		}
 	} else {
 		// Get all hosts which have this domain in 'attrib'
-		$hosts = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+		$hosts = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 							"(&(cn=*)(objectclass=qmailControl)(".$_REQUEST["attrib"]."=".$_REQUEST["set"]."*))");
 		// Convert the DN into a host list
 		for($i=0; $i < count($hosts); $i++) {
@@ -407,17 +407,17 @@ function smtproutes_save($type, $host) {
 			// Update the object
 			if($host == "Global") {
 			  // Get all QLC host
-			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			  $qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 								 '(&(cn=*)(objectclass=qmailControl))');
 
 			  $success = 1;
 			  foreach($qlcs as $host) {
-				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+				if(!pql_modify_attribute($host,
 										 pql_get_define("PQL_ATTR_SMTPROUTES"), '', $smtproutes))
 				  $success = 0;
 			  }
 			} else {
-			  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+			  if(pql_modify_attribute($host,
 									  pql_get_define("PQL_ATTR_SMTPROUTES"), '', $smtproutes))
 				$success = 1;
 			}
@@ -430,7 +430,7 @@ function smtproutes_save($type, $host) {
 					if(@$_REQUEST["relay"][$i]) {
 						// fetch data from ldap server
 						$relay  = $_REQUEST["relay"][$i];
-						$values = pql_get_attribute($_pql_control->ldap_linkid,
+						$values = $_pql_control->get_attribute(
 													pql_get_define("PQL_ATTR_CN")."=$relay,".$_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_SMTPROUTES"));
 						if($values and !is_array($values))
@@ -440,8 +440,7 @@ function smtproutes_save($type, $host) {
 						$values[] = $_REQUEST["domainname"][0].":".$_REQUEST["relay"][$i].":".$_REQUEST["port"][0];
 						
 						// Update the object
-						if(pql_modify_attribute($_pql_control->ldap_linkid,
-												pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+						if(pql_modify_attribute(pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 												pql_get_define("PQL_ATTR_SMTPROUTES"), '', $values))
 						  $success = 1;
 					}
@@ -470,7 +469,7 @@ function smtproutes_save($type, $host) {
 				if(@$_REQUEST["relay"][$i]) {
 					// fetch data from ldap server
 					$relay  = $_REQUEST["relay"][$i];
-					$values = pql_get_attribute($_pql_control->ldap_linkid,
+					$values = $_pql_control->get_attribute(
 												pql_get_define("PQL_ATTR_CN")."=$relay,".$_SESSION["USER_SEARCH_DN_CTR"],
 												pql_get_define("PQL_ATTR_SMTPROUTES"));
 					// Go through the values, removing the specific domain
@@ -480,8 +479,7 @@ function smtproutes_save($type, $host) {
 					}
 					
 					// Update the object
-					if(pql_modify_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+					if(pql_modify_attribute(pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											pql_get_define("PQL_ATTR_SMTPROUTES"), '', $newvals))
 					  $success = 1;
 				}
@@ -490,7 +488,7 @@ function smtproutes_save($type, $host) {
 			// We're deleting ONE value. $set contains the whole string, as it looks like in the object
 			
 			// Find the object(s) which contain this string
-			$ctrls = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			$ctrls = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 								"(&(cn=*)(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_SMTPROUTES")."=".$_REQUEST["set"]."))");
 			// If it isn't an array, but it IS set -> make it an array!
 			if($ctrls && !is_array($ctrls)) {
@@ -500,7 +498,7 @@ function smtproutes_save($type, $host) {
 			
 			foreach($ctrls as $ctrl) {
 				// Retreive this QmailLDAP/Controls object current value(s)
-				$routes = pql_get_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"));
+				$routes = $_pql_control->get_attribute($ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"));
 				if(is_array($routes)) {
 					// Go through the SMTP routes, remove the one in $relay
 					foreach($routes as $route)
@@ -509,14 +507,14 @@ function smtproutes_save($type, $host) {
 				}
 				
 				// Save this new array to the object
-				if(pql_modify_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"), '', $newroutes))
+				if(pql_modify_attribute($ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"), '', $newroutes))
 				  $success = 1;
 			}
 		} elseif(@$_REQUEST["domain"] && @$_REQUEST["set"] && @$_REQUEST["rootdn"] && @$_REQUEST["attrib"]) {
 			// We're called from the domain details page -> we must find out what object to update
 
 			// Find QmailLDAP/Controls object(s) which contain this domain in SMTPRoutes
-			$ctrls = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+			$ctrls = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 								"(&(cn=*)(objectclass=qmailControl)(".pql_set_define("PQL_ATTR_SMTPROUTES")."=".$_REQUEST["set"]."*))");
 			// If it isn't an array, but it IS set -> make it an array!
 			if($ctrls && !is_array($ctrls)) {
@@ -526,7 +524,7 @@ function smtproutes_save($type, $host) {
 
 			foreach($ctrls as $ctrl) {
 				// Retreive this QmailLDAP/Controls object current value(s)
-				$routes = pql_get_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"));
+				$routes = $_pql_control->get_attribute($ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"));
 				if(is_array($routes)) {
 					// Go through the SMTP routes, remove the one in $set
 					foreach($routes as $route)
@@ -535,7 +533,7 @@ function smtproutes_save($type, $host) {
 				}
 
 				// Save this new array to the object
-				if(pql_modify_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"), '', $newroutes))
+				if(pql_modify_attribute($ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"), '', $newroutes))
 				  $success = 1;
 			}
 		}

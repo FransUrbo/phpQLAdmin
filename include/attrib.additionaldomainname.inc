@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.38 2006-12-18 12:47:27 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.39 2007-02-15 12:07:16 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -47,10 +47,10 @@ function attribute_print_form() {
 	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	  // Get all QmailLDAP/Control hosts.
-      $result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+      $result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
 						   '(&(cn=*)(objectclass=qmailControl))');
 	  for($i=0; $i < count($result); $i++)
-		$hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+		$hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
 
 	  if(is_array($hosts)) {
 ?>
@@ -147,7 +147,7 @@ function attribute_save($type) {
 	
   case "delete":
 	// {{{ Fetch old (attrib) values from DB
-	$oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+	$oldvalues = $_pql->get_attribute($_REQUEST["domain"], $attrib);
 	if($oldvalues) {
 	  if(!is_array($oldvalues))
 		$oldvalues = array($oldvalues);
@@ -161,7 +161,7 @@ function attribute_save($type) {
 	}
 	// }}}
 	
-	if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry)) {
+	if(pql_modify_attribute($_REQUEST["domain"], '', '', $entry)) {
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 								   array('what' => $LANG->_('Additional domain name')));
 	  
@@ -169,7 +169,7 @@ function attribute_save($type) {
 	  if($_REQUEST["template"] && $additionaldomainname && pql_get_define("PQL_CONF_BIND9_USE")) {
 		require($_SESSION["path"]."/include/pql_bind9.inc");
 		
-		if(! pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $additionaldomainname))
+		if(! pql_bind9_add_zone($_REQUEST["domain"], $additionaldomainname))
 		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $defaultdomain));
 	  }
 	  // }}}
@@ -197,17 +197,17 @@ function attribute_save($type) {
 					$hostdn = pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"];
 					
 					if($type == 'delete')
-					  pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, $delval, '');
+					  pql_modify_attribute($hostdn, $attrib, $delval, '');
 					else
-					  pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, '', $additionaldomainname);
+					  pql_modify_attribute($hostdn, $attrib, '', $additionaldomainname);
 				  }
 				}
 			  } else {
 				// Change all hosts
 				if($type == 'delete')
-				  pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, $delval, '');
+				  pql_modify_attribute($hostdn, $attrib, $delval, '');
 				else
-				  pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, '', $additionaldomainname);
+				  pql_modify_attribute($hostdn, $attrib, '', $additionaldomainname);
 			  }
 // }}}
 			} else {
@@ -226,7 +226,7 @@ function attribute_save($type) {
 		  }
 		}
 	  
-		pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
+		pql_control_update_domains($_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
 	  }
 	  // }}}
 	} else

@@ -150,6 +150,21 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + Change 'Create DNS object' to checked by default.
 	  - Decode DN and all values in pql_create_ldif().
 
+	API changes
+	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods
+	    of the pql class:
+	      include/pql_search.inc:pql_search(),
+	      include/pql_search.inc:pql_get_attribute(),
+	      include/pql_search.inc:pql_get_dn()
+	      include/pql_write.inc:pql_write_add()
+	      include/pql_write.inc:pql_write_mod()
+	      include/pql_write.inc:pql_write_del()
+	      include/pql_write.inc:pql_write_ren()
+	    + This lead to changes in the rest of the API as well. No need to call functions with
+	      the LDAP linkid any more. Instead, since the pql class handle is global any way, just
+	      import it in any functions that need it.
+	  - Prefix the kadmin_* functions with the usual 'pql_' prefix.
+
 	Misc changes
 	  - Added Strong password option to meet SOX & DSS/PCI compliance
 	  - Added branch option to start in users own account when logging in (this is experimental don't use in production)

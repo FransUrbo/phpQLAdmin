@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.27 2007-02-12 15:10:30 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.28 2007-02-15 12:08:06 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -52,7 +52,7 @@ function attribute_print_form() {
 	if($_REQUEST["action"] != 'add') {
 		// Get old value
 		$dn = urldecode($_REQUEST["rdn"]);
-		$_REQUEST["oldvalue"] = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+		$_REQUEST["oldvalue"] = $_pql->get_attribute($dn, $attrib);
 		if(is_array($_REQUEST["oldvalue"])) {
 		  for($i=0; $i < count($_REQUEST["oldvalue"]); $i++) {
 			if(@eregi($type_value, $_REQUEST["oldvalue"][$i]))
@@ -73,10 +73,10 @@ function attribute_print_form() {
 	}
 
 	// relativeDomainName zoneName
-	$host   = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"));
+	$host   = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"));
 	if(is_array($host))
 	  $host = $host[0];
-	$domain = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ZONENAME"));
+	$domain = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_ZONENAME"));
 	if(is_array($domain))
 	  $domain = $domain[0];
 
@@ -223,9 +223,9 @@ function attribute_save($action) {
 	$dn_soa = 'dNSTTL=3600+relativeDomainName=@,'.$newdn;
 
 	// Verify that this object realy exists
-	if(!pql_get_dn($_pql->ldap_linkid, $dn_soa, 'objectClass=*', 'BASE')) {
+	if(!$_pql->get_dn($dn_soa, 'objectClass=*', 'BASE')) {
 	  // It doesn't! Try without the 'dNSTTL=3600+' part...
-	  if(pql_get_dn($_pql->ldap_linkid, 'relativeDomainName=@,'.$newdn, 'objectClass=*', 'BASE')) {
+	  if($_pql->get_dn('relativeDomainName=@,'.$newdn, 'objectClass=*', 'BASE')) {
 		// That worked better, use it...
 		$dn_soa = 'relativeDomainName=@,'.$newdn;
 	  }
@@ -236,7 +236,7 @@ function attribute_save($action) {
 	  case "add":
 		// {{{ add
 		// Get old value
-		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+		$oldvalues = $_pql->get_attribute($dn, $attrib);
 		if($oldvalues and !is_array($oldvalues))
 		  $oldvalues = array($oldvalues);
 
@@ -247,7 +247,7 @@ function attribute_save($action) {
 		// Add the new value to the array
 		$entry[$attrib][] = $newvalue;
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
+		if(pql_modify_attribute($dn, '', '', $entry)) {
 		  $success = 1;
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib)).".";
@@ -275,7 +275,7 @@ function attribute_save($action) {
 				echo "Renaming<br>'<b>$dn</b>'<br>to<br>'<b>$new_dn,$parent</b>'<br>";
 				$dn = $new_dn.','.$parent;
 			} else {
-				if(pql_write_ren($_pql->ldap_linkid, $dn, $new_dn, $parent, true))
+				if($_pql->rename($dn, $new_dn, $parent, true))
 				  $dn = $new_dn.','.$parent;
 				else {
 					pql_format_error(1);
@@ -288,7 +288,7 @@ function attribute_save($action) {
 	  	// {{{ if(oldtype != newtype)
 		if(lc($oldtype) != lc($attrib)) {
 		  // Remove the 'oldtype' value
-		  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, $oldtype, '', ''))
+		  if(!pql_modify_attribute($dn, $oldtype, '', ''))
 			// This shouldn't really be possible, but until I find out that/if I'm wrong, I'll just die here!
 			die("Failed to remove the old attribute '$oldtype' with value ".$_REQUEST["oldvalue"]);
 		}
@@ -298,7 +298,7 @@ function attribute_save($action) {
 		  $oldvalue = $_REQUEST["oldvalue"];
 
 		// Get old value
-		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+		$oldvalues = $_pql->get_attribute($dn, $attrib);
 		if($oldvalues and !is_array($oldvalues))
 		  $oldvalues = array($oldvalues);
 
@@ -307,7 +307,7 @@ function attribute_save($action) {
 			$oldvalues[$i] = $newvalue;
 		}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, '', $oldvalues)) {
+		if(pql_modify_attribute($dn, $attrib, '', $oldvalues)) {
 		  $success = 1;
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
@@ -337,7 +337,7 @@ function attribute_save($action) {
 		// Generate new RDN
 		$rdn_new = "$attrib=".$_REQUEST["newvalue"];
 
-		if(pql_write_ren($_pql->ldap_linkid, $rdn_old, $parent, $rdn_new))
+		if($_pql->rename($rdn_old, $parent, $rdn_new))
 		  $msg = pql_complete_constant($LANG->_('Successfully renamed RDN %old% to %new%'),
 									   array('old' => $rdn_old,
 											 'new' => $rdn_new));
@@ -351,7 +351,7 @@ function attribute_save($action) {
 		// {{{ del
 		if($_REQUEST["type"] and ($_REQUEST["oldvalue"] or $_REQUEST[$type])) {
 			// Get old value
-			$oldvalues = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+			$oldvalues = $_pql->get_attribute($dn, $attrib);
 			if($oldvalues and !is_array($oldvalues))
 			$oldvalues = array($oldvalues);
 
@@ -367,7 +367,7 @@ function attribute_save($action) {
 			}
 
 			if(is_array($entry)) {
-			  if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
+			  if(pql_modify_attribute($dn, '', '', $entry)) {
 				$success = 1;
 				$msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
 											 array('value' => $_REQUEST["oldvalue"]));
@@ -380,7 +380,7 @@ function attribute_save($action) {
 			  // Extact the host part of the DN
 			  $host = split(',', $dn); $host = split('=', $host[0]); $host = $host[1];
 
-			  if(pql_write_del($_pql->ldap_linkid, $dn)) {
+			  if($_pql->delete($dn)) {
 				$success = 1;
 				$msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
 											 array('value' => $host.'.'.$_REQUEST["dns_domain_name"]));
@@ -391,7 +391,7 @@ function attribute_save($action) {
 			}
 		} else {
 		  // Delete a whole object
-		  if(pql_write_del($_pql->ldap_linkid, $dn))
+		  if($_pql->delete($dn))
 			$success = 1;
 		  else
 			pql_format_error(1);
@@ -413,7 +413,7 @@ function attribute_save($action) {
 
 	if($success) {
 	  // Successfully modified the zone - update the serial number in the SOA
-	  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn_soa))
+	  if(!pql_bind9_update_serial($dn_soa))
 		die("failed to update ".$soa["dn"].":".pql_get_define("PQL_ATTR_SOARECORD")." with value $serial_new<br>");  
 	}
 

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.35 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.36 2007-02-15 12:08:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -32,13 +32,13 @@ function attribute_check($type) {
 	if(!eregi('^rfc822', $attrib)) {
 		if($type == "add") {
 			// add
-			if(pql_email_exists($_pql, $_REQUEST[$attrib])) {
+			if(pql_email_exists($_REQUEST[$attrib])) {
 				$error[$attrib] = $LANG->_('Already exists');
 				return false;
 			}
 		} else {
 			// modify
-			if($_REQUEST["oldvalue"] != $_REQUEST[$attrib] and pql_email_exists($_pql, $_REQUEST[$attrib])) {
+			if($_REQUEST["oldvalue"] != $_REQUEST[$attrib] and pql_email_exists($_REQUEST[$attrib])) {
 				$error[$attrib] = $LANG->_('Already exists');
 				return false;
 			}
@@ -61,8 +61,8 @@ function attribute_print_form() {
     global $error, $_pql, $LANG;
 
 	$attrib               = $_REQUEST["attrib"];
-	$defaultdomain		  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-	$additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	$defaultdomain		  = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$additionaldomainname = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -145,7 +145,7 @@ function attribute_save($type) {
 
     switch($type) {
       case "add":
-		if(pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), $attrib, '', $_REQUEST[$attrib])) {
+		if(pql_modify_attribute(urldecode($_REQUEST["user"]), $attrib, '', $_REQUEST[$attrib])) {
 			$tmp  = split('@', $_REQUEST[$attrib]);
 			$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 
@@ -173,7 +173,7 @@ function attribute_save($type) {
 			break;
 		}
 		
-		if(pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), $attrib,
+		if(pql_modify_attribute(urldecode($_REQUEST["user"]), $attrib,
 									$_REQUEST["oldvalue"], $_REQUEST[$attrib])) {
 			$tmp  = split('@', $_REQUEST[$attrib]);
 			$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
@@ -197,7 +197,7 @@ function attribute_save($type) {
       case "delete":
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
-		$values = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib);
+		$values = $_pql->get_attribute($_REQUEST["user"], $attrib);
 
 		// Add the old values to the resulting array.
 		$OLD[$attrib] = array();
@@ -215,7 +215,7 @@ function attribute_save($type) {
 		}
 		$OLD[$attrib] = $values;
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $OLD))
+		if(pql_modify_attribute($_REQUEST["user"], '', '', $OLD))
 		  $success = 1;
 
 		if(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or

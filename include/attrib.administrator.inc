@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.63 2007-01-09 16:41:23 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.64 2007-02-15 12:07:16 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -35,7 +35,7 @@
 // Need some java stuff since I'm showing foldable branches etc.
 require("./left-head.html");
 
-// {{{ attribute_setup_aci(linkid, dn, userdn, action)
+// {{{ attribute_setup_aci(dn, userdn, action)
 // Options: dn		-> what object to modify ACI's for
 //			userdn	-> array with user(s) to add/delete from ACI list
 //			action	-> 'add' or 'delete' (only!). Changing an RDN for a
@@ -45,8 +45,8 @@ require("./left-head.html");
 // NOTE: user template objects are treated slightly different.
 //       User ($userdn) will only get READ access to the [all]
 //       target. The [children] will not be added...
-function attribute_setup_aci($linkid, $dn, $userdn, $action) {
-	$old_acis = pql_aci_get($linkid, $dn);
+function attribute_setup_aci($dn, $userdn, $action) {
+	$old_acis = pql_aci_get($dn);
 
 	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
 		// Insert the NEW aci in the right place of the OLD.
@@ -241,7 +241,7 @@ function attribute_print_form($action) {
 			$i = 0; $div_counter = 0;
 
 			// Get all domains in the database.
-			$domains = pql_get_domains($_pql);
+			$domains = pql_get_domains();
 			if(isset($domains)) {
 				foreach($domains as $key => $domain) {
 					// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
@@ -252,13 +252,13 @@ function attribute_print_form($action) {
 					$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
 						
 					// Retreive all users in this branch/domain.
-					$users   = pql_get_dn($_pql->ldap_linkid, $domain, $filter);
+					$users   = $_pql->get_dn($domain, $filter);
 					if(is_array($users)) {
 						// Zero out the variables, othervise we won't get users in
 						// specified domain, but also in the PREVIOUS domain shown!
 						unset($cns); $links = array();
 						foreach($users as $dn) {
-							$tmp = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_CN"));
+							$tmp = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_CN"));
 							if(is_array($tmp))
 							  $cns[$dn] = $tmp[0];
 							else
@@ -297,14 +297,14 @@ function attribute_print_form($action) {
 				// We're a super-admin, we can give/take
 				// adminstration on ANY branch/domain
 				// that exists in the system
-				$domains = pql_get_domains($_pql);
+				$domains = pql_get_domains();
 			} else {
 				// We can only give user access to a branch we (the logged in user)
 				// have access to. Otherwise, we could 'steal' access to any domain
 				// in the system. Only a branch owner/admin can give someone access
 				// to the current branch. Am I making myself clear?
 				foreach($_SESSION["BASE_DN"] as $dn)  {
-					$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+					$dom = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 											$_SESSION["USER_DN"], 1);
 					if($dom)
 					  foreach($dom as $d)
@@ -406,7 +406,7 @@ function attribute_save($type) {
 	// (delete the one we want to delete, keep the others etc)
 	for($i=0; $DN[$i]; $i++) {
 	  $dn = $DN[$i];
-	  $tmp = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+	  $tmp = $_pql->get_attribute($dn, $attrib);
 	  if($tmp) {
 		if(!is_array($tmp))
 		  $admins[$dn] = array($tmp);
@@ -446,7 +446,7 @@ function attribute_save($type) {
 		   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and
 		   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")))
 		  // Modify the OpenLDAPaci attribute
-		  $ACIs[$dn] = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], array($value), $type);
+		  $ACIs[$dn] = attribute_setup_aci($_REQUEST["domain"], array($value), $type);
 	  }
 	  // }}}
 	} else {
@@ -462,7 +462,7 @@ function attribute_save($type) {
 			   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and
 			   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")))
 			  // Add the OpenLDAPaci attribute
-			  $ACIs[$dn] = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], array($_REQUEST["user"]), $type);
+			  $ACIs[$dn] = attribute_setup_aci($_REQUEST["domain"], array($_REQUEST["user"]), $type);
 		  }
 		} elseif($value) {
 			if(is_numeric($value)) {
@@ -507,7 +507,7 @@ function attribute_save($type) {
 				$dn = $DN[$i];
 				
 				if(is_array($admins2add[$dn])) 
-				  $ACIs[$dn] = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], $admins2add[$dn], $type);
+				  $ACIs[$dn] = attribute_setup_aci($_REQUEST["domain"], $admins2add[$dn], $type);
 			  }
 			}
 			
@@ -534,7 +534,7 @@ function attribute_save($type) {
 	for($i=0; $DN[$i]; $i++) {
 	  $dn = $DN[$i];
 
-	  if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $ADMs[$dn]))
+	  if(pql_modify_attribute($dn, '', '', $ADMs[$dn]))
 		$success = 1;
 	}
 
@@ -547,7 +547,7 @@ function attribute_save($type) {
 			for($i=0; $DN[$i]; $i++) {
 			  $dn = $DN[$i];
 
-			  $tmp = pql_get_dn($_pql->ldap_linkid, $dn, 'objectClass=*');
+			  $tmp = $_pql->get_dn($dn, 'objectClass=*');
 
 			  // Unset the first array entry - it's the root dn, and we've already
 			  // fixed this!
@@ -560,7 +560,7 @@ function attribute_save($type) {
 			// A branch admin must have read access to all the templates!
 			$filter = '(&(objectClass=phpQLAdminUserTemplate)('.pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME").'=*))';
 			for($i=0; $_SESSION["BASE_DN"][$i]; $i++) {
-			  $tmp = pql_get_dn($_pql->ldap_linkid, 'ou=Templates,'.$_SESSION["BASE_DN"][$i], $filter, 'ONELEVEL');
+			  $tmp = $_pql->get_dn('ou=Templates,'.$_SESSION["BASE_DN"][$i], $filter, 'ONELEVEL');
 			  if($tmp)
 				pql_add2array($branches, $tmp);
 			}
@@ -575,7 +575,7 @@ function attribute_save($type) {
 			  //	* The user is DNS admin for this domain/branch
 			  if(pql_get_define("PQL_CONF_BIND9_USE") and
 				 eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9").',', $branches[$i]) and
-				 pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["branchdn"],
+				 pql_validate_administrator($_REQUEST["branchdn"],
 											pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $value))
 				$skip = 1;
 
@@ -587,7 +587,7 @@ function attribute_save($type) {
 			  //	* The user is web server admin for this domain/branch
 			  //if(!$skip and pql_get_define("PQL_CONF_WEBSRV_USE") and
 			  // eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9").',', $branches[$i]) and
-			  // pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["branchdn"],
+			  // pql_validate_administrator($_REQUEST["branchdn"],
 			  //							pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $value))
 			  //$skip = 1;
 
@@ -599,13 +599,13 @@ function attribute_save($type) {
 				  if($branches[$i] != $dn) {
 					// Create an ACI entry for this branch.
 					if($type == 'delete') {
-					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $branches[$i], array($value), $type);
+					  $ACIs = attribute_setup_aci($branches[$i], array($value), $type);
 					} else {
-					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $branches[$i], $admins2add[$dn], $type);
+					  $ACIs = attribute_setup_aci($branches[$i], $admins2add[$dn], $type);
 					}
 					
 					// Modify this object. BUG: Should we care about failure/successes?!
-					pql_modify_attribute($_pql->ldap_linkid, $branches[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+					pql_modify_attribute($branches[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 				  }
 				}
 			  }
@@ -621,12 +621,12 @@ function attribute_save($type) {
 			// Find all ou=DNS objects in all root DN's
 			$filter   = '(&('.pql_get_define("PQL_CONF_SUBTREE_BIND9").')';
 			$filter  .= '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=*))';
-			$branches = pql_get_dn($_pql->ldap_linkid, $_REQUEST["branchdn"], $filter);
+			$branches = $_pql->get_dn($_REQUEST["branchdn"], $filter);
 
 			// Get all the objects below this branch.
 			$objects = array();
 			for($i=0; $branches[$i]; $i++) {
-			  $tmp = pql_get_dn($_pql->ldap_linkid, $branches[$i], 'objectClass=*');
+			  $tmp = $_pql->get_dn($branches[$i], 'objectClass=*');
 			  pql_add2array($objects, $tmp);
 			}
 
@@ -637,13 +637,13 @@ function attribute_save($type) {
 				if($objects[$i] != $dn) {
 				  // Create an ACI entry for this branch.
 				  if($type == 'delete') {
-					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
+					$ACIs = attribute_setup_aci($objects[$i], array($value), $type);
 				  } else {
-					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add[$dn], $type);
+					$ACIs = attribute_setup_aci($objects[$i], $admins2add[$dn], $type);
 				  }
 				  
 				  // Modify this object. BUG: Should we care about failure/successes?!
-				  pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				  pql_modify_attribute($objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 				}
 			  }
 			}
@@ -661,14 +661,14 @@ function attribute_save($type) {
 
 			// Get all physical hosts
 			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-			$hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+			$hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 
 			// For each physical host, try to find the mailservers
 			for($i=0; $hosts[$i]; $i++) {
 			  // Make sure this physical hosts get ACI changes
 			  $objects[] = $hosts[$i];
 
-			  $tmp = pql_get_dn($_pql->ldap_linkid, $hosts[$i], '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			  $tmp = $_pql->get_dn($hosts[$i], '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
 			  pql_add2array($objects, $tmp);
 			}
 
@@ -679,12 +679,12 @@ function attribute_save($type) {
 				if($objects[$i] != $dn) {
 				  // Create an ACI entry for this branch.
 				  if($type == 'delete')
-					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
+					$ACIs = attribute_setup_aci($objects[$i], array($value), $type);
 				  else
-					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add[$dn], $type);
+					$ACIs = attribute_setup_aci($objects[$i], $admins2add[$dn], $type);
 				  
 				  // Modify this object. BUG: Should we care about failure/successes?!
-				  pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				  pql_modify_attribute($objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 
 				  if(($_REQUEST["branchdn"] == "superadmin") and
 					 eregi('^'.pql_get_define("PQL_ATTR_OU").'=Computers,', $objects[$i]))
@@ -712,7 +712,7 @@ function attribute_save($type) {
 		  
 			// Get all physical hosts
 			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-			$hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+			$hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 
 			// For each physical host, try to find the webserver containers
 			$servers = array();
@@ -720,7 +720,7 @@ function attribute_save($type) {
 			  // Make sure this physical hosts get ACI changes
 			  $servers[] = $host;
 
-			  $tmp = pql_websrv_find_servers($_pql->ldap_linkid, $host);
+			  $tmp = pql_websrv_find_servers($host);
 			  if(is_array($tmp))
 				$servers = $servers + $tmp;
 			}
@@ -730,7 +730,7 @@ function attribute_save($type) {
 			  // Make sure this container get ACI changes
 			  $servers[] = $srvdn;
 
-			  $tmp = pql_get_dn($_pql->ldap_linkid, $srvdn, 'objectClass=*');
+			  $tmp = $_pql->get_dn($srvdn, 'objectClass=*');
 			  pql_add2array($objects, $tmp);
 			}
 
@@ -741,12 +741,12 @@ function attribute_save($type) {
 				if($objects[$i] != $dn) {
 				  // Create an ACI entry for this branch.
 				  if($type == 'delete')
-					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
+					$ACIs = attribute_setup_aci($objects[$i], array($value), $type);
 				  else
-					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add[$dn], $type);
+					$ACIs = attribute_setup_aci($objects[$i], $admins2add[$dn], $type);
 				  
 				  // Modify this object. BUG: Should we care about failure/successes?!
-				  pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				  pql_modify_attribute($objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 
 				  if(($_REQUEST["branchdn"] == "superadmin") and
 					 eregi('^'.pql_get_define("PQL_ATTR_OU").'=Computers,', $objects[$i]))

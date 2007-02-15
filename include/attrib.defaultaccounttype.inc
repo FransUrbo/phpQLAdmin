@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // defaultAccountType
-// $Id: attrib.defaultaccounttype.inc,v 2.3 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.defaultaccounttype.inc,v 2.4 2007-02-15 12:08:05 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -25,7 +25,7 @@ function attribute_print_form($type = "modify") {
 
 	// Retreive the template definitions
 	require($_SESSION["path"]."/include/pql_templates.inc");
-	$templates = pql_get_templates($_pql->ldap_linkid);
+	$templates = pql_get_templates();
 ?>
   <form action="<?$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -70,7 +70,7 @@ function attribute_save($type) {
 		if($type == 'delete')
 		  $_REQUEST[$attrib] = '';
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
+		if(pql_modify_attribute($_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 									   array('what'   => $LANG->_('default account type'),
 											 'domain' => pql_maybe_decode(urldecode($_REQUEST["domain"]))));
