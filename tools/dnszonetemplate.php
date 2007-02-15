@@ -1,6 +1,6 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.15 2006-12-16 12:03:17 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.16 2007-02-15 12:45:22 turbo Exp $
 // {{{ Setup session etc
 require("../include/pql_session.inc");
 require("../include/pql_config.inc");
@@ -100,7 +100,7 @@ $basedomain = eregi_replace("\.".$origin, "", $defaultdomain);
 ?>
     <pre>
 <?php
-echo "; LDAP DN: ".pql_get_define("PQL_CONF_SUBTREE_BIND9")."',".pql_maybe_decode($domain)."'\n";
+echo "; LDAP DN: '".pql_get_define("PQL_CONF_SUBTREE_BIND9").",".pql_maybe_decode($domain)."'\n";
 echo "\$ORIGIN $origin.\n";
 printf("%-25s %8s	IN	SOA	%s %s. (\n", $basedomain, $negttl, $nameservers[0], $admin);
 printf("%58d  ; Serial number\n", $date);
@@ -110,7 +110,13 @@ printf("%58d  ; Expire\n", $expire);
 printf("%58d) ; Negative Cache TTL\n", $negttl);
 
 echo "; ------------------------------\n";
-printf("%25s %8s IN	A	$primaryip\n", " ", $retry);
+if(is_array($primaryip)) {
+  asort($primaryip);
+  for($i=0; $primaryip[$i]; $i++)
+    printf("%25s %8s IN	A	".$primaryip[$i]."\n", " ", $retry);
+} else {
+  printf("%25s %8s IN	A	$primaryip\n", " ", $retry);
+}
 foreach($nameservers as $ns) {
   printf("%25s %8s IN	NS	$ns\n", " ", $retry);
 }
@@ -133,7 +139,7 @@ if(is_array($zone[$defaultdomain])) {
 		$records = $data[$type];
 	      
 	      foreach($records as $record)
-		printf("%-25s %8d IN	%-6s	%s\n", $data['HOST'], $data['TTL'], $type, $record);
+		printf("%-25s %8d IN	%-6s	%s\n", pql_maybe_idna_encode($data['HOST']), $data['TTL'], $type, $record);
 	      
 	      $printed_hosts = 1;
 	    }
