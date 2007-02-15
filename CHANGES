@@ -149,6 +149,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + 'Update QLC object(s)' checked by default.
 	    + Change 'Create DNS object' to checked by default.
 	  - Decode DN and all values in pql_create_ldif().
+	  - Separate the 'PHP Extensions needed' in 'Home->phpQLAdmin Configuration->Test LDAP-Connection'.
+	    + Add checks for more modules: idn, mhash, memcache, gd and krb5.
 
 	API changes
 	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods

@@ -1,14 +1,14 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.40 2007-02-12 15:01:39 turbo Exp $
+// $Id: config_ldaptest.php,v 2.41 2007-02-15 12:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 
 // {{{ Check a domain value
-function check_domain_value($linkid, $dn, $attrib, $value) {
-	global $LANG;
+function check_domain_value($dn, $attrib, $value) {
+	global $_pql; $LANG;
 
 	$debugging = pql_get_define("PQL_CONF_DEBUG_ME");
 	if($debugging)
@@ -16,7 +16,7 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 	  pql_set_define("PQL_CONF_DEBUG_ME", false);
 
 	$entry[$attrib] = $value;
-	if(!pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/1")) {
+	if(!$_pql->modify($dn, $entry, "config_ldaptest.php:check_domain_value()/1")) {
 		if(ldap_errno($linkid) == 21)
 		  // Invalid syntax
 		  $msg = $LANG->_('No. Reason:\n')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>";
@@ -30,7 +30,7 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 		// Success - delete it again
 		unset($entry);
 		$entry['test'] = array();
-		pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/2");
+		$_pql->modify($dn, $entry, "config_ldaptest.php:check_domain_value()/2");
 
 		$msg = 0;
 	}
@@ -59,6 +59,12 @@ if(function_exists("mhash")) {
   $mhash_ext = $LANG->_('Built in (loaded)');
 } else {
   $mhash_ext = $LANG->_('Not available');
+}
+
+if(extension_loaded('kadm5') and function_exists("kadm5_init_with_password")) {	
+  $krb5_ext = $LANG->_('Built in (loaded)');
+} else {
+  $krb5_ext = $LANG->_('Not available');
 }
 
 if((function_exists('ImageCreateFromPng')  && (imagetypes() & IMG_PNG)) or
@@ -97,13 +103,13 @@ if(!function_exists("ldap_connect")){
 				// try to open a connection
 				if(!fsockopen($_SESSION["USER_HOST"], 389))
 				  // impossible to connect
-				  $connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked with a firewall'),
+				  $connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked by a firewall'),
 															  array("host" => $_SESSION["USER_HOST"] ));
 			}
 		}
 	} else {
-		if(!$_pql->bind('', ''))
-		  $connection = $LANG->_('Connection ok, but could not bind to the directory');
+	  if(!$_pql->bind())
+		  $connection = $LANG->_('Connection ok, but could not bind to the directory anonymously');
 		else
 		  $connection = $LANG->_('Yes');
 	}
@@ -131,14 +137,14 @@ if(!function_exists("ldap_connect")){
 					// try to open a connection
 					if(!fsockopen($fqdn, $port)) {
 						// impossible to connect
-						$connection_control .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall'),
+						$connection_control .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked by a firewall'),
 																			array("host" => $_SESSION["USER_HOST"]));
 					}
 				}
 			}
 		} else {
 			if(!$_pql_control->bind())
-			  $connection_control = $LANG->_('Connection ok, but could not bind to the directory');
+			  $connection_control = $LANG->_('Connection ok, but could not bind to the directory anonymously');
 			else
 			  $connection_control = $LANG->_('Yes');
 		}
@@ -151,7 +157,7 @@ if(!function_exists("ldap_connect")){
 		$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		foreach($_SESSION["BASE_DN"] as $basedn) {
 			// {{{ Try to set the attribute 'test' in the top DN
-			$fail = check_domain_value($_pql->ldap_linkid, $basedn, 'test', 'TRUE');
+			$fail = check_domain_value($basedn, 'test', 'TRUE');
 			if($fail)
 			  $TEST["basedn"][$basedn] = $fail;
 			else
@@ -190,6 +196,7 @@ if(!function_exists("ldap_connect")){
 			// }}}
 			
 			// {{{ Check write access
+
 			$filter = "(&" . pql_setup_branch_objectclasses(1, $basedn)
 			  . "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
 			
@@ -209,13 +216,14 @@ if(!function_exists("ldap_connect")){
 			for ($i=0; $i<$info["count"]; $i++) {
 				$domains[] = $info[$i]["dn"];
 			}
+
 			// }}}
 		}
 
 		if(is_array($domains)) {
 			foreach($domains as $domain) {
 				// Check write access
-				$fail = check_domain_value($_pql->ldap_linkid, $domain, 'test', 'TRUE');
+				$fail = check_domain_value($domain, 'test', 'TRUE');
 				if($fail) {
 					$TEST["branches"][$domain] = $fail;
 				} else {
@@ -313,9 +321,14 @@ include($_SESSION["path"]."/header.html");
         <td class="title"><?=$LANG->_('GD')?></td>
         <td class="<?php pql_format_table(); ?>"><?=$gd_ext?>&nbsp;</td>
       </tr>
+
+      <tr>
+        <td class="title"><?=$LANG->_('KRB5')?></td>
+        <td class="<?php pql_format_table(); ?>"><?=$krb5_ext?>&nbsp;</td>
+      </tr>
     </th>
 
-    <th><tr></tr></th>
+<?=pql_format_table_empty(2)?>
 
     <th colspan="3" align="left"><?=$LANG->_('LDAP server connection and setup tests')?>
       <tr>
@@ -329,7 +342,7 @@ include($_SESSION["path"]."/header.html");
       </tr>
 <?php if($_SESSION["ADVANCED_MODE"] == 1) {
 		// Just so that we don't have to call pql_get_subschemas() multiple times here - takes time!
-		$ldap = pql_get_subschemas($_pql->ldap_linkid);
+		$ldap = pql_get_subschemas();
 ?>
 
       <tr></tr>
@@ -365,7 +378,7 @@ include($_SESSION["path"]."/header.html");
     </th>
 <?php if($basedn) { ?>
 
-    <th><tr></tr></th>
+<?=pql_format_table_empty(2)?>
 
     <th colspan="3" align="left"><?=$LANG->_('Modification access - phpQLAdmin configuration')?>
 <?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
@@ -378,7 +391,7 @@ include($_SESSION["path"]."/header.html");
 <?php    } ?>
     </th>
 
-    <th><tr></tr></th>
+<?=pql_format_table_empty(2)?>
 
     <th colspan="3" align="left"><?=$LANG->_('Branch creation access')?>
 <?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
@@ -399,7 +412,7 @@ include($_SESSION["path"]."/header.html");
 <?php    } ?>
     </th>
 
-    <th><tr></tr></th>
+<?=pql_format_table_empty(2)?>
 
     <th colspan="3" align="left"><?=$LANG->_('DN modification access - domain DN\'s')?>
 <?php    if(is_array($domains)) {
