@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 2.16 2007-02-12 15:23:26 turbo Exp $
+// $Id: pql_lang.inc,v 2.17 2007-02-15 12:43:24 turbo Exp $
 //
 
 // ----------------------------
@@ -108,7 +108,7 @@ class pql_lang {
 	}
 	// }}}
 	
-	// {{{ !get_supported()
+	// {{{ get_supported()
 	function get_supported() {
 	  if(!(($directory = @opendir("./translations")) !=0)) {
 		if(!(($directory = @opendir("../translations")) !=0)) {
