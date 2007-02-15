@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.23 2007-02-15 12:07:09 turbo Exp $
+// $Id: config_ldap.php,v 1.24 2007-02-15 17:10:24 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -112,6 +112,7 @@ foreach($ldap as $x => $array) {
 <?php		} ?>
           </td>
 
+<?php $j++; ?>
           <!-- ATTRIBUTE OIDs -->
           <td>
 <?php		if($_SESSION["opera"]) { ?>

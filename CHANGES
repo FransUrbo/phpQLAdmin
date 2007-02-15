@@ -139,6 +139,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Make sure to unset the links value in left.php which is used in pql_left_htmlify_userlist()
 	    to get a list of users in a branch/subunit fold.
 	    + Fix the output in frame if showUsers is unset.
+	  - Increase the parent counter correctly in config_ldap.php to make fold/unfold work on the
+	    correct fold.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
