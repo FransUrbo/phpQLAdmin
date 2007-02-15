@@ -185,6 +185,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    should/could be changed.
 	    + Add 'public' to the list of actions.
 	    + Take the next number of ACI's as OID.
+	  - Support multiple A records to domain in tools/dnszonetemplate.php.
+	    + IDNA decode hostname.
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes
