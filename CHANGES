@@ -136,6 +136,9 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + When showing virtual server aliases, if the value returned isn't an array (as when there's
 	      only ONE alias), then MAKE it an array. This instead of adding more almost-duplicate code
 	      (showing of the value(s)).
+	  - Make sure to unset the links value in left.php which is used in pql_left_htmlify_userlist()
+	    to get a list of users in a branch/subunit fold.
+	    + Fix the output in frame if showUsers is unset.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
