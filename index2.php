@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.48 2006-12-26 23:08:10 aaron Exp $
+// $Id: index2.php,v 2.49 2007-02-15 12:28:36 turbo Exp $
 
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -38,7 +38,7 @@ if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
 
   // Should we show the controls frame (ie, is controls configured
   // in ANY of the namingContexts)?
-  if($_SESSION["ALLOW_CONTROL_CREATE"] or
+  if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	 (pql_get_define("PQL_CONF_CONTROL_USE") or
 	  pql_get_define("PQL_CONF_WEBSRV_USE") or
 	  pql_get_define("PQL_CONF_HOSTACL_USE") or
@@ -146,7 +146,7 @@ if($_SESSION["mozilla"]) {
 
     <!-- RIGHT frame -->
 <?php
-    $value = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"), 0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
+    $value = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"), 0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
     if($value){
 ?>
    <frame src="user_detail.php?rootdn=<?php
@@ -168,7 +168,7 @@ if($_SESSION["mozilla"]) {
   <frameset cols="250,*" rows="*" border="0" frameborder="0"> 
     <frame src="left.php?advanced=0" name="pqlnav">
 <?php
-    $value = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"), 0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
+    $value = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"), 0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
     if($value){
 ?>
    <frame src="user_detail.php?rootdn=<?php
