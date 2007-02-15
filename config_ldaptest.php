@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.42 2007-02-15 16:16:04 turbo Exp $
+// $Id: config_ldaptest.php,v 2.43 2007-02-15 17:00:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -189,11 +189,13 @@ if(!function_exists("ldap_connect")){
 		
 		$TEST["branches"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
 		  $LANG->_('No. Reason:\n')."<b>'".ldap_error($_pql->ldap_linkid)."'</b>";
+		$TEST_simple["branches"][$basedn] = 0;
 	  } else {
 		// Success - delete it again
 		ldap_delete($_pql->ldap_linkid, $dn);
 		
 		$TEST["branches"][$basedn] = $LANG->_('Yes');
+		$TEST_simple["branches"][$basedn] = 1;
 	  }
 // }}}
 	  
@@ -269,15 +271,19 @@ if(!function_exists("ldap_connect")){
 		  
 		  $TEST["acis"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
 			$LANG->_('No. Reason:\n')."<b>'".ldap_error($_pql->ldap_linkid)."'</b>";
+		  $TEST_simple["acis"][$basedn] = 0;
 		} else {
 		  // Success - delete it again
 		  ldap_delete($_pql->ldap_linkid, $dn);
 		  $TEST["acis"][$basedn] = $LANG->_('Yes');
+		  $TEST_simple["acis"][$basedn] = 1;
 		}
 	  }
 	} else {
-	  foreach($_SESSION["BASE_DN"] as $basedn)
+	  foreach($_SESSION["BASE_DN"] as $basedn) {
 		$TEST["acis"][$basedn] = "".$LANG->_("ACI's deactivated")."";
+		$TEST_simple["acis"][$basedn] = 0;
+	  }
 	}
 // }}}
  }
@@ -403,7 +409,7 @@ include($_SESSION["path"]."/header.html");
 <?=pql_format_table_empty(2)?>
 
     <th colspan="3" align="left"><?=$LANG->_('Branch creation access')?>
-<?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
+<?php   foreach($_SESSION["BASE_DN"] as $dn) { ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branches in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>
@@ -416,9 +422,17 @@ include($_SESSION["path"]."/header.html");
         <td class="<?=$class?>"><?=$TEST["acis"][$dn]?></td>
       </tr>
 
+<?php	  if(!$TEST_simple["branches"][$dn] and $TEST_simple["acis"][$dn] and !pql_get_define("PQL_CONF_ACI_USE")) { ?>
+      <tr>
+        <td class="title" align="right"><img src="images/info.png" width="16" height="16" border="0" align="right"></td>
+        <?php $class=pql_format_table(0); ?>
+        <td class="<?=$class?>"><?=$LANG->_("WARNING: You do not have access<br>without ACI's but ACI's is disabled.<br>Please enable ACI's in the configuration!")?></td>
+      </tr>
+
+<?php	  } ?>
       <tr></tr>
 
-<?php    } ?>
+<?php   } ?>
     </th>
 
 <?=pql_format_table_empty(2)?>
