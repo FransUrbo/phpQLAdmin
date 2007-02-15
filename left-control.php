@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.37 2006-12-16 12:02:09 turbo Exp $
+// $Id: left-control.php,v 2.38 2007-02-15 12:33:05 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -13,19 +13,21 @@ require($_SESSION["path"]."/include/pql_websrv.inc");
 require("./left-head.html");
 // }}}
 
-if($_SESSION["ALLOW_CONTROL_CREATE"] or
+if($_SESSION["ALLOW_CONTROL_CREATE"] and
    (pql_get_define("PQL_CONF_CONTROL_USE") or
 	pql_get_define("PQL_CONF_WEBSRV_USE") or
 	pql_get_define("PQL_CONF_HOSTACL_USE") or
-	pql_get_define("PQL_CONF_SUDO_USE")))
+	pql_get_define("PQL_CONF_SUDO_USE") or
+	pql_get_define("PQL_CONF_AUTOMOUNT_USE") or
+	pql_get_define("PQL_CONF_RADIUS_USE")))
 {
   // We're administrating QmailLDAP/Controls, Host ACLs, Sudoers or Webserver and
   // the user is allowed to administrate.
   $div_counter = 1;
 
   // Retreive all necessary web server information (including access control)
-  $DATA = pql_websrv_get_data($_pql);
-  
+  $DATA = pql_websrv_get_data();
+
   // {{{ Server control header
 ?>
     <!-- Server Control -->
@@ -80,7 +82,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 	$controls_admin = 0;
 	foreach($_pql->ldap_basedn as $dn)  {
 	  $dn = pql_format_normalize_dn($dn);
-	  if(pql_validate_administrator($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
+	  if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
 		$controls_admin = 1;
 	}
 // }}}
@@ -93,7 +95,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 	  if($physical_dn == 'Global')
 		$host = 'Global';
 	  else
-		$host = pql_get_attribute($_pql->ldap_linkid, $physical_dn, pql_get_define("PQL_ATTR_CN"));
+		$host = $_pql->get_attribute($physical_dn, pql_get_define("PQL_ATTR_CN"));
 // }}}
 
 	  // {{{ Root of host tree
@@ -107,10 +109,10 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 		foreach($_pql->ldap_basedn as $dn)  {
 		  $dn = pql_format_normalize_dn($dn);
 
-		  if(pql_validate_administrator($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
+		  if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
 			$controls_admin = 1;
 
-		  if(pql_validate_administrator($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]))
+		  if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]))
 			$websrv_admin = 1;
 		}
 
@@ -147,12 +149,12 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 
 	  // {{{ For each host - get QmailLDAP/Control hosts - if enabled
 	  if(pql_get_define("PQL_CONF_CONTROL_USE") and ($controls_admin or $_SESSION["ALLOW_BRANCH_CREATE"])) {
-		// Only do this if:
+	    // Only do this if:
 		//	1.  Mail server administration is on
 		//	2. User is controls administrator OR
 		//  3. User is super admin
 		if($physical_dn != 'Global')
-		  $qlcs = pql_get_dn($_pql->ldap_linkid, $physical_dn, '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  $qlcs = $_pql->get_dn($physical_dn, '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
 		if(is_array($qlcs) or ($physical_dn == 'Global')) {
 		  // {{{ Got QLC Object(s)
 		  if($physical_dn == 'Global')
@@ -163,7 +165,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 			if($qlc_dn == 'Global')
 			  $qlc = 'Global';
 			else
-			  $qlc = pql_get_attribute($_pql->ldap_linkid, $qlc_dn, pql_get_define("PQL_ATTR_CN"));
+			  $qlc = $_pql->get_attribute($qlc_dn, pql_get_define("PQL_ATTR_CN"));
 			$qlc = pql_complete_constant($LANG->_('Mailserver - %host%'), array('host' => $qlc));
 // }}}
 
@@ -205,29 +207,33 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 // }}}
 		} else {
 		  // {{{ No QLC Object(s)
-		  if($_SESSION["opera"]) {
+		  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+			if($_SESSION["opera"]) {
 ?>
   <span id="el<?=$div_counter?>Spn" style="display:''">
-<?php	  } else { ?>
+<?php	    } else { ?>
   <div id="el<?=$div_counter?>Parent" class="parent">
-<?php	  } ?>
+<?php	    } ?>
     <nobr>&nbsp;&nbsp;&nbsp;
       <img src="images/navarrow.png" width="9" height="9" border="0">
       <font color="black" class="heada">no mailserver defined</font>
     </nobr>
     <br>
-<?php	  if($_SESSION["opera"]) { ?>
+<?php		if($_SESSION["opera"]) { ?>
   </span>
-<?php	  } else { ?>
+<?php		} else { ?>
   </div>
-<?php	  }
+<?php		}
+		  }
 // }}}
 		} // end if(is_array(qlcs)
 	  }
 // }}}
 
 	  // {{{ For each host - get Webserver container object(s) - if enabled
-	  if(is_array($physical_data) or ($physical_dn == 'Global')) {
+	  if(pql_get_define("PQL_CONF_WEBSRV_USE") and
+		 (is_array($physical_data) or ($physical_dn == 'Global')))
+	  {
 		// {{{ Got Web container object(s)
 		foreach($physical_data as $container_dn => $virt_hosts) {
 		  $links = array();
@@ -236,7 +242,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 		  if($physical_dn == 'Global')
 			$container = 'Global';
 		  else
-			$container = pql_get_attribute($_pql->ldap_linkid, $container_dn, pql_get_define("PQL_ATTR_CN"));
+			$container = $_pql->get_attribute($container_dn, pql_get_define("PQL_ATTR_CN"));
 // }}}
 
 		  // {{{ Extract the port number
@@ -257,7 +263,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 
 			  // {{{ Add a 'Add virtual server' link
 			  if($_SESSION["ALLOW_BRANCH_CREATE"] or
-				 pql_validate_administrator($_pql->ldap_linkid, $container_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"]))
+				 pql_validate_administrator($container_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"]))
 			  {
 				// Only if:
 				//	1. Super admin
@@ -282,7 +288,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 			  
 			  // Add a 'Add virtual server' link
 			  if($_SESSION["ALLOW_BRANCH_CREATE"] or
-				 pql_validate_administrator($_pql->ldap_linkid, $container_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"]))
+				 pql_validate_administrator($container_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"]))
 			  {
 				// Only if:
 				//	1. Super admin
@@ -305,22 +311,24 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] or
 // }}}
 	  } else {
 		// {{{ No Web container object(s)
-		if($_SESSION["opera"]) {
+		if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+		  if($_SESSION["opera"]) {
 ?>
 
           <span id="el<?=$div_counter?>Spn" style="display:''">
-<?php	} else { ?>
+<?php	  } else { ?>
           <div id="el<?=$div_counter?>Child" class="child">
-<?php	} ?>
+<?php	  } ?>
             <nobr>&nbsp;&nbsp;&nbsp;
               <img src="images/navarrow.png" width="9" height="9" border="0">
               <font color="black" class="heada">no webserver defined</font>
             </nobr>
-<?php	if($_SESSION["opera"]) { ?>
+<?php	  if($_SESSION["opera"]) { ?>
           </span>
-<?php	} else { ?>
+<?php	  } else { ?>
           </div>
-<?php	}
+<?php	  }
+		}
 // }}}
 	  } // endif(is_array(web_containers)
 // }}}
