@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.12 2007-02-12 15:51:13 turbo Exp $
+// $Id: update_translations.php,v 2.13 2007-02-15 12:46:52 turbo Exp $
 //
 
 // ----------------------------
@@ -57,7 +57,7 @@ if(isset($_GET["msg"])) {
 
 if (empty($_REQUEST['total_keys'])) { ?>
   Before saving the translation, make sure the directory 'translations'
-  exists in the phpQLAdmin root and that it's writable by the webserver.
+  exists in the phpQLAdmin root and that it''s writable by the webserver.
   <p>  
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
     <input type="hidden" name="mode" value="select">
@@ -216,7 +216,8 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 	$header  = stripslashes($header);
 
 	// Remove any M$ newlines...
-	$header  = eregi_replace("", "", $header);
+	$header  = eregi_replace("
+", "", $header);
 
 	$total   = $_REQUEST['total_keys'];
 
