@@ -128,10 +128,12 @@
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_RADIUS_CONFIG_IDENTITY", $_REQUEST["branch"]); ?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")?>"></a></td>
       </tr>
-<?php } ?>
+<?php }
 
-      <tr><td></td><td></td></tr>
-<?php if($_SESSION["ADVANCED_MODE"]) { ?>
+	  pql_format_table_empty(2);
+
+	  if($_SESSION["ADVANCED_MODE"]) {
+?>
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0); ?>
@@ -194,7 +196,7 @@
         </td>
       </tr>
 
-      <tr><td></td><td></td></tr>
+<?=pql_format_table_empty(2)?>
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0); ?>
@@ -232,7 +234,7 @@
         </td>
       </tr>
 
-      <tr><td></td><td></td></tr>
+<?=pql_format_table_empty(2)?>
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0);
@@ -245,7 +247,7 @@
 		$url = array('add' => $url_tmp, 'del' => $url_tmp."&action=del");
 //&delval=".$oc[$i][$_REQUEST["branch"]]
 
-		pql_format_table_single($_pql->ldap_linkid, $txt, $url, $objectclasses, pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"), $class);
+		pql_format_table_single($txt, $url, $objectclasses, pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"), $class);
 ?>
 
       <!-- -------------------- -->
@@ -254,7 +256,7 @@
 		$url_tmp .= "&branchdn=".$_REQUEST["branch"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR");
 		$url_tmp .= "&view=config_detail/".$_REQUEST["branch"];
 
-		$admins   = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["branch"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+		$admins   = $_pql->get_attribute($_REQUEST["branch"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 		if($admins and !is_array($admins)) {
 			$admins = array($admins);
 		}
@@ -264,7 +266,7 @@
 						  'del' => $LANG->_('Delete administrator'));
 		$url      = array('add' => $url_tmp."&submit=3&action=add",
 						  'del' => $url_tmp."&submit=4&action=delete");
-		pql_format_table_single($_pql->ldap_linkid, $txt, $url, $admins, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $class);
+		pql_format_table_single($txt, $url, $admins, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $class);
       }
 ?>
     </th>

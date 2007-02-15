@@ -29,7 +29,7 @@
         <td><a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]?>"><?=$img["mod"]?></a></td>
       </tr>
 
-      <tr><td></td></tr>
+      <?=pql_format_table_empty(2)?>
 
 <?php if($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")] and !is_array($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")])) {
 		$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")] = array($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")]);
@@ -154,7 +154,7 @@
 <?php } ?>
 
 <?php if(0) { ?>
-      <tr><td></td></tr>
+      <?=pql_format_table_empty(2)?>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('LDAP Server')?></td>
@@ -190,7 +190,7 @@
       </tr>
 <?php } ?>
 
-      <tr><td></td></tr>
+      <?=pql_format_table_empty(2)?>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Rewrite engine')?></td>
@@ -215,18 +215,18 @@
 					 'add' => $LANG->_('Add rule'));
 		$link_url = array('add' => $url_tmp."&action=add");
       }
-      pql_format_table_single($_pql->ldap_linkid, $txt, $link_url,
+      pql_format_table_single($txt, $link_url,
 							  $virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_RULE")],
 							  pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_RULE"), $class);
 ?>
 
-      <tr><td></td></tr>
+      <?=pql_format_table_empty(2)?>
 
 <?php // Show round-robin information
 	  $filter  = '(&('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ApacheSectionObj)(';
 	  $filter .= pql_get_define("PQL_ATTR_OBJECTCLASS").'=ApacheVirtualHostObj)(';
 	  $filter .= pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["virthost"].'))';
-	  $roundrobin = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+	  $roundrobin = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter);
 	  unset($link_url);
 
 	  $class=pql_format_table(0);
@@ -254,12 +254,12 @@
 		  asort($hosts);
 
 		$txt = array('tit' => $LANG->_('Round-robin'));
-		pql_format_table_single($_pql->ldap_linkid, $txt, $link_url,
+		pql_format_table_single($txt, $link_url,
 								$hosts, '', $class);
 	  } else {
 		$hosts = array('<i>n/a</i>');
 		$txt = array('tit' => $LANG->_('Round-robin'));
-		pql_format_table_single($_pql->ldap_linkid, $txt, $link_url,
+		pql_format_table_single($txt, $link_url,
 								$hosts, '', $class);
 	  }
 ?>

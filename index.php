@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.55 2007-02-12 15:58:02 turbo Exp $
+// $Id: index.php,v 2.56 2007-02-15 12:26:11 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -130,7 +130,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
              <td><input type=password name="passwd" size="30" onChange="this.form.submit()" autocomplete="OFF"></td>
           </tr>
 
-          <tr><td></td></tr>
+          <?=pql_format_table_empty(2)?>
 
           <tr>
             <td></td>
@@ -173,7 +173,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 	//       (under different branches/trees).
 	$user_found = 0;
 	foreach($_SESSION["BASE_DN"] as $base) {
-		$objects = pql_get_dn($_pql->ldap_linkid, $base,
+		$objects = $_pql->get_dn($base,
 							  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base).'='.$_POST["uname"]);
 		if(is_array($objects)) {
 		  foreach($objects as $userdn) {
@@ -217,7 +217,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 	$log .= " : Logged in ($userdn)\n";
 	error_log($log, 3, "phpQLadmin.log");
 
-	if(pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED"))) {
+	if($_pql->get_attribute($_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED"))) {
 	  session_write_close();
 	  pql_header("index2.php?advanced=1");
 	} else

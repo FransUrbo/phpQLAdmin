@@ -17,7 +17,7 @@
         <td><a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")?>&oldvalue=<?=$virt_host_object[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]?>"><?=$img["mod"]?></a></td>
       </tr>
 
-      <tr><td></td></tr>
+      <?=pql_format_table_empty(2)?>
 
 <?php if(@is_array($virt_host_object[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")])) {
         $new_tr = 1;
@@ -138,7 +138,7 @@
 <?php } ?>
 
 <?php if(0) { ?>
-      <tr><td></td></tr>
+      <?=pql_format_table_empty(2)?>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('LDAP Server')?></td>
@@ -174,7 +174,7 @@
       </tr>
 <?php } ?>
 
-      <tr><td></td></tr>
+      <?=pql_format_table_empty(2)?>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Rewrite engine')?></td>
@@ -199,7 +199,7 @@
 					 'add' => $LANG->_('Add rule'));
 		$link_url = array('add' => $url_tmp."&action=add");
       }
-      pql_format_table_single($_pql->ldap_linkid, $txt, $link_url,
+      pql_format_table_single($txt, $link_url,
 							  $virt_host_object[pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_RULE")],
 							  pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_RULE"), $class);
 ?>
