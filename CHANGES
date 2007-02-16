@@ -157,6 +157,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Separate the 'PHP Extensions needed' in 'Home->phpQLAdmin Configuration->Test LDAP-Connection'.
 	    + Add checks for more modules: idn, mhash, memcache, gd and krb5.
 	    + Note about enabling ACI's if test w/o ACI failed, but test w/ ACI worked.
+	  - Move the 'Force Strong Passwords' out of 'Plugin configuration' and into 'Behaviour config'
+	    (a couple of lines down).
 
 	API changes
 	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods
