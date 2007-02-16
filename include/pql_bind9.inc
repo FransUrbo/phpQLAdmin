@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.51 2007-02-15 12:08:12 turbo Exp $
+// $Id: pql_bind9.inc,v 2.52 2007-02-16 09:34:41 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -182,7 +182,7 @@ function pql_bind9_get_acis($zone) {
   foreach($_SESSION["BASE_DN"] as $base) {
 	// OpenLDAP uses 'OpenLDAPaci', but everyone else uses 'aci'...
 	// TODO: This is possible to specify in slapd.conf. Try to detect this.
-	$object = $_pql->search($base, $filter, 'SUBTREE', 1, array('OpenLDAPaci', 'aci'));
+	$object = $_pql->search($base, $filter, 'SUBTREE', 1, array(pql_get_define("PQL_ATTR_LDAPACI"), 'aci'));
 	if(@is_array($object[0]))
 	  return $object[0][pql_get_define("PQL_ATTR_LDAPACI")];
 	elseif($object["dn"])
