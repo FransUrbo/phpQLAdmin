@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.224 2007-02-15 12:08:11 turbo Exp $
+// $Id: pql.inc,v 2.225 2007-02-16 09:34:03 turbo Exp $
 //
 
 // ----------------------------
@@ -567,7 +567,13 @@ class pql {
 	  $dn = pql_maybe_encode(urldecode($dn));
 	
 	// Verify that the object have what it needs to be able to be added
-	$entry = pql_validate_object($this->ldap_linkid, $dn, $entry, $type);
+	$entry = pql_validate_object($dn, $entry, $type);
+
+	// If there's ACI's and we're running OpenLDAP >2.3, then make sure
+	// the ACI's in the correct form (OpenLDAP changed the syntax in 2.3).
+	if(@is_array($entry[pql_get_define("PQL_ATTR_LDAPACI")]) and
+	   ereg('^2\.3', $this->find_ldap_version()))
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = pql_validate_acis($entry[pql_get_define("PQL_ATTR_LDAPACI")]);
 	
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
