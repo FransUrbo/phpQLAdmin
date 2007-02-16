@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.225 2007-02-16 09:34:03 turbo Exp $
+// $Id: pql.inc,v 2.226 2007-02-16 10:20:57 turbo Exp $
 //
 
 // ----------------------------
@@ -627,7 +627,7 @@ class pql {
 	
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
-	if(pql_get_define("PQL_CONF_DEBUG_ME"))
+	if(pql_get_define("PQL_CONF_DEBUG_ME") and !$entry[pql_get_define("PQL_ATTR_DEBUG_ME")])
 	  echo $LDIF;
 	else {
 	  // Modify this object
