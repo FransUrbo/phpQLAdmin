@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.43 2007-02-15 17:00:35 turbo Exp $
+// $Id: config_ldaptest.php,v 2.44 2007-02-16 09:32:02 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -10,8 +10,7 @@ require($_SESSION["path"]."/include/pql_control.inc");
 function check_domain_value($dn, $attrib, $value) {
   global $_pql; $LANG;
   
-  $debugging = pql_get_define("PQL_CONF_DEBUG_ME");
-  if($debugging)
+  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 	// Debugging enabled - temporarily disable it!
 	pql_set_define("PQL_CONF_DEBUG_ME", false);
   
@@ -200,8 +199,14 @@ if(!function_exists("ldap_connect")){
 // }}}
 	  
 	  // {{{ Check write access (w/o ACI's)
-	  $filter = "(&" . pql_setup_branch_objectclasses(1, $basedn)
-		. "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
+	  $filter = "(&";
+	  if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc")
+		$filter .= "(objectClass=domain)(objectClass=dcOrganizationNameForm)";
+	  elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou")
+		$filter .= "(objectClass=organizationalUnit)";
+	  elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o")
+		$filter .= "(objectClass=organization)";
+	  $filter .= "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
 	  
 	  $sr = @ldap_list($_pql->ldap_linkid, $basedn, $filter)
 		or pql_format_error(1);
