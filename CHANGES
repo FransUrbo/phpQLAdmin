@@ -190,6 +190,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + Take the next number of ACI's as OID.
 	  - Support multiple A records to domain in tools/dnszonetemplate.php.
 	    + IDNA decode hostname.
+	  - Just before saving (adding) an object to the database, check the ACI's. OpenLDAP
+	    change the syntax in 2.3 and I didn't notice because I never upgraded).
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes
