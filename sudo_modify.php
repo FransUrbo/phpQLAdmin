@@ -78,6 +78,33 @@ if($_REQUEST["domain"]) {
   $sudo_results = $_pql->search($sudodn, $filter);
   if(is_array($sudo_results))
 	asort($sudo_results);
+} elseif(($_REQUEST["host"] == 'Global') and ($_REQUEST["ref"] == 'global')) {
+  // Called from Computers->Global->Sudo Administration
+
+  // Setup a filter containing all physical hosts we know about
+  $filter = '(&(objectClass=sudoRole)(cn=*)(|';
+  for($i=0; $computer_results[$i]; $i++) {
+	// Get the FQDN from the host DN
+	$physical = $_pql->get_attribute($computer_results[$i], pql_get_define("PQL_ATTR_CN"));
+	$filter .= "(sudoHost=$physical)";
+  }
+  $filter .= '))';
+
+  foreach($_pql->ldap_basedn as $dn)  {
+	$dn  = pql_format_normalize_dn($dn);
+	$tmp = $_pql->get_dn($dn, $filter);
+	pql_add2array($sudo_results, $tmp);
+  }
+
+  if(is_array($sudo_results)) {
+	// Get ALL information about these SUDO roles
+	sort($sudo_results);
+	for($i=0; $sudo_results[$i]; $i++) {
+	  $roles[] = $_pql->search($sudo_results[$i], 'objectClass=*', 'BASE');
+	}
+  }
+
+  $sudo_results = $roles;
 } else {
   // Called from physical host details->Sudo Administration
 
