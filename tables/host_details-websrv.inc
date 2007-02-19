@@ -1,6 +1,6 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.6 2007-02-15 12:08:17 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.7 2007-02-19 15:43:03 turbo Exp $
 
 // {{{ Possibly show some debugging
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
@@ -77,8 +77,7 @@ if(($_REQUEST["host"] == 'Global') or $_REQUEST["global"]) {
   $physical_data = $DATA[$physical_dn];
 // }}}
 
-// else called with virtual host (nothing special needed)
-}
+} // else called with virtual host (nothing special needed)
 
 $server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 // }}}
@@ -88,6 +87,44 @@ if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "<b>Physical DN: '$physical_dn'</b><br>";
   echo "<b>Container DN: '$container_dn'</b><br>";
   echo "--- DEBUG ---<p>\n";
+}
+// }}}
+
+// {{{ Setup the host view buttons
+if($_REQUEST["ref"] == "global") {
+  $buttons = array();
+  
+  if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
+	$new = array('hostacl' => 'Host Control');
+	$buttons = $buttons + $new;
+  }
+  
+  if(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
+	$new = array('automount' => 'Automount Information');
+	$buttons = $buttons + $new;
+  }
+  
+  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+	$new = array('mailsrv'   => 'Mailserver Administration');
+	$buttons = $buttons + $new;
+  }
+  
+  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+	$new = array('websrv' => 'Webserver Administration');
+	$buttons = $buttons + $new;
+  }				 
+  
+  if(pql_get_define("PQL_CONF_RADIUS_USE")) {
+	$new = array('radius' => 'RADIUS Administration');
+	$buttons = $buttons + $new;
+  } 
+  
+  if(pql_get_define("PQL_ATTR_BIND9_USE")) {
+	$new = array('dns' => 'DNS Administration');
+	$buttons = $buttons + $new;
+  }
+  
+  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
 }
 // }}}
 
@@ -113,7 +150,7 @@ if(is_array($physical_data) and count($physical_data)) {
   //	   Still need to init virt_hosts array!
 // }}}
 
-  // {{{ Setup the server buttons
+  // {{{ Setup the server container buttons
   // If called from base Global->Webserver Administration:		ref='left'
   // If called from Webserver - Global:							ref='left1'
   // If called from Physical host->Webserver Administration:	ref='left'
@@ -173,13 +210,11 @@ if(is_array($physical_data) and count($physical_data)) {
 	// {{{ Setup the virtual host buttons
 	// If called from web server container:	virt_hosts     >= 1, ref=container
 	// If called from virtual host:			virt_host_dirs == 1, ref=virtual
-	//
 	if((count($virt_hosts) >= 1) and
-	   ((($_REQUEST["ref"] == 'container') or ($_REQUEST["ref"] == 'physical'))
-		or
-		((count($virt_hosts) >= 1) and
-		 (count($virt_host_dirs) >= 1) and
-		 ($_REQUEST["ref"] == 'virtual'))))
+	   (($_REQUEST["ref"] == 'container') or ($_REQUEST["ref"] == 'physical') or
+		((count($virt_hosts) >= 1) and (count($virt_host_dirs) >= 1) and ($_REQUEST["ref"] == 'virtual')) or
+		($_REQUEST["ref"] == 'global')) and
+	   ($_REQUEST["ref"] != 'virtual'))
 	{
 	  // Show these buttons if:
 	  //	1. Called from container with one or more virtual host(s)						TODO(?)
