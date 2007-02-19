@@ -1,6 +1,6 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.7 2007-02-19 15:43:03 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.8 2007-02-19 16:01:17 turbo Exp $
 
 // {{{ Possibly show some debugging
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
@@ -87,44 +87,6 @@ if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "<b>Physical DN: '$physical_dn'</b><br>";
   echo "<b>Container DN: '$container_dn'</b><br>";
   echo "--- DEBUG ---<p>\n";
-}
-// }}}
-
-// {{{ Setup the host view buttons
-if($_REQUEST["ref"] == "global") {
-  $buttons = array();
-  
-  if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
-	$new = array('hostacl' => 'Host Control');
-	$buttons = $buttons + $new;
-  }
-  
-  if(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
-	$new = array('automount' => 'Automount Information');
-	$buttons = $buttons + $new;
-  }
-  
-  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-	$new = array('mailsrv'   => 'Mailserver Administration');
-	$buttons = $buttons + $new;
-  }
-  
-  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
-	$new = array('websrv' => 'Webserver Administration');
-	$buttons = $buttons + $new;
-  }				 
-  
-  if(pql_get_define("PQL_CONF_RADIUS_USE")) {
-	$new = array('radius' => 'RADIUS Administration');
-	$buttons = $buttons + $new;
-  } 
-  
-  if(pql_get_define("PQL_ATTR_BIND9_USE")) {
-	$new = array('dns' => 'DNS Administration');
-	$buttons = $buttons + $new;
-  }
-  
-  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
 }
 // }}}
 
