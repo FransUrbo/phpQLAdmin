@@ -3,10 +3,7 @@
 // pql_hostctrl.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_hostctrl.inc,v 1.6 2007-02-15 12:08:12 turbo Exp $
-
-$LANG = new pql_lang($_pql) or die("Couldn't make a new LANG object");
-require($_SESSION["path"]."/left-head.html");
+// $Id: pql_hostctrl.inc,v 1.7 2007-02-19 15:08:56 turbo Exp $
 
 // {{{ pql_update_sudo(dn, type, attribute)
 function pql_update_sudo($dn, $type, $attribute) {
