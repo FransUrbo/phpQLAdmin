@@ -1,6 +1,6 @@
 <?php
 // View RADIUS details about/for a physical host
-// $Id: host_details-radius.inc,v 1.3 2007-02-15 12:08:17 turbo Exp $
+// $Id: host_details-radius.inc,v 1.4 2007-02-19 15:40:26 turbo Exp $
 
 // {{{ Include RADIUS API etc
 //require($_SESSION["path"]."/include/pql_radius.inc");
@@ -38,7 +38,6 @@ foreach($attribs as $key => $attrib) {
 	  . 'src="images/del.png" width="12" height="12" border="0" alt="'.$alt2.'"></a>';
 }
 // }}}
-
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_("RADIUS Controls")."\n"?>
