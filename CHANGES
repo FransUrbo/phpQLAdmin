@@ -204,6 +204,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + IDNA decode hostname.
 	  - Just before saving (adding) an object to the database, check the ACI's. OpenLDAP
 	    change the syntax in 2.3 and I didn't notice because I never upgraded).
+	  - Split tables/domain_details-dnszone.inc into three files/parts. One with the
+	    retreival etc, one with the SOA display and one with HOST display.
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

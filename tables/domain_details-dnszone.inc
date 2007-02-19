@@ -1,12 +1,13 @@
 <?php require($_SESSION["path"]."/include/pql_bind9.inc");
-      $zones = pql_bind9_get_zone($_pql->ldap_linkid, $_REQUEST["domain"]);
+      $zones = pql_bind9_get_zone($_REQUEST["domain"]);
       if(is_array($zones)) {
 ?>
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
 <?php	foreach($zones as $dname => $zone_data) {
+			// {{{ Use the first zone as default
+			// ie, if we're not called with a specific zone to show
 			if(!@$_REQUEST["dns_domain_name"] and !@$dns_domain_name) {
-			  // Use the first zone as default (ie, if we're not called with a specific zone to show)
 			  $dns_domain_name = $dname;
 			  $_REQUEST["dns_domain_name"] = $dns_domain_name;
 			} elseif(@$_REQUEST["dns_domain_name"]) {
@@ -18,6 +19,7 @@
 			} else {
 			  unset($mark);
 			}
+// }}}
 ?>
     <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dname?>"><img alt="/ <?=$dname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($dname)?><?=$mark?>"></a>
 <?php	} ?>
@@ -26,229 +28,12 @@
 
   <br>
 
-  <table cellspacing="0" cellpadding="3" border="0" size="100%">
-    <th colspan="3" align="left"><?=$LANG->_('Domainname')?>: <?=pql_maybe_idna_decode($dns_domain_name)?>
-      <tr class="title">
-        <td class="title"><?=$LANG->_('SOA Record')?></td>
-        <td><?=$LANG->_('SOA Value')?></td>
-        <td class="title"></td>
-      </tr>
-
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Administrator')?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$zones[$dns_domain_name]['@']['SOA']['ADMIN']?></td>
-        <td></td>
-      </tr>
-
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Serial number')?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$zones[$dns_domain_name]['@']['SOA']['SERIAL']?></td>
-        <td></td>
-      </tr>
-
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Refresh time')?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$zones[$dns_domain_name]['@']['SOA']['REFRESH']?></td>
-        <td></td>
-      </tr>
-
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Retry time')?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$zones[$dns_domain_name]['@']['SOA']['RETRY']?></td>
-        <td></td>
-      </tr>
-
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Expire time')?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$zones[$dns_domain_name]['@']['SOA']['RETRY']?></td>
-        <td></td>
-      </tr>
-
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Time To Live')?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$zones[$dns_domain_name]['@']['TTL']?></td>
-        <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=ttl&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify SOA value')." TTL"?>"></a>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=ttl&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
-        </td>
-      </tr>
-
-      <tr></tr>
-
 <?php
-// {{{ Domain addresses
-$class = pql_format_table(0);
-$url_tmp  = "bind9_edit_attributes.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
-$url_tmp .= "&view=".$_REQUEST["view"]."&rdn=".urlencode($zones[$dns_domain_name]['@']['RDN']);
-$url_tmp .= "&type=a&view=".$_REQUEST["view"]."&dns_domain_name=$dns_domain_name";
-  
-$tbl_txt = array('tit' => $LANG->_('Domain address'),
-                 'add' => $LANG->_('Add domain address'),
-                 'del' => $LANG->_('Delete domain address'),
-				 'mod' => $LANG->_('Modify domain address'));
-$tbl_url = array('add' => $url_tmp."&action=add",
-                 'del' => $url_tmp."&action=del",
-				 'mod' => $url_tmp."&action=modify");
-pql_format_table_single($tbl_txt, $tbl_url,
-						$zones[$dns_domain_name]['@']['A'],
-						"a", $class, 4);
-// }}}
-
-// {{{ NS record(s)
-$class = pql_format_table(0);
-$url_tmp  = "bind9_edit_attributes.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
-$url_tmp .= "&view=".$_REQUEST["view"]."&rdn=".urlencode($zones[$dns_domain_name]['@']['RDN']);
-$url_tmp .= "&type=ns&view=".$_REQUEST["view"]."&dns_domain_name=$dns_domain_name";
-  
-$tbl_txt = array('tit' => $LANG->_('Name servers'),
-                 'add' => $LANG->_('Add SOA value NS'),
-                 'del' => $LANG->_('Delete NS'),
-				 'mod' => $LANG->_('Modify NS'));
-$tbl_url = array('add' => $url_tmp."&action=add",
-                 'del' => $url_tmp."&action=del",
-				 'mod' => $url_tmp."&action=modify");
-pql_format_table_single($tbl_txt, $tbl_url,
-						$zones[$dns_domain_name]['@']['NS'],
-						"ns", $class, 4);
-// }}}
-
-// {{{ MX record(s)
-$class = pql_format_table(0);
-$url_tmp  = "bind9_edit_attributes.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
-$url_tmp .= "&view=".$_REQUEST["view"]."&rdn=".urlencode($zones[$dns_domain_name]['@']['RDN']);
-$url_tmp .= "&type=mx&view=".$_REQUEST["view"]."&dns_domain_name=$dns_domain_name";
-  
-$tbl_txt = array('tit' => $LANG->_('Mail exchangers'),
-                 'add' => $LANG->_('Add SOA value MX'),
-                 'del' => $LANG->_('Delete MX'),
-				 'mod' => $LANG->_('Modify MX'));
-$tbl_url = array('add' => $url_tmp."&action=add",
-                 'del' => $url_tmp."&action=del",
-				 'mod' => $url_tmp."&action=modify");
-pql_format_table_single($tbl_txt, $tbl_url,
-						$zones[$dns_domain_name]['@']['MX'],
-						"mx", $class, 4);
-// }}}
-
-// {{{ AFSDB record(s)
-$class = pql_format_table(0);
-$url_tmp  = "bind9_edit_attributes.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
-$url_tmp .= "&view=".$_REQUEST["view"]."&rdn=".urlencode($zones[$dns_domain_name]['@']['RDN']);
-$url_tmp .= "&type=afsdb&view=".$_REQUEST["view"]."&dns_domain_name=$dns_domain_name";
-  
-$tbl_txt = array('tit' => $LANG->_('AFS Database servers'),
-                 'add' => $LANG->_('Add SOA value AFSDB'),
-                 'del' => $LANG->_('Delete AFSDB'),
-				 'mod' => $LANG->_('Modify AFSDB'));
-$tbl_url = array('add' => $url_tmp."&action=ADD",
-                 'del' => $url_tmp."&action=del",
-				 'mod' => $url_tmp."&action=modify");
-pql_format_table_single($tbl_txt, $tbl_url,
-						$zones[$dns_domain_name]['@']['AFSDB'],
-						"afsdb", $class, 4);
-// }}}
-?>
-    </th>
-  </table>
-
-  <br>
-
-  <table cellspacing="0" cellpadding="3" border="0" size="100%">
-    <th colspan="3" align="left">
-      <tr class="title">
-        <td><?=$LANG->_('Hostname')?></td>
-        <td><?=$LANG->_('Time To Live')?></td>
-        <td><?=$LANG->_('Type')?></td>
-        <td><?=$LANG->_('Record')?></td>
-        <td class="title"></td>
-      </tr>
-
-<?php	if(@is_array($zones[$dns_domain_name])) {
-			foreach($zones[$dns_domain_name] as $data) {
-				if(@$data['HOST'] != '@') {
-					$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR', 'NS', 'MX');
-					foreach($TYPES as $TYPE) {
-						$type = lc($TYPE);
-
-						$HREF  = "bind9_edit_attributes.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
-						$HREF .= "&action=modify&rdn=".urlencode($data['RDN'])."&view=".$_REQUEST["view"];
-						$HREF .= "&dns_domain_name=$dns_domain_name";
-
-						if(@$data[$TYPE]) {
-							unset($records);
-							if(@!is_array($data[$TYPE])) {
-								$records[] = $data[$TYPE];
-							} else {
-								$records = $data[$TYPE];
-							}
-
-							foreach($records as $record) {
-								if(($TYPE == 'CNAME') and !eregi('\.$', $record)) {
-									$record .= '.'.pql_maybe_idna_decode($dns_domain_name).'.';
-								}
-
-								if($TYPE == 'PTR') {
-									unset($rev);
-
-									// '168.192.in-addr.arpa' => Remove the '.in-addr.arpa' part
-									$zone = preg_replace('/\.in-addr\.arpa/', '', $data["ZONE"]);
-
-									// Reverse what's left => '192.168'
-									$tmp = split('\.', $zone);
-									$count = count($tmp);
-									for($i=$count-1; $tmp[$i]; $i--) {
-										$rev .= $tmp[$i];
-										if(@$tmp[$i-1])
-											$rev .= ".";
-									}
-
-									// Add what's missing in reverse order => '192.168'+'.1.10'
-									$tmp = split('\.', $record);
-									for($i=3; $i >= $count; $i--) {
-										$rev .= '.'.$tmp[$i];
-									}
-
-									$record = $rev;
-								}
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td>
-          <a href="<?=$HREF?>&type=host&host=<?=$data['HOST']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "host"))?>"></a>
-          <?=$data['HOST']?>
-        </td>
-
-        <td>
-          <a href="<?=$HREF?>&type=ttl&ttl=<?=$data['TTL']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "TTL"))?>"></a>
-          <?=$data['TTL']?>
-        </td>
-
-        <td><?=$LANG->_($TYPE)?></td>
-        <td>
-          <a href="<?=$HREF?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => $TYPE))?>"></a>
-          <?=$record?>
-        </td>
-
-        <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
-        </td>
-      </tr>
-<?php					  } // foreach record
-					  } // if TYPE
-				  } // foreach TYPES
-				} // if host != '@'
-			} // foreach $zones
-		}
+require($_SESSION["path"]."/tables/domain_details-dnszone_soa.inc");
+echo "<br>";
+require($_SESSION["path"]."/tables/domain_details-dnszone_data.inc");
 ?>
 
-      <tr class="subtitle">
-        <td><a href="bind9_add.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&domainname=<?=$dns_domain_name?>&action=add&type=host&submit=1&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?></a></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-    </th>
-  </table>
 <?php } else { ?>
   <br>
   <?=$LANG->_('No zones configure for this branch')?>.
