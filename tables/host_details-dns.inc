@@ -1,44 +1,6 @@
 <?php
 // View DNS details for the whole (!) database
-// $Id: host_details-dns.inc,v 1.1 2007-02-19 10:54:52 turbo Exp $
-
-// {{{ Setup the host view buttons
-if($_REQUEST["ref"] == "global") {
-  $buttons = array();
-  
-  if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
-	$new = array('hostacl' => 'Host Control');
-	$buttons = $buttons + $new;
-  }
-  
-  if(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
-	$new = array('automount' => 'Automount Information');
-	$buttons = $buttons + $new;
-  }
-  
-  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-	$new = array('mailsrv'   => 'Mailserver Administration');
-	$buttons = $buttons + $new;
-  }
-  
-  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
-	$new = array('websrv' => 'Webserver Administration');
-	$buttons = $buttons + $new;
-  }				 
-  
-  if(pql_get_define("PQL_CONF_RADIUS_USE")) {
-	$new = array('radius' => 'RADIUS Administration');
-	$buttons = $buttons + $new;
-  } 
-  
-  if(pql_get_define("PQL_ATTR_BIND9_USE")) {
-	$new = array('dns' => 'DNS Administration');
-	$buttons = $buttons + $new;
-  }
-  
-  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
-}
-// }}}
+// $Id: host_details-dns.inc,v 1.2 2007-02-19 19:25:37 turbo Exp $
 
 // {{{ ---------------- GET THE DOMAINS/BRANCHES
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
