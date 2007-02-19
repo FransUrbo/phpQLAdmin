@@ -1,6 +1,6 @@
 <?php
 // Dump either a specific object or a specific LDAP branch
-// $Id: dump_object.php,v 1.6 2007-02-15 12:07:10 turbo Exp $
+// $Id: dump_object.php,v 1.7 2007-02-19 10:58:30 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -16,7 +16,7 @@ if(empty($_REQUEST["submit"])) {
       <input type="hidden" name="dn"    value="<?=urlencode($_REQUEST["dn"])?>">
 
       <span class="title3"><?=$LANG->_('Search options')?></span><br>
-      <!-- The code to follow referrals isn't implemented in 'include/pql.inc:search()', so disable this -->
+      <!-- TODO: The code to follow referrals isn''t implemented in 'include/pql.inc:search()' -->
       <!-- <input type="checkbox" name="referrals"> <?=$LANG->_('Follow referrals')?><br> -->
       <input type="checkbox" name="operationals" CHECKED> <?=$LANG->_('Include operational attributes')?><br>
 
@@ -49,7 +49,6 @@ if(empty($_REQUEST["submit"])) {
 
 	// Get the non-operational attributes for all objects below DN.
 	$objects1 = $_pql->search($_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "SUBTREE", $_REQUEST["referrals"]);
-	
 	for($i=0; $i < count($objects1); $i++) {
 	  if($_REQUEST["operationals"])
 		// Get the operational attributes for each object
@@ -63,15 +62,15 @@ if(empty($_REQUEST["submit"])) {
 	  
 	  if($_REQUEST["operationals"])
 		// Merge the two arrays
-		$objects = $objects1[$i] + $objects2[0];
+		$objects = $objects1[$i] + $objects2;
 	  else
 		$objects = $objects1[$i];
 	  
 	  // Create the LDIF section for this object
 	  if(empty($LDIF))
-		$LDIF  = pql_create_ldif('', '', $objects);
+		$LDIF  = pql_create_ldif('', '', $objects, 0, 0);
 	  else
-		$LDIF .= "\n".pql_create_ldif('', '', $objects);
+		$LDIF .= "\n".pql_create_ldif('', '', $objects, 0, 0);
 	}
   } elseif($_REQUEST["scope"] == "base") {
 	// Get the non-operational attributes
@@ -84,12 +83,12 @@ if(empty($_REQUEST["submit"])) {
 									 'modifyTimestamp', 'subschemaSubentry', 'hasSubordinates', 'aci'));
 	  
 	  // Merge the two arrays
-	  $objects = $objects1[0] + $objects2[0];
+	  $objects = $objects1 + $objects2;
 	} else
-	  $objects = $objects1[0];
+	  $objects = $objects1;
 	
 	// Create the LDIF section for this object
-	$LDIF = pql_create_ldif('', '', $objects);
+	$LDIF = pql_create_ldif('', '', $objects, 0, 0);
   }
 
   if(!empty($LDIF)) {
