@@ -3,11 +3,11 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.68 2007-02-15 12:08:12 turbo Exp $
+// $Id: pql_formating.inc,v 2.69 2007-02-19 15:05:02 turbo Exp $
 
-// {{{ pql_create_ldif(func, dn, entry, extra_newline)
+// {{{ pql_create_ldif(func, dn, entry, extra_newline, show_debug)
 // Create a LDIF object to print in case of error
-function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
+function pql_create_ldif($func, $dn, $entry, $extra_newline = 0, $show_debug = 1) {
   global $account_type; // TODO: This is ugly (and undocumented!!)
   $command = 0; $LDIF = '';
   
@@ -19,7 +19,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
   if($func)
 	$LDIF .= "<br>\n<pre>\n";
   
-  if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF"))
+  if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF") and $show_debug)
 	$LDIF .= "--- DEBUG: $func($account_type) ---$nl\n";
   
   if($dn)
@@ -79,7 +79,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 	}
   }
   
-  if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF"))
+  if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF") and $show_debug)
 	$LDIF .= "--- DEBUG ---\n";
   
   if($func)
@@ -121,30 +121,30 @@ function pql_generate_button($buttons, $link = '', $url = '') {
   if(!empty($_REQUEST["domain"])) {
 	$url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
   }
-	?>
+?>
 									
-									<table cellspacing="0" border="0" width="50%" cellpadding="0">
-									   <th align="left" valign="top">
-									   <?php
-									   $i=0; // A button counter.
+  <table cellspacing="0" border="0" width="50%" cellpadding="0">
+    <th align="left" valign="top">
+<?php
+  $i=0; // A button counter.
   foreach($buttons as $view => $text) {
 	// Generate the button link etc
 	if(($view == $_REQUEST["view"]) or ($text == $_REQUEST["cat"]))
 	  $mark = "&mark=yes";
 	else
 	  unset($mark);
-		?>
-		<a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="// <?=$LANG->_($text)?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
-		   <?php
-		   // Increase button counter"
-		   $i++;
+?>
+      <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="// <?=$LANG->_($text)?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
+<?php
+	// Increase button counter"
+    $i++;
   }
-	?>
-										</th>
-											</table>
-											
-											<?php
-											}
+?>
+    </th>
+  </table>
+
+<?php
+}
 // }}}
 
 // {{{ pql_format_error(output)
@@ -206,28 +206,28 @@ function pql_format_error_span($msg) {
 // dir option is for tools/update_translations.php
 // which need 'img src="../images/info.png"'...
 function pql_format_status_msg($msg, $dir = NULL) {
-  ?>
- <table cellpadding="3" cellspacing="0" border="0" width="100%">
+?>
+  <table cellpadding="3" cellspacing="0" border="0" width="100%">
     <th colspan="3" align="left">
-	<tr class="message">
-	<td colspan="2" class="message">
-	<img src="<?=$dir?>images/info.png" width="16" height="16" border="0" align="left">
-	</td>
-	
-	<td colspan="2" class="message">
-	<table>
-	<th align="left">
-	<?php echo stripslashes($msg) . "\n"; ?>
-	</th>
-		</table>
+      <tr class="message">
+        <td colspan="2" class="message">
+          <img src="<?=$dir?>images/info.png" width="16" height="16" border="0" align="left">
         </td>
-		</tr>
-		</th>
-		</table>
+
+        <td colspan="2" class="message">
+          <table>
+            <th align="left">
+<?php echo stripslashes($msg) . "\n"; ?>
+            </th>
+          </table>
+        </td>
+      </tr>
+    </th>
+  </table>
 		
-		<br><br>
-		<?php
-		}
+  <br><br>
+<?php
+}
 // }}}
 
 // {{{ pql_format_table(echo = 1)
@@ -268,6 +268,7 @@ function pql_format_table_single($text, $url, $array, $attrib, $class = 0, $spac
 	  $space .= "&nbsp;";
   }
   
+  $title_shown = 0;
   if(is_array($array)) { 
 	$new_tr = 0;
 	asort($array);
@@ -288,40 +289,47 @@ function pql_format_table_single($text, $url, $array, $attrib, $class = 0, $spac
 	  if($new_tr) {
   ?>
  
- <tr class="<?=$class?>">
-	<td class="title"></td>
-	<?php } else { ?>
- <tr class="<?=$class?>">
-	<td class="title"><?=$text["tit"]?>:</td>
-	<?php }
+  <tr class="<?=$class?>">
+    <td class="title"></td>
+<?php } else { ?>
+  <tr class="<?=$class?>">
+    <td class="title"><?=$text["tit"]?>:</td>
+<?php $title_shown = 1;
+	  }
 	  
 	  $new_tr = 1;
-		?>
-        <td class="<?=$class?>"><?=$space?><?=$username?></td>
-		   <td class="<?=$class?>" align="right">
-		   <?php if($url["mod"]) { ?><a href="<?=$url["mod"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a><?php } ?>
-		   <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
-			   </td>
-				   </tr>
-				   <?php
-				   }
+?>
+    <td class="<?=$class?>"><?=$space?><?=$username?></td>
+    <td class="<?=$class?>" align="right">
+<?php if($url["mod"]) { ?>
+      <a href="<?=$url["mod"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a>
+<?php }
+
+	  if($url["del"]) {
+ ?>
+      <a href="<?=$url["del"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a>
+<?php } ?>
+    </td>
+   </tr>
+<?php
+	}
   }
-	?>
-						 
-						 <?php if(!$class) { ?>
- <tr class="<?=pql_format_table(0)?>">
-	<?php } else { ?>
- <tr class="<?=$class?>">
-	<?php } ?>
-							 <?php if(!is_array($array)) { ?>
- <td class="title"><?=$text["tit"]?>:</td>
-	<?php } else { ?>
- <td class="title"></td>
-	<?php } ?>
-								 <td colspan="2"><?=$space?><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
-																																					</tr>
-																																					<?php
-																																					}
+
+  if(!$class) {
+?>
+  <tr class="<?=pql_format_table(0)?>">
+<?php } else { ?>
+  <tr class="<?=$class?>">
+<?php } ?>
+<?php if(!$title_shown) { ?>
+    <td class="title"><?=$text["tit"]?>:</td>
+<?php } else { ?>
+   <td class="title"></td>
+<?php } ?>
+    <td colspan="2"><?=$space?><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
+  </tr>
+<?php
+}
 // }}}
 
 // {{{ pql_format_table_empty(tds)
@@ -399,24 +407,22 @@ function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
 	for($i=0; $i < ($level * 4); $i++) 
 	  $nbsp .= "&nbsp;";
   }
-	?>
-			   <div id="el<?=$cnt?><?=$parent?>" class="parent"<?="\n\t\t".$mouse["over"]."\n\t\t".$mouse["out"]."\n\t\t".$mouse["click"]?>>
-				  <?php if(is_array($child)) { ?>
-											   <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt.$child[$child_nr+1]?>">
-											   <?php } else { ?>
- <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
-	  <?php } ?>
-				  <?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
-																	  
-																	  </div>
-																		  
-																		  <?php if(is_array($child)) { ?>
- <span id="el<?=$cnt.$child[$child_nr]?>" style="display:''">
-	<?php } else { ?>
- <span id="el<?=$child?>" style="display:''">
-	<?php } ?>
-																		  <?php	
-																			  }
+?>
+  <div id="el<?=$cnt?><?=$parent?>" class="parent"<?="\n\t\t".$mouse["over"]."\n\t\t".$mouse["out"]."\n\t\t".$mouse["click"]?>>
+<?php if(is_array($child)) { ?>
+    <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt.$child[$child_nr+1]?>">
+<?php } else { ?>
+    <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
+<?php } ?>
+<?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
+  </div>
+
+<?php if(is_array($child)) { ?>
+  <span id="el<?=$cnt.$child[$child_nr]?>" style="display:''">
+<?php } else { ?>
+  <span id="el<?=$child?>" style="display:''">
+<?php }
+}
 // }}}
 
 // {{{ pql_format_tree_other(counter, text, url, level, parent, child)
@@ -440,26 +446,25 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 	else
 	  $url = "href=\"$url\"";
   }
-	?>
-			 <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
-				<nobr>
-				<a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
-				<?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
-				</a>
-				
-				<a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
-				<span class="heada"><?=$text?></span>
-				</a>
-				</nobr>
-				</div>
-				
-				<?php if(is_array($child)) { ?>
-											 <div id="el<?=$child[$child_nr]?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
-											 <?php } else { ?>
- <div id="el<?=$child?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
-	<?php } ?>
-				<?php	
-					}
+?>
+  <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
+    <nobr>
+      <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
+        <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
+      </a>
+
+      <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
+        <span class="heada"><?=$text?></span>
+      </a>
+    </nobr>
+  </div>
+
+<?php if(is_array($child)) { ?>
+  <div id="el<?=$child[$child_nr]?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+<?php } else { ?>
+  <div id="el<?=$child?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+<?php }
+}
 // }}}
 
 // {{{ pql_format_tree_span(text, links, level)
@@ -480,42 +485,42 @@ function pql_format_tree_span($text, $links, $level) {
 	  // {{{ $text is set
 	  if($link) {
 		// {{{ $link is set
-  ?>
- <nobr>
-	<?=$nbsp?>
-	
-	<?php	if(is_array($link)) { ?>
-								  <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
-								  <?php	} else { ?>
- <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
-	 <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
-																																									<?php	} ?>
-	</nobr>
-		<br />
-		<?php
-		// }}}
-		} else {
+?>
+  <nobr>
+    <?=$nbsp?>
+
+<?php	if(is_array($link)) { ?>
+    <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
+<?php	} else { ?>
+<?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
+    <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
+<?php	} ?>
+  </nobr>
+  <br />
+<?php
+// }}}
+	  } else {
 		  // {{{ $link unset
-  ?>
- <nobr>
-	<?=$nbsp?>
-	<?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
-	<?=$text?>
-		 </nobr>
-		 <br />
-		 <?php }
-	  // }}}
-	  // }}}
+?>
+  <nobr>
+    <?=$nbsp?>
+    <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
+    <?=$text?>
+  </nobr>
+  <br />
+<?php }
+// }}}
+// }}}
 	} else {
 	  // {{{ $text UNSET
-  ?>
- <nobr>
-	<?=$nbsp?>
+?>
+  <nobr>
+    <?=$nbsp?>
 	---------------
-	</nobr>
-	<br />
-	<?php
-	// }}}
+  </nobr>
+  <br />
+<?php
+// }}}
 	}
 	
 	$counter++;
