@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.33 2007-02-15 12:07:08 turbo Exp $
+// $Id: bind9_add.php,v 2.34 2007-02-19 10:54:51 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -94,8 +94,15 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	} else
 	  $msg = "Failed to add domain ".$_REQUEST["domainname"];
 	
-	$url  = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
-	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
+	if(@$_REQUEST["host"] and $_REQUEST["ref"])
+	  $url = "host_detail.php";
+	else 
+	  $url = "domain_detail.php";
+	$url .= "?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
+	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&view=".$_REQUEST["view"];
+	$url .= "&msg=".urlencode($msg);
+	if(@$_REQUEST["host"] and $_REQUEST["ref"])
+	  $url .= "&host=".$_REQUEST["host"]."&ref=".$_REQUEST["ref"];
 	
 	if(pql_get_define("PQL_CONF_DEBUG_ME"))
 	  die($url);
@@ -132,7 +139,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Add host to domain
+      <th colspan="3" align="left"><?=$LANG->_('Add host to domain')?>
         <tr class="title">
           <td></td>
           <td>Source</td>
@@ -177,6 +184,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
               <option value="mx" <?php if($_REQUEST["record_type"] == 'mx') { echo "SELECTED"; } ?>>MX</option>
               <option value="ns" <?php if($_REQUEST["record_type"] == 'ns') { echo "SELECTED"; } ?>>NS</option>
               <option value="ptr" <?php if($_REQUEST["record_type"] == 'ptr') { echo "SELECTED"; } ?>>PTR</option>
+              <option value="txt" <?php if($_REQUEST["record_type"] == 'txt') { echo "SELECTED"; } ?>>TXT</option>
             </select>
           </td>
           <td><input type="text" name="dest" value="<?=$_REQUEST["dest"]?>" size="20"></td>
@@ -199,6 +207,10 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
     <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
     <input type="hidden" name="domainname"      value="<?=$_REQUEST["domainname"]?>">
     <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
+<?php if($_REQUEST["host"] and $_REQUEST["ref"]) { ?> 
+    <input type="hidden" name="host"            value="<?=$_REQUEST["host"]?>">
+    <input type="hidden" name="ref"             value="<?=$_REQUEST["ref"]?>">
+<?php } ?>
     <br>
     <input type="submit" value="Save">
   </form>
@@ -267,26 +279,51 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	case "ptr":
 	  $entry[pql_get_define("PQL_ATTR_PTRRECORD")]		= pql_maybe_idna_encode($hn);
 	  break;
+	case "txt":
+	  $entry[pql_get_define("PQL_ATTR_TXTRECORD")]		= pql_maybe_idna_encode($_REQUEST["dest"]);
+	  unset($entry[pql_get_define("PQL_ATTR_DNSTTL")]);
+	  break;
 	}
 	
 	$dn = pql_bind9_add_host($_REQUEST["domain"], $entry);
 	if($dn) {
 	  $msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
 
-	  if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
-		// We can't do this if we're debuging. The object don't exists in the db, hence
-		// we can't figure out zone name etc...
-		if(!pql_bind9_update_serial($dn))
-		  die("failed to update SOA serial number");
-	  } else
-		echo $LANG->_("\bCan't update SOA since we're running in DEBUG_ME mode!\B");
+	  // {{{ Try to figure out the SOA DN here...
+	  $dn_parts = split(',', $dn);
+	  for($i=1; $i < count($dn_parts); $i++) {
+		$newdn .= $dn_parts[$i];
+		if($dn_parts[$i+1])
+		  $newdn .= ',';
+	  }
+	  $dn_soa = 'dNSTTL=3600+relativeDomainName=@,'.$newdn;
+	  
+	  // Verify that this object realy exists
+	  if(!$_pql->get_dn($dn_soa, 'objectClass=*', 'BASE')) {
+		// It doesn't! Try without the 'dNSTTL=3600+' part...
+		if($_pql->get_dn('relativeDomainName=@,'.$newdn, 'objectClass=*', 'BASE')) {
+		  // That worked better, use it...
+		  $dn_soa = 'relativeDomainName=@,'.$newdn;
+		}
+	  }
+	  // }}}
+	
+	  if(!pql_bind9_update_serial($dn_soa))
+		die("failed to update SOA serial number");
 	} else
 	  $msg = "Failed to add ".$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
 	
 	$msg = urlencode($msg);
-	$url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
+
+	if(@$_REQUEST["host"] and $_REQUEST["ref"])
+	  $url = "host_detail.php";
+	else 
+	  $url = "domain_detail.php";
+	$url .= "?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
 	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
-	
+	if(@$_REQUEST["host"] and $_REQUEST["ref"])
+	  $url .= "&host=".$_REQUEST["host"]."&ref=".$_REQUEST["ref"];
+
 	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	  die("<b>$url</b>");

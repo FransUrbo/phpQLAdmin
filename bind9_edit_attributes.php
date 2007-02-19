@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.16 2006-12-16 12:02:08 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.17 2007-02-19 10:54:51 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -13,11 +13,34 @@ include($_SESSION["path"]."/header.html");
 include($_SESSION["path"]."/include/attrib.dnszone.inc");
 // }}}
 
-// {{{ Forward back to domain detail page
+// {{{ Forward back to domain/host detail page
 function attribute_forward($msg) {
     $msg  = urlencode($msg);
-    $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
-	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
+	if($_REQUEST["host"] == 'Global') 
+	  // Originally called from Computers->Global->DNS Administration->[domain]
+	  $url = "host_detail.php?";
+	else
+	  $url = "domain_detail.php?";
+
+	if($_REQUEST["rootdn"] and $_REQUEST["domain"])
+	  $url .= "rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&";
+
+	if($_REQUEST["view"])
+	  $url .= "view=".$_REQUEST["view"]."&";
+	elseif($_REQUEST["oldvalue"] and $_REQUEST["newvalue"] and ($_REQUEST["host"] == 'Global'))
+	  // We've been replacing aRecords!
+	  $url .= "view=dns&";
+
+	if($_REQUEST["dns_domain_name"])
+	  $url .= "dns_domain_name=".$_REQUEST["dns_domain_name"]."&";
+
+	if($_REQUEST["host"] == 'Global')
+	  $url .= "host=".$_REQUEST["host"]."&";
+
+	if(($_REQUEST["host"] == 'Global') and (($_REQUEST["ref"] == 'global') or ($_REQUEST["ref"] == 'zone')))
+	  $url .= "ref=".$_REQUEST["ref"]."&";
+
+	$url .= "msg=$msg";
 
 	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  echo "<p>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
@@ -59,6 +82,9 @@ switch($_REQUEST["type"]) {
 	break;
   case "afsdb";
 	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_AFSRECORD");
+	break;
+  case "txt";
+	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_TXTRECORD");
 	break;
 
   default:

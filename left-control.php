@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.38 2007-02-15 12:33:05 turbo Exp $
+// $Id: left-control.php,v 2.39 2007-02-19 10:54:51 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -331,6 +331,63 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 		}
 // }}}
 	  } // endif(is_array(web_containers)
+// }}}
+
+	  // {{{ Get all DNS domains in the system
+	  if(pql_get_define("PQL_ATTR_BIND9_USE") and ($physical_dn == 'Global')) {
+		// {{{ ---------------- GET THE DOMAINS/BRANCHES
+		if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+		  // This is a 'super-admin'. Should be able to read EVERYTHING!
+		  $domains = pql_get_domains();
+		} else {
+		  // {{{ Get ALL domains we have access to.
+		  //     I.e., all DN's with 'administrator: USER_DN'
+		  foreach($_SESSION["BASE_DN"] as $dn)  {
+			$dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=".$_SESSION["USER_DN"]);
+			if($dom) {
+			  foreach($dom as $d) {
+				$domains[] = $d;
+			  }
+			}
+		  }
+// }}}
+		}
+// }}}
+		if(is_array($domains)) {
+		  // {{{ Retreive all DNS zones
+		  require($_SESSION["path"]."/include/pql_bind9.inc");
+		  
+		  $zones = array();
+		  foreach($domains as $domain)  {
+			$zone = pql_bind9_get_zone($domain);
+			if(is_array($zone)) {
+			  foreach($zone as $key => $data) {
+				$data["@"]["domain_branch_dn"] = $domain;
+				$zones[$key] = $data;
+			  }
+			}
+		  }
+		  // }}}
+
+		  if(is_array($zones)) {
+			ksort($zones);
+
+			// {{{ Setup and show the branch
+			$links = array();
+			foreach($zones as $zone) {
+			  $rootdn = pql_get_rootdn($zone["@"]["domain_branch_dn"], "left-control.php");
+			  $dn  = "host_detail.php?rootdn=$rootdn&domain=".$zone["@"]["domain_branch_dn"];
+			  $dn .= "&view=dns&dns_domain_name=".$zone["@"]["ZONE"]."&host=Global&ref=zone";
+			  $new = array($zone["@"]["ZONE"] => $dn);
+						   
+			  $links = $links + $new;
+			}
+			
+			pql_format_tree("DNS Zones - Global", "host_detail.php?view=dns&host=Global", $links, 1);
+// }}}
+		  }
+		}
+	  }
 // }}}
 
 	  // {{{ End of the span/div - host

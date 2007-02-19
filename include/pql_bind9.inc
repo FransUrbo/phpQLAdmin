@@ -4,11 +4,11 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.52 2007-02-16 09:34:41 turbo Exp $
+// $Id: pql_bind9.inc,v 2.53 2007-02-19 10:54:53 turbo Exp $
 //
 
-// {{{ pql_bind9_get_zone(linkid, branchname, domainname)
-function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
+// {{{ pql_bind9_get_zone(branchname, domainname)
+function pql_bind9_get_zone($branchname, $domainname = '') {
   global $_pql;
   
   $dn = pql_get_define("PQL_CONF_SUBTREE_BIND9").",".urldecode($branchname);
@@ -240,7 +240,7 @@ function pql_bind9_add_zone($dn, $zone) {
   unset($entry);
   $entry['objectclass'][] = 'top';
   $entry['objectclass'][] = 'domain';
-  
+
   // {{{ Create each and every (leading) part of the domain
   for($i=count($dc)-1; !empty($dc[$i]); $i--) {
 	$dc_tmp = pql_maybe_idna_encode($dc[$i]);
@@ -258,6 +258,7 @@ function pql_bind9_add_zone($dn, $zone) {
 		die();
 	  else
 		$DNs[] = $dn;
+	}
   }
   // }}}
   
@@ -288,11 +289,12 @@ function pql_bind9_add_zone($dn, $zone) {
   $dn = "dNSTTL=".$entry['dNSTTL']."+relativeDomainName=".$entry['relativeDomainName'].",$dn";
   
   if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
-	if(!$_pql->add($dn, $entry, 'bind9/zone', 'pql_bind9_add_zone'))
+	if(!$_pql->add($dn, $entry, 'bind9/zone', 'pql_bind9_add_zone')) {
 	  // Can't add SOA record
 	  die();
-	else
+	} else {
 	  $DNs[] = $dn;
+	}
   }
   
   return true;
@@ -380,48 +382,51 @@ function pql_bind9_add_host($basedn, $entry) {
   $dn = "relativeDomainName=$tmp,$dn,".pql_get_define("PQL_CONF_SUBTREE_BIND9").",$basedn";
   // }}}
   
-  // {{{ Just in case the object already exists, we merge the new with the old...
-  // Try to find out which attribute we're trying to add/modify
-  $TYPES = array(pql_get_define("PQL_ATTR_ARECORD"),
-				 pql_get_define("PQL_ATTR_CNAMERECORD"), 
-				 pql_get_define("PQL_ATTR_HINFORECORD"),
-				 pql_get_define("PQL_ATTR_MXRECORD"),
-				 pql_get_define("PQL_ATTR_NSRECORD"),
-				 pql_get_define("PQL_ATTR_PTRRECORD"));
-  foreach($TYPES as $TYPE) {
-	$type = lc($TYPE);
-	if(@$entry[$type]) {
-	  // This one is defined. That's the attribute!
-	  $attrib = $type;
-	  break;
+  if($_pql->get_dn($dn, "objectClass=*")) {
+	// {{{ The object already exists - merge the new with the old...
+	// Try to find out which attribute we're trying to add/modify
+	$TYPES = array(pql_get_define("PQL_ATTR_ARECORD"),
+				   pql_get_define("PQL_ATTR_CNAMERECORD"), 
+				   pql_get_define("PQL_ATTR_HINFORECORD"),
+				   pql_get_define("PQL_ATTR_MXRECORD"),
+				   pql_get_define("PQL_ATTR_NSRECORD"),
+				   pql_get_define("PQL_ATTR_PTRRECORD"),
+				   pql_get_define("PQL_ATTR_TXTRECORD"));
+	foreach($TYPES as $TYPE) {
+	  $type = lc($TYPE);
+	  if(@$entry[$type]) {
+		// This one is defined. That's the attribute!
+		$attrib = $type;
+		break;
+	  }
 	}
-  }
-  
-  // Does the object exists (with this attribute)?
-  if($attrs = $_pql->get_attribute($dn, $attrib)) {
-	// It DOES exists!
-	if(!is_array($attrs))
-	  // Not an array - make it one.
-	  $attrs = array($attrs);
 	
-	// {{{ Go through the existing attributes, make sure that the new value don't already exist
+	// Does the object exists (with this attribute)?
 	$value_exists = 0; 
-	for($i=0; $attrs[$i]; $i++) {
-	  if(is_array($entry[$attrib])) {
-		for($j=0; $entry[$attrib][$j]; $j++) {
-		  if($attrs[$i] == $entry[$attrib][$j]) {
+	if($attrs = $_pql->get_attribute($dn, $attrib)) {
+	  // It DOES exists!
+	  if(!is_array($attrs))
+		// Not an array - make it one.
+		$attrs = array($attrs);
+	
+	  // {{{ Go through the existing attributes, make sure that the new value don't already exist
+	  for($i=0; $attrs[$i]; $i++) {
+		if(is_array($entry[$attrib])) {
+		  for($j=0; $entry[$attrib][$j]; $j++) {
+			if($attrs[$i] == $entry[$attrib][$j]) {
+			  $value_exists = 1;
+			  break;
+			}
+		  }
+		} else {
+		  if($attrs[$i] == $entry[$attrib]) {
 			$value_exists = 1;
 			break;
 		  }
 		}
-	  } else {
-		if($attrs[$i] == $entry[$attrib]) {
-		  $value_exists = 1;
-		  break;
-		}
 	  }
+	  // }}}
 	}
-	// }}}
 	
 	if(!$value_exists) {
 	  // {{{ Add the new attribute to the old list
@@ -430,7 +435,7 @@ function pql_bind9_add_host($basedn, $entry) {
 	  // Recreate the LDIF
 	  unset($entry);
 	  $entry[$attrib] = $attrs;
-
+	  
 	  // Modify object
 	  if(!$_pql->modify($dn, $entry, "pql_bind9_add_host"))
 		die();
@@ -438,23 +443,26 @@ function pql_bind9_add_host($basedn, $entry) {
 	}
 	
 	return $dn;
+	// }}}
+  } else {
+	// {{{ Object doesn't exists - create a new one
+	$entry['objectClass'][] = 'top';
+	$entry['objectClass'][] = 'dNSZone';
+  
+	// {{{ Add the OpenLDAPaci attribute (maybe)
+	if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
+	  $ACIs = pql_bind9_get_acis($entry[pql_get_define("PQL_ATTR_ZONENAME")]);
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = $ACIs;
+	}
+	// }}}
+  
+	// Add the object to the database
+	if(!$_pql->add($dn, $entry, 'bind9/host', 'pql_bind9_add_host'))
+	  die();
+	
+	return $dn;
+	// }}}
   }
-  // }}}
-  
-  $entry['objectClass'][] = 'top';
-  $entry['objectClass'][] = 'dNSZone';
-  
-  // {{{ Add the OpenLDAPaci attribute (maybe)
-  if(@$_SESSION["ACI_SUPPORT_ENABLED"]) 
-	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = pql_bind9_get_acis($entry[pql_get_define("PQL_ATTR_ZONENAME")]);
-  // }}}
-  
-  // Add the object to the database
-  if(!$_pql->add($dn, $entry, 'bind9/host', 'pql_bind9_add_host'))
-	die();
-  }
-  
-  return $dn;
 }
 // }}}
 
@@ -545,7 +553,7 @@ function pql_bind9_update_serial($dn) {
   // Get the zone name from the record (so that we can find the SOA)
   $zone = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_ZONENAME"));
   
-  // Get the SOA for this zone.
+  // {{{ Get the SOA for this zone.
   $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
   foreach($_SESSION["BASE_DN"] as $base) {
 	$object = $_pql->search($base, $filter);
@@ -559,8 +567,9 @@ function pql_bind9_update_serial($dn) {
 	  $soa["soa"] = $object[lc(pql_get_define("PQL_ATTR_SOARECORD"))];
 	}
   }
+  // }}}
   
-  // Get the old serial number from the SOA
+  // {{{ Get the old serial number from the SOA
   // sOARecord: phpqladmin.com. registry.phpqladmin.com. 2005013001 172800 86400 2419200 604800
   $tmp = split(' ', $soa["soa"]); $serial = $tmp[2];
   
@@ -571,6 +580,7 @@ function pql_bind9_update_serial($dn) {
   for($i=0; $i <= 7; $i++)
 	$serial_date .= $serial[$i];
   $serial_number = $serial[8].$serial[9];
+  // }}}
   
   // Get current date.
   $date = date("Ymd", time());

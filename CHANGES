@@ -160,6 +160,10 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Move the 'Force Strong Passwords' out of 'Plugin configuration' and into 'Behaviour config'
 	    (a couple of lines down).
 	  - Manage (i.e. SHOW only) Sudo Administration in Computers->Global and Computers-[physical server].
+	  - Show a 'DNS Administration' in Computers->Global (and a list of ALL DNS domains in a
+	    'DNS Zones - Global' below the Global branch).
+	  - Support setting TXT records for hosts in DNS manager.
+	  - Support changing aRecords globaly (replace IP1 with IP2 in the whole database).
 
 	API changes
 	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods

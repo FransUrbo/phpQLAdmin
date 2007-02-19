@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.53 2007-02-15 12:07:09 turbo Exp $
+// $Id: control_detail.php,v 1.54 2007-02-19 10:54:51 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -160,6 +160,11 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$new = array('radius' => 'RADIUS Administration');
 		$buttons = $buttons + $new;
 	  } 
+
+	  if(pql_get_define("PQL_ATTR_BIND9_USE") and ($_REQUEST["host"] == 'Global')) {
+		$new = array('dns' => 'DNS Administration');
+		$buttons = $buttons + $new;
+	  }
 
 	  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
 
