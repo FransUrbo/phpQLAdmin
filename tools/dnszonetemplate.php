@@ -1,6 +1,6 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.16 2007-02-15 12:45:22 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.17 2007-02-19 15:47:35 turbo Exp $
 // {{{ Setup session etc
 require("../include/pql_session.inc");
 require("../include/pql_config.inc");
@@ -15,7 +15,7 @@ $TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR');
 $domain = $_REQUEST["domain"];
 $defaultdomain = $_REQUEST["defaultdomain"];
 
-$zone = pql_bind9_get_zone($_pql->ldap_linkid, $domain, $defaultdomain);
+$zone = pql_bind9_get_zone($domain, $defaultdomain);
 if(is_array($zone)) {
     // We have a zone, fill in some variables used in the output
     $date = $zone[$defaultdomain]["@"]["SOA"]["SERIAL"];
@@ -152,9 +152,17 @@ if(!$printed_hosts) {
     echo "; [add your host(s) here]\n";
 }
 
-$link  = $_SESSION["URI"]."domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"]);
-$link .= "&domain=".urlencode($_REQUEST["domain"])."&view=".$_REQUEST["view"];
-$link .= "&dns_domain_name=$defaultdomain";
+if($_REQUEST["host"]) {
+  $link  = $_SESSION["URI"]."host_detail.php?rootdn=".urlencode($_REQUEST["rootdn"]);
+  $link .= "&domain=".urlencode($_REQUEST["domain"])."&view=".$_REQUEST["view"];
+  $link .= "&dns_domain_name=$defaultdomain&host=".$_REQUEST["host"];
+  if($_REQUEST["ref"])
+    $link .= "&ref=".$_REQUEST["ref"];
+} else {
+  $link  = $_SESSION["URI"]."domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"]);
+  $link .= "&domain=".urlencode($_REQUEST["domain"])."&view=".$_REQUEST["view"];
+  $link .= "&dns_domain_name=$defaultdomain";
+}
 ?>
     </pre>
 
