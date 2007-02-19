@@ -1,6 +1,7 @@
 <?php
-// $Id: index2.php,v 2.49 2007-02-15 12:28:36 turbo Exp $
+// $Id: index2.php,v 2.50 2007-02-19 11:03:07 turbo Exp $
 
+// {{{ Setup session etc
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 
@@ -9,14 +10,19 @@ if(!@$_SESSION["USER_DN"]) {
   pql_header("index.php");
 }
 
-if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"])) {
-    $_REQUEST["advanced"] = $_SESSION["ADVANCED_MODE"] = 1;
+if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"]) and
+   ($_SESSION["ADVANCED_MODE"] != 1))
+{
+  // If we choose to DISABLE advanced mode, this shouldn't be set!
+  $_REQUEST["advanced"] = $_SESSION["ADVANCED_MODE"] = 1;
+} else {
+  $_REQUEST["advanced"] = $_SESSION["ADVANCED_MODE"] = 0;
 }
 
-$frames = 2; // Default 2 frames - left and main
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // If something changed, make sure we start with these undefined!
+$_SESSION["USE_USERS"] = 0;
 $_SESSION["USE_EZMLM"] = 0;
 
 // All these is located in the 'Computers frame'
@@ -26,18 +32,23 @@ $_SESSION["USE_HOSTACL"] = 0;
 $_SESSION["USE_SUDO"] = 0;
 $_SESSION["USE_AUTOMOUNT"] = 0;
 $_SESSION["USE_RADIUS"] = 0;
+// }}}
 
-// -----------------
-// Count how many frames we should open
-if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
-  if(pql_get_define("PQL_CONF_EZMLM_USE") and $_SESSION["ALLOW_EZMLM_CREATE"]) {
-    $frames++;
-
-    $_SESSION["USE_EZMLM"] = 1;
+// {{{ Count how many frames we should open
+$frames = 2; // Default 2 frames - left-base and main
+foreach($_pql->ldap_basedn as $dn)  {
+  // Should users be shown in ANY of the base DN's? Oonly count it once!
+  if(pql_get_define("PQL_CONF_SHOW_USERS", $dn) and !$_SESSION["USE_USERS"]) {
+	$frames++;
+	$_SESSION["USE_USERS"] = 1;
   }
+}
 
-  // Should we show the controls frame (ie, is controls configured
-  // in ANY of the namingContexts)?
+if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
+  $adv_uri = "?advanced=1";
+  $size = "22"; // Size of the base frame
+
+  // Should we show the computers frame?
   if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	 (pql_get_define("PQL_CONF_CONTROL_USE") or
 	  pql_get_define("PQL_CONF_WEBSRV_USE") or
@@ -68,31 +79,26 @@ if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
 	if(pql_get_define("PQL_CONF_RADIUS_USE"))
 	  $_SESSION["USE_RADIUS"] = 1;
   }
-}
 
-// -----------------
-// Calculate left framesizes depending on how many
-// frames we're opening. There's a maximum of 5 frames
-// (Four on the left + main frame) and a minimum of two
-// (one on the left + main frame).
-if($frames > 2) {
-    $size = 100 / ($frames - 1);
+  if(pql_get_define("PQL_CONF_EZMLM_USE") and $_SESSION["ALLOW_EZMLM_CREATE"]) {
+    $frames++;
+    $_SESSION["USE_EZMLM"] = 1;
+  }
 } else {
-    $size = 100;
+  $size = "19"; // Size of the base frame
 }
-$size = sprintf("%d", $size);
-
 //echo "Frames: $frames<br>";
-//echo "Size: $size<br>";
+// }}}
 
-// Mozilla have problems with resizing frames.
+// {{{ Mozilla have problems with resizing frames.
 // By setting a thick border, it's at least
 // possible...
 if($_SESSION["mozilla"]) {
-    $border = 5;
+    $border = 2;
 } else {
     $border = 0;
 }
+// }}}
 ?>
 <html>
   <head>
@@ -101,89 +107,81 @@ if($_SESSION["mozilla"]) {
 
   <!-- frames == <?=$frames?> -->
 
-<?php if(@$_REQUEST["advanced"] and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
   <frameset cols="260,*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
     <!-- LEFT frame -->
-<?php   if($frames >= 3) { ?>
-    <frameset cols="*" rows="70%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
-<?php   } ?>
-      <frame src="left.php?advanced=1" name="pqlnav">
+<?php if($frames >= 3) { ?>
+    <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
+<?php } ?>
+      <frame src="left-base.php<?=$adv_uri?>" name="pqlbase">
+<?php if($frames >= 4) { ?>
+      <frameset cols="*" rows="70%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
+<?php } ?>
+<?php if($_SESSION["USE_USERS"]) { ?>
+        <frame src="left.php<?=$adv_uri?>" name="pqlnav">
+<?php } ?>
 
-<?php   if($frames >= 4) { ?>
-      <frameset cols="*" rows="50%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
-<?php   } 
+<?php if(@$_REQUEST["advanced"] and !$_SESSION["SINGLE_USER"]) {
+		// {{{ Advance mode - show controls and mailinglist managers
+		if($frames >= 5) {
+?>
+        <frameset cols="*" rows="50%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 5 -->
+<?php	} 
 
-        if($_SESSION["USE_CONTROLS"] or $_SESSION["USE_WEBSRV"]    or $_SESSION["USE_HOSTACL"] or
+		if($_SESSION["USE_CONTROLS"] or $_SESSION["USE_WEBSRV"]    or $_SESSION["USE_HOSTACL"] or
 		   $_SESSION["USE_SUDO"]     or $_SESSION["USE_AUTOMOUNT"] or $_SESSION["USE_RADIUS"])
 		{
 ?>
-      <frame src="left-control.php" name="pqlnavctrl">
-<?php   }
+        <frame src="left-control.php" name="pqlnavctrl">
+<?php	}
 
-        if($frames >= 5) {
+		if($frames >= 6) {
 ?>
-      <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 5 -->
-<?php   }
+        <frameset cols="*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 6 -->
+<?php	}
 
-       if($_SESSION["USE_EZMLM"]) { ?>
-      <frame src="left-ezmlm.php"   name="pqlnavezmlm">
-<?php   }
+		if($_SESSION["USE_EZMLM"]) { ?>
+        <frame src="left-ezmlm.php" name="pqlnavezmlm">
+<?php	}
 
-        if($frames >= 5) {
+		if($frames >= 6) {
 ?>
-      </frameset><!-- $frames >= 5 -->
-<?php   }
+        </frameset><!-- $frames >= 6 -->
+<?php	}
 
-         if($frames >= 4) {
+		if($frames >= 5) {
+?>
+        </frameset><!-- $frames >= 5 -->
+<?php	} 
+// }}}
+	  }
+
+	  if($frames >= 4) {
 ?>
       </frameset><!-- $frames >= 4 -->
-<?php    } 
+<?php }
 
-         if($frames >= 3) {
-?>
+	  if($frames >= 3) { ?>
     </frameset><!-- $frames >= 3 -->
-<?php    }  ?>
+<?php } ?>
 
     <!-- RIGHT frame -->
 <?php
-    $value = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"), 0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
-    if($value){
+	  // {{{ Right frame
+	  $value = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"),
+									0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
+      if($value) {
 ?>
-   <frame src="user_detail.php?rootdn=<?php
+    <frame src="user_detail.php?rootdn=<?php
     if(empty($rootdn) and empty($_REQUEST["rootdn"]))
       echo pql_get_rootdn($_SESSION["USER_DN"], 'index2.php');
-        $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
-        ?>&domain=<?php echo 'place domain here'; ?>&user=<?php echo $_SESSION["USER_DN"]; ?>" name="pqlmain">
-
-<?php
-    }else{ ?>
-       <frame src="home.php?advanced=1" name="pqlmain">
-<?php
-    } ?>
-  </frameset>
-<?php } else {
-          // Not running in advanced mode, don't show the
-          // controls/mailinglist managers
+    $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
+?>&domain=<?php echo 'place domain here'; ?>&user=<?php echo $_SESSION["USER_DN"]; ?>" name="pqlmain">
+<?php } else { ?>
+    <frame src="home.php<?=$adv_uri?>" name="pqlmain">
+<?php }
+// }}}
 ?>
-  <frameset cols="250,*" rows="*" border="0" frameborder="0"> 
-    <frame src="left.php?advanced=0" name="pqlnav">
-<?php
-    $value = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"), 0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
-    if($value){
-?>
-   <frame src="user_detail.php?rootdn=<?php
-    if(empty($rootdn) and empty($_REQUEST["rootdn"]))
-      echo pql_get_rootdn($_SESSION["USER_DN"], 'index2.php');
-        $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
-        ?>&domain=<?php echo 'place domain here'; ?>&user=<?php echo $_SESSION["USER_DN"]; ?>" name="pqlmain">
-<?php
-    }else{ ?>
-       <frame src="home.php?advanced=0" name="pqlmain">
-<?php
-    } ?>
-
   </frameset>
-<?php } ?>
 
   <noframes>
     <body bgcolor="#FFFFFF">

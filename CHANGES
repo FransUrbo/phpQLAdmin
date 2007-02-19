@@ -167,6 +167,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    'DNS Zones - Global' below the Global branch).
 	  - Support setting TXT records for hosts in DNS manager.
 	  - Support changing aRecords globaly (replace IP1 with IP2 in the whole database).
+	  - Separate the User and LDAP server info, logout button, advanced mode selector and the 'Home'
+	    branch from user lists into two separate tables.
 
 	API changes
 	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods
