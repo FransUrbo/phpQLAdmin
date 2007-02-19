@@ -159,6 +159,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + Note about enabling ACI's if test w/o ACI failed, but test w/ ACI worked.
 	  - Move the 'Force Strong Passwords' out of 'Plugin configuration' and into 'Behaviour config'
 	    (a couple of lines down).
+	  - Manage (i.e. SHOW only) Sudo Administration in Computers->Global and Computers-[physical server].
 
 	API changes
 	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods

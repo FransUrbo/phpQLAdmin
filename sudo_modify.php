@@ -43,39 +43,63 @@ if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_sudo_role') {
 }
 
 // {{{ Retreive all users
-if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
-  $subrdn =  pql_get_define("PQL_CONF_SUBTREE_USERS") . ",";
-}
-$userdn = $subrdn . $_GET["domain"];
-$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
-$users = $_pql->get_dn($userdn, $filter);
+if($_REQUEST["domain"]) {
+  if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
+	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_USERS") . ",";
+  }
+  $userdn = $subrdn . $_GET["domain"];
+  $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
+  $users = $_pql->get_dn($userdn, $filter);
 
-// Extract 'human readable' name from the user DN's found
-$user_results = pql_left_htmlify_userlist($_REQUEST["rootdn"], $_REQUEST["domain"],
-										  $userdn, $users, ($links = NULL));
+  // Extract 'human readable' name from the user DN's found
+  $user_results = pql_left_htmlify_userlist($_REQUEST["rootdn"], $_REQUEST["domain"],
+											$userdn, $users, ($links = NULL));
+}
 // }}}
 
 // {{{ Retreive all computers
 if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS")) {
   $subrdn =  pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
 }
-$computerdn = $subrdn . $_GET["domain"];
-$filter = "(&(objectClass=ipHost)(cn=*))";
-$computer_results = $_pql->search($computerdn, $filter);
+$computer_results = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
+								  '(&(cn=*)(objectclass=ipHost)(ipHostNumber=*))');
 if(is_array($computer_results)) {
-  asort($computer_results);
+  sort($computer_results);
 }
 // }}}
 
 // {{{ Retreive all sudo roles
-if(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")) {
-  $subrdn =  pql_get_define("PQL_CONF_SUBTREE_SUDOERS") . ", ";
-}
-$sudodn = $subrdn . $_REQUEST["domain"];
-$filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=sudoRole';
-$sudo_results = $_pql->search($sudodn, $filter);
-if(is_array($sudo_results)) {
-  asort($sudo_results);
+if($_REQUEST["domain"]) {
+  if(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")) {
+	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_SUDOERS") . ", ";
+  }
+  $sudodn = $subrdn . $_REQUEST["domain"];
+  $filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=sudoRole';
+  $sudo_results = $_pql->search($sudodn, $filter);
+  if(is_array($sudo_results))
+	asort($sudo_results);
+} else {
+  // Called from physical host details->Sudo Administration
+
+  // Get the FQDN from the host DN
+  $physical = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+  $filter = "(&(objectClass=sudoRole)(cn=*)(sudoHost=$physical))";
+  $sudo_results = array();
+  foreach($_pql->ldap_basedn as $dn)  {
+	$dn  = pql_format_normalize_dn($dn);
+	$tmp = $_pql->get_dn($dn, $filter);
+	pql_add2array($sudo_results, $tmp);
+  }
+
+  if(is_array($sudo_results)) {
+	// Get ALL information about these SUDO roles
+	sort($sudo_results);
+	for($i=0; $sudo_results[$i]; $i++) {
+	  $roles[] = $_pql->search($sudo_results[$i], 'objectClass=*', 'BASE');
+	}
+  }
+
+  $sudo_results = $roles;
 }
 
 if(is_array($sudo_results) and !@$sudo_results[0]) {
@@ -85,10 +109,12 @@ if(is_array($sudo_results) and !@$sudo_results[0]) {
   $sudo_results[] = $tmp;
 }
 // }}}
+
+if($_REQUEST["domain"]) {
 ?>
   <form method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Create Sudo Roles
+      <th colspan="3" align="left"><?=$LANG->_('Create Sudo Roles')?>
         <tr class="c2">
           <td class="title"><?=$LANG->_("Role")?></td>
           <td class="title"><?=$LANG->_("User")?></td>
@@ -115,7 +141,7 @@ if(is_array($sudo_results) and !@$sudo_results[0]) {
               <option value='ALL'><?=$LANG->_("ALL")?></option>
 <?php if(is_array($computer_results)) {
 		for($i=0; $i < count($computer_results); $i++) {
-		  $host = $computer_results[$i][pql_get_define("PQL_ATTR_CN")];
+		  $host = $_pql->get_attribute($computer_results[$i], pql_get_define("PQL_ATTR_CN"));
 		  print "              <option value='" . $host . "'>" . $host . "</option>\n";
 		}
       }
@@ -131,8 +157,14 @@ if(is_array($sudo_results) and !@$sudo_results[0]) {
     <input type="submit" name="Submit" value="<?=$LANG->_("Add New Sudo Role")?>">
   </form>
 
-<?php if(is_array($sudo_results)) { ?>
+<?php
+}
+
+if(is_array($sudo_results)) {
+	  if($_REQUEST["domain"]) {
+?>
   <form method="post">
+<?php } ?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_("Current Sudo Roles")."\n"?>
         <tr class="c2">
@@ -186,13 +218,14 @@ if(is_array($sudo_results) and !@$sudo_results[0]) {
 			$row = 'c1';
 		}
 									
-		print "        <tr class='c2'>";
-		print "          <td class='title'>\n";
-		print "            <select name='roledn'>\n";
-		for($r = 0; $r < count($sudo_results); $r++) {
-		  print "            <option value='" . $sudo_results[$r]['dn'] . "'>";
-		  print  $sudo_results[$r][pql_get_define("PQL_ATTR_CN")] . "</option>\n";
-		}
+		if($_REQUEST["domain"]) {
+		  print "        <tr class='c2'>";
+		  print "          <td class='title'>\n";
+		  print "            <select name='roledn'>\n";
+		  for($r = 0; $r < count($sudo_results); $r++) {
+			print "            <option value='" . $sudo_results[$r]['dn'] . "'>";
+			print  $sudo_results[$r][pql_get_define("PQL_ATTR_CN")] . "</option>\n";
+		  }
 ?>
             </select>
           </td>
@@ -200,10 +233,10 @@ if(is_array($sudo_results) and !@$sudo_results[0]) {
             <select name='userdn'>
               <option value='none'><?=$LANG->_("None")?></option>
               <option value='ALL'><?=$LANG->_("ALL")?></option>
-<?php	foreach($user_results as $dn => $user) {
+<?php	  foreach($user_results as $dn => $user) {
 			print "              <option value='$user'>$user</option>\n";
-		}
-		print "            </select>\n          </td>\n";
+		  }
+		  print "            </select>\n          </td>\n";
 ?>
           <td><input type="text" name="command" size="20"></td>
           <td><input type="text" name="user" size="20"></td>
@@ -211,22 +244,57 @@ if(is_array($sudo_results) and !@$sudo_results[0]) {
             <select name="computer">
               <option value="none"><?=$LANG->_("None")?></option>
               <option value="ALL"><?=$LANG->_("ALL")?></option>
-<?php	for($i=0; $i < count($computer_results); $i++) {
+<?php	  for($i=0; $i < count($computer_results); $i++) {
 			$host = $computer_results[$i][pql_get_define("PQL_ATTR_CN")];
 			print "              <option value='" . $host . "'>" . $host . "</option>\n";
-		}
+		  }
 ?>
             </select>
           </td>
         </tr>
+<?php	} else { ?>
+        <tr class="c1">
+          <td colspan="5">
+            <img src="images/info.png" width="16" height="16" alt="" border="0">
+            <?=$LANG->_('Note that you will have to go into a branch to \uadd\U users to a host.')?>
+          </td>
+        </tr>
+<?php	} ?>
       </th>
     </table>
+<?php if($_REQUEST["domain"]) { ?>
 
-    <input type="hidden" name="view" value="sudo">
+    <input type="hidden" name="view"   value="sudo">
     <input type="hidden" name="action" value="update_sudo_role">
     <input type="submit" name="Submit" value="<?=$LANG->_('Update Sudo Role')?>">
   </form>
 <?php }
+} else {
+  // No sudo rules!
+?>
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?=$LANG->_("Current Sudo Roles")."\n"?>
+        <tr class="c1">
+          <td>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">
+          </td>
+
+          <td>
+            <table>
+              <th align="left">
+                <tr>
+                  <?=$LANG->_('No sudo rules for this host.');?><br>
+                  <?=$LANG->_('Note that you will have to go into a branch to \uadd\U users to a host.')?>
+                </tr>
+              </th>
+            </table>
+          </td>
+        </tr>
+      </th>
+    </table>
+<?php
+}
+
 /*
  * Local variables:
  * mode: php

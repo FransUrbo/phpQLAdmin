@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 2.2 2007-02-15 12:07:12 turbo Exp $
+// $Id: host_detail.php,v 2.3 2007-02-19 10:00:43 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -69,7 +69,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 }
 // }}}
 
-// {{{ Setup nav buttons
+// {{{ Setup default view if not set
 if(empty($_REQUEST["view"])) {
   if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
 	$_REQUEST["view"] = 'hostacl';
@@ -92,8 +92,10 @@ if(empty($_REQUEST["view"])) {
 	$_REQUEST["view"] = 'radius';
   }
 }
+// }}}
 
-if(($_REQUEST["server"] != 'Global') and ($_REQUEST["ref"] == 'physical') ) {
+// {{{ Setup nav buttons
+if(($_REQUEST["server"] != 'Global') and (($_REQUEST["ref"] == 'physical') or ($_REQUEST["host"] == 'Global'))) {
   // Do NOT show if:
   //	Left host frame/Webserver - Global
   //	Left host frame/[physical]/Webserver - Port xx
@@ -129,6 +131,11 @@ if(($_REQUEST["server"] != 'Global') and ($_REQUEST["ref"] == 'physical') ) {
 	$buttons = $buttons + $new;
   }				 
 
+  if(pql_get_define("PQL_CONF_SUDO_USE")) {
+	$new = array('sudo' => 'Sudo Administration');
+	$buttons = $buttons + $new;
+  }				 
+
   if($_REQUEST["host"] != 'Global') {
 	$new = array('action'  => 'Action');
 	$buttons = $buttons + $new;
@@ -149,6 +156,10 @@ if($_REQUEST["view"] == 'hostacl') {
   include("./tables/host_details-websrv.inc");
 } elseif($_REQUEST["view"] == 'radius') {
   include("./tables/host_details-radius.inc");
+} elseif($_REQUEST["view"] == 'sudo') {
+  include("./sudo_modify.php");
+} elseif($_REQUEST["view"] == 'dns') {
+  include("./tables/host_details-dns.inc");
 } elseif($_REQUEST["view"] == 'action') {
   include("./tables/host_details-action.inc");
 }
