@@ -143,6 +143,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    correct fold.
 	  - Fix some array usage bugs in dump_object.php
 	    + Don't output the '--- DEBUG ---' stuf.
+	  - Change the way host_modify.php finds physical hosts (previosly it also found webserver stuff).
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

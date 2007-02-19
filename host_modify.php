@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.12 2007-02-15 12:07:12 turbo Exp $
+// $Id: host_modify.php,v 2.13 2007-02-19 10:59:27 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -34,7 +34,7 @@ if($user_results) {
 
 // {{{ Retreive all physical computers
 $computer_results = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
-			       '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))');
+				  '(&(cn=*)(objectclass=ipHost)(ipHostNumber=*))');
 if($computer_results) {
   sort($computer_results);
 }
