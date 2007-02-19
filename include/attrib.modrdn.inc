@@ -1,10 +1,12 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.19 2007-02-15 12:08:08 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.20 2007-02-19 14:54:53 turbo Exp $
 
 // {{{ attribute_setup_aci(dn, old, new)
 function attribute_setup_aci($dn, $old, $new) {
+	$replaced = 0;
+
 	// Get the old ACI's for this object
 	$old_acis = pql_aci_get($dn);
 
@@ -14,6 +16,7 @@ function attribute_setup_aci($dn, $old, $new) {
 			if(lc($old_acis[$i]['SUBJECT']) == lc($old)) {
 				// Replace the old value with the new.
 				$new_acis[] = eregi_replace($old, $new, $old_acis[$i]['LINE']);
+				$replaced=1;
 			} else
 			  $new_acis[] = $old_acis[$i]['LINE'];
 		} else
@@ -21,7 +24,8 @@ function attribute_setup_aci($dn, $old, $new) {
 	}
 
 	// Return the new ACI list.
-	return($new_acis);
+	if($replaced)
+		return($new_acis);
 }
 // }}}
 
@@ -138,8 +142,9 @@ function attribute_save($type) {
 				for($i=0; $i < count($objects); $i++) {
 					$ACIs = attribute_setup_aci($objects[$i], $_REQUEST["oldvalue"], $user);
 
-					// Modify this object. BUG: Should we care about failure/successes?!
-					pql_modify_attribute($objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+					if(is_array($ACIs))
+					  // Modify this object. BUG: Should we care about failure/successes?!
+					  pql_modify_attribute($objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 				}
 			}
 		}
