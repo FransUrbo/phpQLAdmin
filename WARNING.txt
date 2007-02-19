@@ -5,16 +5,4 @@ Please check it every time you've done a cvs update, because you MIGHT
 ruin your system/db or something else if you don't take notice!!
 
 Warnings of the day:
-As of 2.3.4, phpQLAdmin have support for Automount information. This
-required schema changes and also a new config define in include/config.inc
-(PQL_CONF_SUBTREE_AUTOMOUNTS).
-
-Please make sure to update both your LDAP server (new schema) and your
-include/config.inc (look for the line reading PQL_CONF_SUBTREE_AUTOMOUNTS
-in include/config.inc.CHANGE_ME).
-
-To demostrate the use of Automounts in LDAP, the file demo/automounts.ldif
-is included. Very rudimentary, but it will give you an idea.
-
-Please make sure you read the file doc/README.automounts for more information
-about this new support.
+[nothing so far]
