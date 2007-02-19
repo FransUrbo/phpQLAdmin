@@ -58,7 +58,7 @@ foreach($hosts as $host_dn) {
             </div>
 <?php } else { ?>
             <div id="el<?=$i."aParent"?>" class="parent">
-	      <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); return false;}">
+              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i."aImg"?>">
               </a>
               <font color="black" class="heada"><?=$host?></font>
@@ -124,7 +124,7 @@ foreach($hosts as $host_dn) {
             <span id="el<?=$i?>bSpn" style="display:''">
 <?php } else { ?>
             <div id="el<?=$i?>bParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>b', true); return false;}">
+              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i?>bImg">
               </a>
               <a class="item"><font color="black" class="heada"><?=$host_ip?></font></a>
@@ -132,18 +132,19 @@ foreach($hosts as $host_dn) {
 
             <div id="el<?=$i?>bChild" class="child">
 <?php }
-	echo "              <br>\n";
 
-	if($_SESSION["opera"])
-	  echo "            </span>\n";
-	else
-	  echo "            </div>\n";
-	print "          </td>\n        </tr>\n";
+	  echo "              <br>\n";
+
+	  if($_SESSION["opera"])
+		echo "            </span>\n";
+	  else
+		echo "            </div>\n";
+	  print "          </td>\n        </tr>\n";
 	  
-	if($row == 'c1')
-	  $row = 'c2';
-	else
-	  $row = 'c1';
+	  if($row == 'c1')
+		$row = 'c2';
+	  else
+		$row = 'c1';
 // }}}
   } else {
 	// {{{ No IP address. Probably only a 'device' object
@@ -159,7 +160,7 @@ foreach($hosts as $host_dn) {
             <span id="el<?=$i?>bSpn" style="display:''">
 <?php } else { ?>
             <div id="el<?=$i?>bParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>', true); return false;}">
+              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i?>Img">
               </a>
               <a class="item"><font color="black" class="heada"><?=$LANG->_('no ip')?></font></a>
