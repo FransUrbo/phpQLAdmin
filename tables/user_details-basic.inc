@@ -114,8 +114,7 @@
         <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uidnumber&user=<?=$url["user"]?>&oldvalue=<?=urlencode($uidnumber . ";" . $gidnumber);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change UID/GID')?>" border="0"></a></td>
       </tr>
 
-<?php 		if(isset($memberuid)) {
-				$class = pql_format_table(0);
+<?php			$class = pql_format_table(0);
 			
 				$tmp  = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
 				$tmp .= "&user=".$url["user"]."&attrib=".pql_get_define("PQL_ATTR_ADDITIONAL_GROUP");
@@ -133,11 +132,10 @@
 				pql_format_table_single($txt, $link, $memberuid,
 										pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"),
 										$class);
-			}
 	  	}
 	  }
 
-// {{{ When user do a login, should the advanced mode be loaded?
+	  // {{{ When user do a login, should the advanced mode be loaded?
 ?>
       <tr class="<?=$class?>">
         <td class="title"><?=$LANG->_('Start in advanced mode')?></td>
