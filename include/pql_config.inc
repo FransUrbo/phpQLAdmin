@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.94 2007-02-15 12:56:31 turbo Exp $
+// $Id: pql_config.inc,v 1.95 2007-02-19 12:17:14 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -109,6 +109,13 @@ if(empty($_pql)) {
   $bindpw = (!empty($_SESSION["USER_PASS"])) ? $_SESSION["USER_PASS"] : '';
   
   $_pql = new pql($_SESSION["USER_HOST"], $binddn, $bindpw);
+  if($_pql->ldap_error) {
+	unset($_SESSION["USER_ID"]);
+	unset($_SESSION["USER_PASS"]);
+	unset($_SESSION["USER_DN"]);
+	
+	die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
+  }
 }
 
 // Initalize some session variable - either with the old OR with an empty value
@@ -237,7 +244,7 @@ if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"])) {
 }
 
 // 6. Get user configuration for phpQLAdmin
-$user_object = $_pql->get_dn($_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
+$user_object = $_pql->search($_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
 foreach($PQL_ATTRIBUTE["USER"] as $define_name => $attrib) {
   pql_set_define($define_name, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
 }
