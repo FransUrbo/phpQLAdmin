@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 2.3 2007-02-19 10:00:43 turbo Exp $
+// $Id: host_detail.php,v 2.4 2007-02-19 19:28:42 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -95,7 +95,9 @@ if(empty($_REQUEST["view"])) {
 // }}}
 
 // {{{ Setup nav buttons
-if(($_REQUEST["server"] != 'Global') and (($_REQUEST["ref"] == 'physical') or ($_REQUEST["host"] == 'Global'))) {
+if(($_REQUEST["server"] != 'Global') and
+   (($_REQUEST["ref"] == 'physical') or (($_REQUEST["host"] == 'Global') and ($_REQUEST["ref"] == 'global'))))
+{
   // Do NOT show if:
   //	Left host frame/Webserver - Global
   //	Left host frame/[physical]/Webserver - Port xx
@@ -136,6 +138,11 @@ if(($_REQUEST["server"] != 'Global') and (($_REQUEST["ref"] == 'physical') or ($
 	$buttons = $buttons + $new;
   }				 
 
+  if(pql_get_define("PQL_ATTR_BIND9_USE") and ($_REQUEST["host"] == 'Global')) {
+	$new = array('dns' => 'DNS Administration');
+	$buttons = $buttons + $new;
+  }
+  
   if($_REQUEST["host"] != 'Global') {
 	$new = array('action'  => 'Action');
 	$buttons = $buttons + $new;
