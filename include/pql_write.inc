@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.47 2007-02-15 12:17:49 turbo Exp $
+// $Id: pql_write.inc,v 2.48 2007-02-19 15:10:39 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -38,30 +38,32 @@ function pql_replace_values($attribs, $old, $new = NULL) {
   foreach($_SESSION["BASE_DN"] as $dn) {
 	// Get all objects that have this object ($old) in any of the $attribs attributes.
 	$result = $_pql->search($dn, $filter);
-	for($i=0; $i < count($result); $i++) {
-	  unset($dn); unset($entry); unset($LDIF);
-	  
-	  // Go through the attributes we're interested in, looking for
-	  // the (old) object DN
-	  foreach($attribs as $attrib) {
-		if(is_array($result[$i][$attrib])) {
-		  for($j=0; $j < count($result[$attrib]); $j++) {
-			// TODO: Only replace the attribute(s) if it have changed
-			if($old == $result[$i][$attrib][$j]) {
-			  // Got a match ...
-			  if($new)
-				// ... we have something to replace with - replace this attribute
-				$entry[$attrib][] = $new;
-			} else
-			  // Remember the old value
-			  $entry[$attrib][] = $result[$i][$attrib][$j];
-		  }
-		} elseif($result[$i][$attrib])
-		  $entry[$attrib][] = $result[$i][$attrib];
+	if(is_array($result)) {
+	  for($i=0; $i < count($result); $i++) {
+		unset($dn); unset($entry); unset($LDIF);
+		
+		// Go through the attributes we're interested in, looking for
+		// the (old) object DN
+		foreach($attribs as $attrib) {
+		  if(is_array($result[$i][$attrib])) {
+			for($j=0; $j < count($result[$attrib]); $j++) {
+			  // TODO: Only replace the attribute(s) if it have changed
+			  if($old == $result[$i][$attrib][$j]) {
+				// Got a match ...
+				if($new)
+				  // ... we have something to replace with - replace this attribute
+				  $entry[$attrib][] = $new;
+			  } else
+				// Remember the old value
+				$entry[$attrib][] = $result[$i][$attrib][$j];
+			}
+		  } elseif($result[$i][$attrib])
+			$entry[$attrib][] = $result[$i][$attrib];
+		}
+		
+		if(!$_pql->modify($result[$i]["dn"], $entry, "pql_replace_values"))
+		  $error = 1;
 	  }
-	  
-	  if(!$_pql->modify($result[$i]["dn"], $entry, "pql_replace_values"))
-		$error = 1;
 	}
   }
   
@@ -319,6 +321,15 @@ function pql_add_sudo_role($domain, $rolename, $user, $command, $runas, $host) {
   
   if(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"))
 	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_SUDOERS") . ",";
+
+  if(!$_pql->get_dn($subrdn.$domain, 'objectClass=*', 'BASE')) {
+	// Organization unit don't exist - create it
+	$ou = explode('=', pql_get_define("PQL_CONF_SUBTREE_SUDOERS")); $ou=$ou[1];
+	if(!pql_unit_add($domain, $ou)) {
+	  pql_format_error(1);
+	  die("pql_add_sudo_role(): Failed to create 'ou=$ou,$domain'");
+	}
+  }
   
   $dn = "cn=" . $rolename . "," . $subrdn . $domain;
   
@@ -341,14 +352,8 @@ function pql_add_sudo_role($domain, $rolename, $user, $command, $runas, $host) {
   
   if(!$_pql->add($dn, $entry, $type, 'pql_add_sudo_role')) {
 	// Failed to add user
-	$failed = 1; pql_format_error(1);
-	
-	$errno = ldap_errno($_pql->ldap_linkid);
-	
-	if($failed) {
-	  pql_format_error(1);
-	  die();
-	}
+	pql_format_error(1);
+	die("pql_add_sudo_role(): Failed to create '$dn'");
   }
   
   return(true);
