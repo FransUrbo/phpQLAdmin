@@ -2,7 +2,7 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.16 2007-02-16 09:34:03 turbo Exp $
+// $Id: pql_aci.inc,v 2.17 2007-02-19 12:07:15 turbo Exp $
 
 // {{{ pql_aci_get(dn, number)
 // Get ACI entries from object
@@ -133,9 +133,9 @@ function pql_validate_acis($acis) {
 	  // OpenLDAPaci: 5#entry#grant;c,x;mailalternateaddress#public#
 	  $attrs = split(',', $access_parts[2]);
 	  foreach($attrs as $attr) {
-		$acis[$OID]  = pql_get_define("PQL_ATTR_LDAPACI").": $OID#".$aci_parts[1].'#';
+		$acis[$OID]  = "$OID#".$aci_parts[1].'#';
 		$acis[$OID] .= $access_parts[0].';'.$access_parts[1].';';
-		$acis[$OID] .= lc($attr).'#'.$aci_parts[3];
+		$acis[$OID] .= lc($attr).'#'.$aci_parts[3]."#";
 		if($aci_parts[4])
 		  $acis[$OID] .= lc($aci_parts[4]);
 
@@ -147,7 +147,7 @@ function pql_validate_acis($acis) {
 	  // OpenLDAPaci: 1#children#grant;w,r,s,c;[all]#access-id#uid=turbo,ou=people,o=fredriksson,c=se
 	  $access = preg_replace('/\[children\]/', '\[all\]', $aci_parts[2]);
 
-	  $acis[$OID]  = pql_get_define("PQL_ATTR_LDAPACI").": $OID#children#$access".$aci_parts[3];
+	  $acis[$OID]  = "$OID#children#$access#".$aci_parts[3]."#";
 	  if($aci_parts[4])
 		$acis[$OID] .= lc($aci_parts[4]);
 	  
@@ -158,14 +158,14 @@ function pql_validate_acis($acis) {
 	  // OpenLDAPaci: 81#entry#grant;w,r,s,c;entry#access-id#uid=fernanda,ou=People,o=Bortheiry,c=SE
 	  $access = preg_replace('/\[entry\]/', 'entry', $aci_parts[2]);
 
-	  $acis[$OID]  = pql_get_define("PQL_ATTR_LDAPACI").": $OID#entry#$access".$aci_parts[3];
+	  $acis[$OID]  = "$OID#entry#$access".$aci_parts[3]."#";
 	  if($aci_parts[4])
 		$acis[$OID] .= lc($aci_parts[4]); if($aci_parts[4]);
 	  
 	  $OID++;
 	} else {
 	  // This line is fine as-is...
-	  $acis[$OID]  = pql_get_define("PQL_ATTR_LDAPACI").": $OID#".$aci_parts[1]."#".$aci_parts[2];
+	  $acis[$OID]  = "$OID#".$aci_parts[1]."#".$aci_parts[2];
 	  $acis[$OID] .= '#'.$aci_parts[3].'#';
 	  if($aci_parts[4])
 		$acis[$OID] .= lc($aci_parts[4]);
