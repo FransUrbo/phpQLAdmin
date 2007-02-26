@@ -69,6 +69,9 @@
 		  unlink($filename);
 		}
 
+		// base64 decode the photo
+		$photo = base64_decode($photo);
+
 		$fp = fopen($filename, "wb");
 		if($fp) {
 		  fputs($fp, $photo);
