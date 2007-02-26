@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.56 2007-02-15 12:26:11 turbo Exp $
+// $Id: index.php,v 2.57 2007-02-26 10:39:34 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -177,18 +177,25 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 							  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base).'='.$_POST["uname"]);
 		if(is_array($objects)) {
 		  foreach($objects as $userdn) {
-			$_pql->bind($userdn, $_POST["passwd"]);
-			$error = ldap_errno($_pql->ldap_linkid);
-			if(!$error) {
+			// Check the account status of this user
+			$status = $_pql->get_attribute($userdn, pql_get_define("PQL_ATTR_ISACTIVE"));
+			if(($status != 'disabled') and ($status != 'deleted') and ($status != 'noaccess')) {
+			  // The account is either: active or nopop. In either case, we let the user in.
+			  // It's only if the account is disabled, deleted or taged with noaccess where we
+			  // refuse login (saying: Can't find you in the database).
+			  $_pql->bind($userdn, $_POST["passwd"]);
+			  $error = ldap_errno($_pql->ldap_linkid);
+			  if(!$error) {
 				// User bound with correct DN with corresponding correct password.
 				$user_found = 1;
 				break;
-			} else {
+			  } else {
 				// Authentication problem (probably!).
 				$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
-
+				
 				session_write_close();
 				pql_header("index.php?msg=" . urlencode($msg) . "&uname=$uname");
+			  }
 			}
 		  }
 		}
