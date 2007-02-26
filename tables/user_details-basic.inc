@@ -107,10 +107,17 @@
         </td>
       </tr>
 
-<?php	if(!empty($uidnumber) && !empty($gidnumber)) { ?>
+<?php	if(!empty($uidnumber) && !empty($gidnumber)) {
+			// Get the group name for $gidnumber
+			$group = $_pql->get_dn($_REQUEST["rootdn"], "(&(objectClass=posixGroup)(gidNumber=$gidnumber))");
+			if($group[0])
+			  $group_name = $_pql->get_attribute($group[0], pql_get_define("PQL_ATTR_CN"));
+			if(!$group_name)
+			  $group_name = "<i>unknown</i>";
+?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('UID;GID')?></td>
-        <td><?=$uidnumber . ";" . $gidnumber?></td>
+        <td><?=$uidnumber . ";" . $gidnumber?> (<?=$group_name?>)</td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uidnumber&user=<?=$url["user"]?>&oldvalue=<?=urlencode($uidnumber . ";" . $gidnumber);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change UID/GID')?>" border="0"></a></td>
       </tr>
 
