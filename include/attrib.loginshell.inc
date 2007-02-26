@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.20 2007-02-15 12:08:07 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.21 2007-02-26 11:23:29 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -24,8 +24,9 @@ function attribute_init() {
 // }}}
 
 // {{{ attribute_print_form(void)
+
 function attribute_print_form() {
-    global $error, $LANG;
+    global $_pql, $error, $LANG;
 
 	// Get all shells we can choose from
     $shells   = pql_get_valid_shells();
@@ -78,12 +79,13 @@ function attribute_print_form() {
 
 <?php
 }
+
 // }}}
 
 // {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
-    
+
     switch($type) {
       case "add":
 		// no add operation possible with loginshell
@@ -97,7 +99,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST["loginshell"])) {
+		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], 1, $_REQUEST["loginshell"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('login shell'),
 											   'new'  => $_REQUEST["loginshell"]));
