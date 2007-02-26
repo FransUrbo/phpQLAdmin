@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.20 2007-02-15 12:08:13 turbo Exp $
+// $Id: pql_units.inc,v 1.21 2007-02-26 13:22:05 turbo Exp $
 //
 
 // {{{ pql_unit_get(dn, filter)
@@ -32,9 +32,10 @@ function pql_unit_get($dn, $filter = 1) {
 	  if(!eregi('qmail',  		$subd[$i]) and
 		 !eregi('auto\.', 		$subd[$i]) and
 		 !eregi('mailinglists',	$subd[$i]) and
-		 !eregi('templates',		$subd[$i]) and
-		 !(pql_get_define("PQL_CONF_SUBTREE_GROUPS")     and eregi(pql_get_define("PQL_CONF_SUBTREE_GROUPS"), 	$subd[$i])) and
-		 !(pql_get_define("PQL_CONF_SUBTREE_BIND9")      and eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9"),		$subd[$i])))
+		 !eregi('templates',	$subd[$i]) and
+		 !(pql_get_define("PQL_CONF_SUBTREE_GROUPS")	and eregi(pql_get_define("PQL_CONF_SUBTREE_GROUPS"),	$subd[$i])) and
+		 !(pql_get_define("PQL_CONF_SUBTREE_BIND9")		and eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9"),		$subd[$i])) and
+		 !(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")	and eregi(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"),	$subd[$i])))
 		$branches[] = $subd[$i];
 	} else
 	  $branches[] = $info[$i];
