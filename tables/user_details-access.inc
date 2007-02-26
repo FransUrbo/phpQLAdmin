@@ -12,121 +12,126 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$super_admin = 1;
   }
 // }}}
+
+  if(!$super_admin) {
+	// {{{ Find all branches the user is admin of
+	$dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$_GET["user"]);
+	if($dom) {
+	  foreach($dom as $d) {
+		// Filter out the RootDN
+		if($d != $branch)
+		  $domains_admins[] = $d;
+	  }
+	} else
+	  $domains_admins = array();
+// }}}
   
-  // {{{ Find all branches the user is admin of
-  $dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$_GET["user"]);
-  if($dom) {
-	foreach($dom as $d) {
-	  // Filter out the RootDN
-	  if($d != $branch)
-		$domains_admins[] = $d;
-	}
+	// {{{ Find all branches the user is mailinglist admin of
+	$dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_GET["user"]);
+	if($dom) {
+	  foreach($dom as $d)
+		$domains_ezmlm[] = $d;
+	} else
+	  $domains_ezmlm = array();
+// }}}
+
+	// {{{ Find all branches the user is webserver admin of
+	$dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV").'='.$_GET["user"]);
+	if($dom) {
+	  foreach($dom as $d)
+		$domains_websrv[] = $d;
+	} else
+	  $domains_websrv = array();
+// }}}
+
+	// {{{ Find all branches the user is DNS admin of
+	$dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9").'='.$_GET["user"]);
+	if($dom) {
+	  foreach($dom as $d)
+		$domains_dns[] = $d;
+	} else
+	  $domains_dns = array();
+// }}}
+  }
+}
+// }}}
+
+if(!$super_admin) {
+  // {{{ Go through and show all the domains that the user is administrator of
+  $class=pql_format_table(0);
+  if(isset($domains_admins)) {
+	asort($domains_admins);
+	
+	$class = pql_format_table(0);
+	$url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
+	$url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR");
+	
+	$tbl_txt = array('tit' => $LANG->_('Administrator in branch'),
+					 'add' => $LANG->_('Grant user administrator access to domain'),
+					 'del' => $LANG->_('Disallow user administrator access to domain'));
+	$tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
+					 'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR")."=".$url["user"]."&submit=4&action=delete");
+	pql_format_table_single($tbl_txt, $tbl_url, $domains_admins, 'branchdn', $class);
   }
 // }}}
-  
-  // {{{ Find all branches the user is mailinglist admin of
-  $dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_GET["user"]);
-  if($dom) {
-	foreach($dom as $d)
-	  $domains_ezmlm[] = $d;
+
+  // {{{ Go through and show all the domains that the user is MAILINGLIST administrator of
+  $class=pql_format_table(0);
+  if(isset($domains_ezmlm)) {
+	asort($domains_ezmlm);
+	
+	$class = pql_format_table(0);
+	$url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
+	$url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM");
+	
+	$tbl_txt = array('tit' => $LANG->_('Mailinglist administrator in branch'),
+					 'add' => $LANG->_('Grant user mailinglist administrator access to domain'),
+					 'del' => $LANG->_('Disallow user mailinglist administrator access to domain'));
+	$tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
+					 'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
+	pql_format_table_single($tbl_txt, $tbl_url, $domains_ezmlm,
+							pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $class);
   }
 // }}}
 
-  // {{{ Find all branches the user is webserver admin of
-  $dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV").'='.$_GET["user"]);
-  if($dom) {
-	foreach($dom as $d)
-	  $domains_websrv[] = $d;
+  // {{{ Go through and show all the domains that the user is WEBSERVER administrator of
+  $class=pql_format_table(0);
+  if(isset($domains_websrv)) {
+	asort($domains_websrv);
+	
+	$class = pql_format_table(0);
+	$url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
+	$url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV");
+	
+	$tbl_txt = array('tit' => $LANG->_('Webserver administrator in branch'),
+					 'add' => $LANG->_('Grant user webserver administrator access to domain'),
+					 'del' => $LANG->_('Disallow user webserver administrator access to domain'));
+	$tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
+					 'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
+	pql_format_table_single($tbl_txt, $tbl_url, $domains_websrv,
+							pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $class);
   }
 // }}}
 
-  // {{{ Find all branches the user is DNS admin of
-  $dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9").'='.$_GET["user"]);
-  if($dom) {
-	foreach($dom as $d)
-	  $domains_dns[] = $d;
+  // {{{ Go through and show all the domains that the user is DNS administrator of
+  $class=pql_format_table(0);
+  if(isset($domains_dns)) {
+	asort($domains_dns);
+	
+	$class = pql_format_table(0);
+	$url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
+	$url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9");
+	
+	$tbl_txt = array('tit' => $LANG->_('DNS administrator in branch'),
+					 'add' => $LANG->_('Grant user DNS administrator access to domain'),
+					 'del' => $LANG->_('Disallow user DNS administrator access to domain'));
+	$tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
+					 'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
+	pql_format_table_single($tbl_txt, $tbl_url, $domains_dns,
+							pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV_BIND9"), $class);
   }
 // }}}
 }
-// }}}
-
-
-// {{{ Go through and show all the domains that the user is administrator of
-$class=pql_format_table(0);
-if(isset($domains_admins)) {
-  asort($domains_admins);
-
-  $class = pql_format_table(0);
-  $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
-  $url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR");
-  
-  $tbl_txt = array('tit' => $LANG->_('Administrator in branch'),
-				   'add' => $LANG->_('Grant user administrator access to domain'),
-				   'del' => $LANG->_('Disallow user administrator access to domain'));
-  $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
-				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
-  pql_format_table_single($tbl_txt, $tbl_url, $domains_admins,
-						  pql_get_define("PQL_ATTR_ADMINISTRATOR"), $class);
-}
-// }}}
-
-// {{{ Go through and show all the domains that the user is MAILINGLIST administrator of
-$class=pql_format_table(0);
-if(isset($domains_ezmlm)) {
-  asort($domains_ezmlm);
-
-  $class = pql_format_table(0);
-  $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
-  $url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM");
-  
-  $tbl_txt = array('tit' => $LANG->_('Mailinglist administrator in branch'),
-				   'add' => $LANG->_('Grant user mailinglist administrator access to domain'),
-				   'del' => $LANG->_('Disallow user mailinglist administrator access to domain'));
-  $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
-				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
-  pql_format_table_single($tbl_txt, $tbl_url, $domains_ezmlm,
-						  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $class);
-}
-// }}}
-
-// {{{ Go through and show all the domains that the user is WEBSERVER administrator of
-$class=pql_format_table(0);
-if(isset($domains_websrv)) {
-  asort($domains_websrv);
-  
-  $class = pql_format_table(0);
-  $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
-  $url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV");
-  
-  $tbl_txt = array('tit' => $LANG->_('Webserver administrator in branch'),
-				   'add' => $LANG->_('Grant user webserver administrator access to domain'),
-				   'del' => $LANG->_('Disallow user webserver administrator access to domain'));
-  $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
-				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
-  pql_format_table_single($tbl_txt, $tbl_url, $domains_websrv,
-						  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $class);
-}
-// }}}
-
-// {{{ Go through and show all the domains that the user is DNS administrator of
-$class=pql_format_table(0);
-if(isset($domains_dns)) {
-  asort($domains_dns);
-  
-  $class = pql_format_table(0);
-  $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
-  $url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9");
-  
-  $tbl_txt = array('tit' => $LANG->_('DNS administrator in branch'),
-				   'add' => $LANG->_('Grant user DNS administrator access to domain'),
-				   'del' => $LANG->_('Disallow user DNS administrator access to domain'));
-  $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
-				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
-  pql_format_table_single($tbl_txt, $tbl_url, $domains_dns,
-						  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV_BIND9"), $class);
-}
-// }}}
-
 
 // {{{ Are the user allowed to create branches (i.e. is the user listed in the Root DN)?
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
