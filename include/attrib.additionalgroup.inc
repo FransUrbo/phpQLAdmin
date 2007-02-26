@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.16 2007-02-15 12:07:16 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.17 2007-02-26 10:52:06 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
@@ -57,7 +57,8 @@ function attribute_print_form() {
 				
 				if(!$is_member) {
 				  $groups[$grps[$i]['cn']]["DN"] = $grps[$i]['dn'];
-				  $groups[$grps[$i]['cn']]["MEMBERS"] = $additional;
+				  if($additional)
+					$groups[$grps[$i]['cn']]["MEMBERS"] = $additional;
 				}
 			}
 		}
@@ -133,21 +134,30 @@ function attribute_save($action) {
 
 	  case "delete":
 		//Get Group dn
-		if(pql_get_define("PQL_CONF_SUBTREE_GROUPS")) {
-		  $_REQUEST['group'] = "cn=" . $_REQUEST['memberuid'] . ', ' .
-		  pql_get_define("PQL_CONF_SUBTREE_GROUPS") . ', ' . $_REQUEST['domain'];
+		foreach($_SESSION["BASE_DN"] as $base) {
+		  $filter  = '(&';
+		  $filter .=   '('.pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$_REQUEST["uid"].')';
+		  $filter .=   '('.pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["memberuid"].')';
+		  $filter .=   '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=posixGroup)';
+		  $filter .= ')';
+		  $group = $_pql->get_dn($base, $filter);
+		  if($group)
+			break;
 		}
 
-
-		if(pql_modify_attribute($_REQUEST['group'], $attrib_name, $_REQUEST["uid"], ''))
-		  $msg = pql_complete_constant($LANG->_('Successfully removed %user% from %what% %group%'),
-									   array('what'  => $LANG->_('additional group'),
-											 'user'  => $_REQUEST["uid"],
-											 'group' => $_REQUEST['group']));
-		else
-		  $msg = pql_complete_constant($LANG->_('Failed to remove %user% from %what%'),
-									   array('what' => $LANG->_('additional group'),
-											 'user'  => $_REQUEST["memberuid"])) . ": " . pql_format_error(0);
+		if($group[0]) {
+		  if(pql_modify_attribute($group[0], $attrib_name, $_REQUEST["uid"], ''))
+			$msg = pql_complete_constant($LANG->_('Successfully removed %user% from %what% %group%'),
+										 array('what'  => $LANG->_('additional group'),
+											   'user'  => $_REQUEST["uid"],
+											   'group' => $_REQUEST['group']));
+		  else
+			$msg = pql_complete_constant($LANG->_('Failed to remove %user% from %what%'),
+										 array('what' => $LANG->_('additional group'),
+											   'user'  => $_REQUEST["memberuid"])) . ": " . pql_format_error(0);
+		} else
+		  // Shouldn't happen...
+		  $msg = $LANG->_('Could not find group');
 
 		attribute_forward($msg);
 		break;
