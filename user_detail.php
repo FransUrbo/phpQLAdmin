@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.102 2007-02-15 12:07:13 turbo Exp $
+// $Id: user_detail.php,v 2.103 2007-02-26 10:49:22 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -234,17 +234,11 @@ if(!empty($uid)) {
 	foreach($_SESSION["BASE_DN"] as $base) {
 		$base = urldecode($base);
 		$tmp  = $_pql->search($base, pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid);
-		if(!empty($tmp) and is_array($tmp)) {
-		  if(empty($tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")]) and !empty($tmp[0])) {
-			// Multidimensional array
-			for($i=0; $i < count($tmp); $i++)
-			  $memberuid[] = $tmp[$i][pql_get_define("PQL_ATTR_CN")];
-		  } else {
-			for($i=0; $i < count($tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")]); $i++)
-			  $memberuid[] = $tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")][$i];
-		  }
-
-		  unset($tmp);
+		if(!empty($tmp[0]) and !empty($tmp[0][pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")])) {
+		  for($i=0; $i < count($tmp); $i++)
+			$memberuid[] = $tmp[$i][pql_get_define("PQL_ATTR_CN")];
+		} elseif(!empty($tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")]) and !is_array($tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")])) {
+		  $memberuid[] = $tmp[pql_get_define("PQL_ATTR_CN")];
 		}
 	}
 }
@@ -284,7 +278,7 @@ $new = array('email'				=> 'Registred addresses',
 $buttons = $buttons + $new;
 
 if(empty($USER_IS_GROUP)) {
-	$new = array('forwards_to'		=> 'Forwarders to other accounts',
+	$new = array('forwards_to'		=> 'Mail forwarding',
 				 'antispam'			=> 'Antispam configuration');
 	$buttons = $buttons + $new;
 }
