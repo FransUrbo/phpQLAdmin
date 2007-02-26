@@ -70,8 +70,7 @@
 					}
 
 					// See if the attribute mailForwardingAddress is there
-					$forwards = $_pql->get_attribute($user,
-												  pql_get_define("PQL_ATTR_FORWARDS"));
+					$forwards = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_FORWARDS"));
 					if($forwards) {
 						if(!is_array($forwards))
 						  $forwards = array($forwards);
