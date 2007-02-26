@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.32 2007-02-15 12:08:06 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.33 2007-02-26 11:00:46 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -83,8 +83,8 @@ function attribute_print_form($type = "modify") {
             <input type="checkbox" name="nolocal"   <?php if($_REQUEST["nolocal"] or in_array('nolocal', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('Do not deliver to local mail box')?><br>
             <input type="checkbox" name="noforward" <?php if($_REQUEST["noforward"] or in_array('noforward', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('Do not forward mail to other account/address')?><br>
             <input type="radio" name="delivery_type" value="noprogram" <?php if($_REQUEST["noprogram"] or in_array('noprogram', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('No program deliveries')?><br>
-<?php if(in_array('nolocal', $deliverymode) and $_REQUEST["programpath"]) { ?>
-            <input type="radio" name="delivery_type" value="program" CHECKED><input type="text" name="programpath" value="<?=$_REQUEST["programpath"]?>">
+<?php if($_REQUEST["programpath"]) { ?>
+            <input type="radio" name="delivery_type" value="program"><input type="text" name="programpath" value="<?=$_REQUEST["programpath"]?>">
 <?php } else { ?>
             <input type="radio" name="delivery_type" value="program"><input type="text" name="programpath">
 <?php } ?>
@@ -133,7 +133,7 @@ function attribute_print_form($type = "modify") {
           <table>
             <td><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
             <td>
-              <?=$LANG->_('If the \'No program deliveries\' is set, QmailLDAP will ignore <i>deliveryProgramPath</i> and <i>.qmail</i>')?>.
+              <?=$LANG->_('If the \'No program deliveries\' is set, QmailLDAP will ignore <i>deliveryProgramPath</i> and <i>.qmail</i> files')?>.
             </td>
           </table>
         </tr>
@@ -164,40 +164,81 @@ function attribute_print_form($type = "modify") {
 function attribute_save($type) {
     global $_pql, $LANG;
 	$entry = array();
+	echo "attribute_save($type)<br>"; printr($_REQUEST);
+
+	// Get old values
+	$user = $_pql->search($_REQUEST["user"], 'objectClass=*', 'BASE');
+
+	// Initial deliveryMode values. We remove from this what is not supposed to be there...
+	$modes = $user[pql_get_define("PQL_ATTR_MODE")];
 
 	if($_SESSION["NEW_STYLE_QUOTA"]) {
-		if($_REQUEST["nolocal"])
-		  // no local deliveries
-		  $entry[pql_get_define("PQL_ATTR_MODE")][] = "nolocal";
-
-		if($_REQUEST["noforward"])
-		  // no mail forwarding
-		  $entry[pql_get_define("PQL_ATTR_MODE")][] = "noforward";
-
-		if($_REQUEST["delivery_type"] == 'noprogram')
-		  // no program deliveries
-		  $entry[pql_get_define("PQL_ATTR_MODE")][] = "noprogram";
-		elseif(($_REQUEST["delivery_type"] == 'program') and $_REQUEST["programpath"])
-		  $entry[pql_get_define("PQL_ATTR_PROGRAM")] = $_REQUEST["programpath"];
-	} else {
-		switch($_REQUEST["deliverymode"]) {
-		  case "forward":
-			$entry[pql_get_define("PQL_ATTR_MODE")][] = "forwardonly";
-			$entry[pql_get_define("PQL_ATTR_MODE")][] = "nombox";
-			break;
-			
-		  case "local":
-			$entry[pql_get_define("PQL_ATTR_MODE")][] = "localdelivery";
+	  // {{{ Go through nolocal and noforward
+	  $values = array('nolocal', 'noforward');
+	  foreach($values as $value) {
+		if($_REQUEST[$value])
+		  $modes[] = $value;
+		elseif(in_array($value, $modes)) {
+		  // Not choosen, and it's in the users object - remove that!
+		  for($i=0; $modes[$i]; $i++) {
+			if($modes[$i] == $value)
+			  // This is the value - remove it!
+			  unset($modes[$i]);
+		  }
 		}
+	  }
+	  $modes = pql_uniq($modes); // Fixup the array (so it starts from 0)
+	  // }}}
+
+	  // {{{ Go through program/noprogram
+	  if($_REQUEST["delivery_type"] == 'noprogram') {
+		// no program deliveries
+		$modes[] = "noprogram";
+
+		// Don't do this - it's perfectly safe to have a deliveryProgramPath if 'noprogram' is set!
+		//if($user[pql_get_define("PQL_ATTR_PROGRAM")])
+		  // There is a value for deliveryProgramPath - remove that
+		  //$entry[pql_get_define("PQL_ATTR_PROGRAM")] = array();
+	  } elseif(($_REQUEST["delivery_type"] == 'program') and $_REQUEST["programpath"]) {
+		if(( is_array($user[pql_get_define("PQL_ATTR_PROGRAM")]) and !in_array($_REQUEST["programpath"], $user[pql_get_define("PQL_ATTR_PROGRAM")])) or
+		   (!is_array($user[pql_get_define("PQL_ATTR_PROGRAM")]) and $user[pql_get_define("PQL_ATTR_PROGRAM")] != $_REQUEST["programpath"]))
+		  // delivery_type=program, program path is set and the program is not already in the users object - add the program
+		  $entry[pql_get_define("PQL_ATTR_PROGRAM")] = $_REQUEST["programpath"];
+
+		if(in_array('noprogram', $modes)) {
+		  // We've specified to do program deliveries, but the 'noprogram' value is set - remove it!
+		  for($i=0; $modes[$i]; $i++) {
+			if($modes[$i] == 'noprogram')
+			  // This is the value - remove it!
+			  unset($modes[$i]);
+		  }
+		}
+	  }
+	  $modes = pql_uniq($modes); // Fixup the array (so it starts from 0)
+	  // }}}
+	} else {
+	  // {{{ Old style quota/delivery mode
+	  switch($_REQUEST["deliverymode"]) {
+	  case "forward":
+		$entry[pql_get_define("PQL_ATTR_MODE")][] = "forwardonly";
+		$entry[pql_get_define("PQL_ATTR_MODE")][] = "nombox";
+		break;
+		
+	  case "local":
+		$entry[pql_get_define("PQL_ATTR_MODE")][] = "localdelivery";
+	  }
+	  // }}}
 	}
 	
 	if($_REQUEST["reply"] == "ok")
-	  $entry[pql_get_define("PQL_ATTR_MODE")][] = "reply";
+	  $modes[] = "reply";
+
+	$entry[pql_get_define("PQL_ATTR_MODE")] = $modes;
 	
-	if(!empty($_REQUEST["mailreplytext"])) {
+	if(!empty($_REQUEST["mailreplytext"]) and $user[pql_get_define("PQL_ATTR_REPLYTEXT")]) {
 		$tmp = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
 		$entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = pql_maybe_encode($tmp, 'mailreplytext', $_pql->ldap_linkid);
-	} elseif($type != "fulldomain")
+	} elseif(($type != "fulldomain") and $user[pql_get_define("PQL_ATTR_REPLYTEXT")])
 	  // Delete the old value from the database
 	  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"), '', '');
 
@@ -225,13 +266,18 @@ function attribute_save($type) {
 		break;
 
 	  case "modify":
-		if(pql_modify_attribute($_REQUEST["user"], '', '', $entry))
-		  $msg = pql_complete_constant($LANG->_('successfully changed %what%'),
-									   array('what' => $LANG->_('delivery mode')));
-		else
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('delivery mode'))) . ": " . pql_format_error(0);
-		
+		if(!empty($entry)) {
+		  // Got changes to make - make them.
+		  if(pql_modify_attribute($_REQUEST["user"], '', '', $entry))
+			$msg = pql_complete_constant($LANG->_('successfully changed %what%'),
+										 array('what' => $LANG->_('delivery mode')));
+		  else
+			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										 array('what' => $LANG->_('delivery mode'))) . ": " . pql_format_error(0);
+		} else {
+		  $msg = $LANG->_('No changes made to delivery mode');
+		}
+
 		attribute_forward($msg);
 		break;
 
