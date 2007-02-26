@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.48 2007-02-19 15:10:39 turbo Exp $
+// $Id: pql_write.inc,v 2.49 2007-02-26 09:45:06 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -309,51 +309,6 @@ function pql_add_computer($hostname, $ip) {
 	
 	if($failed)
 	  pql_format_error(1);
-  }
-  
-  return(true);
-}
-// }}}
-
-// {{{ pql_add_sudo_role(domain, rolename, user, command, runas, host)
-function pql_add_sudo_role($domain, $rolename, $user, $command, $runas, $host) {
-  global $_pql;
-  
-  if(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"))
-	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_SUDOERS") . ",";
-
-  if(!$_pql->get_dn($subrdn.$domain, 'objectClass=*', 'BASE')) {
-	// Organization unit don't exist - create it
-	$ou = explode('=', pql_get_define("PQL_CONF_SUBTREE_SUDOERS")); $ou=$ou[1];
-	if(!pql_unit_add($domain, $ou)) {
-	  pql_format_error(1);
-	  die("pql_add_sudo_role(): Failed to create 'ou=$ou,$domain'");
-	}
-  }
-  
-  $dn = "cn=" . $rolename . "," . $subrdn . $domain;
-  
-  $user = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_UID"));
-  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'top';
-  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'sudoRole';
-  $entry[pql_get_define("PQL_ATTR_CN")] = $rolename;
-  
-  if(isset($user) && $user != 'none')
-	$entry[pql_get_define("PQL_ATTR_SUDOUSER")] = $user;
-  
-  if(isset($command) && $command != '')
-	$entry[pql_get_define("PQL_ATTR_SUDOCOMMAND")] = $command;
-  
-  if(isset($runas) && $runas != '')
-	$entry[pql_get_define("PQL_ATTR_SUDORUNAS")] = $runas;
-  
-  if(isset($host) && $host != 'none')
-	$entry[pql_get_define("PQL_ATTR_SUDOHOST")] = $host;
-  
-  if(!$_pql->add($dn, $entry, $type, 'pql_add_sudo_role')) {
-	// Failed to add user
-	pql_format_error(1);
-	die("pql_add_sudo_role(): Failed to create '$dn'");
   }
   
   return(true);

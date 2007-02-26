@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 2.4 2007-02-19 19:28:42 turbo Exp $
+// $Id: host_detail.php,v 2.5 2007-02-26 09:44:44 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -164,7 +164,7 @@ if($_REQUEST["view"] == 'hostacl') {
 } elseif($_REQUEST["view"] == 'radius') {
   include("./tables/host_details-radius.inc");
 } elseif($_REQUEST["view"] == 'sudo') {
-  include("./sudo_modify.php");
+  include("./sudo_detail.php");
 } elseif($_REQUEST["view"] == 'dns') {
   include("./tables/host_details-dns.inc");
 } elseif($_REQUEST["view"] == 'action') {
