@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.13 2007-02-19 10:59:27 turbo Exp $
+// $Id: host_modify.php,v 2.14 2007-02-26 13:53:42 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -109,7 +109,7 @@ if(is_array($computer_results)) {
   // {{{ Show this domains user access
 ?>
 
-  <form method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_("Host Control Access")?>
         <tr class="c2">
