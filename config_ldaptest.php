@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.44 2007-02-16 09:32:02 turbo Exp $
+// $Id: config_ldaptest.php,v 2.45 2007-02-26 10:04:18 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -10,10 +10,12 @@ require($_SESSION["path"]."/include/pql_control.inc");
 function check_domain_value($dn, $attrib, $value) {
   global $_pql; $LANG;
   
-  if(pql_get_define("PQL_CONF_DEBUG_ME"))
+  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	// Debugging enabled - temporarily disable it!
-	pql_set_define("PQL_CONF_DEBUG_ME", false);
-  
+	pql_set_define("PQL_CONF_DEBUG_ME", 'FALSE');
+	$debugging = 1;
+  }
+
   $entry[$attrib] = $value;
   if(!$_pql->modify($dn, $entry, "config_ldaptest.php:check_domain_value()/1")) {
 	if(ldap_errno($linkid) == 21)
@@ -36,7 +38,7 @@ function check_domain_value($dn, $attrib, $value) {
   
   if($debugging)
 	// Debugging have been temporarily disabled - enable it again!
-	pql_set_define("PQL_CONF_DEBUG_ME", true);
+	pql_set_define("PQL_CONF_DEBUG_ME", 'TRUE');
   
   return($msg);
 }

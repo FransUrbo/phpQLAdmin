@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.26 2007-02-16 10:20:55 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.27 2007-02-26 10:01:55 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -12,7 +12,8 @@ if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_DEBUG_ME")) and pql_get_defi
   // We're modifying the runInDebugMode, but we're alredy doing that (running in debug mode),
   // so we must first turn debugging of - othervise we'll never be able to turn it of (any LDAP modify
   // will only show the LDIF).
-  pql_set_define("PQL_CONF_DEBUG_ME", false);
+  pql_set_define("PQL_CONF_DEBUG_ME", 'FALSE');
+  $debugging = 1;
 }
 
 include($_SESSION["path"]."/include/attrib.config.inc");
@@ -24,6 +25,8 @@ if(@$_REQUEST["view"] == "template") {
 
 // {{{ Forward back to configuration detail page
 function attribute_forward($msg, $rlnb = false) {
+	global $debugging;
+
     $attrib = $_REQUEST["attrib"];
 
     $msg = urlencode($msg);
@@ -46,6 +49,11 @@ function attribute_forward($msg, $rlnb = false) {
 
 	if($rlnb and pql_get_define("PQL_CONF_AUTO_RELOAD"))
 	  $url .= "&rlnb=1";
+
+	if($debugging) {
+	  pql_set_define("PQL_CONF_DEBUG_ME", 'TRUE');
+	  unset($debugging);
+	}
 
 	if(pql_get_define("PQL_CONF_DEBUG_ME") and ($attrib != pql_get_define("PQL_ATTR_DEBUG_ME"))) {
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
