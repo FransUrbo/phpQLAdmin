@@ -7,7 +7,7 @@
 
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="bind9_edit_attributes.php?host=<?=urlencode($_REQUEST["host"])?>&type=a&action=modify"><?=$LANG->_('Modify aRecords globaly')?></a></td>
+        <td><a href="bind9_edit_attributes.php?host=<?=urlencode($_REQUEST["host"])?>&type=a&action=modify"><?=$LANG->_('Replace IP address globally')?></a></td>
       </tr>
     </th>
   </table>
