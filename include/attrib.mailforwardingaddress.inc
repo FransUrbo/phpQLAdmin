@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.26 2007-02-15 12:08:07 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.27 2007-02-26 12:00:31 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -57,7 +57,7 @@ function attribute_print_form() {
 	}
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Email')?></td>
+        <td class="title"><?=$LANG->_('Forward to')?></td>
         <td>
           <?php echo pql_format_error_span($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value="">
         </td>
@@ -116,7 +116,7 @@ function attribute_save($type) {
 		
 		if($_REQUEST["force_no_local_delivery"] == 'on') {
 		  pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_MODE"), '', 'noprogram');
-		  pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_DOTMODE"), '', 'none');
+		  //pql_modify_attribute(urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_DOTMODE"), '', 'none');
 		}
 		break;
 
@@ -139,6 +139,7 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_format_error(0);
 		break;
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));
