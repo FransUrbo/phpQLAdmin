@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.226 2007-02-16 10:20:57 turbo Exp $
+// $Id: pql.inc,v 2.227 2007-02-26 13:03:42 turbo Exp $
 //
 
 // ----------------------------
@@ -294,13 +294,13 @@ class pql {
   
   // ------------------------------------ READ FUNCTIONS
   
-  // {{{ array search(dn, filter, level, referrals, operational)
+  // {{{ array search(dn, filter, level, referrals, operational, encode)
   // Lock for object(s) which match the filter.
   // Level can be:
   //		SUBTREE		=> default!
   //		ONELEVEL
   //		BASE
-  function search($dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
+  function search($dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0, $encode = 0) {
 	global $_SESSION, $pql_cache;
 	
 	// Normalize the DN
@@ -422,28 +422,42 @@ class pql {
 		
 		if(eregi('^[a-z]', $key) and ($key != 'count')) {
 		  if($key == pql_get_define("PQL_ATTR_PHOTO")) {
-			// A jpegPhoto. Save it in the resulting array as-is.
+			// A jpegPhoto. Save it in the resulting array as a base64 encoded value.
 			if($nr_entries > 1)
-			  $entry[$entries][$key] = $value[0];
+			  $entry[$entries][$key] = base64_encode($value[0]);
 			else
-			  $entry[$key] = $value[0];
+			  $entry[$key] = base64_encode($value[0]);
 		  } elseif(is_array($value) and !empty($value[1])) {
 			// A multi value - such as 'mailAlternateAddress'
 			// or 'objectClass' etc. Take ALL values, ignoring
 			// any empty values that might exists.
 			for($j=0; $j < $value["count"]; $j++) {
-			  if($nr_entries > 1)
-				$entry[$entries][$key][$j] = pql_maybe_decode($value[$j]);
-			  else
-				$entry[$key][$j] = pql_maybe_decode($value[$j]);
+			  if($nr_entries > 1) {
+				if($encode)
+				  $entry[$entries][$key][$j] = $value[$j];
+				else
+				  $entry[$entries][$key][$j] = pql_maybe_decode($value[$j]);
+			  } else {
+				if($encode)
+				  $entry[$key][$j] = $value[$j];
+				else
+				  $entry[$key][$j] = pql_maybe_decode($value[$j]);
+			  }
 			}
 		  } else
 			// Single valued such as 'uid' and 'mail' etc...
 			// Just take the ONE value
-			if($nr_entries > 1)
-			  $entry[$entries][$key] = pql_maybe_decode($value[0]);
-			else
-			  $entry[$key] = pql_maybe_decode($value[0]);
+			if($nr_entries > 1) {
+			  if($encode)
+				$entry[$entries][$key] = $value[0];
+			  else
+				$entry[$entries][$key] = pql_maybe_decode($value[0]);
+			} else {
+			  if($encode)
+				$entry[$key] = $value[0];
+			  else
+				$entry[$key] = pql_maybe_decode($value[0]);
+			}
 		}
 	  }
 	  
@@ -505,7 +519,7 @@ class pql {
   }
   // }}}
   
-  // {{{ array get_attribute(linkid, dn, attribute, operational, filter)
+  // {{{ array get_attribute(dn, attribute, operational, filter)
   // Return only a subset of an object (retreived with search()).
   function get_attribute($dn, $attribute, $operational = 0, $filter = NULL) {
 	$attribute = lc($attribute);
@@ -532,7 +546,7 @@ class pql {
   }
   // }}}
   
-  // {{{ array get_dn(linkid, dn, filter, level)
+  // {{{ array get_dn(dn, filter, level)
   // This function returns the DN of each object if finds.
   // Basically a simplified version of search() - one that only returns
   // the DN's of the matches...
@@ -586,10 +600,9 @@ class pql {
 	  
 	  if(!ldap_add($this->ldap_linkid, $dn, $entry)) {
 		// Failed!
-		$errno = ldap_errno($this->ldap_linkid);
-		$error = ldap_error($this->ldap_linkid);
 		
 		// TODO: Error checking. Some problems might be salvable...
+		$errno = ldap_errno($this->ldap_linkid);
 		switch($errno) {
 		case 68:
 		  // Already exists. Fine, return true (?)
@@ -599,7 +612,6 @@ class pql {
 		}
 		
 		pql_format_error(1);
-		echo "Error: #$errno ($error)<p>";
 		echo $LDIF;
 		return(false);
 	  }
@@ -644,7 +656,7 @@ class pql {
 		  // Object class violation - try to add (the) missing objectclass(es).
 		  
 		  // Get the current object classes in this object
-		  $old = pql_get_attribute($this->ldap_linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS"));
+		  $old = $this->get_attribute($dn, pql_get_define("PQL_ATTR_OBJECTCLASS"));
 		  if($old and !is_array($old))
 			$old = array($old);
 		  
@@ -704,8 +716,14 @@ class pql {
   function rename($old, $parent, $new, $keepold = TRUE) {
 	global $pql_cache;
 	
+	// A modrdn LDIF looks a little different...
+	$LDIF  = "<pre>\n--- DEBUG: ldap_rename() ---\n";
+	$LDIF .= "$old\n$new\n";
+	$LDIF .= "--- DEBUG ---\n</pre>\n";
+	
 	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  echo "Renaming DN: '<b>$old</b>' to '<b>$new,$parent</b>'<br>";
+	  echo $LDIF;
 	  return true;
 	} else {
 	  $old = pql_maybe_encode($old);
@@ -718,6 +736,9 @@ class pql {
 		  $pql_cache->del($dn);
 		
 		return true;
+	  } else {
+		pql_format_error(1);
+		echo $LDIF;
 	  }
 	}
 	
@@ -725,7 +746,7 @@ class pql {
   }
   // }}}
   
-  // {{{ bool delete(linkid, dn)
+  // {{{ bool delete(dn)
   function delete($dn) {
 	global $pql_cache;
 	
@@ -733,11 +754,7 @@ class pql {
 	  echo "Removing DN: '<b>$dn</b>'<br>";
 	else {
 	  if(!ldap_delete($this->ldap_linkid, $dn)) {
-		$errno = ldap_errno($this->ldap_linkid);
-		$error = ldap_error($this->ldap_linkid);
-
 		pql_format_error(1);
-		echo "Error: #$errno ($error)<p>";
 		return false;
 	  }
 	}
@@ -760,15 +777,25 @@ class pql {
 function pql_user_get_quota($user) {
   global $_pql, $_SESSION;
   
-  if(!empty($_SESSION["NEW_STYLE_QUOTA"])) {
+  if($_SESSION["NEW_STYLE_QUOTA"]) {
 	$quota_size  = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_QUOTA_SIZE"));
 	$quota_count = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_QUOTA_COUNT"));
 	
-	if($quota_size and $quota_count)
-	  $quota = array($quota_size[0]."S,".$quota_count[0]."C");
+	if($quota_size)
+	  $quota   = $quota_size[0]."S";
 	else
+	  $quota   = '0S';
+
+	if($quota_count)
+	  $quota  .= ",".$quota_count[0]."C";
+	else
+	  $quota  .= ',0C';
+  
+	if(!$quota)
 	  // Just incase we haven't the new style quota in the DB, get the old type
 	  $quota = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_QUOTA_VALUE"));
+	else
+	  $quota = array($quota);
   } else
 	// We're not using new style quota, get the old type...
 	$quota = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_QUOTA_VALUE"));
@@ -1103,6 +1130,7 @@ function pql_password_hash($password, $hash) {
 	
   case "{KERBEROS}":
 	// Kerberos V mapping
+  case "{SASL}":
 	// NEW FORMAT: '{SASL}principal@REALM.TLD'
 	return '{SASL}' . $password;
 	
