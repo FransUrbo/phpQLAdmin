@@ -1,7 +1,7 @@
 <?php
 // phpQLAdmin cache Application Programming Interface (API)
 //
-// $Id: pql_cache.inc,v 2.10 2007-02-15 12:56:30 turbo Exp $
+// $Id: pql_cache.inc,v 2.11 2007-02-26 13:10:45 turbo Exp $
 //
 
 // Initialize the cache 'area'
@@ -10,6 +10,7 @@ $pql_cache = new pql_cache();
 // {{{ PQL_CACHE - caching class
 class pql_cache {
   var $_memcache = 0;
+  var $cache;
 
   // {{{ add(key, value)
   function add($key, $value) {
@@ -22,12 +23,12 @@ class pql_cache {
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	
-	if(is_array($this)) {
-	  // Global key storage
-	  if((($this[$key] == '') or ($this[$key] != $value) or ($key == 'PQL_CONF_DEBUG_ME')) and
+	if(@is_array($this->cache)) {
+	  // Global variable storage
+	  if((($this->cache[$key] == '') or ($this->cache[$key] != $value) or ($key == 'PQL_CONF_DEBUG_ME')) and
 		 !@$_SESSION["loading_resonable_defaults"])
 	  {
-		$this[$key] = $value;
+		$this->cache[$key] = $value;
 
 		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $key) and
 		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
@@ -58,27 +59,29 @@ class pql_cache {
     global $_SESSION;
 	
 	if(file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
-	  return(1);
+	  return(false);
 	if(!isset($key))
-	  return(2);
+	  return(false);
 	
 	if(ereg('=.*,', $key) and function_exists("pql_maybe_encode"))
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	
-	if(is_array($this)) {
-	  if(empty($this[$key])) {
+	if(@is_array($this->cache)) {
+	  // Global variable storage
+	  if(empty($this->cache[$key])) {
 		// We don't have this object yet.
 		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
 		  echo "Object '$key' <b>not</b> cached!<br>";
-		return(3);
+		return(false);
 	  } else {
 		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
 		  echo "Object '$key' <b>is</b> cached<br>";
 		
-		return($this[$key]);
+		return($this->cache[$key]);
 	  }
 	} else {
+	  // Memcache storage
 	  $object = $this->_memcache->get($key);
 	  if(@($object != '')) {
 		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
@@ -109,10 +112,12 @@ class pql_cache {
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	
-	if(is_array($this)) {
-	  if($this[$key])
-		unset($this[$key]);
+	if(@is_array($this->cache)) {
+	  // Global variable storage
+	  if($this->cache[$key])
+		unset($this->cache[$key]);
 	} else {
+	  // Memcache storage
 	  if($this->get($key))
 		// There is such an object - delete it
 		$this->_memcache->delete($key);
@@ -122,16 +127,23 @@ class pql_cache {
 
   // {{{ repl(key, value)
   function repl($key, $value) {
-	if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $key) and
-	   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-	  echo "RPL: $key = '$value'<br>\n";
-	$this->_memcache->replace($key, $value);  //, 1, (60*10));
+	if(@is_array($this->cache)) {
+	  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $key) and
+		 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+		echo "RPL: $key = '$value'<br>\n";
+	  $this->_memcache->replace($key, $value);  //, 1, (60*10));
+	} else {
+	  $this->cache[$key] = $value;
+	}
   }
   // }}}
 
   // {{{ flush(void)
   function flush() {
-	$this->_memcache->flush();
+	if(@is_array($this->cache))
+	  $this->_memcache->flush();
+	else
+	  $this->cache = array();
 	return(true);
   }
   // }}}
@@ -147,21 +159,19 @@ class pql_cache {
 		// the TCP/IP connection doesn't give any overhead! Change at your own
 		// peril!
 		$this->_memcache = new Memcache;
-		$this->_memcache->connect('localhost', 11211);
+		@$this->_memcache->connect('localhost', 11211);
 		if(@$this->_memcache)
 		  return true;
 		$msg = " WARNING: Connection to memcached failed. Using normal apache memory cache.\n";
 	  } else
 		$msg = " WARNING: Memcache module not loaded. Using normal apache memory cache.\n";
 	  
-	  if(!@$this) {
-		$log = date("M d H:i:s");
-		$log .= $msg;
-		@error_log($log, 3, "phpQLadmin.log");
-		
-		// Fall back on global variable cache
-		$this = array();
-	  }
+	  $log = date("M d H:i:s");
+	  $log .= $msg;
+	  @error_log($log, 3, "phpQLadmin.log");
+	  
+	  // Fall back on global variable cache
+	  $this->cache = array();
 	}
   }
   // }}}
