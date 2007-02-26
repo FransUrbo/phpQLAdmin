@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.29 2006-12-26 23:08:11 aaron Exp $
+// $Id: config_plugins.inc,v 2.30 2007-02-26 13:55:22 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -290,7 +290,8 @@ pql_plugin_register(pql_get_define("PQL_ATTR_UNIQUE_GROUP"), "",
 					"attrib.uniquemember.inc",
 					pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
 
-/* This is actually a fake, but it's the easiest way */
+/* This is actually a fake, but it's the easiest way 
+ * Used in [domain]->[user]->Antispam configuration->Add header line to mail */
 pql_plugin_register("add_header", "",
 					"attrib.spamassassin.inc",
 					"add_header");
