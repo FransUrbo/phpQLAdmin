@@ -1,6 +1,6 @@
 <?php
 // Automount information etc
-// $Id: host_details-automount.inc,v 1.5 2007-02-15 12:08:17 turbo Exp $
+// $Id: host_details-automount.inc,v 1.6 2007-02-26 13:31:56 turbo Exp $
 
 // {{{ Retreive automounts
 if($_REQUEST["host"] == 'Global') {
@@ -43,34 +43,67 @@ $titles = array('Device', 'Mountpoint', 'Filesystem', 'Mount option', 'Descripti
       </tr>
 
 <?php
-$row = 'c1'; $host_cnt=1;
+$row = 'c1'; $host_cnt=0;
 // }}}
 
 // Go through the array - start with the first level - the FQDN
 foreach($automounts as $host => $host_data) {
 ?>
       <tr class="<?=$row?>">
-        <!-- 0: Host and Device -->
+        <!-- a: Host and Device -->
         <td>
 <?php
+  $letters = array('a', 'b', 'c', 'd', 'e');
+
+  // {{{ Setup the highlighting when mouse hovers/leaves area
+  $mouse = 'onmouseover="if (isDOM || isIE4) {';
+  for($i=0; $letters[$i]; $i++)
+    $mouse .= 'hilightBase(\'el'.$host_cnt.$letters[$i].'\', \'#CCFFCC\'); ';
+  $mouse .= '}"';
+
+  $mouse .= 'onmouseout="if (isDOM || isIE4) {';
+  for($i=0; $letters[$i]; $i++)
+    $mouse .= 'hilightBase(\'el'.$host_cnt.$letters[$i].'\', \'#D0DCE0\'); ';
+  $mouse .= '}"';
+  // }}}
+
+  // {{{ Setup base exansion
+  $expand1 = 'onclick="if (capable) {';
+  for($i=0; $letters[$i]; $i++)
+    $expand1 .= 'expandBase(\'el'.$host_cnt.$letters[$i].'\', true); ';
+  $expand1 .= '}"';
+
+  $expand2 = 'onclick="if (capable) {';
+  for($i=0; $letters[$i]; $i++)
+    $expand2 .= 'expandBase(\'el'.$host_cnt.$letters[$i].'\', false); ';
+  $expand2 .= '}"';
+  // }}}
+
   // {{{ Start of span
   // The '&nbsp;' included in the '$host' call is to make sure that the title isn't 'flopping' (changing width)
   if($_SESSION["opera"]) {
     pql_format_tree_opera($host_cnt, $host.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-			  '', 0, '0Parent', array(0,
-						  '0Spn', '0Img',
-						  '1Spn', '1Img',
-						  '2Spn', '2Img',
-						  '3Spn', '3Img',
-						  '4Spn', '4Img'));
+			  '', 0, '0aParent', array(0,
+						   '0aChild', '0aImg',
+						   '0bChild', '0bImg',
+						   '0cChild', '0cImg',
+						   '0dChild', '0dImg',
+						   '0dChild', '0eImg'));
   } else {
-    pql_format_tree_other($host_cnt, $host.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-			  '', 0, '0Parent', array(0,
-						  '0Spn', '0Img',
-						  '1Spn', '1Img',
-						  '2Spn', '2Img',
-						  '3Spn', '3Img',
-						  '4Spn', '4Img'));
+    // Here 'a' is hard coded, because it's only called ONCE (for each host).
+?>
+          <div id="el<?=$host_cnt?>aParent" class="parent" <?=$mouse?>>
+              <a class="item" <?=$expand1?>>
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$host_cnt?>aImg">
+              </a>
+
+              <a class="item" <?=$expand2?>>
+                <span class="heada"><?=$host?></span>
+              </a>
+          </div>
+
+          <div id="el<?=$host_cnt?>aChild" class="child" style="margin-bottom: 5px" <?=$mouse?>>
+<?php
   }
 // }}}
 
@@ -99,12 +132,10 @@ foreach($automounts as $host => $host_data) {
       $MOUNT["Mount option"][]	= $OPTS;
       $MOUNT["Description"][]	= $mnt_data["description"];
 ?>
-            <nobr>
               &nbsp;&nbsp;&nbsp;
               <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=delete&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt))?>"></a>
               <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=modify&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
               &nbsp;<?=$MOUNT["Device"]."\n"?>
-            </nobr>
 
             <br>
 
@@ -134,12 +165,10 @@ foreach($automounts as $host => $host_data) {
 	  $MOUNT["Mount option"][]	= $OPTS;
 	  $MOUNT["Description"][]	= $mount_data["description"];
 ?>
-            <nobr>
               &nbsp;&nbsp;&nbsp;
               <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=delete&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt.'/'.$mount))?>"></a>
               <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=modify&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
               &nbsp;<?=$MOUNT["Device"]."\n"?>
-            </nobr>
 
             <br>
 
@@ -153,9 +182,8 @@ foreach($automounts as $host => $host_data) {
   }
 
   // {{{ End of span and td
-  pql_format_tree_end();
- 
 ?>
+          </div>
         </td>
 
 <?php
@@ -164,31 +192,46 @@ foreach($automounts as $host => $host_data) {
   // {{{ Go through the additional information (mountpoint, fs, options etc)
   for($j=1; $titles[$j]; $j++) {
 ?>
-        <!-- <?=$j?>: <?=$titles[$j]?> -->
+        <!-- <?=$letters[$j]?>: <?=$titles[$j]?> -->
         <td>
 <?php
     if($_SESSION["opera"]) {
-      pql_format_tree_opera($host_cnt, '<br>', '', 0, $j.'Parent',
+      pql_format_tree_opera($host_cnt, '<br>', '', 0, $j.'aParent',
 			    array($j,
-				  '0Spn', '0Img',
-				  '1Spn', '1Img',
-				  '2Spn', '2Img',
-				  '3Spn', '3Img',
-				  '4Spn', '4Img'));
+				  $j.'aChild', $j.'aImg',
+				  $j.'bChild', $j.'bImg',
+				  $j.'cChild', $j.'cImg',
+				  $j.'dChild', $j.'dImg',
+				  $j.'eChild', $j.'eImg'));
     } else {
-      pql_format_tree_other($host_cnt, '<br>', '', 0, $j.'Parent',
-			    array($j,
-				  '0Spn', '0Img',
-				  '1Spn', '1Img',
-				  '2Spn', '2Img',
-				  '3Spn', '3Img',
-				  '4Spn', '4Img'));
+?>
+          <div id="el<?=$host_cnt?><?=$letters[$j]?>Parent" class="parent" <?=$mouse?>>
+              <a class="item" <?=$expand1?>>
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$host_cnt?><?=$letters[$j]?>Img">
+              </a>
+
+              <a class="item" <?=$expand2?>>
+                <span class="heada">&nbsp;</span>
+              </a>
+          </div>
+
+          <div id="el<?=$host_cnt?><?=$letters[$j]?>Child" class="child" style="margin-bottom: 5px" <?=$mouse?>>
+<?php
     }
 
     $data = $MOUNT[$titles[$j]];
-    foreach($data as $mount_point)
-      echo "           $mount_point<br>\n";
+    foreach($data as $mount_point) {
+      // The '&nbsp;' and the image here is just so that all columns will be of the same
+      // height! I'm only interested in 'height', hence 'width' in the img tag is only to
+      // get it slightly of the left edge of it's frame.
+      if(!$mount_point)
+	$mount_point = "&nbsp;";
 ?>
+            <img name="imEx" src="images/spacer_12x12.png" border="0" alt="+" width="4" height="12"><?=$mount_point?><br>
+<?php
+    }
+?>
+          </div>
         </td>
 <?php
     if($titles[$j+1])
@@ -199,20 +242,12 @@ foreach($automounts as $host => $host_data) {
       </tr>
 
       <tr class="<?=$row?>">
-        <td>
-            &nbsp;&nbsp;&nbsp;
-            <img src="images/navarrow.png" width="9" height="9" border="0">
-            <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&action=add&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>">
-	      &nbsp;<?=$LANG->_("Add new mount point")?>
-            </a>
-
-            <br>
+        <td colspan="5">
+          <img src="images/navarrow.png" width="9" height="9" border="0">
+          <a href="host_edit_attribute.php?host=<?=urlencode($host)?>&action=add&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>">
+	    &nbsp;<?=$LANG->_("Add new mount point")?>
+          </a>
         </td>
-
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
       </tr>
 <?php
 
