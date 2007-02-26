@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.29 2007-02-19 10:54:53 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.30 2007-02-26 11:14:56 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -147,6 +147,13 @@ function attribute_print_form() {
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?=$LANG->_('With new value')?></td>
             <td><?php echo pql_format_error_span($error["newvalue"]); ?><input type="text" name="newvalue" value="<?=$_REQUEST["newvalue"]?>" size="20"></td>
+          </tr>
+
+          <tr class="<?php pql_format_table(); ?>">
+            <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
+            <td>
+              <?=$LANG->_('Note that this will change \bany\B\nand \ball\B occurences of the IP\nyou specify in \uold value\U with\nthe IP of the value you specify\nin \unew value\U!!')?>
+            </td>
           </tr>
 <?php	} else { ?>
           <tr class="<?php pql_format_table(); ?>">
@@ -327,7 +334,7 @@ function attribute_save($action) {
 				  $parent .= ",";
 			}
 
-			if($_pql->rename($dn, $new_dn, $parent, true))
+			if($_pql->rename($dn, $parent, $new_dn))
 			  $dn = $new_dn.','.$parent;
 			else
 			  die();
@@ -346,7 +353,7 @@ function attribute_save($action) {
 		if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'nsrecord') or ($_REQUEST["host"] == 'Global'))
 		  $oldvalue = $_REQUEST["oldvalue"];
 
-		// {{{ Get old value(s)
+		// {{{ Get old value(s) - or change aRecord (etc) globally)
 		if(@$dn) {
 		  $oldvalues = $_pql->get_attribute($dn, $attrib);
 		  if($oldvalues and !is_array($oldvalues))
@@ -357,10 +364,17 @@ function attribute_save($action) {
 			  $oldvalues[$i] = $newvalue;
 		  }
 		} elseif($_REQUEST["host"] == 'Global') {
+		  // {{{ Change aRecords globaly
+		  $CHANGE = array();
 		  foreach($_pql->ldap_basedn as $dn)  {
 			$dn = pql_format_normalize_dn($dn);
-			$oldvalues = $_pql->search($dn, "$attrib=$oldvalue");
+			$filter = "$attrib=$oldvalue";
+			$oldvalues = $_pql->search($dn, $filter);
 			if(is_array($oldvalues)) {
+			  if($oldvalues and is_array($oldvalues) and !$oldvalues[0])
+				// only one hit - flat object. Modify it for the for loop below
+				$oldvalues = array($oldvalues);
+
 			  for($i=0; $oldvalues[$i]; $i++) {
 				$zone_name = $oldvalues[$i]["zonename"];
 				if(isset($oldvalues[$i][$attrib])) {
@@ -391,7 +405,9 @@ function attribute_save($action) {
 				  $entry[$attrib] = $newvalue;
 				}
 
-				if($_pql->modify($dn, $entry, "attrib.dnszone.inc"))
+				// NOTE: Why where I using modify() directly here?!?
+				//if($_pql->modify($dn, $entry, "attrib.dnszone.inc"))
+				if(pql_modify_attribute($dn, '', '', $entry))
 				  $success = 1;
 				else
 				  $msg .= pql_complete_constant($LANG->_("Failed to change %dn%<br>"),
@@ -403,6 +419,81 @@ function attribute_save($action) {
 				die("failed to update SOA serial for $dn");
 			}
 		  }
+		  // }}}
+
+		  // {{{ Change some other attributes with IP addresses
+		  $attribs = array(pql_get_define("PQL_ATTR_IPHOSTNUMBER"),
+						   pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"),
+						   pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
+
+		  // NOTE: Missing attribute => ApacheAllow ('ApacheAllow: from 1.2.3.4')
+		  // NOTE: Setting of success=1 here is broken. If change 1 failed,
+		  //       but change 2 succeeded, then we still get success a message!
+		  foreach($_pql->ldap_basedn as $dn)  {
+			unset($entry);
+			$dn = pql_format_normalize_dn($dn);
+
+			for($k=0; $attribs[$k]; $k++) {
+			  $filter = $attribs[$k]."=$oldvalue*";
+			  $oldvalues = $_pql->get_dn($dn, $filter);
+			  for($i=0; $oldvalues[$i]; $i++) {
+				// Get old value(s)
+				$old = $_pql->get_attribute($oldvalues[$i], $attribs[$k]);
+				if(is_array($old)) {
+// NOTE: Untested...
+//				  for($j=0; $old[$j]; $j++) {
+//					if($attribs[$k] == pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")) {
+//					  // Split the value to get ip:port
+//					  $tmp = split(':', $old[$j]);
+//					  
+//					  if($tmp[0] != $oldvalue)
+//						// Add old value (in LDAP) != old value (from form)
+//						$entry[$attribs[$k]] = $old[$j];
+//					} else {
+//					  if($old[$j] != $oldvalue)
+//						// Add old value (in LDAP) != old value (from form)
+//						$entry[$attribs[$k]] = $old[$j];
+//					}
+//				  }
+//				  // Add the new value
+//				  if($attribs[$k] == pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"))
+//					$entry[$attribs[$k]] = $_REQUEST["newvalue"].":".$tmp[1];
+//				  else 
+//					$entry[$attribs[$k]] = $_REQUEST["newvalue"];
+//				  
+//				  if(pql_modify_attribute($oldvalues[$i], '', 1, $entry))
+//					$success = 1;
+				} else {
+				  // Split the value to get ip:port
+				  if($attribs[$k] == pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")) {
+					$tmp = split(':', $old);
+					$new = $_REQUEST["newvalue"].":".$tmp[1];
+				  } elseif($attribs[$k] == pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")) {
+					// Objects have this as DN. Do a modrdn!
+					$dnattrs = explode(",", $oldvalues[$i]); unset($parent);
+					$new_rdn = pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")."=".$_REQUEST["newvalue"];
+
+					// Put togheter a new DN
+					for($z=1; $z < count($dnattrs); $z++) {
+					  $parent .= $dnattrs[$z];
+					  if($dnattrs[$z+1])
+						$parent .= ",";
+					}
+
+					if($_pql->rename($oldvalues[$i], $parent, $new_rdn))
+					  $success = 1;
+				  } else
+					$new = $_REQUEST["newvalue"];
+
+				  if($attribs[$k] != pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")) {
+					if(pql_modify_attribute($oldvalues[$i], $attribs[$k], 1, $new))
+					  $success = 1;
+				  }
+				}
+			  }
+			}
+		  }
+		  // }}}
 
 		  if($success)
 			$msg .= pql_complete_constant($LANG->_("Successfully replaced %old% with %new%"),
