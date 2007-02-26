@@ -201,7 +201,7 @@
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Automatically add hostname to domain for replication')?></td>
+        <td class="title"><?=$LANG->_('Automatically add local hostname to domain for replication')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $_REQUEST["branch"])) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
         <td class="<?=$class?>">
 <?php	if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
