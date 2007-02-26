@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.61 2007-02-15 12:07:10 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.62 2007-02-26 10:17:02 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -228,6 +228,7 @@ if(@$_REQUEST["submit"] == 1) {
 	//	tables/domain_details-default.inc
 	//	tables/domain_details-owner.inc
 	//	tables/user_details-access.inc
+	//		Administrator in branch
 	// 		Administrate webservers
 	// 		Administrate DNS
 
@@ -238,9 +239,10 @@ if(@$_REQUEST["submit"] == 1) {
 // }}} 
 // {{{ submit == else
 } else {
-	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA"))
+	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA")) {
+	  attribute_init();
 	  attribute_print_form();
-	elseif(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME")) or
+	} elseif(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_SPAM")) or
