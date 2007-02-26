@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.22 2007-02-15 12:08:08 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.23 2007-02-26 12:42:26 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -42,6 +42,17 @@ function attribute_print_form() {
     global $error, $LANG;
 
 	$qmaildotmode_select[$_REQUEST["qmaildotmode"]] = "selected";
+
+	// {{{ Get default dot mode for servers
+	// Get all hosts with ldapDefaultDotMode defined
+	require($_SESSION["path"]."/include/pql_control.inc");
+	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	$qlcs = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
+								  '(&(cn=*)(objectclass=qmailControl)(ldapDefaultDotMode=*))');
+
+	// Take the value from the first - should be enough (?)
+	$default_dot_mode = $_pql_control->get_attribute($qlcs[0], pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
+	// }}}
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -64,7 +75,13 @@ function attribute_print_form() {
         <tr class="subtitle">
           <td colspan="2">
             <?php echo pql_format_error_span($error["general"]); ?>
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('If you set dotmode to both or ldapwithprog you should add a deliveryprogram too')?>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('If you set dotmode to both or ldapwithprog you should add a deliveryprogram too')?>.
+          </td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="2">
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('Default dot mode is:')?>&nbsp;<b><?=$default_dot_mode?></b>
           </td>
         </tr>
       </th>
