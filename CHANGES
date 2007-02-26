@@ -144,6 +144,19 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Fix some array usage bugs in dump_object.php
 	    + Don't output the '--- DEBUG ---' stuf.
 	  - Change the way host_modify.php finds physical hosts (previosly it also found webserver stuff).
+	  - When changing deliveryMode, make sure that any combination of change is really saved to the
+	    LDAP database - previosly only ADDITIONS was done.
+	  - If user specifies quota value(s), but forgot to tick 'User defined', this should be changed
+	    in the code - broke sometime ago for some reason.
+	  - Simplify/bugfix retreival of additional groups in user_detail.php.
+	  - Don't hardcode the DN to the additional group in include/attrib.additionalgroup.inc:attribute_save().
+	    Try to find it by doing a search.
+	  - Fix changing password - scheme was empty, so it was known which to use.
+	  - Changing a login shell should REPLACE the existing value, not add to it.
+	  - When giving a user controls/webserver administration rights, DON'T give them FULL access. I.e.
+	    they should NOT have access to create physical hosts etc - that's only for the super admin.
+	    Hence, don't give them access to the control search DN nor the physical hosts, only to the
+	    QLC _or_ the webserver containers (and their localtion objects).
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
@@ -167,8 +180,26 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    'DNS Zones - Global' below the Global branch).
 	  - Support setting TXT records for hosts in DNS manager.
 	  - Support changing aRecords globaly (replace IP1 with IP2 in the whole database).
+	    + Also replace some other attributes with IP address in them.
+	    + Put link to this in both 'Computers->Global->DNS Administration->Actions' as well as below
+	      the 'Global->DNS Zones - Global' branch.
 	  - Separate the User and LDAP server info, logout button, advanced mode selector and the 'Home'
 	    branch from user lists into two separate tables.
+	  - Refuse login to phpQLAdmin if user status isn't active or nopop. In all other cases, refuse
+	    login with "Can't find you in the database".
+	  - In the user details->Forwarders to other accounts view, show the deliveryMode value(s).
+	  - Change wording of 'Forwarders to other accounts' to simply 'Mail forwarding'.
+	  - When changing dot mode, there's an option that reads 'default taken from ldapDefaultDotMode'.
+	    Get that value and inform user about it.
+	  - If user is super administrator, there's litte point in showing/retreiving information about
+	    which branches the user is administrator of - a super admin have access to ALL branches!
+	  - In pql->search() method, save the jpegPhoto in the array as a base64 encoded value.
+	    + base64_decode() the photo value before use in tables/user_details-personal.inc.
+	  - Put a counter next to the email alias in User details->Registered address to keep track on
+	    how MANY aliases there are.
+	  - Instead of showing the uid value of a user allowed access to a physical host in
+	    'Domain details->Host Control->Host Control Access', "translate" to a 'human readable'
+	    value using pql_left_htmlify_userlist()
 
 	API changes
 	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods
@@ -184,6 +215,14 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	      the LDAP linkid any more. Instead, since the pql class handle is global any way, just
 	      import it in any functions that need it.
 	  - Prefix the kadmin_* functions with the usual 'pql_' prefix.
+	  - Rewrite the sudoers plugin to be more like rest of phpQLAdmin (i.e. file include/attrib.sudoers.inc,
+	    sudo_add.php, sudo_detail.php and sudo_modify.php instead of one, big, huge 'sudo_modify.php' which
+	    did everything.
+	  - Extra option to pql->search() added: encode (yes or no - default no for backward compability).
+	    + Make sure to leave (if encode=1) all values un-decoded. This so it/they can be used in/by
+	      dump_object.php to create a usable LDIF from/of the object(s) where encoded values won't
+	      be usable if (re)loaded into an LDAP database..
+	  - Speed up domain_detail.php by only retreving the attributes of interest for the specific view.
 
 	Misc changes
 	  - Added Strong password option to meet SOX & DSS/PCI compliance
