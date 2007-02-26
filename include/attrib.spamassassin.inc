@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for spamAssassin
-// $Id: attrib.spamassassin.inc,v 2.7 2007-02-15 12:08:09 turbo Exp $
+// $Id: attrib.spamassassin.inc,v 2.8 2007-02-26 12:49:42 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -82,7 +82,7 @@ function attribute_print_form() {
 }
 // }}}
 
-// {{{ attribute_save($request)
+// {{{ attribute_save(request)
 function attribute_save($request) {
 	global $_pql, $LANG;
 
@@ -197,7 +197,28 @@ function attribute_save($request) {
 		  . ": " . ldap_error($_pql->ldap_linkid);
 	}
 
-	attribute_forward($msg);
+	// {{{ Forward back to users detail page
+	if(function_exists("attribute_forward"))
+	  attribute_forward($msg);
+	else {
+	  // We're called from user_detail.php which don't have attribute_forward()
+	  $url["domain"] = pql_format_urls($_REQUEST["domain"]);
+	  $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+	  $url["user"]   = pql_format_urls($_REQUEST["user"]);
+	  
+	  $link = "user_detail.php?rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
+		. "&user=" . $url["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);
+	  if ($rlnb)
+		$link .= "&rlnb=2";
+	  
+	  if(!pql_get_define("PQL_CONF_DEBUG_ME"))
+		pql_header($link);
+	  else {
+		echo "<p>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+		die("<b>".$_SESSION["URI"].$link."</b>");
+	  }
+	}
+// }}}
 }
 // }}}
 
