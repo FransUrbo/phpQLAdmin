@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.36 2007-02-15 12:08:07 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.37 2007-02-26 12:21:56 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -66,13 +66,32 @@ function attribute_check($type) {
 function attribute_init() {
     global $_pql;
 
-    $quota = pql_user_get_quota($_REQUEST["user"]);
-	if(is_array($quota)) {
-		$_REQUEST["maxmails"] = $quota["maxmails"];
-		$_REQUEST["maxsize"]  = $quota["maxsize"];
+	// Retreive old values
+	if($_REQUEST["attrib"] == 'basequota') {
+	  // Get default quota from domain
+	  $quota = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEQUOTA"));
+	  if($quota) {
+		$tmp = split(',', $quota);
+		$_REQUEST["maxsize"] = $tmp[0];
+		$_REQUEST["maxmails"] = $tmp[1];
+
 		$_REQUEST["options"]  = "user";
-	} else
-	  $_REQUEST["options"]    = "default";
+	  } else
+		$_REQUEST["options"]    = "default";
+	} elseif($_REQUEST["attrib"] == 'mailquota') {
+	  // Get quota value(s) from user
+	  $quota = pql_user_get_quota($_REQUEST["user"]);
+	  if(is_array($quota)) {
+		if($quota["maxmails"])
+		  $_REQUEST["maxmails"] = $quota["maxmails"];
+
+		if($quota["maxsize"])
+		  $_REQUEST["maxsize"]  = $quota["maxsize"];
+
+		$_REQUEST["options"]  = "user";
+	  } else
+		$_REQUEST["options"]    = "default";
+	}
 }
 // }}}
 
@@ -146,39 +165,42 @@ function attribute_save($type) {
     global $_pql, $LANG;
 
 	// Just incase user 'forgets' to tick in the 'User defined' field...
-	if(empty($_REQUEST["options"]) and (!empty($_REQUEST["maxsize"]) or !empty($_REQUEST["maxmails"])))
-	  // Neither 'Standard' nor 'User defined' entered, but we have value(s) for quota
+	if((($_REQUEST["options"] == 'default') or !$_REQUEST["options"]) and (!empty($_REQUEST["maxsize"]) or !empty($_REQUEST["maxmails"])))
+	  // Default specified, but we have value(s) for quota! Change options to 'user'
 	  $_REQUEST["options"] = "user";
 
 	switch($_REQUEST["options"]) {
 	  case "user":
 		// It's possible to support both old AND new style quota at the same time!
 		// Hence no 'elseif()' below!
-		// ------------------------------------
 
-		if($_SESSION["OLD_STYLE_QUOTA"]) {
+		if($_REQUEST["attrib"] != 'basequota') {
+		  // {{{ Old style quota
+		  if($_SESSION["OLD_STYLE_QUOTA"]) {
 			$mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] = '';
-
-			// Set the old style quota value
-			if($_REQUEST["maxsize"] != "") {
-				$_REQUEST["maxsize"] = $_REQUEST["maxsize"] * 1024;
-				$mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] .= $_REQUEST["maxsize"] . "S";
+			if(!empty($_REQUEST["maxsize"])) {
+			  $_REQUEST["maxsize"] = $_REQUEST["maxsize"] * 1024;
+			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] .= $_REQUEST["maxsize"] . "S";
 			}
 			
-			if($mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] != '')
+			if(!empty($_REQUEST["maxmails"]))
 			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] .= ',';
-
+			
 			if($_REQUEST["maxmails"] != "")
 			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] .= $_REQUEST["maxmails"] . "C";
-		}
-
-		if($_SESSION["NEW_STYLE_QUOTA"]) {
+		  }
+		  // }}}
+		  
+		  // {{{ New style quota
+		  if($_SESSION["NEW_STYLE_QUOTA"]) {
 			// Set the new style quota values
 			if($_REQUEST["maxsize"])
 			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_SIZE")]  = $_REQUEST["maxsize"];
 			
 			if($_REQUEST["maxmails"] != "")
 			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_COUNT")] = $_REQUEST["maxmails"];
+		  }
+		  // }}}
 		}
 
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
@@ -200,8 +222,7 @@ function attribute_save($type) {
 			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 			// Get all QmailLDAP/Control hosts.
-			$result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
-								 '(&(cn=*)(objectclass=qmailControl))');
+			$result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"], '(&(cn=*)(objectclass=qmailControl))');
 			for($i=0; $i < count($result); $i++)
 			  $hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
 
@@ -211,12 +232,26 @@ function attribute_save($type) {
 						// Retreive default quota for this QmailLDAP/Controls object.
 						$quota = ldapdefaultquota_init($host);
 						if(is_array($quota)) {
-							if($_SESSION["OLD_STYLE_QUOTA"])
-							  $mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] = $quota[0]."S,".$quota[1]."C";
+							if($_SESSION["OLD_STYLE_QUOTA"]) {
+							  $mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] = '';
+							  if(!empty($quota[0]))
+								$mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] = $quota[0]."S";
+
+							  if(!empty($quota[1])) {
+								$mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] .= ','.$quota[1]."C";
+							  }
+							}
 
 							if($_SESSION["NEW_STYLE_QUOTA"]) {
+							  if(!empty($quota[0]))
 								$mailquota[pql_get_define("PQL_ATTR_QUOTA_SIZE")]  = $quota[0];
+							  else
+								$mailquota[pql_get_define("PQL_ATTR_QUOTA_SIZE")]  = array();
+
+							  if(!empty($quota[1]))
 								$mailquota[pql_get_define("PQL_ATTR_QUOTA_COUNT")] = $quota[1];
+							  else
+								$mailquota[pql_get_define("PQL_ATTR_QUOTA_COUNT")] = array();
 							}
 						}
 					}
@@ -258,16 +293,21 @@ function attribute_save($type) {
 	  case "modify":
 		// remove attribute if it is set to ""
 
-		if($_REQUEST["attrib"] == 'basequota') {
+		if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA")) {
 			$domaindn = urldecode($_REQUEST["domain"]);
 
 			// Setup the array to send to LDAP server
-			$entry['baseQuota']     = $mailquota;
-			$entry['objectClass']   = pql_setup_branch_objectclasses(0, $domaindn, $_pql->ldap_linkid);
-			$entry['objectClass'][] = 'phpQLAdminConfig';
+			$entry[pql_get_define("PQL_ATTR_BASEQUOTA")]      = '';
+			if($_REQUEST["maxsize"])
+			  $entry[pql_get_define("PQL_ATTR_BASEQUOTA")]   .= $_REQUEST["maxsize"];
+			if($_REQUEST["maxmails"])
+			  $entry[pql_get_define("PQL_ATTR_BASEQUOTA")]   .= ','.$_REQUEST["maxmails"];
+
+			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]    = pql_setup_branch_objectclasses(0, $domaindn, $_pql->ldap_linkid);
+			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][]  = 'phpQLAdminConfig';
 
 			// We're setting default quota for domain, not user.
-			if(!pql_modify_attribute($_REQUEST["domain"], 'baseQuota', '', $entry))
+			if(!pql_modify_attribute($_REQUEST["domain"], '', 1, $entry))
 			  // Failed
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what% for domain %domain%'),
 										   array('what'   => $LANG->_('default quota'),
