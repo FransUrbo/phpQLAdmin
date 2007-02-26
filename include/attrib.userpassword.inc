@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.41 2007-02-15 12:08:11 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.42 2007-02-26 12:56:43 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -89,6 +89,15 @@ function attribute_print_form() {
 	else
 	  // Get the default password scheme for branch
 	  $defaultpasswordscheme = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
+
+	$passwordschemes = pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]);
+
+	$pw = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"));
+	if($pw) {
+	  // Extract the scheme from the password field
+	  $tmp = split('}', $pw);
+	  $scheme = $tmp[0]."}";
+	}
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -99,17 +108,20 @@ function attribute_print_form() {
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
-<?php	if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]))) {
+<?php	if(eregi(',', $passwordschemes)) {
 			// We got more than one password scheme...
-			$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
+			$schemes = split(",", $passwordschemes);
 			foreach($schemes as $scheme) {
 ?>
             <input type="radio" name="pwscheme" value="{<?=$scheme?>}" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 
 <?php		}
-		} else { ?>
-            <?=$LANG->_('Scheme')?>: <b><?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?></b>
-            <input type="hidden" name="pwscheme" value="{<?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>}">
+		} elseif($passwordschemes) { ?>
+            <?=$LANG->_('Scheme')?>: <b><?=$passwordschemes?></b>
+            <input type="hidden" name="pwscheme" value="{<?=$passwordschemes?>}">
+<?php	} else { ?>
+            <input type="radio" name="pwscheme" value="<?=$scheme?>" CHECKED><?=$scheme?>
+            <input type="radio" name="pwscheme" value="{<?=$defaultpasswordscheme?>}"><?=$defaultpasswordscheme?>
 <?php	} ?>
           </td>
         </tr>
@@ -130,17 +142,22 @@ function attribute_print_form() {
 <?php } ?>
         <!-- Password -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password')?><br><?=$LANG->_('Re-Type Password')?><br>
+          <td class="title">
+            <?=$LANG->_('Password')?>
+<?php if(pql_get_define("PQL_CONF_STRONGPASSWD_USE")){ ?> 
+            <br><?=$LANG->_('Re-Type Password')?><br>
+<?php } ?>
             <?php echo pql_format_error_span($error["userpassword"]) . "\n"; ?>
-	  </td>
+          </td>
+
           <td>
             <!-- Ugly hack. Should really have type=password here, but what''s the use. Really!? -->
-	<?php if(pql_get_define("PQL_CONF_STRONGPASSWD_USE")){ ?> 
+<?php if(pql_get_define("PQL_CONF_STRONGPASSWD_USE")){ ?> 
 		<input type="password" name="userpassword" size="40"><br>
 		<input type="password" name="userpassword2" size="40">
-	<?php }else{?>
+<?php } else {?>
 		<input type="input" name="userpassword" size="40">
-	<?php }?>
+<?php } ?>
           </td>
         </tr>
 <?php if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"])) { ?>
@@ -191,8 +208,7 @@ function attribute_save($type) {
 		// TODO: Perhaps we should give the admin the choice of weather or
 		//       not we should use lanman since it's so insecure.
 		//       -> Thoughts anyone?
-		$objectclasses = $_pql->get_attribute($_REQUEST["user"],
-										   pql_get_define("PQL_ATTR_OBJECTCLASS"));
+		$objectclasses = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 		if($objectclasses and !is_array($objectclasses))
 		  // Make it an array for the following foreach() to work..
 		  $objectclasses = array($objectclasses);
@@ -202,32 +218,34 @@ function attribute_save($type) {
 			$USER_IS_SAMBA = 1;
 		}
 		
-		if($USER_IS_SAMBA){
+		if($USER_IS_SAMBA) {
 		  $nt = pql_password_hash($_REQUEST["userpassword"], '{ntpasswd}');
-		  pql_modify_attribute($_REQUEST["user"],
-							   pql_get_define("PQL_ATTR_SAMBANTPASSWORD"), 1, $nt);
+		  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_SAMBANTPASSWORD"), 1, $nt);
 		}
 
-		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == '{KERBEROS}')) {
+		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and
+		   ($_REQUEST["pwscheme"] == '{KERBEROS}'))
+		{
 		  if(kadmin_cpw($_REQUEST["principal"], $_REQUEST["userpassword"]))
 			$success = 1;
 		} else {
 		  // Change an 'ordinary' LDAP password
 		  $pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 	
-		  if(pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw))
+		  if(pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw)) {
 			$expiredays = $_pql->get_attribute($_REQUEST['rootn'], pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"));
-                        //Since Password is changeing, I better update the shadowstuff also
-                        if(isset($expiredays)){
-                                $today = floor(time() * (1/60) * (1/60) * (1/24) );
-                                $next = $today + $expiredays;
-                                pql_modify_attribute($_REQUEST["user"],
-                                   pql_get_define("PQL_ATTR_EXPIRATION"), 1, $next);
-                                pql_modify_attribute($_REQUEST["user"],
-                                   pql_get_define("PQL_ATTR_PASSWORD_LASTCHANGED"), 1, $today);
-                        }
 
+			// Since Password is changeing, I better update the shadowstuff also
+			if(isset($expiredays)) {
+			  $today = floor(time() * (1/60) * (1/60) * (1/24) );
+			  $next = $today + $expiredays;
+
+			  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_EXPIRATION"), 1, $next);
+			  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWORD_LASTCHANGED"), 1, $today);
+			}
+			
 			$success = 1;
+		  }
 		}
 
 		if($success)
