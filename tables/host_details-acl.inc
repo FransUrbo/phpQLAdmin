@@ -78,14 +78,22 @@ foreach($hosts as $host_dn) {
 <?php	}
 
 		for($j=0; $j < count($host_users); $j++) {
-		  $user = $_pql->get_attribute($host_users[$j], pql_get_define("PQL_ATTR_UID"));
+		  // Extract 'human readable' name from the user DN's found
+		  if($_REQUEST["rootdn"] and $_REQUEST["domain"]) {
+			$user = pql_left_htmlify_userlist($_REQUEST["rootdn"], $_REQUEST["domain"], $host_users[$j], array($user), ($links = NULL));
+			if(is_array($user)) {
+			  // Grab the first (and only?!) value
+			  foreach($user as $dn => $cn)
+				break;
+			  $user = $cn;
+			}
+		  } else
+			$user = $_pql->get_attribute($host_users[$j], pql_get_define("PQL_ATTR_UID"));
 ?>
              &nbsp;&nbsp;&nbsp;
-             <img src="images/navarrow.png" width="9" height="9" border="0">&nbsp;<?=$user."\n"?>
-               <a href="host_modify.php?host=<?=urlencode($host_dn)?>&userdn=<?=urlencode($host_users[$j])?>&action=remove_user_from_host">
-                 <img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>">
-               </a>
-               <br>
+             <a href="host_modify.php?host=<?=urlencode($host_dn)?>&userdn=<?=urlencode($host_users[$j])?>&action=remove_user_from_host"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>"></a>
+             &nbsp;<?=$user."\n"?>
+             <br>
 <?php
 		}
 	  if($_SESSION["opera"]) {
