@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.62 2007-02-19 14:53:41 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.63 2007-02-26 10:50:51 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -86,12 +86,21 @@ if(!$plugin) {
     die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
 }
 
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+  echo "include: include/$plugin<br>";
+}
 include($_SESSION["path"]."/include/$plugin");
 // }}}
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user' => $username)); ?></span>
   <br><br>
 <?php
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+  echo "REQUEST:";
+  ksort($_REQUEST);
+  printr($_REQUEST);
+}
+
 // {{{ Select what to do
 // DLW: One of these days this submit==1 stuff has to be replaced with
 //      human readable text such as submit="verify".
