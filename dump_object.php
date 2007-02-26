@@ -1,6 +1,6 @@
 <?php
 // Dump either a specific object or a specific LDAP branch
-// $Id: dump_object.php,v 1.7 2007-02-19 10:58:30 turbo Exp $
+// $Id: dump_object.php,v 1.8 2007-02-26 10:21:49 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -74,7 +74,7 @@ if(empty($_REQUEST["submit"])) {
 	}
   } elseif($_REQUEST["scope"] == "base") {
 	// Get the non-operational attributes
-	$objects1 = $_pql->search($_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE");
+	$objects1 = $_pql->search($_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", 0, 0, 1);
 	
 	if($_REQUEST["operationals"]) {
 	  // Get the operational attributes
