@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.39 2007-02-19 10:54:51 turbo Exp $
+// $Id: left-control.php,v 2.40 2007-02-26 10:45:42 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -373,7 +373,9 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 			ksort($zones);
 
 			// {{{ Setup and show the branch
-			$links = array();
+			$links = array('<i>'.$LANG->_('Replace IP address globally').'</i>' => 
+						   'bind9_edit_attributes.php?host=Global&type=a&action=modify');
+
 			foreach($zones as $zone) {
 			  $rootdn = pql_get_rootdn($zone["@"]["domain_branch_dn"], "left-control.php");
 			  $dn  = "host_detail.php?rootdn=$rootdn&domain=".$zone["@"]["domain_branch_dn"];
