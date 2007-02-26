@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.111 2007-02-15 12:07:10 turbo Exp $
+// $Id: domain_detail.php,v 2.112 2007-02-26 10:11:34 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -61,54 +61,55 @@ if(empty($_REQUEST["view"]))
   $_REQUEST["view"] = 'default';
 
 // {{{ Get all needed default values for this domain
-// Some of these (everything after the 'o' attribute)
-// uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
-$attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
-				 "autocreateusername"		=> pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
-				 "autocreatepassword"		=> pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
-				 "basehomedir"				=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
-				 "basemaildir"				=> pql_get_define("PQL_ATTR_BASEMAILDIR"),
-				 "basequota"				=> pql_get_define("PQL_ATTR_BASEQUOTA"),
-				 "defaultdomain"			=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
-				 "defaultpasswordscheme"	=> pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
-				 "defaultaccounttype"		=> pql_get_define("PQL_ATTR_DEFAULT_ACCOUNTTYPE"),
-				 "facsimiletelephonenumber"	=> pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
-				 "l"						=> pql_get_define("PQL_ATTR_L"),
-				 "maximumdomainusers"		=> pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
-				 "maximummailinglists"		=> pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
-				 "o"						=> pql_get_define("PQL_ATTR_O"),
-				 "postaladdress"			=> pql_get_define("PQL_ATTR_POSTALADDRESS"),
-				 "streetaddress"			=> pql_get_define("PQL_ATTR_STREETADDRESS"),
-				 "registeredaddress"		=> pql_get_define("PQL_ATTR_REGISTEREDADDRESS"),
-				 "postalcode"				=> pql_get_define("PQL_ATTR_POSTALCODE"),
-				 "postofficebox"			=> pql_get_define("PQL_ATTR_POSTOFFICEBOX"),
-				 "st"						=> pql_get_define("PQL_ATTR_ST"),
-				 "street"					=> pql_get_define("PQL_ATTR_STREET"),
-				 "telephonenumber"			=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
-				 "mobile"					=> pql_get_define("PQL_ATTR_MOBILE"),
-				 "usernameprefix"			=> pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
-				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
-				 "vatnumber"				=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
-				 "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
-				 "info"						=> pql_get_define("PQL_ATTR_INFO"),
-				 "lockusername"				=> pql_get_define("PQL_ATTR_LOCK_USERNAME"),
-				 "lockemailaddress"			=> pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
-				 "lockdomainaddress"		=> pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"),
-				 "lockpassword"				=> pql_get_define("PQL_ATTR_LOCK_PASSWORD"),
-				 "startinmyaccount"			=> pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"),
-				 "lockaccounttype"			=> pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE"));
-foreach($attribs as $key => $attrib) {
+if($_REQUEST["view"] == 'default') {
+  $attribs = array("defaultdomain"				=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+				   "basehomedir"				=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
+				   "basemaildir"				=> pql_get_define("PQL_ATTR_BASEMAILDIR"),
+				   "maximumdomainusers"			=> pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
+				   "maximummailinglists"		=> pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
+				   "basequota"					=> pql_get_define("PQL_ATTR_BASEQUOTA"),
+				   "defaultpasswordscheme"		=> pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
+				   "defaultaccounttype"			=> pql_get_define("PQL_ATTR_DEFAULT_ACCOUNTTYPE"),
+				   "lockaccounttype"			=> pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE"),
+				   "autocreateusername"			=> pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+				   "lockusername"				=> pql_get_define("PQL_ATTR_LOCK_USERNAME"),
+				   "usernameprefix"				=> pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
+				   "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
+				   "autocreatemailaddress"		=> pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
+				   "lockemailaddress"			=> pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
+				   "lockdomainaddress"			=> pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"),
+				   "autocreatepassword"			=> pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
+				   "lockpassword"				=> pql_get_define("PQL_ATTR_LOCK_PASSWORD"),
+				   "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
+				   "startinmyaccount"			=> pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"));
+} elseif($_REQUEST["view"] == 'owner') {
+  $attribs = array("o"							=> pql_get_define("PQL_ATTR_O"),
+				   "vatnumber"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
+				   "postalcode"					=> pql_get_define("PQL_ATTR_POSTALCODE"),
+				   "postofficebox"				=> pql_get_define("PQL_ATTR_POSTOFFICEBOX"),
+				   "postaladdress"				=> pql_get_define("PQL_ATTR_POSTALADDRESS"),
+				   "street"						=> pql_get_define("PQL_ATTR_STREET"),
+				   "l"							=> pql_get_define("PQL_ATTR_L"),
+				   "st"							=> pql_get_define("PQL_ATTR_ST"),
+				   "telephonenumber"			=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
+				   "facsimiletelephonenumber"	=> pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
+				   "mobile"						=> pql_get_define("PQL_ATTR_MOBILE"),
+				   "info"						=> pql_get_define("PQL_ATTR_INFO"));
+}
+
+if(is_array($attribs)) {
+  foreach($attribs as $key => $attrib) {
 	// Get default value
 	$value = $_pql->get_attribute($_REQUEST["domain"], $attrib);
 	if(is_array($value) and ($key != 'simscanattachmentsuffix'))
 	  $value = $value[0];
 	$$key = $value;
-
+	
 	if($attrib == pql_get_define("PQL_ATTR_INFO")) {
-		// Special circumstance - multiple lines...
-		$$key = eregi_replace("\n", "<br>", $$key);
+	  // Special circumstance - multiple lines...
+	  $$key = eregi_replace("\n", "<br>", $$key);
 	}
-
+	
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	// we add a delete link as well.
 	$link = $key . "_link";
@@ -155,71 +156,90 @@ foreach($attribs as $key => $attrib) {
 		. $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
 		. "border=\"0\" alt=\"".$alt1."\"></a>";
 	}
+  }
 }
+// }}}
+
 if($_REQUEST["view"] == 'access') {
-  // Get domain administrators
+  // {{{ Get domain administrators
   $domain_admins      = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
   if($domain_admins and !is_array($domain_admins)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
 	$domain_admins = array($domain_admins);
-  }
+  } elseif(!$domains_admins)
+	$domain_admins = array();
+// }}}
   
-  // Get mailinglist administrators
-  $mailinglist_admins = $_pql->get_attribute($_REQUEST["domain"],
-										  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
-  if($mailinglist_admins and !is_array($mailinglist_admins)) {
-	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	$mailinglist_admins = array($mailinglist_admins);
+  // {{{ Get mailinglist administrators
+  if(pql_get_define("PQL_CONF_EZMLM_USE")) {
+	$mailinglist_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
+	if($mailinglist_admins and !is_array($mailinglist_admins)) {
+	  // It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	  $mailinglist_admins = array($mailinglist_admins);
+	} elseif(!$mailinglist_admins)
+	  $mailinglist_admins = array();
   }
+// }}}
 
-  // Get webserver administrators
-  $websrv_admins = $_pql->get_attribute($_REQUEST["domain"],
-									 pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
-  if($websrv_admins and !is_array($websrv_admins)) {
-	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	$websrv_admins = array($websrv_admins);
+  // {{{ Get webserver administrators
+  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+	$websrv_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
+	if($websrv_admins and !is_array($websrv_admins)) {
+	  // It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	  $websrv_admins = array($websrv_admins);
+	} elseif(!$websrv_admins)
+	  $websrv_admins = array();
   }
+// }}}
 
-  // Get DNS administrators
-  $bind9_admins = $_pql->get_attribute($_REQUEST["domain"],
-									pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"));
-  if($bind9_admins and !is_array($bind9_admins)) {
-	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	$bind9_admins = array($bind9_admins);
+  // {{{ Get DNS administrators
+  if(pql_get_define("PQL_CONF_BIND9_USE")) {
+	$bind9_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"));
+	if($bind9_admins and !is_array($bind9_admins)) {
+	  // It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	  $bind9_admins = array($bind9_admins);
+	} elseif(!$bind9_admins)
+	  $bind9_admins = array();
   }
-
+// }}}
 }
 
-$seealso            = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
-if($seealso and !is_array($seealso)) {
+// {{{ Get the see-also value
+if($_REQUEST["view"] == 'owner') {
+  $seealso = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
+  if($seealso and !is_array($seealso)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
 	$seealso = array($seealso);
+  }
 }
-
-// The quota value retreived from the object is a one liner.
-// Split it up into it's parts (SIZE and AMOUNT) and
-// create an array that pql_ldap_mailquota() understands.
-if($basequota) {
-  $temp		= split(',', $basequota);
-  $temp[1]	= eregi_replace("C$", "", $temp[1]);
-  $temp[0]	= eregi_replace("S$", "", $temp[0]);
-
-  $quota			 = array();
-  $quota["maxmails"] = $temp[1];
-  $quota["maxsize"]	 = $temp[0];
-
-  $basequota		 = pql_ldap_mailquota($quota);
-}
-
-$additionaldomainname = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 // }}}
+
+if($_REQUEST["view"] == 'default') {
+  // {{{ Get quota values
+  // The quota value retreived from the object is a one liner.
+  // Split it up into it's parts (SIZE and AMOUNT) and
+  // create an array that pql_ldap_mailquota() understands.
+  if($basequota) {
+	$temp		= split(',', $basequota);
+	$temp[1]	= eregi_replace("C$", "", $temp[1]);
+	$temp[0]	= eregi_replace("S$", "", $temp[0]);
+	
+	$quota			 = array();
+	$quota["maxmails"] = $temp[1];
+	$quota["maxsize"]	 = $temp[0];
+	
+	$basequota		 = pql_ldap_mailquota($quota);
+  }
+// }}}
+
+  $additionaldomainname = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+}
 
 // {{{ Setup the buttons
 $buttons = array('default'	=> 'Branch Defaults');
 
 if($_SESSION["ADVANCED_MODE"]) {
-  $new = array('access' => 'Branch access',
-			   'owner'	=> 'Branch Owner Details');
+  $new = array('owner'	=> 'Branch Owner Details');
   $buttons = $buttons + $new;
 }
 
@@ -234,6 +254,9 @@ if($_SESSION["ADVANCED_MODE"]) {
 		$new = array('dnsinfo'	=> 'MX Information');
 		$buttons = $buttons + $new;
 	}
+
+	$new = array('access' => 'Branch access');
+	$buttons = $buttons + $new;
 
 	if($_SESSION["ACI_SUPPORT_ENABLED"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
 		// ACI enabled and this is a 'super-admin'.
@@ -341,7 +364,7 @@ if($_REQUEST["view"] == 'owner') {
 	elseif($_REQUEST["view"] == 'hostacl')
 	  include($_SESSION["path"]."/host_modify.php");
 	elseif($_REQUEST["view"] == 'sudo')
-	  include($_SESSION["path"]."/sudo_modify.php");
+	  include($_SESSION["path"]."/sudo_detail.php");
 }
 // }}}
 ?>
