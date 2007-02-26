@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.17 2007-02-19 10:54:51 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.18 2007-02-26 09:29:12 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -50,7 +50,7 @@ function attribute_forward($msg) {
 }
 // }}}
 ?>
-    <span class="title1">Change DNS zone value</span>
+    <span class="title1"><?=$LANG->_('Change DNS zone value')?></span>
     <br><br>
 
 <?php

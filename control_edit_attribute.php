@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.35 2006-12-16 12:02:08 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.36 2007-02-26 09:29:12 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -56,7 +56,7 @@ function attribute_forward($msg) {
 }
 // }}}
 ?>
-  <span class="title1">Change control values</span>
+  <span class="title1"><?=$LANG->_("Change control values")?></span>
   <br><br>
 <?php
 // {{{ Select what to do

@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.15 2007-02-02 15:42:52 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.16 2007-02-26 09:29:12 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -41,7 +41,7 @@ function attribute_forward($msg) {
 }
 // }}}
 ?>
-    <span class="title1">Change a weberver configuration value</span>
+    <span class="title1"><?=$LANG->_('Change a weberver configuration value')?></span>
     <br><br>
 
 <?php
