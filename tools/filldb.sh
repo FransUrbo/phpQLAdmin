@@ -1,5 +1,21 @@
 #!/bin/sh
 
+if [ -n "$1" -o -n "$2" ]; then
+    if echo $1 | egrep -q '^\-\-help|^\-help|^\-h'; then
+	base=`basename $0`
+	echo "Usage: $base [start] [end]"
+	exit 0
+    elif echo $1 | egrep -q '^[0-9]'; then
+	START=$1
+	if echo $2 | egrep -q '^[0-9]'; then
+	    END=$2
+	fi
+    fi
+fi
+
+[ -z "$START" ] && START=1
+[ -z "$END" ] && END=300
+
 # user ID counter
 uidNumber=10000
 
