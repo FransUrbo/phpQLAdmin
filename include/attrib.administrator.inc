@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.64 2007-02-15 12:07:16 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.65 2007-02-26 10:56:39 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -455,6 +455,13 @@ function attribute_save($type) {
 		  for($i=0; $DN[$i]; $i++) {
 			$dn = $DN[$i];
 
+			if(is_array($admins[$dn])) {
+			  // Add the old values to list
+			  for($j=0; $admins[$dn][$j]; $j++)
+				$ADMs[$dn][$attrib][] = $admins[$dn][$j];
+			}
+
+			// Add the new value to the list
 			$ADMs[$dn][$attrib][] = $_REQUEST["user"];
 			
 			if($use_aci and
@@ -618,10 +625,21 @@ function attribute_save($type) {
 			 ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")) and
 			 pql_get_define("PQL_CONF_SUBTREE_BIND9"))
 		  {
-			// Find all ou=DNS objects in all root DN's
 			$filter   = '(&('.pql_get_define("PQL_CONF_SUBTREE_BIND9").')';
 			$filter  .= '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=*))';
-			$branches = $_pql->get_dn($_REQUEST["branchdn"], $filter);
+
+			// Find all ou=DNS objects in specified domain
+			if($_REQUEST["branchdn"])
+			  // Called from 'User details->User access->Grant user DNS administrator access to domain'
+			  $branches = $_pql->get_dn($_REQUEST["branchdn"], $filter);
+			elseif($_REQUEST["domain"])
+			  // Called from 'Domain details->Branch access->Add DNS administrator for domain'
+			  $branches = $_pql->get_dn($_REQUEST["domain"], $filter);
+			else {
+			  // Shouldn't happen, but I've been so sucky/lazy in documenting this file so...
+			  echo "Undocumented call in include/attrib.administrator.inc:attribute_save()";
+			  die("<b><i>Please</i></b> document this at the bugtracker with information on how you got here!");
+			}
 
 			// Get all the objects below this branch.
 			$objects = array();
@@ -656,12 +674,19 @@ function attribute_save($type) {
 
 			// If we're adding a super admin, he/she needs access to the
 			// ou=Computers,<rootdn> branch as well!
-			if($_REQUEST["branchdn"] == "superadmin")
+			if(($_REQUEST["branchdn"] == "superadmin") and ($_REQUEST["attrib"] == 'administrator')) {
+			  // Controls admins should NOT have full access to create hosts etc, so no access
+			  // to the control search DN nor the physical hosts!
 			  $objects[] = $_SESSION["USER_SEARCH_DN_CTR"];
 
-			// Get all physical hosts
-			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-			$hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+			  // Get all physical hosts
+			  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+			  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+			} elseif(($_REQUEST["branchdn"] == "superadmin") and ($_REQUEST["attrib"] == 'controlsadministrator')) {
+			  // Only find QLC objects
+			  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=qmailControl))';
+			  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter);
+			}
 
 			// For each physical host, try to find the mailservers
 			for($i=0; $hosts[$i]; $i++) {
@@ -707,22 +732,29 @@ function attribute_save($type) {
 
 			// If we're adding a super admin, he/she needs access to the
 			// ou=Computers,<rootdn> branch as well!
-			if($_REQUEST["branchdn"] == "superadmin")
+			if(($_REQUEST["branchdn"] == "superadmin") and ($_REQUEST["attrib"] == 'administrator')) {
+			  // Webserver admins should NOT have full access to create hosts etc, so no access
+			  // to the control search DN nor the physical hosts!
 			  $objects[] = $_SESSION["USER_SEARCH_DN_CTR"];
 		  
-			// Get all physical hosts
-			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-			$hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+			  // Get all physical hosts
+			  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+			  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 
-			// For each physical host, try to find the webserver containers
-			$servers = array();
-			foreach($hosts as $host) {
-			  // Make sure this physical hosts get ACI changes
-			  $servers[] = $host;
-
-			  $tmp = pql_websrv_find_servers($host);
-			  if(is_array($tmp))
-				$servers = $servers + $tmp;
+			  // For each physical host, try to find the webserver containers
+			  $servers = array();
+			  foreach($hosts as $host) {
+				// Make sure this physical hosts get ACI changes
+				$servers[] = $host;
+				
+				$tmp = pql_websrv_find_servers($host);
+				if(is_array($tmp))
+				  $servers = $servers + $tmp;
+			  }
+			} elseif($_REQUEST["attrib"] == 'websrvadministrator') {
+			  // Only find webserver container objects
+			  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device))';
+			  $servers = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter);
 			}
 
 			// For each webserver container, retreive ALL objects
