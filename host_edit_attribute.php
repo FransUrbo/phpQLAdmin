@@ -1,6 +1,6 @@
 <?php
 // Edit attribute of a physical host
-// $Id: host_edit_attribute.php,v 2.3 2007-02-15 12:07:12 turbo Exp $
+// $Id: host_edit_attribute.php,v 2.4 2007-02-26 13:51:57 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -47,6 +47,7 @@ if(!$plugin) {
 } elseif(!file_exists($_SESSION["path"]."/include/$plugin")) {
     die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
 }
+
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "include: include/$plugin<br>";
 }
