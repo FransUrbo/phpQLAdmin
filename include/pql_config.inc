@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.95 2007-02-19 12:17:14 turbo Exp $
+// $Id: pql_config.inc,v 1.96 2007-02-26 13:20:53 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -30,8 +30,9 @@ if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 //	error_reporting=E_ALL
 // in PHP...
 function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) {
-	global $config, $pql_cache;
-	if(empty($value))
+	global $pql_cache;
+
+	if(!isset($value))
 	  return;
 
 	pql_format_bool($value);
@@ -57,7 +58,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 
 // {{{ pql_get_define(define, dn)
 function pql_get_define($define, $dn = NULL) {
-	global $config, $pql_cache;
+	global $pql_cache;
 
 	if($dn) {
 	  $dn = pql_format_normalize_dn($dn);
@@ -89,7 +90,7 @@ require($_SESSION["path"]."/include/config.inc");
 require($_SESSION["path"]."/include/config_attributes.inc");
 
 // Get the LDAP host and port
-if(empty($_SESSION["USER_HOST"])) {
+if(empty($_SESSION["USER_HOST"]) or ($_SESSION["USER_HOST"] == ';;')) {
   if(! eregi('\+', pql_get_define("PQL_CONF_HOST")))
 	$host = split(';', pql_get_define("PQL_CONF_HOST"));
   else {
@@ -107,7 +108,7 @@ if(empty($_pql)) {
   // Open a connection to the LDAP server
   $binddn = (!empty($_SESSION["USER_DN"]))   ? $_SESSION["USER_DN"]   : '';
   $bindpw = (!empty($_SESSION["USER_PASS"])) ? $_SESSION["USER_PASS"] : '';
-  
+
   $_pql = new pql($_SESSION["USER_HOST"], $binddn, $bindpw);
   if($_pql->ldap_error) {
 	unset($_SESSION["USER_ID"]);
