@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: extract_simscan.pl,v 1.4 2006-12-16 12:03:09 turbo Exp $
+# $Id: extract_simscan.pl,v 1.5 2007-02-26 13:58:02 turbo Exp $
 
 $DEBUG		 = 1;
 $SIMSCAN_CONF	 = "/etc/qmail/simcontrol";
@@ -9,8 +9,8 @@ $SIMSCAN_CONF	 = "/etc/qmail/simcontrol";
 $LDAPSEARCH	 = "/usr/bin/ldapsearch -LLL";
 
 # Setup the location of the LDAP server and how to reach it
-$LDAPBIND	 = "-Y GSSAPI";
-$LDAPSERVER	 = "-H ldapi://%2fvar%2frun%2fslapd%2fldapi.main";
+$LDAPBIND	 = "-x -D 'uid=turbo,ou=People,o=Fredriksson,c=SE' -w secret";
+$LDAPSERVER	 = "-h localhost";
 $LDAPBASEDN	 = "-b c=SE";
 
 # -----------------------------------
@@ -47,7 +47,6 @@ if($use_simscan) {
     while(! eof(CMD)) {
 	$line = <CMD>; chomp($line);
 	next if($line =~ /^$/);
-#	print STDERR "line: '$line'\n" if($DEBUG);
 
 	if($line =~ /^dn: /i) {
 	    $i++; $j = 0;
@@ -63,11 +62,13 @@ if($use_simscan) {
 	    print "$attr = $value\n";
 
 	    if($attr eq 'simscanattachmentsuffix') {
-		$SUFFIX[$i][$j] = $value;
+		$VALUE[$i]{$attr}[$j] = $value;
 		$j++;
 	    } else {
 		if($value eq 'TRUE') {
 		    $VALUE[$i]{$attr} = 1;
+		} elsif($value eq 'FALSE') {
+		    $VALUE[$i]{$attr} = 0;
 		}
 	    }
 	}
@@ -77,13 +78,16 @@ if($use_simscan) {
 
 print "\n";
 
-@ATTRS = split(' ', $attrs);
-foreach $attr (@ATTRS) {
-    $attr = lc($attr);
-
-    for($i=1; $i < count($VALUE); $i++) {
-	if($VALUE[$i]{$attr}) {
-	    print "VALUE ($i/$attr): '",$VALUE[$i]{$attr},"'\n";
+for($i=1; $i < ($#VALUE+1); $i++) {
+    foreach $attr (keys(%{$VALUE[$i]})) {
+	if($attr eq 'simscanattachmentsuffix') {
+	    for($j=0; $VALUE[$i]{$attr}[$j]; $j++) {
+		print "VALUE ($i/$attr): '",$VALUE[$i]{$attr}[$j],"'\n";
+	    }
+	} else {
+	    if(defined($VALUE[$i]{$attr})) {
+		print "VALUE ($i/$attr): '",$VALUE[$i]{$attr},"'\n";
+	    }
 	}
     }
 }
