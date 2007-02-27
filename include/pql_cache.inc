@@ -1,11 +1,12 @@
 <?php
 // phpQLAdmin cache Application Programming Interface (API)
 //
-// $Id: pql_cache.inc,v 2.12 2007-02-27 12:04:41 turbo Exp $
+// $Id: pql_cache.inc,v 2.13 2007-02-27 14:07:35 turbo Exp $
 //
 
 // Initialize the cache 'area'
 $pql_cache = new pql_cache();
+$pql_defines = new pql_defines();
 
 // {{{ PQL_CACHE - caching class
 class pql_cache {
@@ -186,9 +187,22 @@ class pql_cache {
 	  
 	  // Fall back on global variable cache
 	  $this->cache = array();
-	}
+	} else
+	  return false;
   }
   // }}}
+}
+// }}}
+
+// {{{ PQL_DEFINES - cache class - defines
+class pql_defines extends pql_cache {
+  function pql_defines() {
+	if(!file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
+	  // Cache not disabled, continue...
+	  $this->cache = array();
+	} else
+	  return false;
+  }
 }
 // }}}
 

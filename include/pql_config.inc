@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.97 2007-02-27 12:05:59 turbo Exp $
+// $Id: pql_config.inc,v 1.98 2007-02-27 14:07:36 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -30,7 +30,7 @@ if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 //	error_reporting=E_ALL
 // in PHP...
 function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) {
-	global $pql_cache;
+	global $pql_defines, $pql_cache;
 
 	if(!isset($value))
 	  return;
@@ -54,21 +54,32 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	  $define .= ":".$dn;
 
 	// Cache this...
-	$pql_cache->add($define, $value);
+	if(ereg('^PQL_CONF_', $define))
+	  // Only use the defines cache for config values
+	  $pql_defines->add($define, $value);
+	else
+	  $pql_cache->add($define, $value);
 }
 // }}}
 
 // {{{ pql_get_define(define, dn)
 function pql_get_define($define, $dn = NULL) {
-	global $pql_cache;
+	global $pql_defines, $pql_cache;
 
 	if($dn) {
 	  $dn = pql_format_normalize_dn($dn);
-	  $value = $pql_cache->get($define.":".$dn);
-	} else
+	  if(ereg('^PQL_CONF_', $define))
+		$value = $pql_defines->get($define.":".$dn);
+	  else
+		$value = $pql_cache->get($define.":".$dn);
+	} else {
 	  // Not called with a DN
-	  $value = $pql_cache->get($define);
-	  
+	  if(ereg('^PQL_CONF_', $define))
+		$value = $pql_defines->get($define);
+	  else
+		$value = $pql_cache->get($define);
+	}
+
 	return($value);
 }
 // }}}
