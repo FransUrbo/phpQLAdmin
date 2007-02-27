@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.227 2007-02-26 13:03:42 turbo Exp $
+// $Id: pql.inc,v 2.228 2007-02-27 11:42:25 turbo Exp $
 //
 
 // ----------------------------
@@ -352,27 +352,29 @@ class pql {
 	
 	// {{{ Try to find object in the cache
 	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-	  echo "<br>";
+	  echo "<br>/<b>--------------------</b><br>";
 	  if($level == 'BASE')
-		echo "search(): Looking for '<b>$dn</b>': ";
+		echo "|search(): Looking for '<b>$dn</b>': ";
 	  else
-		echo "search(): Looking below '<b>$dn</b>':<br>";
+		echo "|search(): Looking below '<b>$dn</b>':<br>";
 	}
 	
-	if($enable_cache and !(($object = $pql_cache->get($dn, $object)) != 1)) {
+	if($enable_cache and !(($object = $pql_cache->get($dn, $object)) != true)) {
 	  // The object is cached -> return this (don't look for it in LDAP).
 	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-		echo "<font size=\"+1\">Returning cached object '$dn':</font>";
-		printr($object);
-	  }
+		echo "|Returning cached object '$dn'<br>";
+		echo "\<b>--------------------</b><p>";
+// Disable this - to much data!
+//		printr($object);
+	  } 
 	  
 	  return($object);
 	} // not BASE, is operational or not cached => fall through.
 	
-	  // It's either not a ONE level search or it doesn't exist in the
-	  // cache. Fetch it...
+	// It's either not a ONE level search or it doesn't exist in the
+	// cache. Fetch it...
 	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-	  echo "Searching with: <b>$func(linkid, '$dn', '$filter', ";
+	  echo "|Searching with: <b>$func(linkid, '$dn', '$filter', ";
 	  if(is_array($op)) {
 		echo "array(";
 		for($i=0; $op[$i]; $i++) {
@@ -389,15 +391,27 @@ class pql {
 	
 	// {{{ Not found in cache, retreive from LDAP
 	$sr = @$func($this->ldap_linkid, $dn, $filter, $op);
-	if(!$sr)
+	if(!$sr) {
 	  // No such object - problem with the search string?
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
+		echo "|No such object - problem with the search string ('$filter')?<br>";
+		echo "\<b>--------------------</b><p>";
+	  }
+
 	  return false;
-	
+	}
+
 	// Get number of objects found.
 	$nr_entries = ldap_count_entries($this->ldap_linkid, $sr);
-	if(!$nr_entries)
+	if(!$nr_entries) {
 	  // No objects found.
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
+		echo "|No objects found!<br>";
+		echo "\<b>--------------------</b><p>";
+	  }
+
 	  return false;
+	}
 	// }}}
 	
 	// {{{ Get ALL hits and rearrange the array.
@@ -475,6 +489,9 @@ class pql {
 		else
 		  $pql_cache->add($entry["dn"], $entry);
 	  }
+
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
+		echo "\<b>--------------------</b><p>";
 	  
 	  $entries++;
 	} while($object = ldap_next_entry($this->ldap_linkid, $object));
