@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.57 2007-02-26 10:39:34 turbo Exp $
+// $Id: index.php,v 2.58 2007-02-27 11:28:54 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -173,8 +173,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 	//       (under different branches/trees).
 	$user_found = 0;
 	foreach($_SESSION["BASE_DN"] as $base) {
-		$objects = $_pql->get_dn($base,
-							  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base).'='.$_POST["uname"]);
+		$objects = $_pql->get_dn($base, pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base).'='.$_POST["uname"]);
 		if(is_array($objects)) {
 		  foreach($objects as $userdn) {
 			// Check the account status of this user
