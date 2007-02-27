@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.50 2007-02-19 11:03:07 turbo Exp $
+// $Id: index2.php,v 2.51 2007-02-27 11:29:34 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -170,6 +170,8 @@ if($_SESSION["mozilla"]) {
 	  $value = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"),
 									0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
       if($value) {
+		// BUG: This be true if ANY domain have the startInMyAccount attribute set!!!
+		//      That CAN NOT be what we want! (?)
 ?>
     <frame src="user_detail.php?rootdn=<?php
     if(empty($rootdn) and empty($_REQUEST["rootdn"]))
