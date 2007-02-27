@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.49 2007-02-26 09:45:06 turbo Exp $
+// $Id: pql_write.inc,v 2.50 2007-02-27 11:34:24 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -164,10 +164,7 @@ function pql_modify_attribute($dn, $attrib, $old, $new) {
 	  $_SESSION["USER_PASS"] = $_SESSION["NEW_PASS"];
 	  unset($_SESSION["NEW_PASS"]);
 	}
-	
-	// Object has changed -> remove the cached version
-	$pql_cache->del($dn);
-	
+
 	return true;
   }
   return false;
