@@ -1,7 +1,7 @@
 <?php
 // phpQLAdmin cache Application Programming Interface (API)
 //
-// $Id: pql_cache.inc,v 2.11 2007-02-26 13:10:45 turbo Exp $
+// $Id: pql_cache.inc,v 2.12 2007-02-27 12:04:41 turbo Exp $
 //
 
 // Initialize the cache 'area'
@@ -16,10 +16,13 @@ class pql_cache {
   function add($key, $value) {
 	global $_SESSION, $_SERVER;
 
+	if(!$value)
+	  return;
+
 	if(file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
 	  return;
 
-	if(ereg('=.*,', $key) and function_exists("pql_maybe_encode"))
+	if(ereg('=', $key) and !ereg('^PQL_', $key))
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	
@@ -30,9 +33,8 @@ class pql_cache {
 	  {
 		$this->cache[$key] = $value;
 
-		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $key) and
-		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-		  echo "ADD: $key = '$value'<br>\n";
+		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		  echo "ADD(1): '$key' = '$value'<br>\n";
 	  }
 	} else {
 	  // Memcache storage ('add' does NOT overwrite!)
@@ -41,14 +43,14 @@ class pql_cache {
 		// Nothing previosly known about this define, add it...
 		$this->_memcache->add($key, $value);
 
-		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $key) and
-		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-		  echo "ADD: $key = '$value'<br>\n";
+		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		  echo "ADD(2): '$key' = '$value'<br>\n";
 	  } elseif((($orig != $value) or ($key == 'PQL_CONF_DEBUG_ME')) and
-			   !@$_SESSION["loading_resonable_defaults"])
+			   !@$_SESSION["loading_resonable_defaults"]) {
 		// Previous value, old and new value differ or we want to change
 		// the PQL_CONF_DEBUG_ME option - replace old value with new...
 		$this->repl($key, $value);
+	  }
 	}
   }
 // }}}
@@ -59,11 +61,11 @@ class pql_cache {
     global $_SESSION;
 	
 	if(file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
-	  return(false);
+	  return(0);
 	if(!isset($key))
-	  return(false);
+	  return(0);
 	
-	if(ereg('=.*,', $key) and function_exists("pql_maybe_encode"))
+	if(ereg('=', $key) and !ereg('^PQL_', $key))
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	
@@ -72,27 +74,28 @@ class pql_cache {
 	  if(empty($this->cache[$key])) {
 		// We don't have this object yet.
 		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
-		  echo "Object '$key' <b>not</b> cached!<br>";
-		return(false);
+		  echo "GET(1a): '$key' <b>not</b> cached!<br>";
+
+		return(0);
 	  } else {
 		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
-		  echo "Object '$key' <b>is</b> cached<br>";
+		  echo "GET(1b): '$key' <b>is</b> cached => '$value'<br>";
 		
 		return($this->cache[$key]);
 	  }
 	} else {
 	  // Memcache storage
-	  $object = $this->_memcache->get($key);
-	  if(@($object != '')) {
+	  $value = $this->_memcache->get($key);
+	  if(!empty($value)) {
 		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
-		  echo "Object '$key' <b>is</b> cached<br>";
+		  echo "GET(2a): '$key' <b>is</b> cached => '$value'<br>";
 		
-		return($object);
+		return($value);
 	  } else {
 		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
-		  echo "Object '$key' <b>not</b> cached!<br>";
+		  echo "GET(2b): '$key' <b>not</b> cached!<br>";
 		
-		return(false);
+		return(0);
 	  }
 	}
   }
@@ -108,19 +111,27 @@ class pql_cache {
 	if(!@$key)
 	  return(false);
 	
-	if(ereg('=.*,', $key) and function_exists("pql_maybe_encode"))
+	if(ereg('=', $key) and !ereg('^PQL_', $key))
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	
 	if(@is_array($this->cache)) {
 	  // Global variable storage
-	  if($this->cache[$key])
+	  if($this->cache[$key]) {
+		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		  echo "DEL(1): '$key'<br>";
+
 		unset($this->cache[$key]);
+	  }
 	} else {
 	  // Memcache storage
-	  if($this->get($key))
+	  if($this->get($key)) {
 		// There is such an object - delete it
+		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		  echo "DEL(2): '$key'<br>";
+
 		$this->_memcache->delete($key);
+	  }
     }
   }
   // }}}
@@ -128,12 +139,15 @@ class pql_cache {
   // {{{ repl(key, value)
   function repl($key, $value) {
 	if(@is_array($this->cache)) {
-	  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $key) and
-		 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-		echo "RPL: $key = '$value'<br>\n";
-	  $this->_memcache->replace($key, $value);  //, 1, (60*10));
-	} else {
+	  // Global variable storage
 	  $this->cache[$key] = $value;
+
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		echo "RPL(1): '$key' = '$value'<br>\n";
+	} else {
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		echo "RPL(2): '$key' = '$value'<br>\n";
+	  $this->_memcache->replace($key, $value);  //, 1, (60*10));
 	}
   }
   // }}}
