@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.96 2007-02-26 13:20:53 turbo Exp $
+// $Id: pql_config.inc,v 1.97 2007-02-27 12:05:59 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -52,6 +52,8 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	if($dn)
 	  // Called with a DN specific define
 	  $define .= ":".$dn;
+
+	// Cache this...
 	$pql_cache->add($define, $value);
 }
 // }}}
@@ -62,18 +64,10 @@ function pql_get_define($define, $dn = NULL) {
 
 	if($dn) {
 	  $dn = pql_format_normalize_dn($dn);
-	  
 	  $value = $pql_cache->get($define.":".$dn);
-	  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
-		 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-		echo "GET: config[$define][$dn] = '$value'<br>\n"; // DEBUG
-	} else {
+	} else
 	  // Not called with a DN
 	  $value = $pql_cache->get($define);
-	  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
-		 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-		echo "GET: config[$define] = '$value'<br>\n"; // DEBUG
-	}
 	  
 	return($value);
 }
@@ -81,7 +75,7 @@ function pql_get_define($define, $dn = NULL) {
 
 // ----------------------------
 // 1. Load site specific configuration
-if(file_exists("./.DEBUG_DEFINES") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"])) {
+if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"])) {
   echo "<b>*</b> Loading base config<br>\n";
 }
 require($_SESSION["path"]."/include/config.inc");
@@ -133,14 +127,14 @@ foreach($_pql->ldap_basedn as $dn)  {
   
   // 3a. Load 'resonable defaults' for this top DN
   $_SESSION["loading_resonable_defaults"] = 1;
-  if(file_exists("./.DEBUG_DEFINES") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 	echo "<br>\n<b>*</b> Loading 'resonable defaults'<br>\n";
   require($_SESSION["path"]."/include/defaults.inc");
-  if(file_exists("./.DEBUG_DEFINES") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 	echo "</b>";
   unset($_SESSION["loading_resonable_defaults"]);
 
-  if(file_exists("./.DEBUG_DEFINES") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 	echo "<br>\n<b>*</b> Go through DN: '$dn'<br>\n";
 
   if(@(is_array($_SESSION["BASE_DN"]) and !in_array($dn, $_SESSION["BASE_DN"])) or !@$_SESSION["BASE_DN"])

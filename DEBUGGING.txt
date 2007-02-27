@@ -19,10 +19,6 @@ directory to simplify bugfixing. They all start with
 .DEBUG_DISABLE_CACHE
 	Disables caching completely
 
-.DEBUG_DEFINES
-	Show information about retreival and setting
-	of the 'defines' (global config values).
-
 .DEBUG_PROFILING
 	Shows the current date and time (as a UNIX
 	timestamp - seconds from Jan 1, 1970) at
