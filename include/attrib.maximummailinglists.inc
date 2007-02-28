@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximummailinglists.inc,v 2.14 2007-02-15 12:08:08 turbo Exp $
+// $Id: attrib.maximummailinglists.inc,v 2.15 2007-02-28 09:38:35 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -86,7 +86,7 @@ function attribute_save($type) {
 											 'domain' => pql_maybe_decode(urlencode($_REQUEST["domain"]))))
 			. ": " . ldap_error($_pql->ldap_linkid);
 	
-		attribute_forward(urlencode($msg));
+		attribute_forward($msg);
 		break;
 		
       default:
