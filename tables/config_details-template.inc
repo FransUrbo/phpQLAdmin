@@ -31,7 +31,7 @@ $templates = pql_get_templates();
 			$url_tmp  = "config_edit_attribute.php?rootdn=".$dn."&attrib=".pql_get_define("PQL_ATTR_PASSWORD_SCHEMES");
 			$url_tmp .= "&view=template";
 
-			if(!$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'internal_group')) {
+			if($templates[$i]["name"] != 'internal_group') {
 			  if(!$templates[$i]["oldformat"]["passwordscheme"]) {
 				$txt = array('tit' => $LANG->_('Allowed password encryption scheme'),
 							 'add' => $LANG->_('Add encryption scheme'),
@@ -41,6 +41,7 @@ $templates = pql_get_templates();
 				$txt = array('tit' => $LANG->_('Allowed password encryption scheme'));
 				$url = array();
 			  }
+
 			  pql_format_table_single($txt, $url, $templates[$i]["passwordscheme"],
 									  pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"), $class);
 			}
@@ -60,6 +61,7 @@ $templates = pql_get_templates();
 			  $txt = array('tit' => $LANG->_('Allowed user objectclasses'));
 			  $url = array();
 			}
+
 			pql_format_table_single($txt, $url, $templates[$i]["userobjectclass"],
 									pql_get_define("PQL_ATTR_OBJECTCLASS_USER"), $class);
 ?>
