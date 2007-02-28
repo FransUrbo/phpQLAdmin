@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.57 2007-02-15 12:07:17 turbo Exp $
+// $Id: attrib.config.inc,v 1.58 2007-02-28 09:31:33 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -473,8 +473,19 @@ function attribute_save() {
 	else
 	  $entry[$attrib][] = $_REQUEST['radius_identity_dn'];
 // }}}
-  } else
-	$entry[$attrib][] = $attrib_val;
+  } else {
+	if($action == 'del')
+	  $entry[$attrib] = array();
+	elseif($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
+	  echo "value: '$attrib_val'<br>"; 
+	  for($i=0; $i < $attrib_val; $i++) {
+		$name = $attrib."_$i";
+		if($_REQUEST[$name])
+		  $entry[$attrib][] = $_REQUEST[$name];
+	  }
+	} else
+	  $entry[$attrib][] = $attrib_val;
+  }
 
   // ---------------------------------
 
