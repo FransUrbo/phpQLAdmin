@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.141 2007-02-15 12:07:13 turbo Exp $
+// $Id: user_add.php,v 2.142 2007-02-28 11:17:58 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -112,8 +112,24 @@ function pql_user_add_retreive_encryption_schemes($template, $rootdn) {
 
   if(empty($schemes))
 	return false;
-  else
+  else {
+	if($_REQUEST["defaultpasswordscheme"]) {
+	  // Add the default password scheme from the domain to the complete list of
+	  // schemes to choose from...
+	  $default_password_scheme_exist_in_schemes = 0;
+	  for($i=0; $schemes[$i]; $i++) {
+		if($schemes[$i] == $_REQUEST["defaultpasswordscheme"]) {
+		  $default_password_scheme_exist_in_schemes = 1;
+		} else
+		  $tmp[] = $schemes[$i];
+	  }
+	  if(!$default_password_scheme_exist_in_schemes)
+		$tmp[] = $_REQUEST["defaultpasswordscheme"];
+	  $schemes = $tmp;
+	}
+
 	return($schemes);
+  }
 }
 // }}}
 
@@ -126,23 +142,24 @@ if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "page_next: '".$_REQUEST["page_next"]."'<br>";
 }
 
+// {{{ Retreive some stuff for autogeneration
+// Needed in both page_curr '' and 'one' (if password is wrong type)
+$attribs = array("autocreatemailaddress" => pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
+				 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+				 "autocreatepassword"	 => pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"));
+foreach($attribs as $key => $attrib) {
+  // Get default value
+  $value = $_pql->get_attribute($_REQUEST["domain"], $attrib);
+  $$key  = pql_format_bool($value);
+}
+// }}}
+
 // Check the input
 $error = false; $error_text = array();
 switch($_REQUEST["page_curr"]) {
   // {{{ '':    Make sure a new user can be added OR that we autogenerate stuff for the very first page)
   case "":
 	if($_REQUEST["page_next"] == "one") {
-		// {{{ Retreive some stuff for autogeneration
-		$attribs = array("autocreatemailaddress" => pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
-						 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
-						 "autocreatepassword"	 => pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"));
-		foreach($attribs as $key => $attrib) {
-			// Get default value
-			$value = $_pql->get_attribute($_REQUEST["domain"], $attrib);
-			$$key  = pql_format_bool($value);
-		}
-		// }}}
-
 		// {{{ Verify/Create uid
 		// But only if:
 		// 1. We haven't specified this ourself (Hmmm, how could we!? We have not been given a choice before this! TODO)
@@ -195,46 +212,45 @@ switch($_REQUEST["page_curr"]) {
 		}
 		// }}}
 
-		// {{{ Get the default password scheme for branch
-		$_REQUEST["defaultpasswordscheme"] = $_pql->get_attribute($_REQUEST["domain"],
-															   pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
-		$schemes = pql_user_add_retreive_encryption_schemes($template, $_REQUEST["rootdn"]);
+		// {{{ Get the default password scheme for branch and from template
+		if(!$_REQUEST["pwscheme"]) {
+		  $_REQUEST["defaultpasswordscheme"] = $_pql->get_attribute($_REQUEST["domain"],
+																	pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
+		  $schemes = pql_user_add_retreive_encryption_schemes($template, $_REQUEST["rootdn"]);
+		}
 		// }}}
 
 		// {{{ Generate a password
 		$auto_generated_kerberos_pw = 0;
-		if(($_REQUEST["template"] != "internal_group") and empty($_REQUEST["password"]) and
-		   ($autocreatepassword or (!$schemes[1] and ($schemes[0] == 'KERBEROS'))) and
-		   function_exists('pql_generate_password') and
-		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD")))
+		if(($_REQUEST["template"] != "internal_group") and empty($_REQUEST["password"]) and	// Not internal group and not already availible
+		   $autocreatepassword and															// SHOULD generate a password
+		   function_exists('pql_generate_password') and										// CAN generate a password
+		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD")) and	// ALLOWS password
+		   !$_REQUEST["pwscheme"])
 		{
 		  // If we only have one password scheme, and it's a Kerberos V scheme, then we generate a Kerberos V
 		  // principal and generate a password which we put in the clear_text_password value.
 		  // Also, since we only have one scheme which is allowed, put this as a default for the rest of the
 		  // user add session.
 		  //
-		  // We MUST autogenerate a password here, even if it's not specified. This because othervise
+		  // We MUST autogenerate a password HERE, even if it's not specified. This because othervise
 		  // the create user script will create a randomized password, which we have no idea what it is..
-		  //
-		  // NOTE:
-		  // It is very possible that the defaultPasswordScheme in the domain defaults DIFFER from the
-		  // password scheme used by the template!
-		  // If this is the case, the templates password scheme overrides.
-		  if(empty($schemes[1]) and ($schemes[0] == 'KERBEROS')) {
+		  if(in_array('KERBEROS', $schemes)) {
 			$_REQUEST["password"]            = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
-			$_REQUEST["pwscheme"]            = $schemes[0];
+			$_REQUEST["pwscheme"]            = 'KERBEROS';
 
 			if($autocreatepassword) {
 			  $_REQUEST["clear_text_password"] = pql_generate_password();
-			  $autogenerated_password = 1;
+			  $_REQUEST["autogenerated_password"] = 1;
 			}
 
 			// Just so that we'll get the opportunity to add a password in tables/user_add-details.inc which
 			// is/should be next...
 			$auto_generated_kerberos_pw      = 1;
+			$_REQUEST["autogenerated_password"] = 1;
 		  } else {
 			$_REQUEST["password"] = pql_generate_password();
-			$autogenerated_password = 1;
+			$_REQUEST["autogenerated_password"] = 1;
 		  }
 		}
 		// }}}
@@ -284,7 +300,7 @@ switch($_REQUEST["page_curr"]) {
   with isn't availible as a <i>MUST</i> nor a <i>MAY</i> in any of the defined
   user templates.
   <p>
-  There's little point in continuing from here, please go to the
+  There''s little point in continuing from here, please go to the
   <a href="config_detail.php?view=template">configuration</a>
   and setup a correct user template...
 <?php
@@ -373,7 +389,7 @@ switch($_REQUEST["page_curr"]) {
 		// ------------------------
 
 		// {{{ Verify surname
-		if(empty($_REQUEST["surname"]) and pql_templates_check_attribute($template, 'sn', 'MUST')) {
+		if(($_REQUEST["dosave"] != 'yes') and empty($_REQUEST["surname"]) and pql_templates_check_attribute($template, 'sn', 'MUST')) {
 			$error = true;
 			$error_text["surname"] = $LANG->_('Missing');
 		}
@@ -381,7 +397,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Verify lastname
-		if(empty($_REQUEST["name"]) and pql_templates_check_attribute($template, 'sn', 'MUST')) {
+		if(($_REQUEST["dosave"] != 'yes') and empty($_REQUEST["name"]) and pql_templates_check_attribute($template, 'sn', 'MUST')) {
 			$error = true;
 			$error_text["name"] = $LANG->_('Missing');
 		}
@@ -417,11 +433,12 @@ switch($_REQUEST["page_curr"]) {
 		// If email is set and allowed.
 		// or:
 		// If email isn't set but is required.
-		if(($_REQUEST["mail"] and
-			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL")))
-		   or
-		   (empty($_REQUEST["mail"]) and
-			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL"), 'MUST')))
+		if(($_REQUEST["dosave"] != 'yes') and
+		   (($_REQUEST["mail"] and
+			 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL")))
+			or
+			(empty($_REQUEST["mail"]) and
+			 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL"), 'MUST'))))
 		{
 		  if(!ereg("@", $_REQUEST["mail"])) {
 			if($_REQUEST["email_domain"])
@@ -473,58 +490,79 @@ switch($_REQUEST["page_curr"]) {
 		{
 			// Only forward and group accounts is ok without password
 			if(empty($_REQUEST["password"])) {
+				// {{{ No previous value
 				if(empty($_REQUEST["autogenerate"])) {
 					$error = true;
 					$error_text["password"] = $LANG->_('Missing');
 				} elseif(function_exists('pql_generate_password')) {
 					// Autogenerate password
 					$_REQUEST["password"] = pql_generate_password();
-					$autogenerated_password = 1;
+					$_REQUEST["autogenerated_password"] = 1;
 				}
-			}
-			
-			if(eregi("KERBEROS", $_REQUEST["pwscheme"])) {
+				// }}}
+			} else {
+			  // Got a previous value
+			  if(($_REQUEST["dosave"] == 'yes') and $autocreatepassword) {
+				// {{{ Change the password
+				// This might happen when we change password encryption type
+				// Example: Initially KERBEROS was selected and the 'password'
+				//          (i.e. a kerberos principal) was generated.
+				//          If we now change to MD5 for example, the password
+				//          must change.
+				// We only care about going FROM Kerberos or TO Kerberos...
+				if($_REQUEST["clear_text_password"]) {
+				  // If we come from kerberos scheme, this will be set...
+				  $_REQUEST["password"] = $_REQUEST["clear_text_password"];
+
+				  // Since we no longer use KERBEROS, unset the clear text password value
+				  unset($_REQUEST["clear_text_password"]);
+				} elseif(eregi('KERBEROS', $_REQUEST["pwscheme"])) {
+				  // Going (back?) to Kerberos scheme...
+				  $_REQUEST["clear_text_password"] = $_REQUEST["password"];
+				  $_REQUEST["password"] = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
+				}
+				// }}}
+			  } elseif(eregi("KERBEROS", $_REQUEST["pwscheme"])) {
+				// {{{ Preselected kerberos password
 				// Should be in the form: userid@DOMAIN.LTD
 				// TODO: Is this regexp correct!?
 				if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"]) and
 				   !preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $_REQUEST["password"]))
 				{
-					$error = true;
-					$error_text["password"] = $LANG->_('Invalid');
-
-					// Since this is a Kerberos V 'password', we must remember the _real_ password.
-					$_REQUEST["clear_text_password"] = $_REQUEST["password"];
-
-					// Try generating a new value. We SHOULD know all we need
-					$_REQUEST["password"] = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
+				  $error = true;
+				  $error_text["password"] = $LANG->_('Invalid');
+				  
+				  // Since this is a Kerberos V 'password', we must remember the _real_ password.
+				  $_REQUEST["clear_text_password"] = $_REQUEST["password"];
+				  
+				  // Try generating a new value. We SHOULD know all we need
+				  $_REQUEST["password"] = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
 				}
-			} elseif(empty($_REQUEST["crypted"])) {
-				// A password in cleartext, NOT already encrypted
+				// }}}
+			  } elseif($_REQUEST["pwscheme"] and empty($_REQUEST["crypted"])) {
+				// {{{ A password in cleartext, NOT already encrypted
 				if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"]) and
 				   preg_match("/[^a-z0-9]/i", $_REQUEST["password"]))
-				{
+				  {
 					$error = true;
 					$error_text["password"] = $LANG->_('Invalid');
-				}
+				  }
+				// }}}
+			  }
 			}
 			
-			// Write the password scheme in a way the LDAP server will understand - within {SCHEME}.
-			if($_REQUEST["pwscheme"]) {
-				if(! eregi('\{', $_REQUEST["pwscheme"]))
-				  $_REQUEST["pwscheme"] = '{'.$_REQUEST["pwscheme"];
-				
-				if(! eregi('\}', $_REQUEST["pwscheme"]))
-				  $_REQUEST["pwscheme"] .= '}';
-			}
-
-			if($error and $error_text["password"])
-			  $schemes = pql_user_add_retreive_encryption_schemes($template, $_REQUEST["rootdn"]);
+			// Need to get this just in case we changed encryption schemes
+			// and password got changed (we still want to give the user a
+			// chance to change his/her mind again ... they usually do :)
+			$_REQUEST["defaultpasswordscheme"] = $_pql->get_attribute($_REQUEST["domain"],
+																	  pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
+			$schemes = pql_user_add_retreive_encryption_schemes($template, $_REQUEST["rootdn"]);
 		}
 		// }}}
 
 		// {{{ Verify mail forwarding address
 		// If it's a forwarding accounts (allowing 'mailForwardingAddress') make sure the forwarding mail address is ok
-		if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_FORWARDS"), "MUST")) {
+		if(($_REQUEST["dosave"] != 'yes') and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_FORWARDS"), "MUST")) {
 			if(!pql_check_email($_REQUEST["forwardingaddress"])) {
 				$error = true;
 				$error_text["forwardingaddress"] = $LANG->_('Invalid');
@@ -538,7 +576,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate the mailHost attribute/value
-		if($_REQUEST["mail"] and
+		if(($_REQUEST["dosave"] != 'yes') and $_REQUEST["mail"] and
 		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST")))
 		{
 			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
@@ -561,7 +599,7 @@ switch($_REQUEST["page_curr"]) {
 		// If email set and mailMessageStore is allowed
 		// or
 		// If email set and mailMessageStore is required
-		if($_REQUEST["mail"] and
+		if(($_REQUEST["dosave"] != 'yes') and $_REQUEST["mail"] and
 		   (pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILSTORE"))
 			or
 			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILSTORE"), 'MUST')))
@@ -629,7 +667,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate the home directory value
-		if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_HOMEDIR"), 'MUST')) {
+		if(($_REQUEST["dosave"] != 'yes') and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_HOMEDIR"), 'MUST')) {
 		  if(!empty($basehomedir)) {
 			if(function_exists("user_generate_homedir")) {
 			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
@@ -680,14 +718,19 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ If we have an error, what page should come after this?
-		if($error and !empty($error_text)) {
+		if($_REQUEST["dosave"] == 'yes') {
+		  // Redisplay the current page
+		  $_REQUEST["page_next"] = 'one';
+		} else {
+		  if($error and !empty($error_text)) {
 			if(ereg("mx", $error)) {
-				// This is the only case where we really SHOULD go to the next page - MX problems.
-				$_REQUEST["page_next"] = 'two';
+			  // This is the only case where we really SHOULD go to the next page - MX problems.
+			  $_REQUEST["page_next"] = 'two';
 			} else {
-				// Redisplay the current page
-				$_REQUEST["page_next"] = 'one';
+			  // Redisplay the current page
+			  $_REQUEST["page_next"] = 'one';
 			}
+		  }
 		}
 		// }}}
 		// }}}
@@ -706,12 +749,6 @@ switch($_REQUEST["page_curr"]) {
 	}
 	break;
 	// }}}
-}
-
-if(is_array($error_text)) {
-	// Add a HTML newline to (all) the error text(s)
-	foreach($error_text as $key => $msg)
-	  $error_text[$key] = "&nbsp;&nbsp;".$error_text[$key]."<br>";
 }
 // }}}
 
@@ -748,8 +785,16 @@ if($error and !empty($error_text["mkntpw"])) {
 // This will be set correctly above if there's
 // an error.
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+  echo "<pre>";
   echo "Request array: "; printr($_REQUEST);
   echo "Error array: "; printr($error_text);
+  echo "</pre>";
+}
+
+if(is_array($error_text)) {
+	// Add a HTML newline to (all) the error text(s)
+	foreach($error_text as $key => $msg)
+	  $error_text[$key] = "&nbsp;&nbsp;".$error_text[$key]."<br>";
 }
 
 switch($_REQUEST["page_next"]) {

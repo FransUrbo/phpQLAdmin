@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.50 2007-02-15 12:08:19 turbo Exp $
+// $Id: user_add-save.inc,v 1.51 2007-02-28 11:18:00 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -157,6 +157,16 @@ if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_QMAILUID"))
 	  
 	  $entry[pql_get_define("PQL_ATTR_GECOS")]  = $tmp1 . " " . $tmp2;
 	}
+}
+// }}}
+
+// {{{ Modify the password scheme in a way the LDAP server will understand - within {SCHEME}.
+if($_REQUEST["pwscheme"]) {
+  if(! eregi('\{', $_REQUEST["pwscheme"]))
+	$_REQUEST["pwscheme"] = '{'.$_REQUEST["pwscheme"];
+  
+  if(! eregi('\}', $_REQUEST["pwscheme"]))
+	$_REQUEST["pwscheme"] .= '}';
 }
 // }}}
 

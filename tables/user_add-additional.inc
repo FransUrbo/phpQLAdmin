@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.38 2007-02-15 12:08:18 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.39 2007-02-28 11:17:59 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if(!empty($_REQUEST["surname"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -63,12 +63,11 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Path to homedirectory')?></td>
           <td>
-<?php   if(!empty($_REQUEST["homedirectory"])) { ?>
+<?php   if($lockhomedirectory) { // NOTE: Implement 'lockHomeDirectory' attribute ?>
             <?=$_REQUEST["homedirectory"]?>
-
             <input type="hidden" name="homedirectory" value="<?=$_REQUEST["homedirectory"]?>">
 <?php   } else { ?>
-            <input type="text" name="homedirectory" size="60">
+            <input type="text" name="homedirectory" size="60" value="<?=$_REQUEST["homedirectory"]?>">
 <?php   } ?>
           </td>
         </tr>
@@ -84,11 +83,11 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Path to mailbox')?></td>
           <td>
-<?php		if(!empty($_REQUEST["maildirectory"])) { ?>
+<?php		if($lockmaildirectory) { // NOTE: Implement 'lockMailDirectory' attribute ?>
             <?=$_REQUEST["maildirectory"]?>
             <input type="hidden" name="maildirectory" value="<?=$_REQUEST["maildirectory"]?>">
 <?php   	} else { ?>
-            <input type="text" name="maildirectory" size="60">
+            <input type="text" name="maildirectory" size="60" value="<?=$_REQUEST["maildirectory"]?>">
 <?php   	} ?>
           </td>
         </tr>
@@ -118,15 +117,8 @@
             <br>
             <input type="radio"  name="forwardingtype" value="copyto" <?php if(($_REQUEST["forwardingtype"] == 'copyto') or empty($forwardingtype)) { ?>CHECKED<?php } ?>><?=$LANG->_('Copy to')?>
             <input type="radio"  name="forwardingtype" value="moveto" <?php if($_REQUEST["forwardingtype"] == 'moveto') { ?>CHECKED<?php } ?>><?=$LANG->_('Forward to')?>
+            &nbsp;&nbsp;<img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('(Only used if forwarding address is specified)')?>
             <br>
-          </td>
-        </tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td class="title" valign="top"></td>
-          <td class="message">
-            <img src="images/info.png" width="16" height="16" border="0">
-            <?=$LANG->_('(Only used if forwarding address is specified)')?>
           </td>
         </tr>
 
@@ -174,9 +166,7 @@
 
 <?php	if($i >= 1) echo "&nbsp;&nbsp;"; ?>
             <input type="radio"  name="host"   value="<?=$i?>"<?php if(!$checked) { $checked = 1; ?> CHECKED<?php } ?>>
-            <b><?=$LANG->_('User defined')?></b>:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php if($i >= 1) { echo "&nbsp;&nbsp;\n"; } else { echo "\n"; } ?>
-            <input type="text"   name="host_<?=$i?>" size="56">
+            <b><?=$LANG->_('User defined')?></b>:&nbsp;&nbsp;<input type="text" name="host_<?=$i?>" size="40">
             <input type="hidden" name="text_host" value="<?=$i?>">
           </td>
         </tr>
