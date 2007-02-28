@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.16 2007-02-15 12:08:06 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.17 2007-02-28 09:36:31 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -22,6 +22,10 @@ function attribute_print_form($type = "modify") {
     global $error, $LANG;
 
 	$attrib = $_REQUEST["attrib"];
+	$schemes = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
+	if(!is_array($schemes))
+	  // Make some up...
+	  $schemes = array('SSHA', 'SHA', 'MD5', 'CRYPT', 'NTPASSWD', 'LMPASSWD');
 ?>
   <form action="<?$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -32,7 +36,6 @@ function attribute_print_form($type = "modify") {
             <?php echo pql_format_error_span($error[$attrib]); ?>
             <select name="<?=$attrib?>">
 <?php // Convert the array to a index
-	  $schemes = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
 	  foreach($schemes as $scheme) {
 ?>
               <option value="<?=$scheme?>"><?=$scheme?></option>
