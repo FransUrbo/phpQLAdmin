@@ -1,7 +1,8 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.46 2007-02-15 12:07:11 turbo Exp $
-//
+// $Id: ezmlm_add.php,v 1.47 2007-03-01 10:26:00 turbo Exp $
+
+// {{{ Setup session etc
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 
@@ -30,10 +31,12 @@ if(!empty($_REQUEST["add_kill"])) {
 		$_REQUEST["killcount"] = 0;
 	}
 }
+// }}}
 
 if(empty($_REQUEST["domainname"])) {
-	// We're not called with a specific domain name to add list to/in
+	// {{{ We're not called with a specific domain name to add list to/in
 
+	// {{{ Get domains
 	if(!empty($_SESSION["ALLOW_BRANCH_CREATE"])) {
 		// This is a 'super-admin' - get ALL branches
 		$domains = pql_get_domains();
@@ -47,12 +50,13 @@ if(empty($_REQUEST["domainname"])) {
 			}
 		}
 	}
+// }}}
 
     if(!is_array($domains))
 	  // if no domain defined - fatal error
 	  die("<b>".$LANG->_('Can\'t find any domains!')."</b><br>");
 	else {
-		// Get the domainname from the domain object
+		// {{{ Get the domainname from the domain object
 		foreach($domains as $key => $d) {
 			$dont_add = 0;
 			
@@ -92,11 +96,13 @@ if(empty($_REQUEST["domainname"])) {
 				}
 			}
 		}
+// }}}
 	}
+// }}}
 } else {
-	// We're called with a specific domain name to add list to/in
+	// {{{ We're called with a specific domain name to add list to/in
 
-	// Get domain branch and root DN(s)
+	// {{{ Get domain branch and root DN(s)
 	if(empty($_REQUEST["rootdn"]) and empty($_REQUEST["domain"]) and !empty($_REQUEST["domainname"])) {
 		$tmp = split(';', $_REQUEST["domainname"]);
 
@@ -108,15 +114,16 @@ if(empty($_REQUEST["domainname"])) {
 		$url["domain"] = pql_format_urls($_REQUEST["domain"]);
 		$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 	}
+// }}}
 
-	// Get basemaildir path for domain
+	// {{{ Get basemaildir path for domain
 	if(!($basemaildir = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"))))
 	  die(pql_complete_constant($LANG->_('Can\'t get %what% path from domain \'%domain%\'!'),
 								array('what'   => pql_get_define("PQL_ATTR_BASEMAILDIR"),
 									  'domain' => $_REQUEST["domainname"])));
-	
-	require($_SESSION["path"]."/include/pql_ezmlm.inc");
+// }}}
 
+	require($_SESSION["path"]."/include/pql_ezmlm.inc");
 	$user  = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 	$ezmlm = new ezmlm($user, $basemaildir);
 
@@ -142,24 +149,29 @@ if(empty($_REQUEST["domainname"])) {
 <?php
 		die();
 	}
+// }}}
 }
 
-// Create list
+// {{{ Create list
 if(!empty($_REQUEST["submit"])) {
 	if(!empty($_REQUEST["listname"]) and !empty($_REQUEST["domainname"])) {
 	  $checked["pubpriv"] = $_REQUEST["pubpriv"];
 	  foreach($values as $value)
 		$checked[$value] = (empty($_REQUEST[$value]) ? 0 : 1);
 
-	  if(is_array($_REQUEST["killlist"]))
+	  if(is_array($_REQUEST["killlist"])) {
 		$checked["kill"] = 1;
+	  }
 	  
 	  if($ezmlm->updatelistentry(1, $_REQUEST["listname"], $_REQUEST["domainname"], $checked)) {
-		for($i=1; $i <= count($_REQUEST["subscriber"]); $i++)
-		  $ezmlm->subscribe($_REQUEST["listname"], $_REQUEST["subscriber"][$i]);
+		for($i=1; $i <= count($_REQUEST["subscriber"]); $i++) {
+		  if($_REQUEST["subscriber"][$i])
+			$ezmlm->subscribe($_REQUEST["listname"], $_REQUEST["subscriber"][$i]);
+		}
 		
 		for($i=1; $i <= count($_REQUEST["killlist"]); $i++)
-		  $ezmlm->subscribe_kill($_REQUEST["listname"], $_REQUEST["killlist"][$i]);
+		  if($_REQUEST["killlist"][$i])
+			$ezmlm->subscribe_kill($_REQUEST["listname"], $_REQUEST["killlist"][$i]);
 		
 		$msg  = urlencode("Successfully created list ".$_REQUEST["listname"]."<br>");
 	  } else
@@ -202,10 +214,9 @@ if(!empty($_REQUEST["submit"])) {
 		$checked["private"]			= " CHECKED";	// -P
 	}
 }
+// }}}
 
-// --------------------------------------------
-// We haven't submitted (or we're missing listname and/or domain name) - show 'add list form'.
-
+// {{{ We haven't submitted (or we're missing listname and/or domain name) - show 'add list form'.
 require($_SESSION["path"]."/header.html");
 if(empty($_REQUEST["domainname"])) {
 ?>
@@ -230,7 +241,7 @@ if(empty($_REQUEST["domainname"])) {
 
 <?php
 if(empty($_REQUEST["domainname"])) {
-	// No domain - select box with existing domains
+	// {{{ No domain - select box with existing domains
 ?>
             <input name="listname" <?php if(!empty($_REQUEST["listname"])) { echo 'value="'.$_REQUEST["listname"].'"'; }?>><b>@<?php
 	if(is_array($domain_list)) {
@@ -252,12 +263,14 @@ if(empty($_REQUEST["domainname"])) {
             <input type="hidden" name="domainname" <?php if(!empty($domain_list)) { echo 'value="'.$domain_list.'"'; }?>>
 <?php
 	}
+// }}}
 } else {
-	// Got domainname, show that (and remember it!)
+	// {{{ Got domainname, show that (and remember it!)
 ?>
             <input type="hidden" name="domainname" <?php if(!empty($_REQUEST["domainname"])) { echo 'value="'.$_REQUEST["domainname"].'"'; }?>>
             <input name="listname" <?php if(!empty($_REQUEST["listname"])) { echo 'value="'.$_REQUEST["listname"].'"'; }?>><b>@<?=$_REQUEST["domainname"]?></b>
 <?php
+// }}}
 }
 ?>
           </td>
@@ -490,6 +503,8 @@ if(empty($_REQUEST["domainname"])) {
   </body>
 </html>
 <?php
+// }}}
+
 pql_flush();
 
 /*
