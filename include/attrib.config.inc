@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.58 2007-02-28 09:31:33 turbo Exp $
+// $Id: attrib.config.inc,v 1.59 2007-03-02 15:48:45 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -413,13 +413,10 @@ function attribute_save() {
 	}
 
 	// Reverse state
-	if($oldvalue == 1)
+	pql_format_bool($oldvalue);
+	if(($oldvalue == 1) or eregi('^true$', $oldvalue))
 	  $entry[$attrib][] = 'FALSE';
-	elseif($oldvalue == 'TRUE')
-	  $entry[$attrib][] = 'FALSE';
-	elseif(($oldvalue == 0) or empty($oldvalue))
-	  $entry[$attrib][] = 'TRUE';
-	elseif($oldvalue == 'FALSE')
+	elseif(($oldvalue == 0) or empty($oldvalue) or eregi('^false$', $oldvalue))
 	  $entry[$attrib][] = 'TRUE';
 	// }}}
   } elseif(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
