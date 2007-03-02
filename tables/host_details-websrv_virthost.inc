@@ -117,9 +117,19 @@
       </tr>
 
 <?php if(@is_array($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")])) {
+		$additional_attrib  = pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS");
+		$additional_options = $virthost[$additional_attrib];
+	  } elseif(@is_array($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_RAW_ARG")])) {
+		$additional_attrib  = pql_get_define("PQL_ATTR_WEBSRV_SRV_RAW_ARG");
+		$additional_options = $virthost[$additional_attrib];
+	  } else {
+		$additional_options = '';
+	  }
+
+	  if($additional_options) {
         $new_tr = 1;
 
-        foreach($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")] as $srv) {
+        foreach($additional_options as $srv) {
 		  if($new_tr) { $new_tr = 0;
 ?>
       <tr class="<?php pql_format_table(); ?>">
@@ -130,9 +140,9 @@
 <?php     } ?>
         <td><?=$srv?></td>
         <td>
-          <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")?>&oldvalue=<?=$srv?>"><?=$img["mod"]?></a>
+          <a href="<?=$LINK_URL?>&action=mod&attrib=<?=$additional_attrib?>&oldvalue=<?=$srv?>"><?=$img["mod"]?></a>
 <?php	  if($srv) { ?>
-          <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")?>&oldvalue=<?=$srv?>"><?=$img["del"]?></a>
+          <a href="<?=$LINK_URL?>&action=del&attrib=<?=$additional_attrib?>&oldvalue=<?=$srv?>"><?=$img["del"]?></a>
 <?php 	  } ?>
         </td>
       </tr>
@@ -140,7 +150,7 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional option')?></td>
-        <td><a href="<?=$LINK_URL?>&action=add&type=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
+        <td><a href="<?=$LINK_URL?>&action=add&type=<?=$additional_attrib?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
         <td></td>
       </tr>
 <?php } else {
@@ -148,7 +158,7 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional option')?></td>
-        <td><a href="<?=$LINK_URL?>&action=add&type=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
+        <td><a href="<?=$LINK_URL?>&action=add&type=<?=$additional_attrib?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
         <td></td>
       </tr>
 <?php } ?>

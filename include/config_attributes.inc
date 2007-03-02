@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.59 2007-02-27 14:05:33 turbo Exp $
+// $Id: config_attributes.inc,v 2.60 2007-03-02 15:49:43 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -218,6 +218,7 @@ pql_set_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER",			strtolower('ApacheOrder'),	
 pql_set_define("PQL_ATTR_WEBSRV_SRV_ACCESS_DENY",			strtolower('ApacheDeny'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ALLOW",			strtolower('ApacheAllow'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_OPTIONS",				strtolower('ApacheOptions'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_RAW_ARG", 				strtolower('ApacheRawArg'),					false);
 
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER", 				strtolower('webLDAPServer'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN", 		strtolower('webLDAPServerLoginDN'),			false);
