@@ -1,6 +1,6 @@
 <?php
 // LDAP host, user, login info etc
-// $Id: left-base.php,v 2.1 2007-02-19 11:03:07 turbo Exp $
+// $Id: left-base.php,v 2.2 2007-03-05 10:27:24 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -93,34 +93,61 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
   $links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
 				 $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php');
   pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
-  
-  // Level 2c: LDAP server setup etc
-  $links = array($LANG->_('LDAP Syntaxes')		=> 'config_ldap.php?type=ldapsyntaxes',
-				 $LANG->_('LDAP Matching rules')	=> 'config_ldap.php?type=matchingrules',
-				 $LANG->_('LDAP Attribute types')	=> 'config_ldap.php?type=attributetypes',
-				 $LANG->_('LDAP Object classes')	=> 'config_ldap.php?type=objectclasses');
-  pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
-  
-  if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
-	// Level 2c2: LDAP Server status
-	$links = array($LANG->_('LDAP Server Status')		=> 'status_ldap.php?type=basics',
-				   $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
-				   $LANG->_('LDAP Database Status')		=> 'status_ldap.php?type=databases');
-	pql_format_tree($LANG->_('LDAP Server Statistics'), 0, $links, 1);
+
+  // Level 2c2: LDAP server configuration
+  if($_SESSION["ACCESSLOG_OVERLAY"])
+	$accesslog_overlay = array($LANG->_('LDAP Access logs')			=> 'config_ldap.php?type=accesslog');
+
+  if($_SESSION["CONFIG_BACKEND_ENABLED"] and eregi('CVS', $_SESSION["VERSION"]))
+	$config_backend = array($LANG->_('LDAP Server Configuration')	=> 'config_ldap.php?type=config');
+
+  // Level 2c2: LDAP server setup etc
+  if($_SESSION["MONITOR_BACKEND_ENABLED"]) {
+	$links = array($LANG->_('LDAP Syntaxes')			=> 'config_ldap.php?type=ldapsyntaxes',
+				   $LANG->_('LDAP Matching rules')		=> 'config_ldap.php?type=matchingrules',
+				   $LANG->_('LDAP Attribute types')		=> 'config_ldap.php?type=attributetypes',
+				   $LANG->_('LDAP Object classes')		=> 'config_ldap.php?type=objectclasses');
+
+	if(is_array($accesslog_overlay))
+	  $links = $accesslog_overlay + $links;
+
+	if(is_array($config_backend))
+	  $links = $config_backend + $links;
+
+	pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
+
+	// Level 2c3: LDAP Server status
+	if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+	  $links = array($LANG->_('LDAP Server Status')		=> 'status_ldap.php?type=basics',
+					 $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
+					 $LANG->_('LDAP Database Status')	=> 'status_ldap.php?type=databases');
+	  pql_format_tree($LANG->_('LDAP Server Statistics'), 0, $links, 1);
+	}
+  } elseif(is_array($config_backend) or is_array($accesslog_overlay)) {
+	// No monitor backend, but config is - show only the config backend
+	$links = array();
+
+	if(is_array($accesslog_overlay))
+	  $links = $accesslog_overlay + $links;
+
+	if(is_array($config_backend))
+	  $links = $config_backend + $links;
+
+	pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
   }
 }
 // }}}
 
 // {{{ Level 2d:     Documentation etc
-$links = array($LANG->_('Documentation')		=> 'doc/index.php');
+$links = array($LANG->_('Documentation')				=> 'doc/index.php');
 if($_SESSION["ADVANCED_MODE"]) {
-  $new = array($LANG->_('What\'s left todo')		=> 'TODO',
-			   $LANG->_('What\'s been done')		=> 'CHANGES');
+  $new = array($LANG->_('What\'s left todo')			=> 'TODO',
+			   $LANG->_('What\'s been done')			=> 'CHANGES');
   $links = $links + $new;
   
   if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-	$new = array($LANG->_('Language translator')	=> 'tools/update_translations.php',
-				 $LANG->_('PHP Information dump')	=> 'tools/phpinfo.php');
+	$new = array($LANG->_('Language translator')		=> 'tools/update_translations.php',
+				 $LANG->_('PHP Information dump')		=> 'tools/phpinfo.php');
 	$links = $links + $new;
   }
 }
@@ -130,14 +157,14 @@ pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 // {{{ Level 2[ef]:  Main site and misc QmailLDAP links
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
   // Level 2e: Main site and general phpQLAdmin links
-  $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.com/',
-				 $LANG->_('Bugtracker')			=> 'http://bugs.bayour.com/');
+  $links = array('phpQLAdmin @ Bayour'					=> 'http://phpqladmin.com/',
+				 $LANG->_('Bugtracker')					=> 'http://bugs.bayour.com/');
   pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
   
   // Level 2f: Misc QmailLDAP/Controls links
   $links = array('Official Qmail-LDAP pages'			=> 'http://www.qmail-ldap.org/',
-				 'Life with Qmail-LDAP'			=> 'http://www.lifewithqmail.org/ldap/',
-				 'Life with Qmail'				=> 'http://www.lifewithqmail.org/');
+				 'Life with Qmail-LDAP'					=> 'http://www.lifewithqmail.org/ldap/',
+				 'Life with Qmail'						=> 'http://www.lifewithqmail.org/');
   pql_format_tree($LANG->_('Misc Qmail & Qmail-LDAP'), 0, $links, 1);
 }
 // }}}
