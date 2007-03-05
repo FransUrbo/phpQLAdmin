@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.228 2007-02-27 11:42:25 turbo Exp $
+// $Id: pql.inc,v 2.229 2007-03-05 10:40:23 turbo Exp $
 //
 
 // ----------------------------
@@ -79,15 +79,46 @@ class pql {
   // {{{ string _find_context_rootdns(void)
   function _find_context_rootdns() {
 	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
-	return $this->_find_base_option("namingContexts");
+	$dns = $this->_find_base_option("namingContexts");
+	for($i=0; $dns[$i]; $i++) {
+	  $value = $this->get_attribute($dns[$i], 'structuralObjectClass', 1);
+	  if(!eregi('auditContainer', $value)) 
+		// I'm using the overlay-accesslog on the 'cn=LOG1'
+		// backend - filter that out (if structuralObjectClass=auditContainer,
+		// then it should NOT be used)!
+		// NOTE: There needs to be anonymous read to the attributes
+		//       structuralobjectclass,objectClass and entry of this
+		//       dn.base for this to work. Othervise there will be
+		//       lots of LDAP search warnings etc...
+		//
+		// I recommend a ACL like this:
+		//
+		// access to dn.base="cn=LOG1"
+		//        attrs=structuralobjectclass,objectClass,entry
+		//        by peername.ip="127\.0\.0\.1" read
+		//        by peername.path="/var/run/slapd/ldapi" read
+		//        by * none
+		$tmp[] = $dns[$i];
+	  else {
+		global $_SESSION;
+		if(!$_SESSION["ACCESSLOG_OVERLAY"] or !in_array($dns[$i], $_SESSION["ACCESSLOG_OVERLAY"]))
+		  $_SESSION["ACCESSLOG_OVERLAY"][] = $dns[$i];
+	  }
+	}
+
+	return $tmp;
   }
   // }}}
   
   // {{{ string _find_context_config(void)
   function _find_context_config() {
 	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* configContext
+	global $_SESSION;
 	$context = $this->_find_base_option("configContext");
 	
+	if($context[0] and !$_SESSION["CONFIG_BACKEND_ENABLED"])
+	  $_SESSION["CONFIG_BACKEND_ENABLED"] = 1;
+
 	if($context[0])
 	  return(urldecode($context[0]));
 	else
@@ -202,8 +233,8 @@ class pql {
 	
 	// Find the base DN(s)
 	$this->ldap_basedn = $this->_find_context_rootdns();
-	
-	// Find the config context
+
+	// Find the config context (only OpenLDAP >=2.3)
 	$this->ldap_config = $this->_find_context_config();
 	
 	// Find the monitor context
@@ -211,7 +242,7 @@ class pql {
 	
 	// Find the subschema context
 	$this->ldap_subschema = $this->_find_context_subschema();
-	
+
 	return true;
   }
   // }}}
@@ -309,7 +340,7 @@ class pql {
 	// {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
 	if(eregi("^dNSTTL=", $dn))
 	  // FROM: dNSTTL=3600 relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
-	  // TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,,o=Branch,c=SE
+	  // TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
 	  $dn = pql_recreate_dnsttl($dn);
 	// }}}
 	
@@ -317,7 +348,8 @@ class pql {
 	switch($level) {
 	case "SUBTREE":		$func = "ldap_search";	break;
 	case "ONELEVEL":	$func = "ldap_list";	break;
-	default:			$func = "ldap_read";	break;
+	case "BASE":		$func = "ldap_read";	break;
+	default:			die("Faulty search scope '$level'! Please report this at the bugtracker.");
 	}
 	
 	$subschema_dn = 0; // Can't be NULL (''). Then the 'check if enable cache' don't work...
@@ -370,9 +402,10 @@ class pql {
 	  
 	  return($object);
 	} // not BASE, is operational or not cached => fall through.
+	// }}}
 	
-	// It's either not a ONE level search or it doesn't exist in the
-	// cache. Fetch it...
+	// {{{ Not found in cache, retreive from LDAP
+	// Debugging for what is about to happen
 	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
 	  echo "|Searching with: <b>$func(linkid, '$dn', '$filter', ";
 	  if(is_array($op)) {
@@ -387,9 +420,7 @@ class pql {
 		echo "$op";
 	  echo ")</b><br>";
 	}	
-	// }}}
-	
-	// {{{ Not found in cache, retreive from LDAP
+
 	$sr = @$func($this->ldap_linkid, $dn, $filter, $op);
 	if(!$sr) {
 	  // No such object - problem with the search string?
@@ -548,7 +579,7 @@ class pql {
 	  $scope = "SUBTREE";
 	}
 	
-	// Get the (WHOLE) object but only return only the attributes of interest.
+	// Get the (WHOLE) object but only return the attributes of interest.
 	$object = $this->search($dn, $filter, $scope, 1, $operational);
 	if(!empty($object)) {
 	  if(!empty($object[0])) {
