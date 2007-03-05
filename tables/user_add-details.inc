@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.46 2007-02-28 11:18:00 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.47 2007-03-05 10:33:21 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8" name="user_add">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -11,7 +11,7 @@
 // }}}
 
 	// {{{ Username
-	if($mark = pql_templates_check_attribute($template, 'uid')) {
+	if($mark = pql_templates_check_attribute($template_attribs, 'uid')) {
 	  if((!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and $_SESSION["ADVANCED_MODE"]) or
 		 empty($_REQUEST["uid"]))
 	  {
@@ -50,7 +50,7 @@
 // }}}
 
 	// {{{ Firstname
-	if($mark = pql_templates_check_attribute($template, 'sn')) {
+	if($mark = pql_templates_check_attribute($template_attribs, 'sn')) {
 ?>
         <!-- Firstname -->
         <tr class="<?php pql_format_table(); ?>">
@@ -65,7 +65,7 @@
 // }}}
 
 	// {{{ Lastname
-	if($mark = pql_templates_check_attribute($template, 'cn')) {
+	if($mark = pql_templates_check_attribute($template_attribs, 'cn')) {
 ?>
 
         <!-- Lastname -->
@@ -80,10 +80,10 @@
 <?php }
 // }}}
 
-	if($mark = pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"))) {
+	if($mark = pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD"))) {
 	  // {{{ Password encryption scheme
 	  if((!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"]) and !$lockpassword and 
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD")))
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD")))
 	  {
 		// We have NO default password scheme (or we're running in advanced mode) and password is allowed.
 		// -> Allow password to be entered...
@@ -259,9 +259,9 @@
 		$branches = pql_unit_get($_REQUEST["domain"]);
 	  }
 
-	  if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_LOGINSHELL")) or
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL"))       or
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_ISACTIVE"))   or
+	  if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_LOGINSHELL")) or
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAIL"))       or
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_ISACTIVE"))   or
 		 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_MAIL"))       or
 		 ($_SESSION["ADVANCED_MODE"] and !empty($branches[1]))                                                           or
 		 ($_SESSION["ADVANCED_MODE"] and ($_SESSION["NEW_STYLE_QUOTA"] and ($_REQUEST["template"] == 'forward')))        or
@@ -272,7 +272,7 @@
 <?php }
 
 	  // {{{ Login shell
-	  if($mark = pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_LOGINSHELL"))) {
+	  if($mark = pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_LOGINSHELL"))) {
 		if($_SESSION["ADVANCED_MODE"]) {
 		  $shells = pql_get_valid_shells();
 ?>
@@ -296,7 +296,7 @@
 // }}}
 
 	  // {{{ Mail address
-	  if($mark = pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL"))) {
+	  if($mark = pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAIL"))) {
 		if(!pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) or
 		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
 		   $_SESSION["ADVANCED_MODE"] or !empty($error_text["mail"])) {
@@ -457,7 +457,7 @@
 // }}}
   
 	  // {{{ Account status
-      if($mark = pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_ISACTIVE"))) {
+      if($mark = pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_ISACTIVE"))) {
 ?>
 
         <!-- Account status -->

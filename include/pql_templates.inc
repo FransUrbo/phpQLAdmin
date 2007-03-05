@@ -1,9 +1,9 @@
 <?php
 // ----------------------------
-// pql_search.inc
+// pql_templates.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.13 2007-02-15 12:08:13 turbo Exp $
+// $Id: pql_templates.inc,v 2.14 2007-03-05 10:33:19 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -31,11 +31,12 @@ function pql_templates_group() {
 // }}}
 
 // {{{ pql_get_templates()
+// Get ALL templates availible
 function pql_get_templates() {
   global $_pql;
 
   $filter    = '(&(objectClass=phpQLAdminUserTemplate)('.pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME").'=*))';
-  $templates = $_pql->get_dn('ou=Templates,'.$_SESSION["BASE_DN"][0], $filter, 'ONELEVEL');
+  $templates = $_pql->get_dn(pql_get_define("PQL_CONF_SUBTREE_TEMPLATES").','.$_SESSION["BASE_DN"][0], $filter, 'ONELEVEL');
 
   // {{{ Setup attributes to retreive.
   $attribs = array("name"            		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME"),
@@ -104,6 +105,7 @@ function pql_get_templates() {
 // }}}
 
 // {{{ pql_get_template(name)
+// Get all data about a specific template
 function pql_get_template($name) {
   if($name == 'group') {
 	return pql_templates_group();
@@ -155,29 +157,20 @@ function pql_templates_attributes($objectclasses) {
 }
 // }}}
 
-// {{{ pql_templates_check_attribute(template, attribute, type)
+// {{{ pql_templates_check_attribute(attribs, attribute, type)
 // Template can be either the template array OR a template name
 // Returns '1' if it's a MUST and '2' if it's a MAY.
 //
 // TODO (if/when '$type' is set):
 //	* If looking for a MUST, then return '1' if it's a MUST and '0' if it's a MAY
 //	* If looking for a MAY,  then return '1' if it's a MAY  and '0' if it's a MUST
-function pql_templates_check_attribute($template, $attribute, $type = NULL) {
+function pql_templates_check_attribute($attribs, $attribute, $type = NULL) {
   // This is quite ugly and maybe a little 'fuzzy'. But we're always (?) called from within
   // (or between) forms where the root DN is specified in the request so it should be safe
   // to do it this way...
   if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == $attribute)
 	// We're referencing users with this attribute - require this!
 	return 1;
-
-  if(is_array($template))
-	$template_def = $template;
-  else
-	// Retreive the user template we've choosen to use when creating this user
-	$template_def = pql_get_template($template);
-
-  // For each of the userObjectClass'es in the template, get required attributes 
-  $attribs = pql_templates_attributes($template_def["userobjectclass"]);
 
   if(!$type or (lc($type) == "must")) {
 	for($i=0; $i < count($attribs['must']); $i++) {

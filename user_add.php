@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.142 2007-02-28 11:17:58 turbo Exp $
+// $Id: user_add.php,v 2.143 2007-03-05 10:33:18 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -86,6 +86,7 @@ if(empty($_REQUEST["page_next"])) {
 // {{{ Retreive the template definition
 if(!empty($_REQUEST["template"]) and !@is_array($template)) {
   $template = pql_get_template($_REQUEST["template"]);
+  $template_attribs = pql_templates_attributes($template["userobjectclass"]);
 } else {
   $templates = pql_get_templates();
 }
@@ -93,7 +94,9 @@ if(!empty($_REQUEST["template"]) and !@is_array($template)) {
 
 // {{{ Retreive password encryption schemes
 function pql_user_add_retreive_encryption_schemes($template, $rootdn) {
-  if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"))) {
+  global $template_attribs;
+
+  if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD"))) {
 	if(is_array($template["passwordscheme"])) {
 	  // There's schemes specified in the template we're using - use them!
 	  $schemes = $template["passwordscheme"];
@@ -125,7 +128,9 @@ function pql_user_add_retreive_encryption_schemes($template, $rootdn) {
 	  }
 	  if(!$default_password_scheme_exist_in_schemes)
 		$tmp[] = $_REQUEST["defaultpasswordscheme"];
-	  $schemes = $tmp;
+
+	  if(is_array($tmp))
+		$schemes = $tmp;
 	}
 
 	return($schemes);
@@ -166,9 +171,9 @@ switch($_REQUEST["page_curr"]) {
 		// 2. We have set autoCreateUserName to TRUE for this branch/domain
 		// 3. The function 'user_generate_uid()' is defined in include/config.inc.
 		// 4. At least one of the objects we've choosen to use when creating users MAY or MUST the 'uid' attribute..
-		if(empty($_REQUEST["uid"]) and pql_templates_check_attribute($template, 'uid')) {
+		if(empty($_REQUEST["uid"]) and pql_templates_check_attribute($template_attribs, 'uid')) {
 		  if(function_exists('user_generate_uid') and empty($_REQUEST["uid"]) and
-			 (($autocreateusername and pql_templates_check_attribute($template, 'uid', 'MUST'))
+			 (($autocreateusername and pql_templates_check_attribute($template_attribs, 'uid', 'MUST'))
 			  or
 			  (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == 'uid')))
 		  {
@@ -184,7 +189,7 @@ switch($_REQUEST["page_curr"]) {
 			if(empty($_REQUEST["uid"])) {
 				$error = true;
 
-				if(pql_templates_check_attribute($template, 'uid', 'MUST'))
+				if(pql_templates_check_attribute($template_attribs, 'uid', 'MUST'))
 				  $error_text["uid"] = "&nbsp;&nbsp;".$LANG->_("Can't autogenerate, but this value is required.");
 				else
 				  $error_text["uid"] = $LANG->_("Can't autogenerate.");
@@ -200,7 +205,7 @@ switch($_REQUEST["page_curr"]) {
 		
 		// {{{ Verify/Create email address
 		if(empty($_REQUEST["mail"]) and $autocreatemailaddress and function_exists('user_generate_email') and
-		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL")))
+		   pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAIL")))
 		{
 			// It's not supplied - generate one
 			$_REQUEST["mail"] = strtolower(user_generate_email($_REQUEST["uid"], "", "",
@@ -225,7 +230,7 @@ switch($_REQUEST["page_curr"]) {
 		if(($_REQUEST["template"] != "internal_group") and empty($_REQUEST["password"]) and	// Not internal group and not already availible
 		   $autocreatepassword and															// SHOULD generate a password
 		   function_exists('pql_generate_password') and										// CAN generate a password
-		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD")) and	// ALLOWS password
+		   pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD")) and	// ALLOWS password
 		   !$_REQUEST["pwscheme"])
 		{
 		  // If we only have one password scheme, and it's a Kerberos V scheme, then we generate a Kerberos V
@@ -281,7 +286,8 @@ switch($_REQUEST["page_curr"]) {
 	  //             in at least ONE object class we've choosen to use when creating users...
 	  $attrib_is_availible = 0;
 	  for($i=0; $i < count($templates); $i++) {
-		if(pql_templates_check_attribute($templates[$i],
+		// NOTE/BUG (?): Orig: $templates[$i]. New: $template_attribs
+		if(pql_templates_check_attribute($template_attribs,
 										 pql_get_define("PQL_CONF_REFERENCE_USERS_WITH",
 														$_REQUEST["rootdn"])))
 		{
@@ -389,7 +395,7 @@ switch($_REQUEST["page_curr"]) {
 		// ------------------------
 
 		// {{{ Verify surname
-		if(($_REQUEST["dosave"] != 'yes') and empty($_REQUEST["surname"]) and pql_templates_check_attribute($template, 'sn', 'MUST')) {
+		if(($_REQUEST["dosave"] != 'yes') and empty($_REQUEST["surname"]) and pql_templates_check_attribute($template_attribs, 'sn', 'MUST')) {
 			$error = true;
 			$error_text["surname"] = $LANG->_('Missing');
 		}
@@ -397,7 +403,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Verify lastname
-		if(($_REQUEST["dosave"] != 'yes') and empty($_REQUEST["name"]) and pql_templates_check_attribute($template, 'sn', 'MUST')) {
+		if(($_REQUEST["dosave"] != 'yes') and empty($_REQUEST["name"]) and pql_templates_check_attribute($template_attribs, 'sn', 'MUST')) {
 			$error = true;
 			$error_text["name"] = $LANG->_('Missing');
 		}
@@ -406,14 +412,14 @@ switch($_REQUEST["page_curr"]) {
 
 		// {{{ Verify username
 		unset($filter);
-		if(pql_templates_check_attribute($template, 'sn') and
+		if(pql_templates_check_attribute($template_attribs, 'sn') and
 		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")))
 		{
 			// 1. Template allows attribute 'sn'
 			// 2. 'sn' is used to reference users
 			$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))";
 			$error_user = $user;
-		} elseif(pql_templates_check_attribute($template, 'uid') and
+		} elseif(pql_templates_check_attribute($template_attribs, 'uid') and
 		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
 		{
 			// 1. Template allows attribute 'uid'
@@ -435,10 +441,10 @@ switch($_REQUEST["page_curr"]) {
 		// If email isn't set but is required.
 		if(($_REQUEST["dosave"] != 'yes') and
 		   (($_REQUEST["mail"] and
-			 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL")))
+			 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAIL")))
 			or
 			(empty($_REQUEST["mail"]) and
-			 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL"), 'MUST'))))
+			 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAIL"), 'MUST'))))
 		{
 		  if(!ereg("@", $_REQUEST["mail"])) {
 			if($_REQUEST["email_domain"])
@@ -480,13 +486,13 @@ switch($_REQUEST["page_curr"]) {
 		// or:
 		// If password isn't set, we have been asked to autogenerate one AND it's allowed.
 		if(($_REQUEST["password"] and
-			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD")))
+			pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD")))
 		   or
 		   (empty($_REQUEST["password"]) and
-            pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"), 'MUST'))
+            pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD"), 'MUST'))
 		   or
 		   (empty($_REQUEST["password"]) and ($_REQUEST["autogenerate"] == "on") and
-			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"))))
+			pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD"))))
 		{
 			// Only forward and group accounts is ok without password
 			if(empty($_REQUEST["password"])) {
@@ -562,7 +568,7 @@ switch($_REQUEST["page_curr"]) {
 
 		// {{{ Verify mail forwarding address
 		// If it's a forwarding accounts (allowing 'mailForwardingAddress') make sure the forwarding mail address is ok
-		if(($_REQUEST["dosave"] != 'yes') and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_FORWARDS"), "MUST")) {
+		if(($_REQUEST["dosave"] != 'yes') and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_FORWARDS"), "MUST")) {
 			if(!pql_check_email($_REQUEST["forwardingaddress"])) {
 				$error = true;
 				$error_text["forwardingaddress"] = $LANG->_('Invalid');
@@ -577,7 +583,7 @@ switch($_REQUEST["page_curr"]) {
 
 		// {{{ Generate the mailHost attribute/value
 		if(($_REQUEST["dosave"] != 'yes') and $_REQUEST["mail"] and
-		   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST")))
+		   pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILHOST")))
 		{
 			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
 			$mx = pql_get_mx($_REQUEST["email_domain"]);
@@ -600,9 +606,9 @@ switch($_REQUEST["page_curr"]) {
 		// or
 		// If email set and mailMessageStore is required
 		if(($_REQUEST["dosave"] != 'yes') and $_REQUEST["mail"] and
-		   (pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILSTORE"))
+		   (pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILSTORE"))
 			or
-			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILSTORE"), 'MUST')))
+			pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILSTORE"), 'MUST')))
 		{
 		  if(!empty($basemaildir)) {
 			if(function_exists("user_generate_mailstore")) {
@@ -667,7 +673,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate the home directory value
-		if(($_REQUEST["dosave"] != 'yes') and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_HOMEDIR"), 'MUST')) {
+		if(($_REQUEST["dosave"] != 'yes') and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_HOMEDIR"), 'MUST')) {
 		  if(!empty($basehomedir)) {
 			if(function_exists("user_generate_homedir")) {
 			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
@@ -741,7 +747,7 @@ switch($_REQUEST["page_curr"]) {
   // {{{ 'two': Tripplecheck the mail host value
   case "two":
 	if($_REQUEST["mail"] and ($_REQUEST["page_next"] == 'save') and !isset($_REQUEST["host"]) and
-	   pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST")))
+	   pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILHOST")))
 	{
 	  $error = true;
 	  $error_text["userhost"] = $LANG->_('Missing');

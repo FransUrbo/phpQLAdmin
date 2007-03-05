@@ -1,52 +1,52 @@
-<?php /* $Id: user_add-additional.inc,v 1.39 2007-02-28 11:17:59 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.40 2007-03-05 10:33:21 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
-<?php if(!empty($_REQUEST["surname"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_CN"))) { ?>
+<?php if(!empty($_REQUEST["surname"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_CN"))) { ?>
     <input type="hidden" name="surname"             <?php if(!empty($_REQUEST["surname"])) { echo 'value="'.urlencode($_REQUEST["surname"]).'"'; }?>>
 <?php } ?>
-<?php if(!empty($_REQUEST["name"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_SN"))) { ?>
+<?php if(!empty($_REQUEST["name"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_SN"))) { ?>
     <input type="hidden" name="name"                <?php if(!empty($_REQUEST["name"])) { echo 'value="'.urlencode($_REQUEST["name"]).'"'; }?>>
 <?php } ?>
-<?php if(!empty($_REQUEST["mail"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAIL"))) { ?>
+<?php if(!empty($_REQUEST["mail"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAIL"))) { ?>
     <input type="hidden" name="mail"                <?php if(!empty($_REQUEST["mail"])) { echo 'value="'.$_REQUEST["mail"].'"'; }?>>
     <input type="hidden" name="email_domain"        <?php if(!empty($_REQUEST["email_domain"])) { echo 'value="'.$_REQUEST["email_domain"].'"'; }?>>
     <input type="hidden" name="include_additional"  <?php if(!empty($_REQUEST["include_additional"])) { echo 'value="'.$_REQUEST["include_additional"].'"'; }?>>
 <?php } ?>
-<?php if(!empty($_REQUEST["uid"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_UID"))) { ?>
+<?php if(!empty($_REQUEST["uid"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_UID"))) { ?>
     <input type="hidden" name="uid"                 <?php if(!empty($_REQUEST["uid"])) { echo 'value="'.$_REQUEST["uid"].'"'; }?>>
 <?php } ?>
-<?php if(!empty($_REQUEST["password"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"))) { ?>
+<?php if(!empty($_REQUEST["password"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD"))) { ?>
     <input type="hidden" name="autogenerate"        <?php if(!empty($_REQUEST["autogenerate"])) { echo 'value="'.$_REQUEST["autogenerate"].'"'; }?>>
     <input type="hidden" name="password"            <?php if(!empty($_REQUEST["password"])) { echo 'value="'.$_REQUEST["password"].'"'; }?>>
     <input type="hidden" name="pwscheme"            <?php if(!empty($_REQUEST["pwscheme"])) { echo 'value="'.$_REQUEST["pwscheme"].'"'; }?>>
     <input type="hidden" name="crypted"             <?php if(!empty($_REQUEST["crypted"])) { echo 'value="'.$_REQUEST["crypted"].'"'; }?>>
 <?php } ?>
-<?php if(!empty($_REQUEST["clear_text_password"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD_CLEAR"))) { ?>
+<?php if(!empty($_REQUEST["clear_text_password"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD_CLEAR"))) { ?>
     <input type="hidden" name="clear_text_password" <?php if(!empty($_REQUEST["clear_text_password"])) { echo 'value="'.$_REQUEST["clear_text_password"].'"'; }?>>
 <?php } ?>
-<?php if(!empty($_REQUEST["forwardingaddress"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_FORWARDS"))) { ?>
+<?php if(!empty($_REQUEST["forwardingaddress"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_FORWARDS"))) { ?>
     <input type="hidden" name="forwardingaddress"   <?php if(!empty($_REQUEST["forwardingaddress"])) { echo 'value="'.$_REQUEST["forwardingaddress"].'"'; }?>>
 <?php } ?>
     <input type="hidden" name="subbranch"           <?php if(!empty($url["subbranch"])) { echo 'value="'.$url["subbranch"].'"'; }?>>
-<?php if(!empty($_REQUEST["account_status"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_ISACTIVE"))) { ?>
+<?php if(!empty($_REQUEST["account_status"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_ISACTIVE"))) { ?>
     <input type="hidden" name="account_status"      <?php if(!empty($_REQUEST["account_status"])) { echo 'value="'.$_REQUEST["account_status"].'"'; }?>>
 <?php } ?>
-<?php if(!empty($_REQUEST["loginshell"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_LOGINSHELL"))) { ?>
+<?php if(!empty($_REQUEST["loginshell"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_LOGINSHELL"))) { ?>
     <input type="hidden" name="loginshell"          <?php if(!empty($_REQUEST["loginshell"])) { echo 'value="'.$_REQUEST["loginshell"].'"'; }?>>
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-<?php if((!empty($_REQUEST["autogenerate"]) and pql_templates_check_attribute($template,
+<?php if((!empty($_REQUEST["autogenerate"]) and pql_templates_check_attribute($template_attribs,
 																			  pql_get_define("PQL_ATTR_PASSWD"))) or
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_HOMEDIR")) or
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILSTORE")) or
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST")))
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_HOMEDIR")) or
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILSTORE")) or
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILHOST")))
 	  {
 ?>
       <th colspan="3" align="left"><?=$LANG->_('Additional account properties')?></th>
 <?php }
 
-	  if(!empty($_REQUEST["autogenerate"]) and pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_PASSWD"))) {
+	  if(!empty($_REQUEST["autogenerate"]) and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD"))) {
 ?>
         <!-- Show the autogenerated password -->
         <tr class="<?php pql_format_table(); ?>">
@@ -57,7 +57,7 @@
         <input type="hidden" name="password_shown" value="1">
 <?php }
 
-	  if(pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_HOMEDIR"))) {
+	  if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_HOMEDIR"))) {
 ?>
         <!-- Home directory -->
         <tr class="<?php pql_format_table(); ?>">
@@ -75,7 +75,7 @@
 <?php } // Allowing home directory
 
 	  if(!empty($_REQUEST["mail"]) and
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILSTORE")))
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILSTORE")))
       {
 		if(!empty($_SESSION["ADVANCED_MODE"]) or empty($_REQUEST["maildirectory"])) {
 ?>
@@ -99,7 +99,7 @@
 	  } // Allowing mailbox path
 
 	  if(!empty($_REQUEST["mail"]) and
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_FORWARDS")))
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_FORWARDS")))
       {
 		if(empty($_REQUEST["forwardingtype"])) {
 		  $_REQUEST["forwardingtype"] = '';
@@ -125,7 +125,7 @@
 <?php } // Allowing mail forwarding address
 
 	  if(!empty($_REQUEST["mail"]) and
-		 pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST")))
+		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILHOST")))
       {
 ?>
         <!-- Mailhost -->
@@ -133,10 +133,10 @@
           <td class="title" valign="top"><?=$LANG->_('Mail server')?></td>
           <td>
 <?php	if((!empty($_REQUEST["mail"]) and 
-			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST")))
+			pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILHOST")))
 		   or
 		   ($_REQUEST["mail"] or
-			pql_templates_check_attribute($template, pql_get_define("PQL_ATTR_MAILHOST"), 'MUST')))
+			pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILHOST"), 'MUST')))
 		{
 			 echo "            ".pql_templates_mark_importance(1);
 		}

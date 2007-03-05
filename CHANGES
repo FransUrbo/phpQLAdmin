@@ -203,6 +203,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Add support for the Password Policy overlay in OpenLDAP >2.3. Not complete, but the core
 	    is there with new objectclass phpQLAdminPasswordPolicy which should be used in combination
 	    with pwdPolicy.
+	  - Support the Accesslog overlay with filtering possibilities from config_ldap.php.
 
 	API changes
 	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods
@@ -228,7 +229,11 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Speed up domain_detail.php by only retreving the attributes of interest for the specific view.
 	  - Move all HTML from config_ldap.php to tables/config_ldap-monitor.inc
 	  - Move all HTML, verification and saving from config_template_add.php to include/attrib.config.template.inc.
-	  - Support the Accesslog overlay with filtering possibilities from config_ldap.php.
+	  - Speed up pql_templates_check_attribute() (which previosly was VERY expensive) by removing the retreival
+	    of the template attributes (using pql_templates_attributes()). This in turn retreives all subschemas
+	    using pql_get_subschema(). Even if cached, it's still a couple of meg of data that have to be retreived
+	    EVERY TIME an attribute is checked - hence VERY expensive.
+	    Insted do this (retreiving the template attributes) ONCE (in user_add.php just after getting the template.
 
 	Misc changes
 	  - Added Strong password option to meet SOX & DSS/PCI compliance
