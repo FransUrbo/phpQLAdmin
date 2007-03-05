@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.21 2007-02-26 13:22:05 turbo Exp $
+// $Id: pql_units.inc,v 1.22 2007-03-05 10:37:31 turbo Exp $
 //
 
 // {{{ pql_unit_get(dn, filter)
@@ -70,10 +70,13 @@ function pql_unit_add($domain, $unit) {
   $entry['objectClass'] = "organizationalUnit";
   
   // Add the unit to the database
-  if(!$_pql->add($dn, $entry, 'unit', 'pql_unit_add'))
-	// Failed to add unit
-	return false;
-  
+  if(!$_pql->get_dn($dn, pql_get_define("PQL_ATTR_OBJECTCLASS")."=*", 'BASE')) {
+	// Object don't exist, add it...
+	if(!$_pql->add($dn, $entry, 'unit', 'pql_unit_add'))
+	  // Failed to add unit
+	  return false;
+  }
+
   return(true);
 }
 // }}}
