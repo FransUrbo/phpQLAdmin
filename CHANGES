@@ -226,6 +226,9 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	      dump_object.php to create a usable LDIF from/of the object(s) where encoded values won't
 	      be usable if (re)loaded into an LDAP database..
 	  - Speed up domain_detail.php by only retreving the attributes of interest for the specific view.
+	  - Move all HTML from config_ldap.php to tables/config_ldap-monitor.inc
+	  - Move all HTML, verification and saving from config_template_add.php to include/attrib.config.template.inc.
+	  - Support the Accesslog overlay with filtering possibilities from config_ldap.php.
 
 	Misc changes
 	  - Added Strong password option to meet SOX & DSS/PCI compliance

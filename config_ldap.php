@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.24 2007-02-15 17:10:24 turbo Exp $
+// $Id: config_ldap.php,v 1.25 2007-03-05 10:21:06 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -10,212 +10,147 @@ include($_SESSION["path"]."/header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-$ldap = pql_get_subschemas();
-if($_REQUEST["type"]) {
-  $type = $_REQUEST["type"];
-  $tmp = $ldap; unset($ldap);
-  
-  $ldap[$type] = $tmp[$type];
-  $attributetypes = $tmp['attributetypes'];
-} else {
-  $attributetypes = $ldap['attributetypes'];
-}
-$j = 1; $oc_counter = 0;
-?>
-    <table cellspacing="0" cellpadding="3" border="0">
-<?php
-// I won't be needing this and it's in the way...
-unset($ldap['objectclasses']['ALIAS']);
-
-foreach($ldap as $x => $array) {
-?>
-      <th colspan="3" align="left"><?=$x?>
-<?php
-	if(!eregi($x, 'objectclasses')) {
-?>
-
-        <tr>
-          <td><?=$LANG->_('Name')?></td>
-          <td><?=$LANG->_('Oid')?></td>
-          <td><?=$LANG->_('Single valued')?></td>
-          <td><?=$LANG->_('Description')?></td>
-        </tr>
-
-<?php    foreach($array as $value) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-<?php       echo "          <td>".@$value['NAME']."</td>\n";
-			echo "          <td>".@$value['OID']."</td>\n";
-			echo "          <td>".@$value['SINGLE-VALUE']."</td>\n";
-			echo "          <td>".@$value['DESC']."</td>\n";
-?>
-        </tr>
-<?php    } ?>
-      </th>
-
-<?php
-	} else {
-		// Objectclasses
-		$class = pql_format_table(0);
-?>
-
-        <p><font size="1"><?=$LANG->_('Text in bold is a MUST, and non-bold is MAY')?>.</font><br>
-
-<?php	foreach($array as $x => $value) { ?>
-        <!-- --------------------------------------------------- -->
-        <!-- Objectclass #<?=$oc_counter?>: '<?=$value['NAME']?>:<?=$value['OID']?>' -->
-        <tr class="<?=$class?>">
-          <!-- ATTRIBUTE NAMES -->
-          <td>
-<?php		if($_SESSION["opera"]) { ?>
-            <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>aSpn, el<?=$j?>aImg); showhide(el<?=$j?>bSpn, el<?=$j?>bImg);">
-              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>aImg">
-              <a class="item"><font color="black" class="heada"><?=$value['NAME']?></font></a>
-            </div>
-<?php		} else { ?>
-            <div id="el<?=$j?>Parent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$j?>', true); expandBase('el<?=$j+1?>', true); return false;}">
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
-              </a>
-        
-              <a class="item"><font color="black" class="heada"><?=$value['NAME']?></font></a>
-            </div>
-<?php		}
-
-			if($_SESSION["opera"]) {
-?>
-            <span id="el<?=$j?>aSpn" style="display:''">
-<?php		} else { ?>
-            <div id="el<?=$j?>Child" class="child">
-<?php		} 
-
-			if(isset($value['MUST'])) {
-			  for($i=0; $i < $value['MUST']['count']; $i++) {
-				// MUST attributes
-?>
-              &nbsp;&nbsp;&nbsp;&nbsp;<b><?=$value['MUST'][$i]?></b><br>
-<?php		  }
-			}
-
-			if(isset($value['MAY'])) {
-			  for($i=0; $i < $value['MAY']['count']; $i++) {
-				// MAY attributes
-?>
-              &nbsp;&nbsp;&nbsp;&nbsp;<?=$value['MAY'][$i]?><br>
-<?php		  }
-			}
-
-			if($_SESSION["opera"]) {
-?>
-            </span>
-<?php		} else { ?>
-            </div>
-<?php		} ?>
-          </td>
-
-<?php $j++; ?>
-          <!-- ATTRIBUTE OIDs -->
-          <td>
-<?php		if($_SESSION["opera"]) { ?>
-            <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>aSpn, el<?=$j?>aImg); showhide(el<?=$j?>bSpn, el<?=$j?>bImg);">
-              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>bImg">
-              <a class="item"><font color="black" class="heada"><?=$value['OID']?></font></a>
-            </div>
-
-            <span id="el<?=$j?>bSpn" style="display:''">
-<?php		} else { ?>
-            <div id="el<?=$j?>Parent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$j-1?>', true); expandBase('el<?=$j?>', true); return false;}">
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
-              </a>
-              <a class="item"><font color="black" class="heada"><?=$value['OID']?></font></a>
-            </div>
-
-            <div id="el<?=$j?>Child" class="child">
-<?php		}
-
-			if(isset($value['MUST'])) {
-			  for($i=0; $i < $value['MUST']['count']; $i++) {
-				// MUST attributes
-?>
-              &nbsp;&nbsp;&nbsp;&nbsp;<b><?php
-			  	if(@$attributetypes[lc($value['MUST'][$i])]['OID']) {
-				  echo $attributetypes[lc($value['MUST'][$i])]['OID'];
-				} else {
-				  // It's an alias
-				  $alias_attribs = split(':', $value['MUST'][$i]);
-
-				  foreach($attributetypes as $attrib) {
-					if(isset($attrib['ALIAS'][0])) {
-					  foreach($alias_attribs as $alias) {
-						if(lc($alias) == lc($attrib['ALIAS'][0])) {
-						  echo $attrib['OID'];
-						}
-					  }
-					}
-				  }
-				}
-			  } ?></b><br>
-<?php       }
-
-			if(isset($value['MAY'])) {
-			  for($i=0; $i < $value['MAY']['count']; $i++) {
-				// MAY attributes
-?>
-              &nbsp;&nbsp;&nbsp;&nbsp;<?php
-				if(@$attributetypes[lc($value['MAY'][$i])]['OID']) {
-				  echo $attributetypes[lc($value['MAY'][$i])]['OID'];
-				} else {
-				  // It's an alias
-				  $alias_attribs = split(':', $value['MAY'][$i]);
-
-				  foreach($attributetypes as $attrib) {
-					if(isset($attrib['ALIAS'][0])) {
-					  foreach($alias_attribs as $alias) {
-						if(lc($alias) == lc($attrib['ALIAS'][0])) {
-						  echo $attrib['OID'];
-						}
-					  }
-					}
-				  }
-				} ?><br>
-<?php         }
-			}
-
-			if($_SESSION["opera"]) {
-?>
-            </span>
-<?php		} else { ?>
-            </div>
-<?php		} ?>
-          </td>
-
-          <!-- EMPTY TABLE -->
-          <td></td>
-
-          <!-- OBJECTCLASS DESCRIPTION -->
-          <td><?=@$value['DESC']?></td>
-        </tr>
-
-<?php		$class = pql_format_table(0);
-			$j++; $oc_counter++;
-        }
+if($_REQUEST["type"] == 'config') {
+  die("Sorry, not yet implemented.");
+} elseif($_REQUEST["type"] == 'accesslog') {
+  if($_REQUEST["filter"]) {
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+	  echo "_REQUEST:";
+	  printr($_REQUEST);
 	}
+	$filter = '(&';
+	
+	// Filter on type
+	// NOTE: This is quite ugly, because there's a lot of possibilities with
+	//       four choices!
+
+	if($_REQUEST["filter_type_unbind"] or $_REQUEST["filter_type_search"] or $_REQUEST["filter_type_modify"] or $_REQUEST["filter_type_delete"])
+	  $filter .= '(|';
+
+	// BIND
+	if($_REQUEST["filter_type_bind"])
+	  $filter .= '(reqType=bind)';
+
+	// UNBIND
+	if($_REQUEST["filter_type_unbind"])
+	  $filter .= '(reqType=unbind)';
+
+	// SEARCH
+	if($_REQUEST["filter_type_search"])
+	  $filter .= '(reqType=search)';
+
+	// MODIFY
+	if($_REQUEST["filter_type_modify"])
+	  $filter .= '(reqType=modify)';
+
+	// DELETE
+	if($_REQUEST["filter_type_delete"])
+	  $filter .= '(reqType=delete)';
+
+	if($_REQUEST["filter_type_unbind"] or $_REQUEST["filter_type_search"] or $_REQUEST["filter_type_modify"] or $_REQUEST["filter_type_delete"])
+	  $filter .= ')';
+
+	// Filter on session ID
+	if($_REQUEST["session"])
+	  $filter .= '(reqSession='.$_REQUEST["session"].')';
+
+	// Filter on LDAP result (is or is not)
+	if(ereg('^[0-9]', $_REQUEST["result"])) {
+	  if($_REQUEST["result_type"] == 'is')
+		$filter .= '(reqResult='.$_REQUEST["result"].')';
+	  elseif($_REQUEST["result_type"] == 'not')
+		$filter .= '(!(reqResult='.$_REQUEST["result"].'))';
+	}
+
+	// Filter on start time
+	// NOTE: This can't be done, because they require exact match.
+	//       Instead, filter that out after retreiving all objects.
+
+	$filter .= ')';
+  } else
+	// Do not filter output - retreive EVERYTHING!
+	$filter = 'objectClass=*';
+
+  if($filter == '(&)') {
+	// Faulty filter - nothing to filter on.
+	// Fall back to the 'no filter' filter.
+	$filter = 'objectClass=*';
+  }
+
+  if(pql_get_define("PQL_CONF_DEBUG_ME"))
+	echo "filter: '$filter'<br>";
+
+  foreach($_SESSION["ACCESSLOG_OVERLAY"] as $dn) {
+	$logs = $_pql->search($dn, $filter, 'ONELEVEL');
+	if(is_array($logs) and !$logs[0]) {
+	  // Flat object...
+	  $logs = array($logs);
+	}
+
+	if(is_array($logs)) {
+	  for($i=0; $i < count($logs); $i++)
+		$log[] = $logs[$i];
+	}
+  }
+
+  if($_REQUEST["start"]) {
+	// Filter on reqStart - must do this manually because of
+	// schema limitations...
+	$tmp = array();
+
+	$start_len = strlen($_REQUEST["start"]);
+//	$_REQUEST["start"] = sprintf("%.14d", $_REQUEST["start"]); // Make sure we have the format: YYYYMMDDHHMMSS
+	for($j=$start_len+1; $j <= 14; $j++)
+	  $_REQUEST["start"] .= '0';
+
+	if($_REQUEST["end"]) {
+	  $end_len   = strlen($_REQUEST["end"]);
+
+//	  $_REQUEST["end"] = sprintf("%.14d", $_REQUEST["end"]); // Make sure we have the format: YYYYMMDDHHMMSS
+	  for($j=$start_len+1; $j <= 14; $j++)
+		$_REQUEST["end"] .= '0';
+	}
+
+	// Go through each object, check the 'reqStart' attribute
+	for($i=0; $log[$i]; $i++) {
+	  $start = substr($log[$i]["reqstart"], 0, 14); // Extract: YYYYMMDDHHMMSS
+
+	  if($_REQUEST["end"]) {
+		// We have an end time as well.
+		$end = substr($log[$i]["reqstart"], 0, 14); // Extract: YYYYMMDDHHMMSS
+
+		if(($start >= $_REQUEST["start"]) and ($end <= $_REQUEST["end"]))
+		  // Between start and end time.
+		  $tmp[] = $log[$i];
+	  } else {
+		if($start >= $_REQUEST["start"])
+		  // Later than start time.
+		  $tmp[] = $log[$i];
+	  }
+	}
+
+	// Overwrite the original values with the filtered ones.
+	$log = $tmp;
+  }
+  
+  require($_SESSION["path"]."/tables/config_ldap-accesslog.inc");
+} else {
+  $ldap = pql_get_subschemas();
+  if($_REQUEST["type"]) {
+	$type = $_REQUEST["type"];
+	$tmp = $ldap; unset($ldap);
+	
+	$ldap[$type] = $tmp[$type];
+	$attributetypes = $tmp['attributetypes'];
+  } else {
+	$attributetypes = $ldap['attributetypes'];
+  }
+
+  $j = 1; $oc_counter = 0;
+
+  require($_SESSION["path"]."/tables/config_ldap-monitor.inc");
 }
 ?>
-      </th>
-    </table>
-
-    <!-- Arrange collapsible/expandable db list at startup -->
-    <script type="text/javascript" language="javascript1.2">
-    <!--
-    if (isNS4) {
-      firstEl  = 'el1Parent';
-      firstInd = nsGetIndex(firstEl);
-      nsShowAll();
-      nsArrangeList();
-    }
-    //-->
-    </script>
   </body>
 </html>
 <?php
