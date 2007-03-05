@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.98 2007-02-27 14:07:36 turbo Exp $
+// $Id: pql_config.inc,v 1.99 2007-03-05 10:34:59 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -153,7 +153,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$_SESSION["BASE_DN"][] = $dn;
   
   // 3b. Load configurations from LDAP base DN, override defaults
-  $sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
+  $sr = @ldap_read($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')
 	or pql_format_error(1);
   $info = ldap_get_entries($_pql->ldap_linkid, $sr)
 	or pql_format_error(1);

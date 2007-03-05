@@ -1,4 +1,6 @@
 <?php 
+// Plugin for user templates
+// $Id: config_details-template.inc,v 1.12 2007-03-05 10:36:15 turbo Exp $
 require($_SESSION["path"]."/include/pql_templates.inc");
 $templates = pql_get_templates();
 ?>
@@ -93,7 +95,6 @@ $templates = pql_get_templates();
           <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")?>&view=template&toggle=1"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")?>"></a>
         </td>
       </tr>
-      </tr>
 
       <tr>
         <td class="title"></td>
@@ -149,7 +150,7 @@ $templates = pql_get_templates();
     <th>
       <tr>
         <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-        <td class="<?=$class?>"><?=pql_complete_constant($LANG->_("The old ways for phpQLAdmin to do things with users was to have some information in the root dn (\b%rootdn%\B in your case). But the new way is to keep that information in specific objects below the '\bou=Templates,%rootdn%\B' branch (created if it doesn't exists already).<br>I see that you still have information in your root dn. To make phpQLAdmin work at it's best, please update your database.<br>I can't let you change stuff that's retreived from %rootdn%, so if you'd like to change any of that, please update your database."), array('rootdn' => $_SESSION["BASE_DN"][0]))?></td>
+        <td class="<?=$class?>"><?=pql_complete_constant($LANG->_("The old ways for phpQLAdmin to do things with users was to have some information in the root dn (\b%rootdn%\B in your case). But the new way is to keep that information in specific objects below the '\b%templates%,%rootdn%\B' branch (created if it doesn't exists already).<br>I see that you still have information in your root dn. To make phpQLAdmin work at it's best, please update your database.<br>I can't let you change stuff that's retreived from %rootdn%, so if you'd like to change any of that, please update your database."), array('templates' => pql_get_define("PQL_CONF_SUBTREE_TEMPLATES"), 'rootdn' => $_SESSION["BASE_DN"][0]))?></td>
       </tr>
     </th>
   </table>
