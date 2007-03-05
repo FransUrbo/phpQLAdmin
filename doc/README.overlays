@@ -1,0 +1,29 @@
+As of version 2.3.6 (CVS) (commit March 5, 2007), phpQLAdmin
+will support two slapd overlays, namely 'accesslog' and 'ppolicy'.
+
+The 'accesslog' overlay (if/when) enabled, can be reach through
+the 'HOME->LDAP Server Configuration->LDAP Access logs' link
+in the left base frame. It supports retreiving all or a subset
+of log records. You will need some extra ACL's to be able to
+fully support this:
+
+	access to dn.base="cn=LOG1"
+		attrs=structuralobjectclass,objectClass,entry
+		by peername.ip="127\.0\.0\.1" read
+		by peername.path="/var/run/slapd/ldapi" read
+		by * none
+	
+The 'cn=LOG1' here naturally depends on which suffix you configured
+for the accesslog database (see slapo-accesslog(5) for more information
+about this overlay). Also, the 'peername.ip' and 'peername.path'
+depends on how you connect to the database - using 'localhost'
+or a LDAPI URI. I use both, hence both is used in the ACL...
+
+
+The 'ppolicy' overlay can be reached from the 'HOME->phpQLAdmin
+Configuration->phpQLAdmin Configuration->Password Policies'
+view. You can specify any number of password policies there,
+much like you do with/in the 'User Templates' view.
+
+TODO
+

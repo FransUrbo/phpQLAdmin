@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.60 2007-03-02 15:49:43 turbo Exp $
+// $Id: config_attributes.inc,v 2.61 2007-03-05 10:12:25 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -286,6 +286,30 @@ pql_set_define("PQL_ATTR_AUTOMOUNT_INFO",					strtolower('autoMountInformation')
 // {{{ Attributes used by the RADIUS config
 pql_set_define("PQL_ATTR_RADIUS_USE",						strtolower('useRadius'),					false);
 pql_set_define("PQL_ATTR_RADIUS_FILTERID",					strtolower('radiusFilterId'),				false);
+// }}}
+
+// {{{ Attributes used by the Password Policy config
+// Global password policy attributes
+pql_set_define("PQL_ATTR_PPOLICY_NAME",						strtolower('passwordPolicyName'),			false);
+pql_set_define("PQL_ATTR_PPOLICY_DESC",						strtolower('passwordPolicyDesc'),			false);
+pql_set_define("PQL_ATTR_PPOLICY_ATTR",						strtolower('pwdAttribute'),					false);
+pql_set_define("PQL_ATTR_PPOLICY_MINAGE",					strtolower('pwdMinAge'),					false);
+pql_set_define("PQL_ATTR_PPOLICY_MAXAGE",					strtolower('pwdMaxAge'),					false);
+pql_set_define("PQL_ATTR_PPOLICY_INHIST",					strtolower('pwdInHistory'),					false);
+pql_set_define("PQL_ATTR_PPOLICY_CHKQUAL",					strtolower('pwdCheckQuality'),				false);
+pql_set_define("PQL_ATTR_PPOLICY_MINLEN",					strtolower('pwdMinLength'),					false);
+pql_set_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING",			strtolower('pwdExpireWarning'),				false);
+pql_set_define("PQL_ATTR_PPOLICY_GRACEAUTHLIMIT",			strtolower('pwdGraceAuthnLimit'),			false);
+pql_set_define("PQL_ATTR_PPOLICY_LOCKOUT",					strtolower('pwdLockout'),					false);
+pql_set_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION",			strtolower('pwdLockoutDuration'),			false);
+pql_set_define("PQL_ATTR_PPOLICY_MAXFAILURE",				strtolower('pwdMaxFailure'),				false);
+pql_set_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL",	strtolower('pwdFailureCountInterval'),		false);
+pql_set_define("PQL_ATTR_PPOLICY_MUST_CHANGE",				strtolower('pwdMustChange'),				false);
+pql_set_define("PQL_ATTR_PPOLICY_ALLOW_USER_CHANGE",		strtolower('pwdAllowUserChange'),			false);
+pql_set_define("PQL_ATTR_PPOLICY_SAFE_MODIFY",				strtolower('pwdSafeModify'),				false);
+pql_set_define("PQL_ATTR_PPOLICY_CHECK_MODULE",				strtolower('pwdCheckModule'),				false);
+
+// User password policy attributes
 // }}}
 
 // {{{ Miscellaneous external attributes

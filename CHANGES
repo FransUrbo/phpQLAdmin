@@ -200,6 +200,9 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Instead of showing the uid value of a user allowed access to a physical host in
 	    'Domain details->Host Control->Host Control Access', "translate" to a 'human readable'
 	    value using pql_left_htmlify_userlist()
+	  - Add support for the Password Policy overlay in OpenLDAP >2.3. Not complete, but the core
+	    is there with new objectclass phpQLAdminPasswordPolicy which should be used in combination
+	    with pwdPolicy.
 
 	API changes
 	  - Rewrite (simplify) the API. Move the following function into include/pql.inc as methods
