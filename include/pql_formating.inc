@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.70 2007-03-02 15:48:45 turbo Exp $
+// $Id: pql_formating.inc,v 2.71 2007-03-05 10:38:13 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline, show_debug)
 // Create a LDIF object to print in case of error
@@ -930,8 +930,8 @@ function pql_separate_host_domain($fqdn) {
 // {{{ pql_uniq(array)
 function pql_uniq($array) {
   if(is_array($array)) {
-	$array = array_values(array_unique($array));
 	asort($array);
+	$array = array_values(array_unique($array));
   }
   
   return($array);
