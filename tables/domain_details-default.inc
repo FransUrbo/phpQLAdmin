@@ -111,7 +111,7 @@
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Default account type')?></td>
+        <td class="title"><?=$LANG->_('Default account template')?></td>
         <td><?php if($defaultaccounttype) {
 		  // Retreive the short name of the account type (template name)
 		  require($_SESSION["path"]."/include/pql_templates.inc");
