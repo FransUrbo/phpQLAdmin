@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.78 2007-02-15 12:08:11 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.79 2007-03-05 10:41:09 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -55,6 +55,9 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // or in a subtree like
 //	uid=username,ou=People,PQL_CONF_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 // -> If the former (no subtree), leave this empty!
+//
+// NOTE: The DN of the branch/domain will be appended to the
+//       end of this DN when used.
 //pql_set_define("PQL_CONF_SUBTREE_USERS", "ou=People");
 
 // ----------------------------
@@ -63,7 +66,59 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // etc, you'd need a group for the user as well. Under
 // what subtree is the groups located?
 // -> Do not add a comma after this, not needed.
+//
+// NOTE: The DN of the branch/domain will be appended to the
+//       end of this DN when used.
 //pql_set_define("PQL_CONF_SUBTREE_GROUPS", "ou=Groups");
+
+// ----------------------------
+// PQL_CONF_SUBTREE_SUDOERS
+// Below what sub-DN is all your sudoers information
+// stored?
+//
+// NOTE: The DN of the branch/domain will be appended to the
+//       end of this DN when used.
+//pql_set_define("PQL_CONF_SUBTREE_SUDOERS", "ou=Sudoers");
+
+// ----------------------------
+// PQL_CONF_SUBTREE_BIND9
+// Below what sub-DN is your DNS information stored?
+//
+// NOTE: The DN of the branch/domain will be appended to the
+//       end of this DN when used.
+//pql_set_define("PQL_CONF_SUBTREE_BIND9", "ou=DNS");
+
+// ----------------------------
+// PQL_CONF_SUBTREE_COMPUTERS
+// Below what sub-DN is all your physical hosts, mail
+// servers (QLC objects) and webservers located?
+// Affects the following plugins:
+//	Mailserver configuration
+//	Webserver configuration
+//	Host ACL configuration
+//	Sudo configuration
+//	Automount configuration
+//	RADIUS configuration
+//
+// NOTE: The DN of the root suffix will be appended to the
+//       end of this DN when used.
+//pql_set_define("PQL_CONF_SUBTREE_COMPUTERS", "ou=Computers");
+
+// ----------------------------
+// PQL_CONF_SUBTREE_PPOLICY
+// Below what sub-DN is all of your password policies located?
+//
+// NOTE: The DN of the root suffix will be appended to the
+//       end of this DN when used.
+//pql_set_define("PQL_CONF_SUBTREE_PPOLICY", "ou=PPolicies");
+
+// ----------------------------
+// PQL_CONF_SUBTREE_TEMPLATES
+// Below what sub-DN is all of your user templates located?
+//
+// NOTE: The DN of the root suffix will be appended to the
+//       end of this DN when used.
+//pql_set_define("PQL_CONF_SUBTREE_TEMPLATES", "ou=Templates");
 
 // ----------------------------
 // => Please see doc/README.samba <=
@@ -77,11 +132,6 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //
 // Full path to the mkntpw binary
 //pql_set_define("PQL_CONF_MKNTPW_PATH", '/usr/local/sbin/mkntpwd');
-
-// ----------------------------
-// PQL_CONF_SUBTREE_BIND9
-// Below what sub-DN is your DNS information stored?
-//pql_set_define("PQL_CONF_SUBTREE_BIND9", "ou=DNS");
 
 // ----------------------------
 // mail(message)store generation
