@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// config_detail.php,v 2.51 2004/03/11 18:13:32 turbo Exp
+// $Id: config_detail.php,v 2.66 2007-03-05 10:14:16 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -69,7 +69,8 @@ foreach($_SESSION["BASE_DN"] as $dn) {
 // {{{ Create the button array with domain buttons
 $buttons    = array('default'  => 'Global configuration');
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-  $button   = array('template' => 'User templates');
+  $button   = array('template' => 'User templates',
+					'ppolicy'  => 'Password Policies');
   $buttons += $button;
 }
 foreach($_SESSION["BASE_DN"] as $dn) {
@@ -107,6 +108,8 @@ if($_REQUEST["view"] == 'default') {
     include("./tables/config_details-global.inc");
 } elseif($_REQUEST["view"] == 'template') {
     include("./tables/config_details-template.inc");
+} elseif($_REQUEST["view"] == 'ppolicy') {
+    include("./tables/config_details-ppolicy.inc");
 } elseif($_SESSION["lynx"] and ($_REQUEST["view"] == 'index2')) {
     $link = "index2.php";
     if(isset($_SESSION["ADVANCED_MODE"]))
