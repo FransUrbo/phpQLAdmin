@@ -5,7 +5,7 @@ phpqladmin (2.3.6-1) unstable; urgency=low
   * Adding German po-debconf template translation. Thanx to Matthias Julius.
     Closes: #404902, #410566
 
- --
+ -- Turbo Fredriksson <turbo@debian.org>  Mon,  5 Mar 2007 18:01:23 +0100
 
 phpqladmin (2.3.5-1) unstable; urgency=low
 
