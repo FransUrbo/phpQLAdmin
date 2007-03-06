@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin/User Templates
-// $Id: attrib.config.template.inc,v 1.1 2007-03-05 10:21:08 turbo Exp $
+// $Id: attrib.config.template.inc,v 1.2 2007-03-06 10:20:32 turbo Exp $
 
 // {{{ attribute_check_templates(void)
 function attribute_check_templates() {
@@ -85,7 +85,7 @@ function attribute_print_form_templates($error_text) {
 
 // {{{ attribute_save_templates(void)
 function attribute_save_templates() {
-  global $_pql;
+  global $_pql, $LANG;
 
   $templates = $_pql->get_dn(pql_get_define("PQL_CONF_SUBTREE_TEMPLATES").','.$_SESSION["BASE_DN"][0],
 							 '(&(objectClass=organizationalUnit)(ou=*))', 'BASE');
