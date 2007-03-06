@@ -36,10 +36,11 @@ and 'apache.ldif') which will setup one physical server with two virtual
 machines. One listening on FQDN:PORT of 'websrv1.domain.tld:80', the
 other listens on the same FQDN, but on port 443 (SSL).
 
-As of phpQLAdmin CVS branch BRANCH_HOST_MERGE, all the host/computer
-handling have been rewritten. All mail and web servers are now located
-beneith a physical machine in what previosly was called the QmailLDAP/Controls
-(QLC) frame. The web information is further devided below the listening
+As of phpQLAdmin CVS branch BRANCH_HOST_MERGE (and official release of
+version 2.3.6), all the host/computer handling have been
+rewritten. All mail and web servers are now located beneith a physical
+machine in what previosly was called the QmailLDAP/Controls (QLC)
+frame. The web information is further devided below the listening
 address/port and then below that are the virtual hosts located.
 
 This required a rewrite/move of where all QLC and webservers are located.
@@ -168,7 +169,9 @@ can give a user:
    add/remove virtual hosts. Can NOT add physical servers
    or web containers.
 3. Domain web admin => Access to all virtual hosts containing
-   the domain/branch DNS domain(s).
+   the domain/branch DNS domain(s) but can not add or remove
+   a virtual host nor a physical server (i.e. only _modify_
+   existing virtual hosts and location objects).
 
 This is all set in the [user]->User access view...
 

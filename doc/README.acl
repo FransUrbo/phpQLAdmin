@@ -1,6 +1,5 @@
 Access control
 ==============
-
 phpQLAdmin does not allow or disallow anything. All access control is
 up to the 'backbone'. That is, the LDAP server, Kerberos KDC and AFS
 protection database (pts) etc. If the user have write access to do
@@ -170,19 +169,23 @@ LDAP server.
 Anonymous read to attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Another issue with LDAP ACL's is that you _absolutly_ need anonymous
-read to the 'namingContexts', 'subschemaSubentry' attribute(s) in the
-'' (base) DN. You will need to grant access to the value that the
-'subschemaSubentry' points to (usually 'cn=Subschema').
+read to the 'namingContexts', 'subschemaSubentry', 'monitorContext'
+and 'configContext' (if you're using the new config backend that came
+with OpenLDAP 2.3) attribute(s) in the '' (base) DN. You will need to
+grant access to the value that the 'subschemaSubentry', 'configContext'
+and 'monitorContext' points to (usually 'cn=Subschema', 'cn=config'
+and 'cn=Monitor' respectivly).
 
 One way to find out if you have this, is to execute the following command:
 
 	ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* \
-		namingContexts subschemaSubentry
+		namingContexts subschemaSubentry monitorContext configContext
 
 If this only returns one line, such as:
 
 ----- s n i p -----
-[tuzjfi.tty2]$ ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts subschemaSubentry
+[tuzjfi.tty2]$ ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* \
+namingContexts subschemaSubentry monitorContext configContext
 dn:
 
 [tuzjfi.tty2]$
@@ -194,6 +197,9 @@ look something like:
 ----- s n i p -----
 [tuzjfi.tty2]$ ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts subschemaSubentry
 dn:
+configContext: cn=config
+monitorContext: cn=Monitor
+namingContexts: cn=LOG1
 namingContexts: c=SE
 namingContexts: dc=com
 subschemaSubentry: cn=Subschema
@@ -202,39 +208,64 @@ subschemaSubentry: cn=Subschema
 ----- s n i p -----
 
 This shows that I have two databases. One with base 'c=SE' and
-one with base 'dc=com'.
+one with base 'dc=com'. The first naming context here is actually
+used for the 'accesslog' overlay that came with OpenLDAP v2.3
+and basically lets you log all operations of choosen database
+backend to another database backend (in this case located in the
+'cn=LOG1' suffix). Please read doc/README.overlays for more about
+this.
 
 To allow anonymous read access to the namingContexts in a OpenLDAP
 2.1 server, I use the following ACL (at the very top):
 
 ----- s n i p -----
 # We need to allow anonymous read access to the namingContexts attribute
-access to dn.base="" attrs=namingContexts,subschemaSubentry,objectClass,entry
+access to dn.base="" attrs=namingContexts,subschemaSubentry,objectClass,monitorContext,configContext,entry
 	by peername="IP=127\.0\.0\.1:.*" read
 
 # We need to allow anonymous to read the schema definitions the LDAP
 # server knows about. But only from localhost!
 access to dn.subtree="cn=Subschema"
         by peername="IP=127\.0\.0\.1:.*" read
+
+# By default, allow read access to the structuralobjectclass in the cn=LOG1
+# object
+access to dn.base="cn=LOG1"
+        attrs=structuralobjectclass,objectClass,entry
+        by peername.ip="127\.0\.0\.1" read
+
+# * Make sure the 'admin' have full read access to ALL attributes
+#   in the monitor backend no matter where he/she comes from.
+# * Anonymous read from local host.
+access to dn.subtree="cn=Monitor"
+       by dn.exact="uid=turbo,ou=People,o=Fredriksson,c=SE" read
+       by peername.ip="127\.0\.0\.1" read
+
+# Allow anonymous to read the configuration branch from local host.
+#       by * read
+access to dn.subtree="cn=config"
+        by dn.exact="uid=turbo,ou=People,o=Fredriksson,c=SE" write
+        by peername.ip="127\.0\.0\.1" read
 ----- s n i p -----
 
-The reason why we (phpQLAdmin) needs anonymous read access to namingContexts
-and subschemaSubentry is because phpQLAdmin does a lot of 'automatic discovering'
-of what the database look like etc.
+The reason why we (phpQLAdmin) needs anonymous read access to
+namingContexts, subschemaSubentry etc is because phpQLAdmin does a lot
+of 'automatic discovering' of what the database look like etc.
 
-NOTE: If phpQLAdmin isn't running on the same host as the LDAP server, they
-      change the localhost IP to the real IP in the 'by peername' above.
+NOTE: If phpQLAdmin isn't running on the same host as the LDAP server,
+      then just change the localhost IP to the real IP in the 'by peername'
+      above.
 
 
 Access to the root dn and it's attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-For a branch administrator to get all the needed buttons in the domain details
-pages, all authenticated users need access to the attributes defined in the
-'phpQLAdminGlobal' object class. Either that, or you specify all branch administrators
-manually...
+For a branch administrator to get all the needed buttons in the domain
+details pages, all authenticated users need access to the attributes
+defined in the 'phpQLAdminGlobal' object class. Either that, or you
+specify all branch administrators manually...
 
-An ACL for this would look like this (allowing authenticated access to my
-c=SE branch):
+An ACL for this would look like this (allowing authenticated access to
+my c=SE branch):
 
 ----- s n i p -----
 access to dn="c=SE"

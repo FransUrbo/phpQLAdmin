@@ -489,19 +489,6 @@ http://php-idn.bayour.com/. I do know that there are at least one more
 PHP IDN module out there, but that have not been verified to work.
 
 
-LDAP Server monitoring and status retreival
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-As of 2.0.19, phpQLAdmin can retreive more information about the LDAP server.
-Those values are stored below 'cn=Monitor', and are only availible in
-OpenLDAP 2.1 and newer. As of 2.1.22, there's not that much information about
-the databases (suffixes), but hopfully that have improved in 2.2.
-This information will only be availible if: a) you're running in Advanced
-mode, b) you're a site administrator (you're listed in the base dn's) and
-c) the monitor backend is enabled and readable by the user logging in.
-If all three cases are true, then there will be three extra links below
-the Home->LDAP Server Configuration tree.
-
-
 For more information on installations, please view doc/index.php through
 your web browser. Note though that documentation is not my stronges side
 while coding, so it is much out of date. I will evenually get to it,

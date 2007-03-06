@@ -5,14 +5,15 @@ having RADIUS information in the LDAP server.
 
 I have yet to test this (I'm still rumbling through my 'vintage pile
 of junk' to see if I have a device that can do/require RADIUS. But
-I've been reading the HOWTO at http://vuksan.com/linux/dot1x/802-1x-LDAP.html,
-and think I (phpQLAdmin) have what it needs to setup RADIUS on the
-LDAP side.
+I've been reading the HOWTO at
+http://vuksan.com/linux/dot1x/802-1x-LDAP.html, and think I
+(phpQLAdmin) have what it needs to setup RADIUS on the LDAP side.
 
-To enable RADIUS configuration, go to 'HOME->phpQLAdmin Configuration->Global configuration'
-and enable 'RADIUS configuration'. Also, make sure to select (or create)
-the DN that your RADIUS server will use to do LDAP lookups. You do this
-at the 'HOME->phpQLAdmin Configuration->[rootdn]' table.
+To enable RADIUS configuration, go to 'HOME->phpQLAdmin
+Configuration->Global configuration' and enable 'RADIUS
+configuration'. Also, make sure to select (or create) the DN that your
+RADIUS server will use to do LDAP lookups. You do this at the
+'HOME->phpQLAdmin Configuration->[rootdn]' table.
 
 Then you will need to setup a physical host. After that, just click on
 the 'RADIUS Administration' button and enter a value for the RADIUS

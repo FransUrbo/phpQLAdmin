@@ -17,9 +17,9 @@ This is the basic idea for the 'Hosts' frame
 Hosts
 Add host
 + host1.domain.tld
-  Add QmailLDAP/Controls object
-  Add Webserver object
-  + QmailLDAP/Controls
+  Add mail server
+  Add web server
+  + Mailserver - host1.domain.tld
     > Accepted domains
     > LDAP Clustering 
     > LDAP Core 
@@ -35,13 +35,9 @@ Add host
     > qmail-remote 
     > qmail-send 
     > qmail-smtpd
-  + Webservers
+  + Webserver - Port <port>
     > Virtualhost1
     > Virtualhost2
-      ....
-  + Access Control
-    > user1
-    > user2
       ....
 ----- s n i p -----
 
@@ -77,24 +73,24 @@ From this:
 To something like this:
 ----- s n i p -----
 + dc=tld
-  + dc=domain
-    + ou=Computers
-      + cn=host1.domain.tld	 [*1]
-        > user1			 [*2]
-	> user2
-	  ....
-        + cn=host1.domain.tld	 [*3]
-        + cn=host1.domain.tld:80 [*4]
-          + <Virtualhost1>	 [*5]
-	    > ApacheSectionArg
-	  + <Virtualhost2>
-	    ....
+  + ou=Computers
+    + cn=host1.domain.tld	 [*1]
+      > user1			 [*2]
+      > user2
+        ....
+    + cn=host1.domain.tld	 [*3]
+      > [qlc data]
+    + cn=host1.domain.tld:80     [*4]
+      + <Virtualhost1>           [*5]
+        > ApacheSectionArg
+      + <Virtualhost2>
+        ....
 ----- s n i p -----
 
 *1: Simple 'device' container:
 
     ----- s n i p -----
-    dn: cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
+    dn: cn=host1.domain.tld,ou=Computers,dc=tld
     objectClass: device
     cn: host1.domain.tld
     ----- s n i p -----
@@ -102,7 +98,7 @@ To something like this:
 *2: If user is added to host, the *1 is changed into this:
 
     ----- s n i p -----
-    dn: cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
+    dn: cn=host1.domain.tld,ou=Computers,dc=tld
     cn: host1.domain.tld
     objectClass: ipHost
     objectClass: groupOfUniqueNames
@@ -122,7 +118,7 @@ To something like this:
     'device' object:
 
     ----- s n i p -----
-    dn: cn=host1.domain.tld:80,cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
+    dn: cn=host1.domain.tld:80,cn=host1.domain.tld,ou=Computers,dc=tld
     objectClass: device
     cn: host1.domain.tld:80
     ----- s n i p -----
@@ -135,7 +131,7 @@ To something like this:
     container object. Example:
 
     ----- s n i p -----
-    dn: ApacheServerName=virthost1.domain.tld,cn=host1.domain.tld:80,cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
+    dn: ApacheServerName=virthost1.domain.tld,cn=host1.domain.tld:80,cn=host1.domain.tld,ou=Computers,dc=tld
     objectClass: device
     objectClass: ApacheSectionObj
     objectClass: ApacheVirtualHostObj
@@ -153,8 +149,7 @@ To something like this:
     This would result in the following LDAP tree:
 
     + dc=tld
-      + dc=domain
-        + ou=Computers
-          + cn=host1.domain.tld
-            + cn=host1.domain.tld:80
-              + ApacheServerName=virthost1.domain.tld
+      + ou=Computers
+        + cn=host1.domain.tld
+          + cn=host1.domain.tld:80
+            + ApacheServerName=virthost1.domain.tld

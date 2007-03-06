@@ -1,30 +1,26 @@
-As of 2.1.4 (roughly Jan 30, 2005) phpQLAdmin have
-a new way of creating users. It is done with 'templates'
-(see page 'Home->phpQLAdmin Configuration->User templates'
-in the GUI).
+As of 2.1.4 (roughly Jan 30, 2005) phpQLAdmin have a new way of
+creating users. It is done with 'templates' (see page
+'Home->phpQLAdmin Configuration->User templates' in the GUI).
 
-It have not been throughly tested yet, but with my own
-object class 'schemas/turbo.schema:mailRecipient' and
-the 'person' object class I can successfully CREATE
-(mail) users...
+It have not been throughly tested yet, but with my own object class
+'schemas/turbo.schema:mailRecipient' and the 'person' object class I
+can successfully CREATE (mail) users...
 
-However, as said, I have not done extensive testing in
-CHANGING a user (such as adding/changing 'Personal
-details' etc)... This require other object classes, and
-I'm not sure how good the templates system work in those
-circumstances.
+However, as said, I have not done extensive testing in CHANGING a user
+(such as adding/changing 'Personal details' etc)... This require other
+object classes, and I'm not sure how good the templates system work in
+those circumstances.
 
 
-To create a template, go to the 'url' above and create
-a new template. You must specify a name a short and a
-long description.
-When that's done, you will see information about this
-template. The allowed user objectclasses etc will be
-empty, so choose to add object class. Here you will
-have to specify which object classes you must have
-when creating a specific type of user (i.e. when
-creating a user with this specific template). When
-you've added object class(es), you'll see what attributes
-are required and optional. That can not be changed. It
-is an LDAP schema restriction and not for phpQLAdmin
-to override...
+To create a template, go to the 'url' above and create a new
+template. You must specify a name, a short and a long description.
+
+When that's done, you will see information about this template. The
+allowed user objectclasses etc will be empty, so choose to add object
+class. Here you will have to specify which object classes you must
+have when creating a specific type of user (i.e. when creating a user
+with this specific template). When you've added object class(es),
+you'll see what attributes are required and optional. That can not be
+changed, it is derived from the LDAP servers knowledge of the object
+class(es) - it is an LDAP schema restriction and not for phpQLAdmin to
+override...
