@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.66 2007-03-05 10:34:58 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.67 2007-03-06 10:19:54 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -564,12 +564,14 @@ function attribute_save($type) {
 				pql_add2array($branches, $tmp);
 			}
 
-			// A branch admin must have read access to all the templates!
-			$filter = '(&(objectClass=phpQLAdminUserTemplate)('.pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME").'=*))';
-			for($i=0; $_SESSION["BASE_DN"][$i]; $i++) {
-			  $tmp = $_pql->get_dn(pql_get_define("PQL_CONF_SUBTREE_TEMPLATES").','.$_SESSION["BASE_DN"][$i], $filter, 'ONELEVEL');
-			  if($tmp)
-				pql_add2array($branches, $tmp);
+			if(pql_get_define("PQL_CONF_SUBTREE_TEMPLATES")) {
+			  // A branch admin must have read access to all the templates!
+			  $filter = '(&(objectClass=phpQLAdminUserTemplate)('.pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME").'=*))';
+			  for($i=0; $_SESSION["BASE_DN"][$i]; $i++) {
+				$tmp = $_pql->get_dn(pql_get_define("PQL_CONF_SUBTREE_TEMPLATES").','.$_SESSION["BASE_DN"][$i], $filter, 'ONELEVEL');
+				if($tmp)
+				  pql_add2array($branches, $tmp);
+			  }
 			}
 
 			for($i=0; $i < count($branches); $i++) {
