@@ -1,5 +1,11 @@
 phpQLAdmin 2.3 Change Log
 
+phpQLAdmin 2.3.7 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout changes
+	API changes
+	Misc changes
+
 phpQLAdmin 2.3.6 Release (Mar  5 2007)
 	Bug fixes
 	  - Also removed lan password auth from samba, almost all windows users using at least win2k by this point and the lan man protocol
