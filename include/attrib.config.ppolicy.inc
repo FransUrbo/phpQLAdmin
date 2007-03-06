@@ -1,6 +1,6 @@
 <?php
-// attribute plugin for phpQLAdmin/Password Policies
-// $Id: attrib.config.ppolicy.inc,v 2.1 2007-03-05 10:12:25 turbo Exp $
+// attribute plugin for phpQLAdmin/Password Policies - global entries
+// $Id: attrib.config.ppolicy.inc,v 2.2 2007-03-06 10:22:06 turbo Exp $
 
 // {{{ attribute_check_ppolicy(void)
 function attribute_check_ppolicy() {
