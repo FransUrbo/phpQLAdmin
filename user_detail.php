@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.103 2007-02-26 10:49:22 turbo Exp $
+// $Id: user_detail.php,v 2.104 2007-03-06 10:24:15 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -97,6 +97,7 @@ if($username and is_array($username)) {
   <br><br>
 <?php
 // }}}
+
 if(empty($_GET["view"]) or empty($_REQUEST["view"])) {
   $_GET["view"] = 'basic';
   $_REQUEST["view"] = 'basic'; // Just so that initial marking of active button works
@@ -137,7 +138,13 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "sambadomainname"		=> pql_get_define("PQL_ATTR_SAMBADOMAINNAME"),
 				 "sambalogonscript"		=> pql_get_define("PQL_ATTR_SAMBALOGONSCRIPT"),
 				 "sambauserworkstations"=> pql_get_define("PQL_ATTR_SAMBAUSERWORKSTATIONS"),
-				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"));
+				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"),
+				 "ppolicy_entry"		=> pql_get_define("PQL_ATTR_PPOLICY_ENTRY"),
+				 "ppolicy_changed"		=> pql_get_define("PQL_ATTR_PPOLICY_CHANGED"),
+				 "ppolicy_locked"		=> pql_get_define("PQL_ATTR_PPOLICY_LOCKED"),
+				 "ppolicy_failure"		=> pql_get_define("PQL_ATTR_PPOLICY_HISTORY"),
+				 "ppolicy_graceuse"		=> pql_get_define("PQL_ATTR_PPOLICY_GRACEUSE"),
+				 "ppolicy_reset"		=> pql_get_define("PQL_ATTR_PPOLICY_RESET"));
 foreach($attribs as $key => $attrib) {
 	if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]))
 	  $got_user_reference_attribute = 1;

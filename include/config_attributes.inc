@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.61 2007-03-05 10:12:25 turbo Exp $
+// $Id: config_attributes.inc,v 2.62 2007-03-06 10:24:16 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -310,6 +310,13 @@ pql_set_define("PQL_ATTR_PPOLICY_SAFE_MODIFY",				strtolower('pwdSafeModify'),		
 pql_set_define("PQL_ATTR_PPOLICY_CHECK_MODULE",				strtolower('pwdCheckModule'),				false);
 
 // User password policy attributes
+pql_set_define("PQL_ATTR_PPOLICY_ENTRY",					strtolower('pwdPolicySubentry'),			false);
+pql_set_define("PQL_ATTR_PPOLICY_CHANGED",					strtolower('pwdChangedTime'),				false);
+pql_set_define("PQL_ATTR_PPOLICY_LOCKED",					strtolower('pwdAccountLockedTime'),			false);
+pql_set_define("PQL_ATTR_PPOLICY_FAILURE",					strtolower('pwdFailureTime'),				false);
+pql_set_define("PQL_ATTR_PPOLICY_HISTORY",					strtolower('pwdHistory'),					false);
+pql_set_define("PQL_ATTR_PPOLICY_GRACEUSE",					strtolower('pwdGraceUseTime'),				false);
+pql_set_define("PQL_ATTR_PPOLICY_RESET",					strtolower('pwdReset'),						false);
 // }}}
 
 // {{{ Miscellaneous external attributes

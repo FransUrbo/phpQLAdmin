@@ -54,6 +54,16 @@
 
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Password policy')?></td>
+        <td><?php if($ppolicy_entry){echo $ppolicy_entry;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
+<?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
+        <td><?=$ppolicy_entry_link?></td>
+<?php } else { ?>
+        <td></td>
+<?php } ?>
+      </tr>
+  
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Firstname')?></td>
         <td><?php if(!empty($givenname)) { echo $givenname; }?></td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=givenname&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$givenname?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change First name')?>" border="0"></a></td>
