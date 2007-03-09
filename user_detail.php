@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.104 2007-03-06 10:24:15 turbo Exp $
+// $Id: user_detail.php,v 2.105 2007-03-09 17:22:52 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -81,7 +81,7 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 }
 // }}}
 
-// {{{ Retreive and show username etc
+// {{{ Retreive and show user details
 $username = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_CN"));
 if(!$username) {
     // No common name, use uid field
@@ -139,12 +139,7 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "sambalogonscript"		=> pql_get_define("PQL_ATTR_SAMBALOGONSCRIPT"),
 				 "sambauserworkstations"=> pql_get_define("PQL_ATTR_SAMBAUSERWORKSTATIONS"),
 				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"),
-				 "ppolicy_entry"		=> pql_get_define("PQL_ATTR_PPOLICY_ENTRY"),
-				 "ppolicy_changed"		=> pql_get_define("PQL_ATTR_PPOLICY_CHANGED"),
-				 "ppolicy_locked"		=> pql_get_define("PQL_ATTR_PPOLICY_LOCKED"),
-				 "ppolicy_failure"		=> pql_get_define("PQL_ATTR_PPOLICY_HISTORY"),
-				 "ppolicy_graceuse"		=> pql_get_define("PQL_ATTR_PPOLICY_GRACEUSE"),
-				 "ppolicy_reset"		=> pql_get_define("PQL_ATTR_PPOLICY_RESET"));
+				 "ppolicy_entry"		=> pql_get_define("PQL_ATTR_PPOLICY_ENTRY"),);
 foreach($attribs as $key => $attrib) {
 	if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]))
 	  $got_user_reference_attribute = 1;
@@ -270,9 +265,17 @@ foreach($objectclasses as $oc) {
 
 // {{{ Setup the buttons
 $buttons = array('basic'			=> 'User data');
-if(empty($USER_IS_GROUP)) {
-	$new = array('personal'			=> 'Personal details',
-				 'status'			=> 'Account status',
+if(@empty($USER_IS_GROUP)) {
+	$new = array('personal'			=> 'Personal details');
+	$buttons = $buttons + $new;
+
+	if(!@empty($_SESSION["ADVANCED_MODE"]) and @empty($_SESSION["SINGLE_USER"]) and $$ppolicy_entry) {
+	  // Domain admins should be able to see this...
+	  $new = array('ppolicy'		=> 'Password Policy');
+	  $buttons = $buttons + $new;
+	}
+
+	$new = array('status'			=> 'Account status',
 				 'delivery'			=> 'Delivery mode');
 	$buttons = $buttons + $new;
 } else {
@@ -308,7 +311,7 @@ if(!@empty($_SESSION["ADVANCED_MODE"]) and empty($USER_IS_GROUP)) {
 	}
 }
 
-if(!$_SESSION["SINGLE_USER"]) {
+if(@empty($_SESSION["SINGLE_USER"])) {
 	$new = array('actions'			=> 'Actions');
 	$buttons = $buttons + $new;
 }
@@ -319,6 +322,9 @@ pql_generate_button($buttons, "user=".$url["user"]); echo "  <br>\n";
 // {{{ Load the correct view page
 if($_GET["view"] == 'basic')					include("./tables/user_details-basic.inc");
 if($_GET["view"] == 'personal')					include("./tables/user_details-personal.inc");
+if($_SESSION["ADVANCED_MODE"]) {
+  if($_GET["view"] == 'ppolicy')				include("./tables/user_details-ppolicy.inc");
+}
 if($_GET["view"] == 'email')					include("./tables/user_details-email.inc");
 if($_GET["view"] == 'status')					include("./tables/user_details-status.inc");
 if($_GET["view"] == 'delivery')					include("./tables/user_details-delivery.inc");
