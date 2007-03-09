@@ -1,6 +1,6 @@
 <?php
 // Edit attribute of a physical host
-// $Id: host_edit_attribute.php,v 2.4 2007-02-26 13:51:57 turbo Exp $
+// $Id: host_edit_attribute.php,v 2.5 2007-03-09 17:19:59 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -57,7 +57,7 @@ include($_SESSION["path"]."/include/$plugin");
 
 // {{{ Select what to do
 $error_text = array();
-if(@$_REQUEST["submit"]) {
+if(@$_REQUEST["submit"] or $_REQUEST["dosave"]) {
   if(attribute_check())
 	attribute_save($_REQUEST["action"]);
   else

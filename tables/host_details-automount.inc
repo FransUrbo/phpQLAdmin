@@ -1,6 +1,6 @@
 <?php
 // Automount information etc
-// $Id: host_details-automount.inc,v 1.6 2007-02-26 13:31:56 turbo Exp $
+// $Id: host_details-automount.inc,v 1.7 2007-03-09 17:20:22 turbo Exp $
 
 // {{{ Retreive automounts
 if($_REQUEST["host"] == 'Global') {
@@ -141,7 +141,7 @@ foreach($automounts as $host => $host_data) {
 
 <?php
 // }}}
-    } else {
+    } elseif(is_array($mnt_data)) {
       // {{{ Mountpoint with more than one device
       foreach($mnt_data as $mount => $mount_data) {
 	if($mount_data["automountinformation"]) {

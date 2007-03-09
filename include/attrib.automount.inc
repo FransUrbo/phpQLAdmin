@@ -1,14 +1,35 @@
 <?php
 // attribute plugin for automount maps
-// $Id: attrib.automount.inc,v 2.6 2007-02-15 12:07:17 turbo Exp $
+// $Id: attrib.automount.inc,v 2.7 2007-03-09 17:20:06 turbo Exp $
+
+// {{{ attribute_find_automaster(hostdn)
+function attribute_find_automaster($hostdn) {
+  global $_pql;
+
+  // Find the 'auto.master' object DN
+  $auto_master = $_pql->get_dn($hostdn, 'ou=auto.master');
+  if(!$auto_master[0])
+	// No auto.master!? Let's wing it!!
+	$auto_master[0] = 'ou=auto.master,'.$hostdn;
+
+  return($auto_master[0]);
+}
+// }}}
 
 // {{{ attribute_setup(void)
 function attribute_setup() {
-  $automount = "-fstype=".$_REQUEST["filesystem"];
+  if($_REQUEST["filesystem"])
+	$automount = "-fstype=".$_REQUEST["filesystem"];
+
   if(@$_REQUEST["options"])
 	$automount .= ",".$_REQUEST["options"];
 
-  if($_REQUEST["filesystem"] == 'smbfs') {
+  if($_REQUEST["basemount"] == 'new') {
+	// {{{ New base mount point
+	$automount = $_REQUEST["linktype"]." ".$_REQUEST["ldaphost"].":".$_REQUEST["searchdn"];
+// }}}
+
+  } elseif($_REQUEST["filesystem"] == 'smbfs') {
 	// {{{ FS: SMB
 	if($_REQUEST["smbcredtype"] == 'guest') {
 	  $automount .= ",guest";
@@ -164,7 +185,7 @@ function attribute_init() {
   $physical_host_dn = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 
   // {{{ Get all base mountpoints
-  $dn = "ou=auto.master,".$physical_host_dn[0];
+  $dn = attribute_find_automaster($physical_host_dn[0]);
   $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(objectClass=autoMount))';
   if(!ereg('^/', $dn))
 	$DNs = $_pql->get_dn($dn, $filter, 'ONELEVEL');
@@ -1112,7 +1133,6 @@ function attribute_print_form() {
 	// {{{ Hidden inputs
 ?>
     <input type="hidden" name="dosave"   id="dosave">
-    <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
     <input type="hidden" name="host"     value="<?=$_REQUEST["host"]?>">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
@@ -1140,36 +1160,54 @@ function attribute_save($type) {
 		// {{{ Add a automount
 		// {{{ Setup DN
 		// Find the physical host DN
-		$filter = '(&('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+		$filter  = '(&';
+		$filter .=   '('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')';
+		$filter .=   '(|';
+		$filter .=     '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)';
+		$filter .=     '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)';
+		$filter .=   ')';
+		$filter .= ')';
 		$physical_host_dn = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+		if(!@$physical_host_dn[0]) {
+		  echo "Can't find physical host DN for host FQDN '".$_REQUEST["host"]."'.<br>";
+		  echo "Tried with filter '$filter' below DN '".$_SESSION["USER_SEARCH_DN_CTR"]."'<br>";
+		  echo "and a ONELEVEL search scope.";
+		  die();
+		}
 
-		$dn  = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["basemount"].",ou=auto.master,".$physical_host_dn[0];
-		$info = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
-		if(eregi('ldap ', $info)) {
-		  // info => 'ldap ldapi://%2fvar%2frun%2fslapd%2fldapi.main:ou=auto.mnt,cn=pumba.bayour.com,ou=Computers,c=SE'
-		  // An LDAP link - asume that the DN is in this server
-		  // (simply because I won't be able to connect to another server here)
-		  $dn = split(':', $info); $dn = $dn[2];
-		} elseif(eregi('file ', $info)) {
-		  // A file link - can't follow that!
-?>
-Sorry, this base mount is a <b>file</b> link and I don't know how to follow that...
-<?php
+		if(@$_REQUEST["mountpoint"] and ($_REQUEST["basemount"] == 'new')) {
+		  // Prefix the DN with the name of the mounpoint
+		  $dn = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mountpoint"].",".attribute_find_automaster($physical_host_dn[0]);
 		} else {
-		  // Don't know what to do now... Die!
-		  $object = $_pql->search($dn, 'objectClass=*', BASE);
+		  $dn  = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["basemount"].",".attribute_find_automaster($physical_host_dn[0]);
+		  $info = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
+		  if(eregi('ldap ', $info)) {
+			// info => 'ldap ldapi://%2fvar%2frun%2fslapd%2fldapi.main:ou=auto.mnt,cn=pumba.bayour.com,ou=Computers,c=SE'
+			// An LDAP link - asume that the DN is in this server
+			// (simply because I won't be able to connect to another server here)
+			$dn = split(':', $info); $dn = $dn[2];
+		  } elseif(eregi('file ', $info)) {
+			// A file link - can't follow that!
+?>
+Sorry, this base mount is a <b>file</b> link and I don''t know how to follow that...
+<?php
+		  } else {
+			// Don't know what to do now... Die!
+			$object = $_pql->search($dn, 'objectClass=*', BASE);
 ?>
 Sorry, this base mount is not an LDAP link. Don't know what to do now...<br>
 Please report this to either to the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>
 or to the <a href="mailto:phpqladmin@lists.bayour.com">mailinglist</a><br>
 Make sure you include this object information (I'm mostly interested in the <b><?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?></b> attribute):
 <?php
-		  printr($object);
-		  die();
+			printr($object);
+			die();
+		  }
+
+		  // Prefix the DN with the name of the mounpoint
+		  $dn = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mountpoint"].",$dn";
 		}
 
-		// Prefix the DN with the name of the mounpoint
-		$dn = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mountpoint"].",$dn";
 // }}}
 
 		// {{{ Setup object
@@ -1199,9 +1237,25 @@ Make sure you include this object information (I'm mostly interested in the <b><
 
 		// {{{ Add object to LDAP server
 		// The ':_add' is only so that pql_create_ldif() will not put the 'replace: ...' lines in the LDIF.
-		if($_pql->add($object["dn"], $object, 'automount', 'attrib.automount.inc:attribute_save_add'))
+		if($_pql->add($object["dn"], $object, 'automount', 'attrib.automount.inc:attribute_save_add')) {
+		  if(@$_REQUEST["mountpoint"] and ($_REQUEST["basemount"] == 'new')) {
+			// Also create the $_REQUEST[searchdn] object
+			$dnparts = split(',', $_REQUEST["searchdn"]);
+			$parentdn = '';
+			for($i=1; $dnparts[$i]; $i++) {
+			  $parentdn .= $dnparts[$i];
+			  if($dnparts[$i+1])
+				$parentdn .= ',';
+			}
+
+			if(pql_unit_add($parentdn, $dnparts[0]))
+			  $msg = '<br>'.$LANG->_('Successfully added automountpoint');
+			else
+			  $msg = '<br>'.$LANG->_('Failed to add automountpoint');
+		  }
+
 		  $msg = $LANG->_('Successfully added automount');
-		else
+		} else
 		  $msg = $LANG->_('Failed to add automount').": ".ldap_error($_pql->ldap_linkid);
 // }}}
 
