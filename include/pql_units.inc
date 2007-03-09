@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.22 2007-03-05 10:37:31 turbo Exp $
+// $Id: pql_units.inc,v 1.23 2007-03-09 17:28:01 turbo Exp $
 //
 
 // {{{ pql_unit_get(dn, filter)
@@ -35,7 +35,8 @@ function pql_unit_get($dn, $filter = 1) {
 		 !eregi('templates',	$subd[$i]) and
 		 !(pql_get_define("PQL_CONF_SUBTREE_GROUPS")	and eregi(pql_get_define("PQL_CONF_SUBTREE_GROUPS"),	$subd[$i])) and
 		 !(pql_get_define("PQL_CONF_SUBTREE_BIND9")		and eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9"),		$subd[$i])) and
-		 !(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")	and eregi(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"),	$subd[$i])))
+		 !(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")	and eregi(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"),	$subd[$i])) and
+		 !(pql_get_define("PQL_CONF_SUBTREE_PPOLICY")	and eregi(pql_get_define("PQL_CONF_SUBTREE_PPOLICY"),	$subd[$i])))
 		$branches[] = $subd[$i];
 	} else
 	  $branches[] = $info[$i];
@@ -48,22 +49,22 @@ function pql_unit_get($dn, $filter = 1) {
 }
 // }}}
 
-// {{{ pql_unit_add(domain, unit)
+// {{{ pql_unit_add(parentdn, unit)
 // Returns true if successfully added sub unit, false if not
-function pql_unit_add($domain, $unit) {
+function pql_unit_add($parentdn, $unit) {
   global $_pql;
   
   // What's the Root DN (namingContexts) for this domain
-  $domain = urldecode($domain);
+  $parentdn = urldecode($parentdn);
   $unit   = pql_maybe_encode($unit);
   
   if(ereg('=', $unit)) {
 	$tmp = split('=', $unit);
 	
-	$dn = $tmp[0]."=".$tmp[1].",$domain";
+	$dn = $tmp[0]."=".$tmp[1].",$parentdn";
 	$entry[$tmp[0]] = $tmp[1];
   } else {
-	$dn = "ou=$unit,$domain";
+	$dn = "ou=$unit,$parentdn";
 	$entry["ou"] = $unit;
   }
   
