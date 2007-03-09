@@ -1,6 +1,6 @@
 <?php
 // Add a Password Policy
-// $Id: config_ppolicy_add.php,v 1.1 2007-03-05 10:12:22 turbo Exp $
+// $Id: config_ppolicy_add.php,v 1.2 2007-03-09 17:17:27 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -14,7 +14,7 @@ include($_SESSION["path"]."/header.html");
 
 // {{{ Forward back to configuration detail page
 function attribute_forward($msg) {
-  $url =  "config_detail.php?view=ppolicy";
+  $url =  "config_detail.php?view=ppolicy&msg=".urlencode($msg);
   if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	die("<b>$url</b>");
