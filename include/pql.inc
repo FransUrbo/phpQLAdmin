@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.229 2007-03-05 10:40:23 turbo Exp $
+// $Id: pql.inc,v 2.230 2007-03-09 17:25:56 turbo Exp $
 //
 
 // ----------------------------
@@ -665,7 +665,7 @@ class pql {
 	  }
 	  
 	  // Cache this object
-	  $pql_cache->add($entry["dn"], $entry);
+	  $pql_cache->add($dn, $entry);
 	}
 	
 	pql_flush();
