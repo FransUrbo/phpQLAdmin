@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.112 2007-02-26 10:11:34 turbo Exp $
+// $Id: domain_detail.php,v 2.113 2007-03-12 10:13:24 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -296,13 +296,13 @@ if($_SESSION["ADVANCED_MODE"]) {
 	  $buttons = $buttons + $new;
 	}
         if(pql_get_define("PQL_CONF_SUDO_USE")) {
-          $new = array('sudo'   => 'Sudo');
+          $new = array('sudo'   => 'Sudo Administration');
           $buttons = $buttons + $new;
         }
 }
 
 if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
-  $new = array('simscan' => 'SimScan config');
+  $new = array('simscan' => 'SimScan Administration');
   $buttons = $buttons + $new;
 }
 
