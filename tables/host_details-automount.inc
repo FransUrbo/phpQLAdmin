@@ -1,9 +1,62 @@
 <?php
 // Automount information etc
-// $Id: host_details-automount.inc,v 1.7 2007-03-09 17:20:22 turbo Exp $
+// $Id: host_details-automount.inc,v 1.8 2007-03-12 12:24:42 turbo Exp $
+
+// {{{ table_go_through_details(host, mnt_pnt, mnt_data)
+// This is here so we can have unlimited depth in mountpoints.
+// It will call itself recursivly if it encounters sub-data...
+function table_go_through_details($host, $mnt_pnt, $mnt_data) {
+  global $MOUNT, $LANG;
+
+  if($mnt_data["automountinformation"]) {
+    // {{{ Device mounted on mountpoint
+    $tmp = preg_replace('/-fstype=/', '', $mnt_data["automountinformation"]);
+    
+    $opts = ereg_replace(' :.*', '', $tmp);
+    $opts = split(',', $opts);
+    $fs = $opts[0];
+    
+    $OPTS = '';
+    for($j=1; $opts[$j]; $j++) {
+      $OPTS .= $opts[$j];
+      if($opts[$j+1])
+	$OPTS .= ',';
+    }
+    
+    $MOUNT["Device"]		= ereg_replace('.*:', '', $tmp);
+    $MOUNT["Mountpoint"][]	= $mnt_pnt;
+    $MOUNT["Filesystem"][]	= $fs;
+    $MOUNT["Mount option"][]	= $OPTS;
+    $MOUNT["Description"][]	= $mnt_data["description"];
+?>
+              &nbsp;&nbsp;&nbsp;
+              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&mountpoint=<?=$mnt_pnt?>&action=delete&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mnt_pnt))?>"></a>
+              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&mountpoint=<?=$mnt_pnt?>&action=modify&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mnt_pnt))?>"></a>
+              &nbsp;<?=$MOUNT["Device"]."\n"?>
+
+            <br>
+
+<?php
+    // }}}
+
+  } elseif(is_array($mnt_data)) {
+    // {{{ A submount - call ourself recursivly to get the submounts information
+    foreach($mnt_data as $sub_pnt => $sub_data) {
+      $mount_point = $mnt_pnt;
+      if(!ereg('/$', $mnt_pnt) and !ereg('^/', $sub_pnt))
+	$mount_point .= '/'.$sub_pnt;
+      else
+	$mount_point .= $sub_pnt;
+
+      table_go_through_details($host, $mount_point, $sub_data);
+    }
+    // }}}
+  }
+}
+// }}}
 
 // {{{ Retreive automounts
-if($_REQUEST["host"] == 'Global') {
+if(($_REQUEST["host"] == 'Global') or !@$_REQUEST["host"]) {
   // Retreive ALL automounts for ALL hosts
   foreach($hosts as $host_dn) {
     // Retreive the FQDN for this host
@@ -24,6 +77,19 @@ if($_REQUEST["host"] == 'Global') {
   if(!is_array($automounts[$host]))
     // No autoMount maps for this host, remove the entry from the array
     unset($automounts[$host]);
+  else {
+    // Just because this is an array, doesn't mean that we actually have
+    // mountpoints - we might have just added a basemount for a host
+    // that didn't have any auto mounts...
+    // Go through the array and see if we have any actual mount points...
+    foreach($automounts[$host] as $mnt_pnt => $mnt_data) {
+      if(!@$mnt_data) {
+	// As suspected - just a base mount. Remove the entry from the array
+	unset($automounts[$host]);
+	break;
+      }
+    }
+  }
 }
 
 if(file_exists($_SESSION["path"]."/.DEBUG_AUTOMOUNT")) {
@@ -107,79 +173,14 @@ foreach($automounts as $host => $host_data) {
   }
 // }}}
 
-  // Go through the automount data
+  // {{{ Go through the automount data
+  // - Output the 'Delete' and 'Modify' links and also the device
+  // - Will call table_go_through_details() recursivly until all
+  //   automount data have been retreived and displayed.
   $MOUNT = array();
-  foreach($host_data as $mntpnt => $mnt_data) {
-    if($mnt_data["automountinformation"]) {
-      // {{{ Device mounted on mountpoint
-      $tmp = preg_replace('/-fstype=/', '', $mnt_data["automountinformation"]);
-
-      $opts = ereg_replace(' :.*', '', $tmp);
-      $opts = split(',', $opts);
-      
-      $fs = $opts[0];
-      
-      $OPTS = '';
-      for($j=1; $opts[$j]; $j++) {
-	$OPTS .= $opts[$j];
-	if($opts[$j+1])
-	  $OPTS .= ',';
-      }
-      
-      $MOUNT["Device"]		= ereg_replace('.*:', '', $tmp);
-      $MOUNT["Mountpoint"][]	= $mntpnt;
-      $MOUNT["Filesystem"][]	= $fs;
-      $MOUNT["Mount option"][]	= $OPTS;
-      $MOUNT["Description"][]	= $mnt_data["description"];
-?>
-              &nbsp;&nbsp;&nbsp;
-              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=delete&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt))?>"></a>
-              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=modify&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
-              &nbsp;<?=$MOUNT["Device"]."\n"?>
-
-            <br>
-
-<?php
+  foreach($host_data as $mnt_pnt => $mnt_data)
+    table_go_through_details($host, $mnt_pnt, $mnt_data);
 // }}}
-    } elseif(is_array($mnt_data)) {
-      // {{{ Mountpoint with more than one device
-      foreach($mnt_data as $mount => $mount_data) {
-	if($mount_data["automountinformation"]) {
-	  $tmp = preg_replace('/-fstype=/', '', $mount_data["automountinformation"]);
-
-	  $opts = ereg_replace(' :.*', '', $tmp);
-	  $opts = split(',', $opts);
-
-	  $fs = $opts[0];
-
-	  $OPTS = '';
-	  for($j=1; $opts[$j]; $j++) {
-	    $OPTS .= $opts[$j];
-	    if($opts[$j+1])
-	      $OPTS .= ',';
-	  }
-
-	  $MOUNT["Device"]		= ereg_replace('.*:', '', $tmp);
-	  $MOUNT["Mountpoint"][]	= $mntpnt.'/'.$mount;
-	  $MOUNT["Filesystem"][]	= $fs;
-	  $MOUNT["Mount option"][]	= $OPTS;
-	  $MOUNT["Description"][]	= $mount_data["description"];
-?>
-              &nbsp;&nbsp;&nbsp;
-              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=delete&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt.'/'.$mount))?>"></a>
-              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=modify&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
-              &nbsp;<?=$MOUNT["Device"]."\n"?>
-
-            <br>
-
-<?php 
-      }
-	//} else {
-	// Mountpoint in a mountpoint...
-	}
-// }}}
-    }
-  }
 
   // {{{ End of span and td
 ?>
@@ -240,15 +241,6 @@ foreach($automounts as $host => $host_data) {
 // }}}
 ?>
       </tr>
-
-      <tr class="<?=$row?>">
-        <td colspan="5">
-          <img src="images/navarrow.png" width="9" height="9" border="0">
-          <a href="host_edit_attribute.php?host=<?=urlencode($host)?>&action=add&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>">
-	    &nbsp;<?=$LANG->_("Add new mount point")?>
-          </a>
-        </td>
-      </tr>
 <?php
 
   if($row == 'c1')
@@ -259,8 +251,19 @@ foreach($automounts as $host => $host_data) {
   $host_cnt++;
 }
 
-
+$host = '';
+if($_REQUEST["host"] and ($_REQUEST["host"] != 'Global')) {
+  $host = '&host='.$_REQUEST["host"];
+}
 ?>
+      <tr class="<?=$row?>">
+        <td colspan="5">
+          <img src="images/navarrow.png" width="9" height="9" border="0">
+          <a href="host_edit_attribute.php?action=add<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>">
+	    &nbsp;<?=$LANG->_("Add new mount point")?>
+          </a>
+        </td>
+      </tr>
     </th>
   </table>
 <?php
