@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.71 2007-02-15 12:08:13 turbo Exp $
+// $Id: pql_search.inc,v 2.72 2007-03-12 11:54:44 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -232,15 +232,26 @@ function pql_get_email_domains($host) {
 }
 // }}}
 
-// {{{ pql_get_automount_maps($computerdn)
+// {{{ pql_get_automount_maps(computerdn)
 // Retreive ALL automount maps (recursivly) for a specific host in a specific domain
 function pql_get_automount_maps($computerdn) {
   global $_pql;
 
   // {{{ Retreive the base mount points
   // Find the auto.master object
-  $filter = '(&(objectClass=autoMountMap)(|('.pql_get_define("PQL_ATTR_CN").'=auto.master)('.pql_get_define("PQL_ATTR_OU").'=auto.master)))';
-  $auto_master = $_pql->search($computerdn, $filter); $auto_master = $auto_master["dn"];
+  $filter  = '(&';
+  $filter .=   '(|';
+  $filter .=     '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=autoMountMap)';
+  $filter .=     '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit)';
+  $filter .=   ')';
+  $filter .=   '(|';
+  $filter .=     '('.pql_get_define("PQL_ATTR_CN").'=auto.master)';
+  $filter .=     '('.pql_get_define("PQL_ATTR_OU").'=auto.master)';
+  $filter .=   ')';
+  $filter .= ')';
+
+  $auto_master = $_pql->search($computerdn, $filter);
+  $auto_master = $auto_master["dn"];
 
   if(isset($auto_master))
 	// Get automount maps below auto.master
