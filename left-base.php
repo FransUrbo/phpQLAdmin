@@ -1,6 +1,6 @@
 <?php
 // LDAP host, user, login info etc
-// $Id: left-base.php,v 2.2 2007-03-05 10:27:24 turbo Exp $
+// $Id: left-base.php,v 2.3 2007-03-12 10:38:40 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -96,7 +96,7 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
 
   // Level 2c2: LDAP server configuration
   if($_SESSION["ACCESSLOG_OVERLAY"])
-	$accesslog_overlay = array($LANG->_('LDAP Access logs')			=> 'config_ldap.php?type=accesslog');
+	$accesslog_overlay = array($LANG->_('LDAP Access logs')			=> 'config_ldap.php?type=accesslog&start=0');
 
   if($_SESSION["CONFIG_BACKEND_ENABLED"] and eregi('CVS', $_SESSION["VERSION"]))
 	$config_backend = array($LANG->_('LDAP Server Configuration')	=> 'config_ldap.php?type=config');
