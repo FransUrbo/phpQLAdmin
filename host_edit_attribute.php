@@ -1,6 +1,6 @@
 <?php
 // Edit attribute of a physical host
-// $Id: host_edit_attribute.php,v 2.5 2007-03-09 17:19:59 turbo Exp $
+// $Id: host_edit_attribute.php,v 2.6 2007-03-12 10:36:25 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -15,11 +15,7 @@ include($_SESSION["path"]."/header.html");
 function attribute_forward($msg) {
 	global $_pql, $url;
 
-	// Find the physical host DN
-	$filter = '(&('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-	$physical_host_dn = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
-
-	$link = "host_detail.php?host=".urlencode($physical_host_dn[0])."&view=".$_REQUEST["view"]."&msg=$msg";
+	$link = "host_detail.php?host=".urlencode($_REQUEST["host"])."&view=".$_REQUEST["view"]."&msg=$msg";
 	if($_REQUEST["server"])
 	  $link .= "&server=".$_REQUEST["server"];
 	if($_REQUEST["virthost"])
@@ -63,7 +59,7 @@ if(@$_REQUEST["submit"] or $_REQUEST["dosave"]) {
   else
 	attribute_print_form();
 } else {
-  if($_REQUEST["action"] == 'del')
+  if($_REQUEST["action"] == 'delete')
 	attribute_save($_REQUEST["action"]);
   else
 	attribute_print_form();
