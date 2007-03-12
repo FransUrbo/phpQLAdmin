@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.53 2007-02-19 10:54:53 turbo Exp $
+// $Id: pql_bind9.inc,v 2.54 2007-03-12 11:44:09 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(branchname, domainname)
@@ -252,8 +252,8 @@ function pql_bind9_add_zone($dn, $zone) {
 	  $dn = pql_get_define("PQL_ATTR_DC")."=".$dc_tmp;
 	
 	// See if the component exists. If not, create it.
-	if(!pql_get_dn($linkid, $dn, 'objectClass=domain', 'BASE')) {
-	  if(!$_pql->add($dn, $entry, 'objectclass', 'pql_bind9_add_zone'))
+	if(!$_pql->get_dn($dn, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE')) {
+	  if(!$_pql->add($dn, $entry, 'bind9/zone', 'pql_bind9_add_zone'))
 		// Can't add domain component
 		die();
 	  else
