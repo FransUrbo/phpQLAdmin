@@ -1,5 +1,5 @@
 <?php
-// Get total number of connections
+// {{{ Get total number of connections
 $connections_total = pql_get_status($_pql->ldap_linkid, "cn=Total,cn=Connections,".$_pql->ldap_monitor, "monitorCounter");
 if($connections_total) {
 	$connections_average = round($connections_total / (($timestamp_current - $timestamp_start) / 3600), 2);
@@ -7,8 +7,9 @@ if($connections_total) {
 	$connections_total   = '<i>unknown</i>';
 	$connections_average = '<i>unknown</i>';
 }
+// }}}
 
-// Get all operations
+// {{{ Get all operations
 $operations = array('Bind', 'Unbind', 'Add', 'Delete', 'Modrdn', 'Modify', 'Compare', 'Search', 'Abandon', 'Extended');
 foreach($operations as $operation) {
   $key = lc($operation);
@@ -16,8 +17,9 @@ foreach($operations as $operation) {
   if(!$$key)
 	$$key = array("monitoropinitiated" => 0, "monitoropcompleted" => 0);
 }
+// }}}
 
-// Get TOTAL number of initiated and completed operations
+// {{{ Get TOTAL number of initiated and completed operations
 $tmp = pql_get_status($_pql->ldap_linkid, "cn=Operations,".$_pql->ldap_monitor, array("monitorOpInitiated", "monitorOpCompleted"));
 if($tmp) {
 	// Initiated operations
@@ -34,8 +36,9 @@ if($tmp) {
 	$operations_completed         = '<i>unknown</i>';
 	$operations_completed_average = '<i>unknown</i>';
 }
+// }}}
 
-// Get number of entries sent to client(s)
+// {{{ Get number of entries sent to client(s)
 $sent_entries = pql_get_status($_pql->ldap_linkid, "cn=Entries,cn=Statistics,".$_pql->ldap_monitor, "monitorCounter");
 if($sent_entries) {
 	$sent_entries_average         = round($sent_entries / (($timestamp_current - $timestamp_start) / 3600), 2);
@@ -43,8 +46,9 @@ if($sent_entries) {
 	$sent_entries                 = '<i>unknown</i>';
 	$sent_entries_average         = '<i>unknown</i>';
 }
+// }}}
 
-// Get number of bytes sent to client(s)
+// {{{ Get number of bytes sent to client(s)
 $sent_bytes  = pql_get_status($_pql->ldap_linkid, "cn=Bytes,cn=Statistics,".$_pql->ldap_monitor, "monitorCounter");
 if($sent_bytes) {
 	$sent_kbytes = round($sent_bytes / 1024, 2);
@@ -54,14 +58,16 @@ if($sent_bytes) {
 	$sent_kbytes                  = '<i>unknown</i>';
 	$sent_kbytes_average          = '<i>unknown</i>';
 }
+// }}}
 
-// Get number of current open connections
+// {{{ Get number of current open connections
 $connections_current = pql_get_status($_pql->ldap_linkid, "cn=Current,cn=Connections,".$_pql->ldap_monitor, "monitorCounter");
 if(!$connections_current) {
 	$connections_current          = '<i>unknown</i>';
 }
+// }}}
 
-// Get number of threads
+// {{{ Get number of threads
 $tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
 for($i=0; $i < count($tmp1); $i++) {
 	$tmp2 = split('=', $tmp1[$i]);
@@ -76,17 +82,53 @@ for($i=0; $i < count($tmp1); $i++) {
 if(is_array($threads)) {
 	$connections_threads  = "Max ".$threads['max'];
 	$connections_threads .= ", Backlog ".$threads['backload'];
+	unset($threads);
 } else {
-	$connections_threads  = '<i>unknown</i>';
+	// OpenLDAP 2.4(3?) is different...
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Max,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['max'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Max Pending,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['max_pending'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Open,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['open'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Starting,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['starting'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Active,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['active'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Pending,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['pending'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Backload,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['backload'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=State,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['state'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Runqueue,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['runqueue'] = $tmp1;
+
+	$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Tasklist,cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
+	if(isset($tmp1))	  $threads['tasklist'] = $tmp1;
+
+	if(!is_array($threads))
+	  $connections_threads  = '<i>unknown</i>';
 }
+// }}}
 
-// Get number of active databases
+// {{{ Get number of active databases
 $databases = pql_get_subentries($_pql->ldap_linkid, "cn=Databases,".$_pql->ldap_monitor);
+// }}}
 
-// Get current connection informations
+// {{{ Get current connection informations
 $connections_information = pql_get_subentries($_pql->ldap_linkid,
 											  "cn=Connections,".$_pql->ldap_monitor,
 											  'monitoredInfo', "cn=Connection*");
+// }}}
 ?>
   <span class="title1"><?=$LANG->_('LDAP Server Connection Status')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
@@ -167,12 +209,14 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
         <td class="title"><?=$LANG->_('Open Connections')?></td>
         <td class="<?=$class?>" align="right"><?=$connections_current?></td>
       </tr>
+<?php if($connections_threads) { ?>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?=$LANG->_('Active Threads')?></td>
         <td class="<?=$class?>" align="right"><?=$connections_threads?></td>
       </tr>
+<?php } ?>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
@@ -181,6 +225,75 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
       </tr>
     </th>
   </table>
+
+<?php if(is_array($threads)) { ?>
+  <br><br>
+
+  <span class="title1"><?=$LANG->_('Current LDAP Server Thread Resources')?></span>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Maximum number of threads as configured')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['max']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Maximum number of pending threads')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['max_pending']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Number of open threads')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['open']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Number of threads being started')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['starting']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Number of active threads')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['active']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Number of pending threads')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['pending']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Number of active plus pending threads')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['backload']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Thread pool state')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['state']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Queue of running threads - besides\nthose handling operations')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['runqueue']?></td>
+      </tr>
+
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('List of running plus standby threads\n- besides those handling operations')?></td>
+        <td class="<?=$class?>" align="right"><?=$threads['tasklist']?></td>
+      </tr>
+    </th>
+  </table>
+<?php } ?>
 
 <?php	if($connections_information[0]) { ?>
   <br><br>
