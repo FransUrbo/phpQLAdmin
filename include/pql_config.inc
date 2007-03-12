@@ -1,9 +1,7 @@
 <?php
-// Translation file from the old PQL_* defines to
-// attributeType (objectclass: phpQLAdminConfig)
-// values
+// Load basic configuration
 //
-// $Id: pql_config.inc,v 1.99 2007-03-05 10:34:59 turbo Exp $
+// $Id: pql_config.inc,v 1.100 2007-03-12 11:50:48 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -149,7 +147,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 	echo "<br>\n<b>*</b> Go through DN: '$dn'<br>\n";
 
   if(@(is_array($_SESSION["BASE_DN"]) and !in_array($dn, $_SESSION["BASE_DN"])) or !@$_SESSION["BASE_DN"])
-	// Remember the base DN's
+	// Remember the base DN(s)
 	$_SESSION["BASE_DN"][] = $dn;
   
   // 3b. Load configurations from LDAP base DN, override defaults
