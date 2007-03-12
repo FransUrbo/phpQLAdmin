@@ -1,5 +1,5 @@
 <?php
-// Get all database suffixes
+// {{{ Get all database suffixes
 $attribs = array('namingContexts', 'monitorContext', 'subschemaSubentry');
 $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->ldap_monitor, $attribs);
 ?>
@@ -20,13 +20,13 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->l
 
 			// Get all information about this database/suffix
 			if(is_array($database_contexts[$attrib])) {
-			  for($i=0; $database_contexts[$attrib][$i]; $i++) {
-				$database_status = pql_get_status_databases($database_contexts[$attrib][$i]);
+			  foreach($database_contexts[$attrib] as $context) {
+				$database_status = pql_get_status_databases($context);
 				if(isset($database_status['monitoredinfo'])) {
 ?>
       <tr>
         <?php $class=pql_format_table(0); ?>
-        <td class="title"><?=$database_contexts[$attrib][$i]?></td>
+        <td class="title"><?=$context?></td>
         <td class="<?=$class?>"><?=$database_status['monitoredinfo']?></td>
       </tr>
 <?php
@@ -63,6 +63,8 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->l
     </th>
   </table>
 <?php
+// }}}
+
 /*
  * Local variables:
  * mode: php
