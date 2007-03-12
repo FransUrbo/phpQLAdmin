@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.40 2007-02-26 10:45:42 turbo Exp $
+// $Id: left-control.php,v 2.41 2007-03-12 10:45:23 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -25,8 +25,48 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
   // the user is allowed to administrate.
   $div_counter = 1;
 
-  // Retreive all necessary web server information (including access control)
-  $DATA = pql_websrv_get_data();
+  // {{{ Retreive all physical hosts
+  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
+						 '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))',
+						 'ONELEVEL');
+  // }}}
+
+  // {{{ Check if user is controls admin in any of the root DN's
+  $controls_admin = 0;
+  foreach($_pql->ldap_basedn as $dn)  {
+	$dn = pql_format_normalize_dn($dn);
+	if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
+	  $controls_admin = 1;
+  }
+// }}}
+
+  // {{{ Add a 'Global' branch as first branch
+  if($_SESSION["ALLOW_BRANCH_CREATE"] or $controls_admin) {
+	// Only do this if:
+	//	1. User is super admin
+	//	2. User is global controls administrator
+	$tmp[] = "Global";
+	foreach($hosts as $host)
+	  $tmp[] = $host;
+	$hosts = $tmp;
+  }
+// }}}
+
+  // {{{ For each physical host, find web containers and their virtual hosts
+  $DATA = array();
+  foreach($hosts as $host_dn) {
+	$tmp = pql_websrv_get_data($host_dn);
+	if(is_array($tmp)) {
+	  foreach($tmp as $host => $data)
+		$DATA[$host] = $data;
+	} else {
+	  // This host does not have any web containers, but we still want it
+	  // in the list - add it 'empty'
+	  $host = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_CN"));
+	  $DATA[$host_dn] = array();
+	}
+  }
+// }}}
 
   // {{{ Server control header
 ?>
@@ -78,15 +118,6 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	echo "\n"; 
 // }}}
   } else {
-	// {{{ Check if user is controls admin in any of the root DN's
-	$controls_admin = 0;
-	foreach($_pql->ldap_basedn as $dn)  {
-	  $dn = pql_format_normalize_dn($dn);
-	  if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
-		$controls_admin = 1;
-	}
-// }}}
-
 	foreach($DATA as $physical_dn => $physical_data) {
 	  // {{{ Get physical hostname for display
 ?>
