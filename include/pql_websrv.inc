@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.25 2007-02-15 12:08:13 turbo Exp $
+// $Id: pql_websrv.inc,v 1.26 2007-03-12 12:00:29 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(dn, entry, type)
@@ -42,7 +42,7 @@ function pql_websrv_add_server($dn, $entry, $type) {
 function pql_websrv_find_servers($dn) {
   global $_pql;
 
-  $temp = $_pql->get_dn($dn, "objectClass=device", "ONELEVEL");
+  $temp = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_OBJECTCLASS")."=device", "ONELEVEL");
   if(is_array($temp)) {
 	foreach($temp as $s) {
 	  $servers[] = $s;
@@ -188,65 +188,36 @@ function pql_websrv_get_virtual_host($virtualhost) {
 }
 // }}}
 
-// {{{ pql_websrv_get_data()
-function pql_websrv_get_data() {
+// {{{ pql_websrv_get_data(host_dn)
+function pql_websrv_get_data($host_dn) {
   global $_pql;
 
-  // {{{ Get all physical hosts
-  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
-					  '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))',
-					  'ONELEVEL');
+  // {{{ Get web containers for this physical host
+  if($host_dn != 'Global') {
+	$web_containers = $_pql->get_dn($host_dn, '(&(cn=*)(objectclass=device))', 'ONELEVEL');
+	if(!$web_containers)
+	  $web_containers = array();
+  } else
+	$web_containers = array('Global'); // Fake this so that the foreach() won't complain.
   // }}}
 
-  // {{{ Check if user is controls admin in any of the root DN's
-  $controls_admin = 0;
-  foreach($_pql->ldap_basedn as $dn)  {
-	$dn = pql_format_normalize_dn($dn);
-	if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
-	  $controls_admin = 1;
-  }
-  // }}}
-
-  // {{{ Add a 'Global' branch as first branch
-  if($_SESSION["ALLOW_BRANCH_CREATE"] or $controls_admin) {
-	// Only do this if:
-	//	1. User is super admin
-	//	2. User is global controls administrator
-	$tmp[] = "Global";
-	foreach($hosts as $host)
-	  $tmp[] = $host;
-	$hosts = $tmp;
-  }
-  // }}}
-
-  // {{{ For each physical host, find web containers and their virtual hosts
-  foreach($hosts as $host_dn) {
-	// Get web containers for this physical host
-	if($host_dn != 'Global') {
-	  $web_containers = $_pql->get_dn($host_dn, '(&(cn=*)(objectclass=device))', 'ONELEVEL');
-	  if(!$web_containers)
-		$web_containers = array();
-	} else
-	  $web_containers = array('Global'); // Fake this so that the foreach() won't complain.
-
-	foreach($web_containers as $container_dn) {
-	  // Retreive virtual hosts for each web container
-	  if($container_dn != 'Global') {
-		$tmp = $_pql->get_dn($container_dn,
-							 '(&(objectClass=ApacheVirtualHostObj)(objectClass=ApacheSectionObj))',
-							 'ONELEVEL');
+  // {{{ Retreive virtual hosts for each web container
+  foreach($web_containers as $container_dn) {
+	if($container_dn != 'Global') {
+	  $tmp = $_pql->get_dn($container_dn,
+						   '(&(objectClass=ApacheVirtualHostObj)(objectClass=ApacheSectionObj))',
+						   'ONELEVEL');
+	  
+	  for($i=0; $tmp[$i]; $i++) {
+		$virthost_dn = $tmp[$i];
 		
-		for($i=0; $tmp[$i]; $i++) {
-		  $virthost_dn = $tmp[$i];
-		  
-		  // Get the virtual host name (FQDN)
-		  $virthost_name = $_pql->get_attribute($virthost_dn, pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
-		  
-		  $HOSTS[$host_dn][$container_dn][$virthost_dn] = $virthost_name;
-		}
-	  } else
-		$HOSTS['Global']['Global'] = array('Global');
-	}
+		// Get the virtual host name (FQDN)
+		$virthost_name = $_pql->get_attribute($virthost_dn, pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
+		
+		$HOSTS[$host_dn][$container_dn][$virthost_dn] = $virthost_name;
+	  }
+	} else
+	  $HOSTS['Global']['Global'] = array('Global');
   }
   // }}}
 
