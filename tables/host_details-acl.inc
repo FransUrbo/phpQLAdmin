@@ -14,39 +14,40 @@
 
 $row = 'c1'; $i=0;
 foreach($hosts as $host_dn) {
-  // {{{ Retreive values from this host
-  $host   = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_CN"));
-  $hostIP = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_IPHOSTNUMBER"));
+  if($host_dn != 'Global') {
+	// {{{ Retreive values from this host
+	$host   = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_CN"));
+	$hostIP = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_IPHOSTNUMBER"));
 // }}}
 
-  // {{{ Retreive uniqueMember from this host
-  $host_users = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
-  if($host_users) {
-	if(!is_array($host_users))
-	  $host_users = array($host_users);
-  } else
-	$host_users = array();
+	// {{{ Retreive uniqueMember from this host
+	$host_users = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
+	if($host_users) {
+	  if(!is_array($host_users))
+		$host_users = array($host_users);
+	} else
+	  $host_users = array();
 
-  if(@$_REQUEST["domain"]) {
-	// If called from the domain view->Host control
+	if(@$_REQUEST["domain"]) {
+	  // If called from the domain view->Host control
 
-	// Go through the host users, verify that this user IS in this branch
-	unset($tmp);
-	foreach($host_users as $host_user) {
-	  foreach($users as $user) {
-		if(lc($host_user) == $user) {
-		  // Save this
-		  $tmp[] = $user;
+	  // Go through the host users, verify that this user IS in this branch
+	  unset($tmp);
+	  foreach($host_users as $host_user) {
+		foreach($users as $user) {
+		  if(lc($host_user) == $user) {
+			// Save this
+			$tmp[] = $user;
+		  }
 		}
 	  }
+	  
+	  // Overwrite the list of users with the list of users located in this branch
+	  $host_users = $tmp;
 	}
-	
-	// Overwrite the list of users with the list of users located in this branch
-	$host_users = $tmp;
-  }
 // }}}
 
-  // {{{ Hostname(s)
+	// {{{ Hostname(s)
 ?>	
         <tr class="<?=$row?>">
           <!-- HOSTNAME AND USERS -->
@@ -57,7 +58,7 @@ foreach($hosts as $host_dn) {
               <a class="item"><font color="black" class="heada"><?=$host?></font></a>
             </div>
 <?php } else { ?>
-            <div id="el<?=$i."aParent"?>" class="parent">
+            <div id="el<?=$i?>aParent" class="parent">
               <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i."aImg"?>">
               </a>
@@ -66,59 +67,59 @@ foreach($hosts as $host_dn) {
 <?php }
 // }}}
 
-  // {{{ User(s)
-  if(@$host_users and !is_array($host_users))
-	$host_users = array($host_users);
-  if(@$host_users) {
-		if($_SESSION["opera"]) {
+	// {{{ User(s)
+	if(@$host_users and !is_array($host_users))
+	  $host_users = array($host_users);
+	if(@$host_users) {
+	  if($_SESSION["opera"]) {
 ?>
             <span id="el<?=$i?>aSpn" style="display:''">
-<?php	} else { ?>
-            <div id="el<?=$i."aChild"?>" class="child">
-<?php	}
+<?php } else { ?>
+            <div id="el<?=$i?>aChild" class="child">
+<?php }
 
-		for($j=0; $j < count($host_users); $j++) {
-		  // Extract 'human readable' name from the user DN's found
-		  if($_REQUEST["rootdn"] and $_REQUEST["domain"]) {
-			$user = pql_left_htmlify_userlist($_REQUEST["rootdn"], $_REQUEST["domain"], $host_users[$j], array($user), ($links = NULL));
-			if(is_array($user)) {
-			  // Grab the first (and only?!) value
-			  foreach($user as $dn => $cn)
-				break;
-			  $user = $cn;
-			}
-		  } else
-			$user = $_pql->get_attribute($host_users[$j], pql_get_define("PQL_ATTR_UID"));
+	  for($j=0; $j < count($host_users); $j++) {
+		// Extract 'human readable' name from the user DN's found
+		if($_REQUEST["rootdn"] and $_REQUEST["domain"]) {
+		  $user = pql_left_htmlify_userlist($_REQUEST["rootdn"], $_REQUEST["domain"], $host_users[$j], array($user), ($links = NULL));
+		  if(is_array($user)) {
+			// Grab the first (and only?!) value
+			foreach($user as $dn => $cn)
+			  break;
+			$user = $cn;
+		  }
+		} else
+		  $user = $_pql->get_attribute($host_users[$j], pql_get_define("PQL_ATTR_UID"));
 ?>
              &nbsp;&nbsp;&nbsp;
              <a href="host_modify.php?host=<?=urlencode($host_dn)?>&userdn=<?=urlencode($host_users[$j])?>&action=remove_user_from_host"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>"></a>
              &nbsp;<?=$user."\n"?>
              <br>
-<?php
-		}
+<?php }
+
 	  if($_SESSION["opera"]) {
 ?>
             </span>
-<?php	  } else { ?>
+<?php } else { ?>
             </div>
-<?php	  }
-  }
+<?php }
+	}
 ?>
           </td>
 <?php
 // }}}
 
-  if($hostIP) {
-	// {{{ IP Address
-	$host_ip = '';
-	if(is_array($hostIP)) {
-	  for($z = 0; $z < count($hostIP); $z++) {
-	    $host_ip .= $hostIP[$z];
-	    if($hostIP[$z+1])
-	      $host_ip .= ",&nbsp";
-	  }
-	} else
-	  $host_ip = $hostIP;
+	if($hostIP) {
+	  // {{{ IP Address
+	  $host_ip = '';
+	  if(is_array($hostIP)) {
+		for($z = 0; $z < count($hostIP); $z++) {
+		  $host_ip .= $hostIP[$z];
+		  if($hostIP[$z+1])
+			$host_ip .= ",&nbsp";
+		}
+	  } else
+		$host_ip = $hostIP;
 ?>
 
           <!-- IP ADDRESS -->
@@ -154,9 +155,9 @@ foreach($hosts as $host_dn) {
 	  else
 		$row = 'c1';
 // }}}
-  } else {
-	// {{{ No IP address. Probably only a 'device' object
-	if($_SESSION["opera"]) {
+	} else {
+	  // {{{ No IP address. Probably only a 'device' object
+	  if($_SESSION["opera"]) {
 ?>
           <!-- IP ADDRESS -->
           <td>
@@ -177,9 +178,10 @@ foreach($hosts as $host_dn) {
         </tr>
 <?php }
 // }}}
-  }
+	}
 
-  $i++;
+	$i++;
+  } // if(host == Global)
 } // end foreach($hosts)
 
 // {{{ Table and file end
