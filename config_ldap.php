@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.25 2007-03-05 10:21:06 turbo Exp $
+// $Id: config_ldap.php,v 1.26 2007-03-12 10:09:39 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -11,7 +11,9 @@ include($_SESSION["path"]."/header.html");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 if($_REQUEST["type"] == 'config') {
-  die("Sorry, not yet implemented.");
+  echo "It's supposed to be information retreived from the cn=config backend, but it's not yet implemented...<br>";
+  echo "Basically because ACL/ACI don't work properly yet in the LDAP server.";
+  die();
 } elseif($_REQUEST["type"] == 'accesslog') {
   if($_REQUEST["filter"]) {
 	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
@@ -69,6 +71,11 @@ if($_REQUEST["type"] == 'config') {
 	$filter .= ')';
   } else
 	// Do not filter output - retreive EVERYTHING!
+	// TODO: We really need to limit the number of objects!
+	//       I have 43464 objects between 20070304004918
+	//       and 20070312003842. There's no way I'll be
+	//       able to retreive all those within the scope
+	//       of Apache/PHP!
 	$filter = 'objectClass=*';
 
   if($filter == '(&)') {
