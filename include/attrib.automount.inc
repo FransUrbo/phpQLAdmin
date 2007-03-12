@@ -1,8 +1,10 @@
 <?php
 // attribute plugin for automount maps
-// $Id: attrib.automount.inc,v 2.7 2007-03-09 17:20:06 turbo Exp $
+// $Id: attrib.automount.inc,v 2.8 2007-03-12 11:37:49 turbo Exp $
 
 // {{{ attribute_find_automaster(hostdn)
+// Called from attribute_init() and attribute_save() to find
+// the auto.master object for specific host DN.
 function attribute_find_automaster($hostdn) {
   global $_pql;
 
@@ -16,7 +18,51 @@ function attribute_find_automaster($hostdn) {
 }
 // }}}
 
+// {{{ attribute_find_mountpoints(mnt_pnt, mnt_dn)
+// Called from attribute_init() and will recursivly
+// call itself to find ALL mountpoints which isn't a
+// device mounted on a mountpoint.
+// I.e. All objects that links to another object in LDAP.
+function attribute_find_mountpoints($mnt_pnt, $mnt_dn) {
+  global $_pql, $extra_dns;
+
+  $info = $_pql->get_attribute($mnt_dn, pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
+  if(eregi('ldap', $info)) {
+	// Get the mountpoint for the FS
+	$sub_mnt = split(',', $mnt_dn);
+	$sub_mnt = split('=', $sub_mnt[0]);
+	if(!ereg('^/', $sub_mnt[1]))
+	  $sub_mnt = '/'.$sub_mnt[1];
+	else
+	  $sub_mnt = $sub_mnt[1];
+
+	// Remember this submount point link
+	$extra_dns["$mnt_pnt$sub_mnt"] = $mnt_dn;
+
+	// Since this is an LDAP link, find possible submounts
+	$dn = split(':', $info);
+	if($dn[2])
+	  // info => 'ldap ldapi://%2fvar%2frun%2fslapd%2fldapi.provider:ou=auto.mnt,cn=pumba.bayour.com,ou=Computers,c=SE'
+	  $dn = $dn[2];
+	elseif($dn[1])
+	  // info => 'ldap localhost:ou=auto.share,cn=pumba.bayour.com,ou=Computers,c=SE'
+	  $dn = $dn[1];
+	
+	// Find any LDAP links below this DN
+	$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(objectClass=autoMount))';
+	$links = $_pql->get_dn($dn, $filter, 'ONELEVEL');
+	for($i=0; $links[$i]; $i++)
+	  // Is there more submount links after this?
+	  attribute_find_mountpoints($mnt_pnt.$sub_mnt, $links[$i]);
+  }
+//  else
+//	unset($DNs[$mnt]);
+}
+// }}}
+
 // {{{ attribute_setup(void)
+// Called from attribute_save() to setup the
+// automountInformation attribute
 function attribute_setup() {
   if($_REQUEST["filesystem"])
 	$automount = "-fstype=".$_REQUEST["filesystem"];
@@ -24,9 +70,16 @@ function attribute_setup() {
   if(@$_REQUEST["options"])
 	$automount .= ",".$_REQUEST["options"];
 
-  if($_REQUEST["basemount"] == 'new') {
+  if(($_REQUEST["basemount"] == 'new') or ($_REQUEST["filesystem"] == 'autofs')) {
 	// {{{ New base mount point
-	$automount = $_REQUEST["linktype"]." ".$_REQUEST["ldaphost"].":".$_REQUEST["searchdn"];
+	global $_pql;
+
+	// {{{ Setup the 'auto.<mnt>' DN
+	$mnt  = pql_get_define("PQL_ATTR_OU").'=auto.'.preg_replace('/\//', '', $_REQUEST["mountpoint"]);
+	$mnt .= ','.$_REQUEST["host"];
+// }}}
+
+	$automount = $_REQUEST["linktype"]." ".$_REQUEST["ldaphost"].":".$mnt;
 // }}}
 
   } elseif($_REQUEST["filesystem"] == 'smbfs') {
@@ -69,6 +122,20 @@ function attribute_setup() {
 	$automount .= ":".$_REQUEST["ncpshare"];
 	// }}}
 
+  } elseif($_REQUEST["filesystem"] == 'iso9660') {
+	// {{{ FS: ISO9660
+	// TODO: I'm forcing iso9660 options 'ro,sync,nodev,nosuid' for the time being.
+	$automount .= ',ro,sync,nodev,nosuid';
+
+	if($_REQUEST["utf8"])					$automount .= ",utf8";
+	if($_REQUEST["creduid"])				$automount .= ",uid=".$_REQUEST["creduid"];
+	if($_REQUEST["credgid"])				$automount .= ",gid=".$_REQUEST["credgid"];
+	if($_REQUEST["session"])				$automount .= ",session=".$_REQUEST["session"];
+	if($_REQUEST["iocharset"] and ($_REQUEST["iocharset"] != 'iso8859-1'))
+	  // Not the default - use choosen value
+	  $automount .= ",iocharset=".$_REQUEST["iocharset"];
+// }}}
+
   } elseif(($_REQUEST["filesystem"] == 'ext2') or ($_REQUEST["filesystem"] == 'ext3')) {
 	// {{{ FS: EXT2/EXT3
 	if($_REQUEST["reserveduid"])			$automount .= ",resuid=".$_REQUEST["reserveduid"];
@@ -105,25 +172,33 @@ function attribute_setup() {
 // }}}
 
 // {{{ attribute_check(void)
+// Called by host_edit_attribute.php before saving object.
 function attribute_check() {
     global $error, $LANG;
     
 	if($_REQUEST["dosave"] == 'yes') {
 	  // We've clicked the Save button
-	  if($_REQUEST["basemount"] == 'new') {
+	  if(($_REQUEST["basemount"] == 'new') or ($_REQUEST["filesystem"] == 'autofs')) {
 		// {{{ Create a new base mountpoint
-		if(!$_REQUEST["mountpoint"]) {
+		if(!$_REQUEST["mountpoint"])
 		  $error["mountpoint"] = $LANG->_('Missing');
-		} elseif(!$_REQUEST["linktype"]) {
+
+		if($_REQUEST["mountpoint"] and !ereg('^/', $_REQUEST["mountpoint"]))
+		  $_REQUEST["mountpoint"] = '/'.$_REQUEST["mountpoint"];
+
+		if(!$_REQUEST["linktype"])
 		  $error["linktype"] = $LANG->_('Missing');
-		} elseif(($_REQUEST["linktype"] == 'file') and !$_REQUEST["filepath"]) {
+
+		if(($_REQUEST["linktype"] == 'file') and !$_REQUEST["filepath"])
 		  // A file 'link' - must have path to file
 		  $error["filepath"] = $LANG->_('Missing');
-		} elseif(($_REQUEST["linktype"] == 'ldap') and (!$_REQUEST["ldaphost"] or !$_REQUEST["searchdn"])) {
+
+		if(($_REQUEST["linktype"] == 'ldap') and !$_REQUEST["ldaphost"])
 		  // A ldap 'link' - must have host and DN
-		  $error["ldapinfo"] = $LANG->_('Missing');
-		}
+		  $error["ldaphost"] = $LANG->_('Missing');
+
 		// }}}
+
 	  } else {
 		// {{{ Mountpoint below existing base mountpoint
 		if(!@$_REQUEST["mountpoint"] or !@$_REQUEST["filesystem"]) {
@@ -131,6 +206,7 @@ function attribute_check() {
 		  $error["filesystem"] = $LANG->_('Missing');
 		}
 		// }}}
+
 	  }
 
 	  // {{{ Filesystem which uses device
@@ -158,10 +234,12 @@ function attribute_check() {
 // }}}
 
 // {{{ attribute_init(void)
+// Called in attribute_print_form() to retreive all basic mount
+// points for a specific host.
 function attribute_init() {
-  global $_pql;
+  global $_pql, $extra_dns;
 
-  // Setup list of filesystems
+  // {{{ Setup full list of availible filesystems and codepages
   $_REQUEST["FILESYSTEMS"] = array('ext2', 'ext3', 'reiserfs', 'xfs',
 								   'msdos', 'umsdos', 'vfat', 'ntfs',
 								   'iso9660', 'udf', 'ufs', 'smbfs',
@@ -179,105 +257,99 @@ function attribute_init() {
 								 'iso8859-5', 'iso8859-6', 'iso8859-7',
 								 'iso8859-9', 'koi8-r', 'koi8-ru',
 								 'koi8-u', 'utf8');
+  // }}}
 
-  // Find the physical host DN
-  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-  $physical_host_dn = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+  if(@$_REQUEST["host"]) {
+	// {{{ Find the physical hosts auto.master object
+	// Find the auto.master DN
+	$dn = attribute_find_automaster($_REQUEST["host"]);
+	// }}}
 
-  // {{{ Get all base mountpoints
-  $dn = attribute_find_automaster($physical_host_dn[0]);
-  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(objectClass=autoMount))';
-  if(!ereg('^/', $dn))
-	$DNs = $_pql->get_dn($dn, $filter, 'ONELEVEL');
-	
-  // Make sure we only get base mounts that are LDAP links
-  for($i=0; $DNs[$i]; $i++) {
-	$info = $_pql->get_attribute($DNs[$i], pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
-	if(!eregi('ldap', $info))
-	  unset($DNs[$i]);
+	// {{{ Get all base mountpoints
+	if(@$dn and $_pql->get_dn($dn, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
+	  // I.e. everything below the auto.master DN
+	  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=autoMount))';
+	  if(!ereg('^/', $dn))
+		$DNs = $_pql->get_dn($dn, $filter, 'ONELEVEL');
+	  
+	  // Rearrange the array based on the actual mountpoint in the FS
+	  for($i=0; $DNs[$i]; $i++) {
+		$mnt = split(',', $DNs[$i]);
+		$mnt = split('=', $mnt[0]);
+		$new_array[$mnt[1]] = $DNs[$i];
+	  }
+	  $DNs = $new_array;
+	  
+	  // Make sure we only get base mounts that are LDAP links
+	  $extra_dns = array();
+	  foreach($DNs as $mnt_pnt => $mnt_dn)
+		// Don't call with first parameter - that's retreived in the function.
+		attribute_find_mountpoints('', $mnt_dn);
+	  
+	  if(is_array($extra_dns))
+		$DNs = $extra_dns;
+	  
+	  // Sort the list of DN's on the mountpoint.
+	  ksort($DNs);
+	  
+	  $_REQUEST["DNs"] = $DNs;
+	}
+	// }}}
   }
 
-  // Uniquiefy the list of DN's.
-  pql_uniq($DNs);
-
-  $_REQUEST["DNs"] = $DNs;
-// }}}
+  // {{{ Retreive all physical hosts
+  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
+						 '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))',
+						 'ONELEVEL');
+  for($i=0; $hosts[$i]; $i++) {
+	$cn = $_pql->get_attribute($hosts[$i], pql_get_define("PQL_ATTR_CN"));
+	$_REQUEST["HOSTS"][$cn] = $hosts[$i];
+  }
+  // }}}
 
   if(@$_REQUEST["action"] == 'modify') {
-	// {{{ We're called with a MODIFY command - special circumstances
+	// {{{ We're called with a MODIFY command - find the base mountpoint and (sub)mountpoint
 
-	// Extract the mountpoint to modify
-	$tmp = split(',', urldecode($_REQUEST["mount"]));
-	$MOUNT_POINT = ereg_replace(pql_get_define("PQL_ATTR_CN").'=', '', $tmp[0]);
+	// Fetch the automountInformation value from the object
+	$info = $_pql->search($_REQUEST["mount"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE');
 
-	// Retreive autoMount maps for this host
-	$automounts = pql_get_automount_maps($_REQUEST["host"]);
-
-	// Find the automount map object for the specified mountpoint to modify
-	// Also find the base mountpoint for that mountpoint.
-	$MOUNTS = array('/');
-	foreach($automounts as $mntpnt => $mntdata) {
-	  if($mntdata["automountinformation"]) {
-		// Device mounted on mountpoint
-		if(lc($mntpnt) == lc($MOUNT_POINT)) {
-		  $info = $mntdata;
-
-		  // Retreive the base mountpoint for this automount
-		  // The last MOUNTS array value will be this mountpoints
-		  // base mount...
-		  if(!@$_REQUEST["basemount"])
-			$_REQUEST["basemount"] = $MOUNTS[count($MOUNTS)-1];
-
-		  last;
-		}
-	  } else {
-		// Mountpoint with more than one device
-
-		// Add this basemount to the MOUNTS array.
-		pql_add2array($MOUNTS, $mntpnt);
-
-		foreach($mntdata as $mount => $mountdata) {
-		  if($mountdata["automountinformation"]) {
-			// Device mounted on mountpoint
-			if(lc($mount) == lc($MOUNT_POINT)) {
-			  $info = $mountdata;
-
-			  // Retreive the base mountpoint for this automount
-			  // The last MOUNTS array value will be this mountpoints
-			  // base mount...
-			  if(!@$_REQUEST["basemount"])
-				$_REQUEST["basemount"] = $MOUNTS[count($MOUNTS)-1];
-
-			  last;
-			}
-		  }
-		}
+	// {{{ Figure out the basemount and the final mountpoint for this mount
+	if(!@$_REQUEST["basemount"]) {
+	  $_REQUEST["basemount"] = '/';
+	  $tmp = split('/', $_REQUEST["mountpoint"]);
+	  for($i=1; $tmp[$i]; $i++) {
+		$_REQUEST["basemount"] .= $tmp[$i];
+		if(!@$tmp[$i+2])
+		  break;
+		else
+		  $_REQUEST["basemount"] .= '/';
 	  }
-	}
 
-	// Extract mountpoint
-	if(!@$_REQUEST["mountpoint"]) {
-	  $tmp = split(',', $info["dn"]);
-	  $_REQUEST["mountpoint"]  = ereg_replace(pql_get_define("PQL_ATTR_CN").'=', '', $tmp[0]);
+	  // What's left of the $tmp array is the actual mountpoint 
+	  $_REQUEST["mountpoint"] = $tmp[$i+1];
 	}
+	// }}}
 
-	// Extract description and autoMountInfo(rmation) attributes
+	// {{{ Extract description and autoMountInfo(rmation) attributes
 	if(!@$_REQUEST[pql_get_define("PQL_ATTR_DESCRIPTION")])
 	  $_REQUEST[pql_get_define("PQL_ATTR_DESCRIPTION")]    = $info[pql_get_define("PQL_ATTR_DESCRIPTION")];
 	if(!@$_REQUEST[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")])
 	  $_REQUEST[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")] = $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")];
+	// }}}
 
-	// Extract the device from the automountInfo attribute
+	// {{{ Extract the device from the automountInfo attribute
 	if(!@ $_REQUEST["device"])
 	  $_REQUEST["device"] = ereg_replace('.* :', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
-	
-	// Extract the filesystem from the automountInfo attribute
+	// }}}
+
+	// {{{ Extract the filesystem and mount options from the automountInfo attribute
 	$tmp = preg_replace('/-fstype=/', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
 	$opts = ereg_replace(' :.*', '', $tmp);
 	$opts = split(',', $opts);
 	$fs = $opts[0];
+	// }}}
 
-	// Setup the filesystem request variable
+	// {{{ Setup the filesystem request variable
 	if(!@$_REQUEST["filesystem"]) {
 	  // Complicated because I haven't listed EVERY possible FS in
 	  // the FILESYSTEMS array, so we need to do it in two steps. 
@@ -292,8 +364,9 @@ function attribute_init() {
 	  if(!@$_REQUEST["filesystem"]) {
 		$_REQUEST["filesystem"] = 'new';
 		$_REQUEST["realfilesystem"] = $fs;
+
 	  } elseif($_REQUEST["filesystem"] == 'smbfs') {
-		// Extract SMB server and share
+		// {{{ Extract SMB server and share
 		$tmp = ereg_replace('.*://', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
 		$tmp = split('/', $tmp);
 		
@@ -304,8 +377,10 @@ function attribute_init() {
 		  if(@$tmp[$i+1])
 			$_REQUEST["smbshare"] .= '/';
 		}
+		// }}}
+
 	  } elseif(($_REQUEST["filesystem"] == 'nfs') or ($_REQUEST["filesystem"] == 'nfs4')) {
-		// Extract NFS server and 'share'
+		// {{{ Extract NFS server and 'share'
 		$tmp = ereg_replace('.*://', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
 		$tmp = split('/', $tmp);
 		
@@ -316,15 +391,20 @@ function attribute_init() {
 		  if(@$tmp[$i+1])
 			$_REQUEST["nfsshare"] .= '/';
 		}
-	  }
-	}
+		// }}}
 
-	// Setup the options request variable
+	  }
+	} elseif($_REQUEST["filesystem"] == 'new') {
+	  $_REQUEST["realfilesystem"] = $fs;
+	}
+	// }}}
+
+	// {{{ Setup the options request variable
 	if(!@$_REQUEST["options"]) {
 	  $_REQUEST["options"] = '';
 	  for($i=1; $opts[$i]; $i++) {
 		if($_REQUEST["filesystem"] == 'smbfs') {
-		  // Extract SMB specific stuff
+		  // {{{ Extract SMB specific stuff
 		  if(eregi('username', $opts[$i])) {
 			$_REQUEST["smbcredtype"] = 'manual';
 			$_REQUEST["smbcreduser"] = eregi_replace('username=', '', $opts[$i]);
@@ -340,6 +420,8 @@ function attribute_init() {
 		  } elseif(eregi('gid', $opts[$i])) {
 			$_REQUEST["smbcredgid"]  = eregi_replace('gid=', '', $opts[$i]);
 		  }
+		  // }}}
+
 		} else {
 		  $_REQUEST["options"] .= $opts[$i];
 		  if($opts[$i+1])
@@ -348,6 +430,7 @@ function attribute_init() {
 	  }
 	}
 // }}}
+	// }}}
   }
 }
 // }}}
@@ -384,6 +467,29 @@ function attribute_print_form() {
 <?php
 // }}}
 
+	// {{{ Hosts to add automount to
+?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Host')?></td>
+          <td><font color="red">*</font></td>
+          <td>
+            <select name="host" onChange="submit()">
+<?php
+	foreach($_REQUEST["HOSTS"] as $fqdn => $dn) {
+	  echo "              <option value=\"$dn\"";
+	  if($_REQUEST["host"] == $dn) {
+		echo " SELECTED";
+	  }
+	  echo ">$fqdn</option>\n";
+	}
+?>
+            </select>
+          </td>
+        </tr>
+
+<?php
+// }}}
+
 	// {{{ Base mountpoint
 ?>
         <tr class="<?php pql_format_table(); ?>">
@@ -392,13 +498,17 @@ function attribute_print_form() {
           <td>
             <select name="basemount" onChange="submit()">
 <?php
-	foreach($_REQUEST["DNs"] as $dn) {
-	  $cn = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_CN"));
-	  echo "              <option value=\"$cn\"";
-	  if($_REQUEST["basemount"] == "$cn") {
+	foreach($_REQUEST["DNs"] as $mnt => $dn) {
+	  echo "              <option value=\"$dn\"";
+	  if(($_REQUEST["basemount"] == $dn) or ($_REQUEST["basemount"] == $mnt)) {
+		// * If 'basemount' contains a DN, then we have changed the Base mountpoint select
+		//   and the page got reloaded.
+		// * If 'basemount' contains a mountpoint value and not a DN, then we're called
+		//   from tables/host_details-automount.inc with a mount which is mounted below
+		//   a submount...
 		echo " SELECTED";
 	  }
-	  echo ">$cn</option>\n";
+	  echo ">$mnt</option>\n";
 	}
 ?>
               <option value="new" <?php if($_REQUEST["basemount"] == 'new') { echo "SELECTED"; }?>>New base mountpoint</option>
@@ -447,12 +557,6 @@ function attribute_print_form() {
           <td><font color="red">*</font></td>
           <td><input type="text" name="ldaphost" value="<?=$_REQUEST["ldaphost"]?>"></td>
         </tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Search DN')?></td>
-          <td><font color="red">*</font></td>
-          <td><input type="text" name="searchdn" value="<?=$_REQUEST["searchdn"]?>" size="60"></td>
-        </tr>
 <?php	} else { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('File path')?></td>
@@ -485,7 +589,8 @@ function attribute_print_form() {
 <?php	foreach($_REQUEST["FILESYSTEMS"] as $fs) { ?>
               <option value="<?=$fs?>" <?php if($_REQUEST["filesystem"] == $fs) { echo "SELECTED"; }?>><?=$fs?></option>
 <?php	} ?>
-              <option value="new"      <?php if($_REQUEST["filesystem"] == 'new')      { echo "SELECTED"; }?>>Other</option>
+              <option value="autofs"   <?php if($_REQUEST["filesystem"] == 'autofs')   { echo "SELECTED"; }?>><?=$LANG->_('Submount')?></option>
+              <option value="new"      <?php if($_REQUEST["filesystem"] == 'new')      { echo "SELECTED"; }?>><?=$LANG->_('Other')?></option>
             </select>
           </td>
         </tr>
@@ -622,6 +727,7 @@ function attribute_print_form() {
         </tr>
 <?php	}
 // }}}
+
 	  } elseif(($_REQUEST["filesystem"] == 'nfs') or ($_REQUEST["filesystem"] == 'nfs4')) {
 		// {{{ NFS/NFS4
 ?>
@@ -639,6 +745,7 @@ function attribute_print_form() {
         </tr>
 <?php
 // }}}
+
 	  } elseif($_REQUEST["filesystem"] == 'ncpfs') {
 		// {{{ NCPFS
 ?>
@@ -656,6 +763,7 @@ function attribute_print_form() {
         </tr>
 <?php
 // }}}
+
 	  } elseif(($_REQUEST["filesystem"] == 'msdos') or ($_REQUEST["filesystem"] == 'umsdos') or
 			   ($_REQUEST["filesystem"] == 'vfat')  or ($_REQUEST["filesystem"] == 'ntfs'))
 	  {
@@ -700,6 +808,7 @@ function attribute_print_form() {
         </tr>
 <?php	}
 // }}}
+
 	  } elseif(($_REQUEST["filesystem"] == 'ext2') or ($_REQUEST["filesystem"] == 'ext3')) {
 		// {{{ EXT2 or EXT3
 ?>
@@ -731,6 +840,7 @@ function attribute_print_form() {
 <?php	} ?>
 <?php
 // }}}
+
 	  } elseif($_REQUEST["filesystem"] == 'reiserfs') {
 		// {{{ Mount options for ReiserFS
 ?>
@@ -742,6 +852,7 @@ function attribute_print_form() {
 
 <?php
 // }}}
+
 	  } elseif($_REQUEST["filesystem"] == 'xfs') {
 		// {{{ Mount options for XFS
 ?>
@@ -790,6 +901,7 @@ function attribute_print_form() {
                  </tr>
 <?php
 // }}}
+
 	  } elseif($_REQUEST["filesystem"] == 'iso9660') {
 		// {{{ Mount options for ISO9660
 		if(@$_REQUEST["norock"]) {
@@ -812,6 +924,7 @@ function attribute_print_form() {
         </tr>
 <?php	}
 // }}}
+
 	  } elseif($_REQUEST["filesystem"] == 'udf') {
 		// {{{ Mount options for udf
 ?>
@@ -822,6 +935,7 @@ function attribute_print_form() {
         </tr>
 <?php
 // }}}
+
 	  }
 
 	  // {{{ Filesystem which uses device
@@ -843,7 +957,37 @@ function attribute_print_form() {
 // }}}
 // }}}
 
-	  // {{{ Additional FS Options (toggles or multiple choices)
+	  if($_REQUEST["filesystem"] == 'autofs') {
+		// {{{ Submount
+?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Link type')?></td>                                                             
+          <td><font color="red">*</font></td>
+          <td>
+            <select name="linktype" onChange="submit()">>
+              <option value="ldap" <?php if($_REQUEST["linktype"] == 'ldap') { echo "SELECTED"; }?>>LDAP</option>
+              <option value="file" <?php if($_REQUEST["linktype"] == 'file') { echo "SELECTED"; }?>>File</option>
+            </select>
+          </td>
+        </tr>
+
+<?php if(!@$_REQUEST["linktype"] or ($_REQUEST["linktype"] == "ldap")) { ?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('LDAP Host')?></td>
+          <td><font color="red">*</font></td>
+          <td><input type="text" name="ldaphost" value="<?=$_REQUEST["ldaphost"]?>"></td>
+        </tr>
+<?php   } else { ?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('File path')?></td>
+          <td><font color="red">*</font></td>
+          <td><input type="text" name="filepath" value="<?=$_REQUEST["filepath"]?>"></td>
+        </tr>
+<?php   }
+// }}}
+
+	  } else {
+		// {{{ Additional FS Options (toggles or multiple choices)
 ?>
         <tr class="<?php pql_format_table(); ?>" valign="top">
           <td class="title"><?=$LANG->_('Mount Options')?></td>
@@ -852,8 +996,8 @@ function attribute_print_form() {
             <table cellspacing="0" cellpadding="0" border="0" width="100%">
                <th colspan="2" align="left">
 <?php
-	  if(($_REQUEST["filesystem"] == 'ext2') or ($_REQUEST["filesystem"] == 'ext3') or !@$_REQUEST["filesystem"]) {
-		// {{{ Mount options for ext2 or ext3
+		if(($_REQUEST["filesystem"] == 'ext2') or ($_REQUEST["filesystem"] == 'ext3') or !@$_REQUEST["filesystem"]) {
+		  // {{{ Mount options for ext2 or ext3
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td><input type="checkbox" name="ext2_acl"<?php if($_REQUEST["ext2_acl"]) { echo " CHECKED"; } ?>><?=$LANG->_('Support POSIX Access Control Lists')?>&nbsp;&nbsp;</td>
@@ -924,8 +1068,9 @@ function attribute_print_form() {
                  </tr>
 <?php
 // }}}
-	  } elseif(($_REQUEST["filesystem"] == 'msdos') or ($_REQUEST["filesystem"] == 'umsdos') or ($_REQUEST["filesystem"] == 'vfat')) {
-		// {{{ Mount options for msdos, umsdos and/or vfat
+
+		} elseif(($_REQUEST["filesystem"] == 'msdos') or ($_REQUEST["filesystem"] == 'umsdos') or ($_REQUEST["filesystem"] == 'vfat')) {
+		  // {{{ Mount options for msdos, umsdos and/or vfat
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td><input type="checkbox" name="fat_debug"<?php if($_REQUEST["fat_debug"]) { echo " CHECKED"; } ?>><?=$LANG->_('Print debugging info upon each (re)mount')?></td>
@@ -964,8 +1109,9 @@ function attribute_print_form() {
                  </tr>
 <?php
 // }}}
-	  } elseif($_REQUEST["filesystem"] == 'ntfs') {
-		// {{{ Mount options for NTFS
+
+		} elseif($_REQUEST["filesystem"] == 'ntfs') {
+		  // {{{ Mount options for NTFS
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td><input type="checkbox" name="utf8"<?php if($_REQUEST["utf8"]) { echo " CHECKED"; } ?>><?=$LANG->_('Use UTF-8 for converting file names')?></td>
@@ -984,8 +1130,9 @@ function attribute_print_form() {
                  </tr>
 <?php
 // }}}
-	  } elseif($_REQUEST["filesystem"] == 'reiserfs') {
-		// {{{ Mount options for reiserfs
+
+		} elseif($_REQUEST["filesystem"] == 'reiserfs') {
+		  // {{{ Mount options for reiserfs
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td><input type="checkbox" name="reiser_conv"<?php if($_REQUEST["reiser_conv"]) { echo " CHECKED"; } ?>><?=$LANG->_('Instructs version 3.6 reiserfs software to mount a version 3.5 FS')?></td>
@@ -1020,8 +1167,9 @@ function attribute_print_form() {
                  </tr>
 <?php
 // }}}
-	  } elseif($_REQUEST["filesystem"] == 'xfs') {
-		// {{{ Mount options for XFS
+
+		} elseif($_REQUEST["filesystem"] == 'xfs') {
+		  // {{{ Mount options for XFS
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td><input type="checkbox" name="dmapi"<?php if($_REQUEST["dmapi"]) { echo " CHECKED"; } ?>><?=$LANG->_('Enable the DMAPI event callouts')?>&nbsp;&nbsp;</td>
@@ -1053,8 +1201,9 @@ function attribute_print_form() {
                  </tr>
 <?php
 // }}}
-	  } elseif($_REQUEST["filesystem"] == 'iso9660') {
-		// {{{ Mount options for ISO9660
+
+		} elseif($_REQUEST["filesystem"] == 'iso9660') {
+		  // {{{ Mount options for ISO9660
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td><input type="checkbox" name="norock" onChange="submit()"<?php if($_REQUEST["norock"]) { echo " CHECKED"; } ?>><?=$LANG->_('Disable the use of Rock Ridge extensions')?>&nbsp;&nbsp;</td>
@@ -1084,8 +1233,9 @@ function attribute_print_form() {
 
 <?php
 // }}}
-	  } elseif($_REQUEST["filesystem"] == 'udf') {
-		// {{{ Mount options for udf
+
+		} elseif($_REQUEST["filesystem"] == 'udf') {
+		  // {{{ Mount options for udf
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td><input type="checkbox" name="unhide"<?php if($_REQUEST["unhide"]) { echo " CHECKED"; } ?>><?=$LANG->_('Show otherwise hidden files')?>&nbsp;&nbsp;</td>
@@ -1098,8 +1248,9 @@ function attribute_print_form() {
                  </tr>
 <?php
 // }}}
-	  } else {
-		// {{{ Mount options for unspecified FS
+
+		} else {
+		  // {{{ Mount options for unspecified FS
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td>&nbsp;
@@ -1116,6 +1267,7 @@ function attribute_print_form() {
                  </tr>
 <?php
 // }}}
+		}
 	  }
 ?>
                </th>
@@ -1124,7 +1276,8 @@ function attribute_print_form() {
         </tr>
 <?php
 // }}}
-	}
+
+	  }
 ?>
       </th>
     </table>
@@ -1134,7 +1287,6 @@ function attribute_print_form() {
 ?>
     <input type="hidden" name="dosave"   id="dosave">
     <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
-    <input type="hidden" name="host"     value="<?=$_REQUEST["host"]?>">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue" value="<?=urlencode($_REQUEST[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")])?>">
     <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
@@ -1155,61 +1307,61 @@ function attribute_print_form() {
 function attribute_save($type) {
     global $_pql, $LANG;
 
-    switch($type) {
-      case "add":
-		// {{{ Add a automount
-		// {{{ Setup DN
-		// Find the physical host DN
-		$filter  = '(&';
-		$filter .=   '('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')';
-		$filter .=   '(|';
-		$filter .=     '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)';
-		$filter .=     '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)';
-		$filter .=   ')';
-		$filter .= ')';
-		$physical_host_dn = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
-		if(!@$physical_host_dn[0]) {
-		  echo "Can't find physical host DN for host FQDN '".$_REQUEST["host"]."'.<br>";
-		  echo "Tried with filter '$filter' below DN '".$_SESSION["USER_SEARCH_DN_CTR"]."'<br>";
-		  echo "and a ONELEVEL search scope.";
-		  die();
+	// {{{ Setup DN
+	if(($type == 'add') or ($type == 'modify')) {
+	  if(@$_REQUEST["mountpoint"] and ($_REQUEST["basemount"] == 'new')) {
+		// Prefix the DN with the name of the mounpoint
+		$auto_master = attribute_find_automaster($_REQUEST["host"]);
+		if(!$_pql->get_dn($auto_master, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
+		  // First ever automount for this host - create the auto.master object
+		  // Can't use pql_unit_add() here because it creates an organizationalUnit
+		  // object, and we want a automountMap...
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = 'automountMap';
+		  $entry["ou"] = "auto.master";
+		  
+		  if(!$_pql->add($auto_master, $entry, 'unit', 'attrib.automount.inc:attribute_save_add'))
+			die("Could not add auto.master object!");
 		}
-
-		if(@$_REQUEST["mountpoint"] and ($_REQUEST["basemount"] == 'new')) {
-		  // Prefix the DN with the name of the mounpoint
-		  $dn = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mountpoint"].",".attribute_find_automaster($physical_host_dn[0]);
-		} else {
-		  $dn  = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["basemount"].",".attribute_find_automaster($physical_host_dn[0]);
-		  $info = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
-		  if(eregi('ldap ', $info)) {
-			// info => 'ldap ldapi://%2fvar%2frun%2fslapd%2fldapi.main:ou=auto.mnt,cn=pumba.bayour.com,ou=Computers,c=SE'
-			// An LDAP link - asume that the DN is in this server
-			// (simply because I won't be able to connect to another server here)
-			$dn = split(':', $info); $dn = $dn[2];
-		  } elseif(eregi('file ', $info)) {
-			// A file link - can't follow that!
+		
+		$dn = $auto_master;
+	  } else {
+		$info = $_pql->get_attribute($_REQUEST["basemount"], pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
+		if(eregi('ldap', $info)) {
+		  // An LDAP link
+		  $dn = split(':', $info);
+		  if($dn[2])
+			// info => 'ldap ldapi://%2fvar%2frun%2fslapd%2fldapi.provider:ou=auto.mnt,cn=pumba.bayour.com,ou=Computers,c=SE'
+			$dn = $dn[2];
+		  elseif($dn[1])
+			// info => 'ldap localhost:ou=auto.share,cn=pumba.bayour.com,ou=Computers,c=SE'
+			$dn = $dn[1];
+		} elseif(eregi('file ', $info)) {
+		  // A file link - can't follow that!
 ?>
 Sorry, this base mount is a <b>file</b> link and I don''t know how to follow that...
 <?php
-		  } else {
-			// Don't know what to do now... Die!
-			$object = $_pql->search($dn, 'objectClass=*', BASE);
+		} else {
+		  // Don't know what to do now... Die!
+		  $object = $_pql->search($dn, 'objectClass=*', BASE);
 ?>
-Sorry, this base mount is not an LDAP link. Don't know what to do now...<br>
+<font color="red">Sorry, this base mount is not an LDAP link nor is it a file link. Don't know what to do now...</font><p>
 Please report this to either to the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>
 or to the <a href="mailto:phpqladmin@lists.bayour.com">mailinglist</a><br>
 Make sure you include this object information (I'm mostly interested in the <b><?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?></b> attribute):
 <?php
-			printr($object);
-			die();
-		  }
-
-		  // Prefix the DN with the name of the mounpoint
-		  $dn = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mountpoint"].",$dn";
+		  printr($object);
+		  die();
 		}
+	  }
 
+	  // Prefix the DN with the name of the mounpoint
+	  $dn = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mountpoint"].",$dn";
+	}
 // }}}
 
+    switch($type) {
+      case "add":
+		// {{{ Add a automount
 		// {{{ Setup object
 		$object["dn"] = $dn;
 		$object[pql_get_define("PQL_ATTR_OBJECTCLASS")] = 'autoMount';
@@ -1238,9 +1390,12 @@ Make sure you include this object information (I'm mostly interested in the <b><
 		// {{{ Add object to LDAP server
 		// The ':_add' is only so that pql_create_ldif() will not put the 'replace: ...' lines in the LDIF.
 		if($_pql->add($object["dn"], $object, 'automount', 'attrib.automount.inc:attribute_save_add')) {
-		  if(@$_REQUEST["mountpoint"] and ($_REQUEST["basemount"] == 'new')) {
-			// Also create the $_REQUEST[searchdn] object
-			$dnparts = split(',', $_REQUEST["searchdn"]);
+		  if(@$_REQUEST["mountpoint"] and (($_REQUEST["basemount"] == 'new') or ($_REQUEST["filesystem"] == 'autofs'))) {
+			// Also create the 'auto.<mountpoint>' object
+			$mnt  = pql_get_define("PQL_ATTR_OU").'=auto.'.preg_replace('/\//', '', $_REQUEST["mountpoint"]);
+			$mnt .= ','.$_REQUEST["host"];
+
+			$dnparts = split(',', $mnt);
 			$parentdn = '';
 			for($i=1; $dnparts[$i]; $i++) {
 			  $parentdn .= $dnparts[$i];
@@ -1266,25 +1421,41 @@ Make sure you include this object information (I'm mostly interested in the <b><
 
       case "modify":
 		// {{{ Modify a automount
-		// {{{ Setup (new) automountInformation attribute
-		$dn = $_REQUEST["mount"];
-		$automount = attribute_setup();
-// }}}
+		if(!$_pql->get_dn($dn, pql_get_define("PQL_ATTR_OBJECTCLASS".'=*'), 'BASE')) {
+		  // We probably 'changed' the location by selecting another base mountpoint or
+		  // by selecting another mount point. This means that the new location doesn't
+		  // exist, so ADD a new object to the database...
 
-		// {{{ Do modification
-		if($automount == $_REQUEST["oldvalue"])
-			// Don't change if new value equal to old one
-			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Automount information')));
-		else {
-			if(pql_modify_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), 1, $automount))
-				$msg = pql_complete_constant($LANG->_('Successfully changed %what% to SMB mount %new%'),
-											 array('what' => $LANG->_('path'),
-												   'new'  => $_REQUEST["mountpoint"]));
-			else
-			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('path'))) . ": " . ldap_error($_pql->ldap_linkid);
+		  // {{{ Setup object
+		  $object["dn"] = $dn;
+		  $object[pql_get_define("PQL_ATTR_OBJECTCLASS")] = 'autoMount';
+		  if(@$_REQUEST["description"])
+			$object[pql_get_define("PQL_ATTR_DESCRIPTION")] = $_REQUEST["description"];
+		  if(@$_REQUEST["mountpoint"])
+			$object[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["mountpoint"];
+		  
+		  $object[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")] = attribute_setup();
+		  // }}}
+		  
+		  // Add new object to database
+		  if($_pql->add($dn, $object, 'automount', 'attrib.automount.inc:attribute_save_add'))
+			// TODO: Should we remove the old? I don't think so - user might want duplicates.
+			//       For example: I have '/mnt/cdrom1' and '/mnt/cdrom/1' with the same options
+			//       etc... The first is for convenience (and because I don't always get the
+			//       submount - the second one - correct :).
+			$msg = $LANG->_('Successfully added automount');
+		  else
+			$msg = $LANG->_('Failed to add automount').": ".ldap_error($_pql->ldap_linkid);
+		} else { 
+		  // Setup (new) automountInformation attribute
+		  $automount = attribute_setup();
+
+		  // Do modification
+		  if(pql_modify_attribute($dn, pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), 1, $automount))
+			$msg = $LANG->_('Successfully modified automount');
+		  else
+			$msg = $LANG->_('Failed to modify automount').": ".ldap_error($_pql->ldap_linkid);
 		}
-// }}}
 
 		attribute_forward($msg);
 		break;
@@ -1294,10 +1465,10 @@ Make sure you include this object information (I'm mostly interested in the <b><
 		// {{{ Delete the automount information in $_REQUEST["mount"]
 		if($_pql->delete($_REQUEST["mount"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed mountpoint %mount%'),
-									   array('mount' => $_REQUEST["mount"]));
+									   array('mount' => $_REQUEST["mountpoint"]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove mountpoint %mount%'),
-									   array('mount' => $_REQUEST["mount"])) . ": " . ldap_error($_pql->ldap_linkid);
+									   array('mount' => $_REQUEST["mountpoint"])) . ": " . ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
