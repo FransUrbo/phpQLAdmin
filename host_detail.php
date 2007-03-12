@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 2.5 2007-02-26 09:44:44 turbo Exp $
+// $Id: host_detail.php,v 2.6 2007-03-12 10:32:49 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -56,16 +56,50 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
     <span class="title1"><?=$LANG->_('Computer')?>: <?=pql_maybe_idna_decode(urldecode($host))?></span>
     <p>
 <?php
-// Retreive all necessary web server information (including access control)
-$DATA = pql_websrv_get_data();
+if($_REQUEST["host"] == 'Global') {
+  // {{{ Retreive all physical hosts
+  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
+						 '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))',
+						 'ONELEVEL');
+// }}}
 
-// {{{ Access Control checks
-// Check if user is controls admin in any of the root DN's
+  // {{{ Add a 'Global' branch as first branch
+  if($_SESSION["ALLOW_BRANCH_CREATE"] or $controls_admin) {
+	// Only do this if:
+	//	1. User is super admin
+	//	2. User is global controls administrator
+	$tmp[] = "Global";
+	foreach($hosts as $host)
+	  $tmp[] = $host;
+	$hosts = $tmp;
+  }
+// }}}
+} else {
+  $hosts = array($_REQUEST["host"]);
+}
+
+// {{{ Check if user is controls admin in any of the root DN's
 $controls_admin = 0;
 foreach($_pql->ldap_basedn as $dn)  {
   $dn = pql_format_normalize_dn($dn);
   if(pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
 	$controls_admin = 1;
+}
+// }}}
+
+// {{{ For each physical host, find web containers and their virtual hosts
+$DATA = array();
+foreach($hosts as $host_dn) {
+  $tmp = pql_websrv_get_data($host_dn);
+  if(is_array($tmp)) {
+	foreach($tmp as $host => $data)
+	  $DATA[$host] = $data;
+  } else {
+	// This host does not have any web containers, but we still want it
+	// in the list - add it 'empty'
+	$host = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_CN"));
+	$DATA[$host_dn] = array();
+  }
 }
 // }}}
 
