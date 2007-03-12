@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.50 2007-02-27 11:34:24 turbo Exp $
+// $Id: pql_write.inc,v 2.51 2007-03-12 12:02:13 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -225,7 +225,7 @@ function pql_user_add($domain, $dn, $entry, $type, $branch) {
 	  $ou_entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'organizationalUnit';
 	  
 	  // Create a LDIF object to print in case of error
-	  if(!$_pql->add($ou_rdn, $ou_entry, '', 'pql_user_add - user creation/ou')) {
+	  if(!$_pql->add($ou_rdn, $ou_entry, $type, 'pql_user_add - user creation/ou')) {
 		echo "I've tried to add the user object, but that failed because of error 32 - No such object. ";
 		echo "The idea was that it was missing the organizational unit container preceding it in the path. ";
 		echo "That didn't work either. I'm stumped...<br>";
