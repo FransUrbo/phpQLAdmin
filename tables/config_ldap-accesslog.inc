@@ -76,7 +76,7 @@
           <td><?=$LANG->_('Result')?></td>
           <td><?=$LANG->_('Who')?>/<?=$LANG->_('What')?></td>
         </tr>
-<?php for($i=0; $log[$i]; $i++) {
+<?php for($i=$_REQUEST["start"]; $log[$i]; $i++) {
 	$reqstart = pql_format_timestamp($log[$i]["reqstart"]);
 	$reqstart = preg_replace('/ /', '&nbsp;', $reqstart);
 	$reqstart = preg_replace('/\+.*/', '', $reqstart);
@@ -108,6 +108,11 @@
             <?=$log[$i]["reqdn"]?>
           </td>
         </tr>
-<?php } ?>
+<?php
+	if($i >= ($_REQUEST["start"]*500)) {
+	  break;
+	}
+      }
+?>
       </th>
     </table>
