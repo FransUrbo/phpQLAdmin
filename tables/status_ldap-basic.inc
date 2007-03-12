@@ -8,6 +8,8 @@ if($timestamp_current and $timestamp_start) {
 } else {
     $time_uptime = "n/a";
 }
+
+// {{{ Basic LDAP server status
 ?>
 
   <span class="title1"><?=$LANG->_('Basic LDAP Server Status')?></span>
@@ -40,7 +42,9 @@ if($timestamp_current and $timestamp_start) {
   </table>
 
 <?php
-// Get LDAP listeners this server have opened
+// }}}
+
+// {{{ Get LDAP listeners this server have opened
 $listeners = pql_get_subentries($_pql->ldap_linkid, "cn=Listeners,".$_pql->ldap_monitor, "labeledURI", "cn=Listener*");
 if(is_array($listeners)) {
 ?>
@@ -65,8 +69,22 @@ if(is_array($listeners)) {
 ?>
 
 <?php
-// Get LDAP overlays this server have opened/started.
-$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlay,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
+// }}}
+
+// {{{ Get LDAP overlays this server have opened/started.
+// NOTE: Is it 'cn=Overlay' or 'cn=Overlays'?
+//       In 2.4, it's the later...
+if($_pql->get_dn("cn=Overlay,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
+  // OpenLDAP <2.4
+  $overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlay,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
+} elseif($_pql->get_dn("cn=Overlays,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
+  // OpenLDAP >2.4
+  $overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlays,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
+} else {
+  echo "Can't find out where to look for overlays... Tried both 'cn=Overlay,".$_pql->ldap_monitor."' and cn=Overlays,".$_pql->ldap_monitor;
+  echo "<br>but neither worked...<br>";
+}
+
 if(is_array($overlays)) {
 ?>
   <br>
@@ -85,8 +103,31 @@ if(is_array($overlays)) {
   </table>
 <?php
 }
+// }}}
+
+// {{{ Misc LDAP server configuration
+$max_file_descriptors = pql_get_subentries($_pql->ldap_linkid, "cn=Connections,".$_pql->ldap_monitor,
+										   "monitorCounter", "cn=Max File Descriptors");
+if(is_array($max_file_descriptors)) {
+  $max_file_descriptors = $max_file_descriptors[0];
 ?>
+  <br>
+
+  <span class="title1"><?=$LANG->_('LDAP Server Configuration Setup')?></span>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">
+      <tr>
+        <td class="title"><?=$LANG->_('Max File Descriptors')?></td>
+        <?php $class=pql_format_table(0); ?>
+        <td class="<?=$class?>"><?=$max_file_descriptors?></td>
+      </tr>
+    </th>
+  </table>
+
 <?php
+}
+// }}}
+
 /*
  * Local variables:
  * mode: php
