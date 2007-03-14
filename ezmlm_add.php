@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.47 2007-03-01 10:26:00 turbo Exp $
+// $Id: ezmlm_add.php,v 1.48 2007-03-14 12:10:51 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -179,11 +179,7 @@ if(!empty($_REQUEST["submit"])) {
 	  
 	  $url  = "ezmlm_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&domainname=".$_REQUEST["domainname"];
 	  $url .= "&listno=".$_REQUEST["listname"]."&msg=$msg&rlnb=3";
-	  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-		die("<b>$url</b>");
-	  } else
-		pql_header($url);
+	  pql_header($url);
 	} else
 	  $error_text["listname"] = $LANG->_('Missing')."<br>";
 } else {

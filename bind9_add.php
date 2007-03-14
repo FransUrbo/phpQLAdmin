@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.34 2007-02-19 10:54:51 turbo Exp $
+// $Id: bind9_add.php,v 2.35 2007-03-14 12:10:49 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -103,11 +103,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	$url .= "&msg=".urlencode($msg);
 	if(@$_REQUEST["host"] and $_REQUEST["ref"])
 	  $url .= "&host=".$_REQUEST["host"]."&ref=".$_REQUEST["ref"];
-	
-	if(pql_get_define("PQL_CONF_DEBUG_ME"))
-	  die($url);
-	else
-	  pql_header($url);
+	pql_header($url);
 // }}}
   }
 } elseif(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'host')) {
@@ -323,12 +319,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 	if(@$_REQUEST["host"] and $_REQUEST["ref"])
 	  $url .= "&host=".$_REQUEST["host"]."&ref=".$_REQUEST["ref"];
-
-	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-	  die("<b>$url</b>");
-	} else
-	  pql_header($url);
+	pql_header($url);
 // }}}
   }
 }

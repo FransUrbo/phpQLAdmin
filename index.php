@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.58 2007-02-27 11:28:54 turbo Exp $
+// $Id: index.php,v 2.59 2007-03-14 12:10:52 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -193,7 +193,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 				$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
 				
 				session_write_close();
-				pql_header("index.php?msg=" . urlencode($msg) . "&uname=$uname");
+				pql_header("index.php?msg=" . urlencode($msg) . "&uname=$uname", 1);
 			  }
 			}
 		  }
@@ -209,7 +209,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
 		  die($msg);
 		else
-		  pql_header("index.php?msg=$msg");
+		  pql_header("index.php?msg=$msg", 1);
 	}
 
 	// We made it, so set all the session variables.
@@ -225,9 +225,9 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 
 	if($_pql->get_attribute($_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED"))) {
 	  session_write_close();
-	  pql_header("index2.php?advanced=1");
+	  pql_header("index2.php?advanced=1", 1);
 	} else
-	  pql_header("index2.php");
+	  pql_header("index2.php", 1);
 }
 
 pql_flush();

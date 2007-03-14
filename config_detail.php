@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.66 2007-03-05 10:14:16 turbo Exp $
+// $Id: config_detail.php,v 2.67 2007-03-14 12:10:50 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -117,7 +117,7 @@ if($_REQUEST["view"] == 'default') {
     else
       $link .= "?advanced=0";
 
-    pql_header($link);
+    pql_header($link, 1);
 } else {
     if (empty($_REQUEST["branch"])) {
       $_REQUEST["branch"] = $_REQUEST["view"];

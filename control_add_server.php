@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.35 2007-02-15 12:07:09 turbo Exp $
+// $Id: control_add_server.php,v 2.36 2007-03-14 12:10:50 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -80,12 +80,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		if($_pql_control->add($dn, $entry, 'qmail', 'control_add_server.php')) {
 		  $msg  = urlencode("Successfully created mailserver ".pql_maybe_idna_decode($_REQUEST["fqdn"]).".");
 		  $link = "control_detail.php?mxhost=".urlencode($dn)."&msg=$msg&rlnb=2";
-		  
-		  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-			echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-			die("<b>$link</b>");
-		  } else
-			pql_header($link);
+		  pql_header($link);
 		} else
 		  die("Failed to clone QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>.");
 	  } else
@@ -126,12 +121,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		if($_pql_control->add($dn, $entry, 'qmail', 'control_add_server.php')) {
 		  $msg  = urlencode("Successfully created mailserver ".$_REQUEST["fqdn"].".");
 		  $link = "control_detail.php?mxhost=".urlencode($dn)."&msg=$msg&rlnb=2";
-		  
-		  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-			echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-			die("<b>$link</b>");
-		  } else
-			pql_header($link);
+		  pql_header($link);
 		} else
 		  die("Failed to add QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>");
 	  } else {

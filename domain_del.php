@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.43 2007-02-15 12:07:10 turbo Exp $
+// $Id: domain_del.php,v 2.44 2007-03-14 12:10:51 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -105,12 +105,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	    // {{{ Redirect to home page
 	    $msg = urlencode($LANG->_('Successfully removed the domain'));
 		$link = "home.php?msg=$msg&rlnb=1";
-
-		if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-		  echo "<br>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-		  die("<b>".$link."<b>");
-		} else
-		  pql_header($link);
+		pql_header($link);
 		// }}}
 	} else {
 	    $msg = $LANG->_('Failed to remove the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);

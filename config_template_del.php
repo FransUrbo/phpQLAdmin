@@ -1,6 +1,6 @@
 <?php
 // Delete a user template object
-// $Id: config_template_del.php,v 2.10 2007-02-15 12:07:09 turbo Exp $
+// $Id: config_template_del.php,v 2.11 2007-03-14 12:10:50 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -22,7 +22,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
       die();
     }
 
-    pql_header("config_detail.php?view=template");
+    pql_header("config_detail.php?view=template", 1);
   }
 // }}}
 } else {

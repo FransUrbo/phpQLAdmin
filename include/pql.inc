@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.230 2007-03-09 17:25:56 turbo Exp $
+// $Id: pql.inc,v 2.231 2007-03-14 12:10:55 turbo Exp $
 //
 
 // ----------------------------
@@ -1445,20 +1445,25 @@ function pql_recreate_dnsttl($dn) {
 }
 // }}}
 
-// {{{ pql_header(url)
-function pql_header($url) {
+// {{{ pql_header(url, force)
+function pql_header($url, $force = 0) {
   $uri = $_SESSION["URI"].$url;
   
-  if(function_exists("http_redirect"))
-	http_redirect($uri);
-  else {
-	if(function_exists("ob_clean"))
-	  ob_clean();
-	
-	header("Location: $uri");
+  if(pql_get_define("PQL_CONF_DEBUG_ME") and !$force) {
+    echo "<p>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+    die("<b>$uri</b>");
+  } else {
+	if(function_exists("http_redirect"))
+	  http_redirect($uri);
+	else {
+	  if(function_exists("ob_clean"))
+		ob_clean();
+	  
+	  header("Location: $uri");
+	}
+
+	exit;
   }
-  
-  exit;
 }
 // }}}
 

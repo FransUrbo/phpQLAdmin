@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.55 2007-02-19 19:24:44 turbo Exp $
+// $Id: control_detail.php,v 1.56 2007-03-14 12:10:51 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -212,7 +212,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	else {
 	  // This is ugly. We're called with a 'view' which is actually a 'category'.
 	  $url = "control_cat.php?mxhost=".$_REQUEST["mxhost"]."&cat=".urlencode($_REQUEST["view"])."&ref=".$_REQUEST["ref"];
-	  pql_header($url);
+	  pql_header($url, 1);
 	}
 // }}}
 } else {

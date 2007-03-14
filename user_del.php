@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.49 2007-02-15 12:07:13 turbo Exp $
+// $Id: user_del.php,v 2.50 2007-03-14 12:10:53 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -150,11 +150,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	$msg = urlencode($msg);
 	$link = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg$rlnb";
 
-	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-	  echo "<br>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-	  die("<b>".$link."<b>");
-	} else
-	  pql_header($link);
+	pql_header($link);
 // }}}
 
 	// }}}

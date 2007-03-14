@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.51 2007-02-27 11:29:34 turbo Exp $
+// $Id: index2.php,v 2.52 2007-03-14 12:10:52 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -7,7 +7,7 @@ require($_SESSION["path"]."/include/pql_config.inc");
 
 if(!@$_SESSION["USER_DN"]) {
   /* The user haven't loged in, force a login */
-  pql_header("index.php");
+  pql_header("index.php", 1);
 }
 
 if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"]) and

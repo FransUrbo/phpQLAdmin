@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.30 2007-02-15 12:07:12 turbo Exp $
+// $Id: unit_add.php,v 2.31 2007-03-14 12:10:52 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -49,15 +49,9 @@ if($_REQUEST["unit"]) {
 // }}}
 
     // {{{ Add unit to database
-    if(pql_unit_add($_REQUEST["domain"], $_REQUEST["unit"])) {
-      if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
-	// Redirect to domain-details
-	pql_header($url);
-      } else {
-	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-	die("<b>$url</b>");
-      }
-    } else {
+    if(pql_unit_add($_REQUEST["domain"], $_REQUEST["unit"]))
+      pql_header($url);
+    else {
       $msg = urlencode($LANG->_('Failed to create the sub unit') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
       pql_header("home.php?msg=$msg");
     }

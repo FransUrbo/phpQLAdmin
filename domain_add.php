@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.71 2007-02-15 12:07:09 turbo Exp $
+// $Id: domain_add.php,v 2.72 2007-03-14 12:10:51 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -46,7 +46,7 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc
 // {{{ Check if domain is valid
 //if(!pql_check_hostaddress($_REQUEST["domain"], $force_dot)) {
 //	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
-//	pql_header("home.php?msg=$msg");
+//	pql_header("home.php?msg=$msg", 1);
 //}
 // }}}
 
@@ -55,7 +55,7 @@ $filter  = '(&(objectclass=*)('.pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH"
 $filter .= '='.$_REQUEST["domain"].'))';
 if($_pql->get_dn($_REQUEST["rootdn"], $filter, 'ONELEVEL')) {
 	$msg = urlencode($LANG->_('This domain already exists'));
-	pql_header("home.php?msg=$msg");
+	pql_header("home.php?msg=$msg", 1);
 }
 // }}}
 

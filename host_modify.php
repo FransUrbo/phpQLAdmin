@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.14 2007-02-26 13:53:42 turbo Exp $
+// $Id: host_modify.php,v 2.15 2007-03-14 12:10:52 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -76,12 +76,7 @@ if(isset($_REQUEST['action'])) {
 				   array("what" => $_REQUEST['userdn']));
     
     $url = "host_detail.php?host=".urlencode($_REQUEST["host"])."&msg=".urlencode($msg);
-    
-    if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-      echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url: '<b>$url</b>'<br>";
-      die($msg);
-    } else
-      pql_header($url);
+    pql_header($url);
 // }}}
 
   } elseif($_REQUEST['action'] == 'add_user_to_host') {

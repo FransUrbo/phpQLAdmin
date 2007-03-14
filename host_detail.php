@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 2.6 2007-03-12 10:32:49 turbo Exp $
+// $Id: host_detail.php,v 2.7 2007-03-14 12:10:52 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -192,7 +192,7 @@ if($_REQUEST["view"] == 'hostacl') {
 } elseif($_REQUEST["view"] == 'automount') {
   include("./tables/host_details-automount.inc");
 } elseif($_REQUEST["view"] == 'mailsrv') {
-  pql_header("control_detail.php?host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]);
+  pql_header("control_detail.php?host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 1);
 } elseif($_REQUEST["view"] == 'websrv') {
   include("./tables/host_details-websrv.inc");
 } elseif($_REQUEST["view"] == 'radius') {

@@ -1,6 +1,6 @@
 <?php
 // Modify Sudo roles
-// $Id: sudo_modify.php,v 2.9 2007-02-26 09:44:44 turbo Exp $
+// $Id: sudo_modify.php,v 2.10 2007-03-14 12:10:52 turbo Exp $
 
 // {{{ Setup session etc
 // Called directly - as in modifying something with a specific sudo role
@@ -14,12 +14,7 @@ include($_SESSION["path"]."/header.html");
 function attribute_forward($msg) {
   $url  = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
   $url .= "&view=".$_REQUEST["view"]."&msg=$msg";
-  
-  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-    echo "<p>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-    die("<b>".$_SESSION["URI"].$url."</b>");
-  } else
-    pql_header($url);
+  pql_header($url);
 }
 // }}}
 

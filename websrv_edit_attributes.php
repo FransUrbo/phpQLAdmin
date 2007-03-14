@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.16 2007-02-26 09:29:12 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.17 2007-03-14 12:10:53 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -33,11 +33,7 @@ function attribute_forward($msg) {
 	if($_REQUEST["hostdir"])  $LINK_URL .= "&hostdir=".$_REQUEST["hostdir"];
 	$LINK_URL .= "&view=".$_REQUEST["view"]."&msg=$msg";
 
-	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-		die("<b>$LINK_URL</b>");
-	} else
-	  pql_header($LINK_URL);
+	pql_header($LINK_URL);
 }
 // }}}
 ?>

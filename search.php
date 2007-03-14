@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.41 2007-02-15 12:07:12 turbo Exp $
+// $Id: search.php,v 2.42 2007-03-14 12:10:52 turbo Exp $
 //
 // {{{ Includes
 require("./include/pql_session.inc");
@@ -37,7 +37,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 if(empty($_REQUEST["attribute"]) or empty($_REQUEST["filter_type"]) or empty($_REQUEST["search_string"])) {
     // Invalid form submission
     $msg = urlencode($LANG->_('You have to provide a value to search for'));
-    pql_header("home.php?msg=$msg");
+    pql_header("home.php?msg=$msg", 1);
 }
 // }}}
 

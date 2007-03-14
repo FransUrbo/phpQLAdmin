@@ -1,6 +1,6 @@
 <?php
 // Add a user template
-// $Id: config_template_add.php,v 2.10 2007-03-05 10:21:07 turbo Exp $
+// $Id: config_template_add.php,v 2.11 2007-03-14 12:10:50 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -17,12 +17,7 @@ $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 // {{{ Forward back to configuration detail page
 function attribute_forward($msg) {
-  $url =  "config_detail.php?view=template";
-  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-	die("<b>$url</b>");
-  } else
-	pql_header($url);
+  pql_header("config_detail.php?view=template&msg=".urlencode($msg));
 }
 // }}}
 

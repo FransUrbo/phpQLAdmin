@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.28 2007-02-15 12:07:09 turbo Exp $
+// $Id: control_del.php,v 2.29 2007-03-14 12:10:50 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -123,14 +123,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				  $oldmx = $_REQUEST["oldmx"]; unset($_REQUEST);
 				  $url = $_SERVER["PHP_SELF"]."?mxhost=$oldmx&error=1";
 
-				  pql_header($url);
+				  pql_header($url, 1);
 			  } else {
 				  if(($_REQUEST["newmx"] == 'user') and !$_REQUEST["mxhost"]) {
 					  // No (user specified) MX/host specified - do over!
 					  $oldmx = $_REQUEST["oldmx"]; unset($_REQUEST);
 					  $url = $_SERVER["PHP_SELF"]."?mxhost=$oldmx&error=1";
 
-					  pql_header($url);
+					  pql_header($url, 1);
 				  } else {
 					  // Move the user(s) to user specified server
 					  // OR

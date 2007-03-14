@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.41 2007-02-15 12:07:13 turbo Exp $
+// $Id: user_del_attribute.php,v 2.42 2007-03-14 12:10:53 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -118,12 +118,6 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     // {{{ Redirect to users detail page
     $url = "user_detail.php?rootdn=" . urlencode($_REQUEST["rootdn"]) . "&domain=" . urlencode($_REQUEST["domain"])
       . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg) . "&view=" . $_REQUEST["view"];
-	
-    if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-      echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-      die("<b>$url</b>");
-    }
-	
     pql_header($url);
 // }}}
 } else {

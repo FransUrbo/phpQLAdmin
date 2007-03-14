@@ -1,6 +1,6 @@
 <?php
 // add sudo role
-// $Id: sudo_add.php,v 2.1 2007-02-26 09:44:44 turbo Exp $
+// $Id: sudo_add.php,v 2.2 2007-03-14 12:10:52 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -24,12 +24,7 @@ function attribute_forward($msg) {
   
   $LINK_URL = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
   $LINK_URL .= "&view=".$_REQUEST["view"]."&msg=$msg";
-  
-  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-	die("<b>$LINK_URL</b>");
-  } else
-	pql_header($LINK_URL);
+  pql_header($LINK_URL);
 }
 // }}}
 ?>

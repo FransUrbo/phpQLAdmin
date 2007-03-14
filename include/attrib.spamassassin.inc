@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for spamAssassin
-// $Id: attrib.spamassassin.inc,v 2.8 2007-02-26 12:49:42 turbo Exp $
+// $Id: attrib.spamassassin.inc,v 2.9 2007-03-14 12:10:55 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -210,13 +210,7 @@ function attribute_save($request) {
 		. "&user=" . $url["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);
 	  if ($rlnb)
 		$link .= "&rlnb=2";
-	  
-	  if(!pql_get_define("PQL_CONF_DEBUG_ME"))
-		pql_header($link);
-	  else {
-		echo "<p>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-		die("<b>".$_SESSION["URI"].$link."</b>");
-	  }
+	  pql_header($link);
 	}
 // }}}
 }
