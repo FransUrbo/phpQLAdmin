@@ -2,9 +2,43 @@ phpQLAdmin 2.3 Change Log
 
 phpQLAdmin 2.3.7 TO BE ANNOUNCED
 	Bug fixes
+	  - Almost a complete rewrite of the automount manager:
+	    + Support creating a submount (mountpoint link)
+	    + Function to get the all the mountpoints recursivly (mountpoint link on a
+	      mountpoint link) using attribute_find_mountpoints().
+	    + Catch the iso9660 mount options already availible in the form.
+	    + Option to specify to which physical host to add the mountpoint - Doh!
+	    + No longer any need to fetch the physical host DN - we're already called
+	      with that information.
+	    + Simplification on retreiving the automount information about specific
+	      mountpoint when modifying an existing object - we already know the DN
+	      of the mountpoint!
+	    + Also no need to retreive/'calculate' the base mount for the mountpoint
+	      in question - that information is also already availible in the call
+	      to attrib.automount.inc:attribute_save().
+	    + Remove the option to insert the 'Search DN' of the new automount link.
+	      To complicated - that can be calculated...
+	    + If the host never had a automount before, the auto.master object must
+	      first be created when adding an automount.
+	    + Fix the very broken 'modify automount' part which used '$_REQUEST["domain"]'
+	      which isn't availible and is also wrong.
+	    + Catch a new object (if changing mountpoint for example) when asked to
+	      modify.
+	  - Small fixes in regards of deleting DNS host(s) when we're removing a
+	    web server virtual host.
+	    + Don't do this by default if we have round-robin hosts for this vhost.
+	    + The 'Delete any DNS host entries' question must be a radio button, not
+	      a checkbox - we must be able to distinguish set and unset.
+
 	GUI layout changes
+	  - Support for copying or moving a virtual host from one physical webserver to
+	    another.
+
 	API changes
 	Misc changes
+	  - Move all the 'if debug die, othervise call pql_header()'. Had to make a small
+	    API change to pql_header() for this to work propperly - a 'force' option which
+	    bypasses the 'if debug die' thing...
 
 phpQLAdmin 2.3.6 Release (Mar  5 2007)
 	Bug fixes
