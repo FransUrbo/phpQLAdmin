@@ -4,11 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.26 2007-03-12 12:00:29 turbo Exp $
+// $Id: pql_websrv.inc,v 1.27 2007-03-14 12:21:50 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(dn, entry, type)
 function pql_websrv_add_server($dn, $entry, $type) {
+	global $_pql;
+
 	if($type == "vrtsrv") {
 	  // This is a virtual host object
 	  $entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
