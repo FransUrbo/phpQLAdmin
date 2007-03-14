@@ -1,6 +1,6 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.8 2007-02-19 16:01:17 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.9 2007-03-14 12:16:38 turbo Exp $
 
 // {{{ Possibly show some debugging
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
@@ -302,8 +302,16 @@ if(($_REQUEST["virthost"] != 'acl') and
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="host_del.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
+        <td><a href="host_del.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?><?=$url_have_replicas?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
       </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td><a href="host_copy.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?><?=$url_have_replicas?>&action=move"><?php echo pql_complete_constant($LANG->_('Move %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td><a href="host_copy.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?><?=$url_have_replicas?>&action=clone"><?php echo pql_complete_constant($LANG->_('Clone %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
+      </tr>
+
 <?php		if($_REQUEST["hostdir"]) { ?>
 
       <tr class="<?php pql_format_table(); ?>">

@@ -243,6 +243,7 @@
 	  if(count($roundrobin) > 1) {
 		// Got more than one entry - round robin!
 		unset($hosts);
+		$url_have_replicas = "&replicas=1";
 
 		// Find the physical host and web container
 		for($i=0; $i < count($roundrobin); $i++) {
