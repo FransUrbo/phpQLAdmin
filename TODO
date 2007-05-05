@@ -1,11 +1,22 @@
 Things left to do
+	BUGS
+	* Fix Domain details->Host Control the same way as Domain details->Sudo was -
+	  by rewriting the whole thing to phpQLAdmin standars (i.e. use include/attrib.*.inc
+	  file etc).
+
 	IMPORTANT
 	* If we're modifying a value and we're missing an objectclass
 	  and the objectclass we find that REQUIRE (MAY) some attributes
 	  which we're missing, ask user/admin to fill in the missing
 	  attributes, THEN retry to add/modify the object.
+	  + Much/Most of this is already there, it just needs to be even
+	    smarter!
 
 	WISHLIST/Not so very important
+	* Fix 'Computers->Global->Mailserver Administration'. It currently doesn't
+	  show all the QLC objects (see 'Computers->Global->Webserver Administration').
+	  +  The current view should be moved to something like 'All mailserver values'.
+	  => I haven't decided if this actually wanted though!!
 	* Support for alias-domains: phpQLAdmin will be able to create
 	  domain aliases e.g domain.ch will forward all registred
 	  accounts to the equal account of domain.com.
