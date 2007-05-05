@@ -17,6 +17,30 @@ function showhide(what, what2) {
 	}
 }
 
+/**
+  * Function to start all childs closed in opera
+  */
+function initOpera() {
+
+  // Start all folders closed
+  var tempChilds = document.all.tags('SPAN');
+    var tempChildsCnt = tempChilds.length;
+    for (var i = 0; i < tempChildsCnt; i++) {
+      if (tempChilds(i).id.indexOf('Child') > 0)
+        tempChilds(i).style.display = 'none';
+    }
+
+  // Lets put all images with the plus sign
+  var tempImages = document.all.tags('IMG');
+    var tempImagesCnt = tempImages.length;
+    for (var i = 0; i < tempImagesCnt; i++) {
+      if (tempImages(i).id.indexOf('Img') > 0)
+        tempImages(i).src = imgClosed.src;
+    }
+
+}
+
+
 /*
  * Local variables:
  * mode: java

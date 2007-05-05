@@ -106,6 +106,17 @@ function nsShowAll() {
 } // end of the 'nsShowAll()' function
 
 
+function initOpera() {
+  // STart all folders closed
+  var tempChilds = document.all.tags('SPAN');
+    var tempChildsCnt = tempChilds.length;
+    for (var i = 0; i < tempChildsCnt; i++) {
+      if (tempChilds(i).id.indexOf('Child') > 0)
+        tempChilds(i).style.display = 'none';
+    }
+
+}
+
 /**
  * Collapses databases at startup
  *
@@ -113,8 +124,11 @@ function nsShowAll() {
  */
 function initIt()
 {
-  if (!capable || !isServer)
+  if ( (!capable || !isServer) && !isOpera)
     return;
+
+  if(isOpera)
+   initOpera();
 
   if (isDOM) {
     var tempColl    = document.getElementsByTagName('DIV');
