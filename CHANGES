@@ -29,16 +29,36 @@ phpQLAdmin 2.3.7 TO BE ANNOUNCED
 	    + Don't do this by default if we have round-robin hosts for this vhost.
 	    + The 'Delete any DNS host entries' question must be a radio button, not
 	      a checkbox - we must be able to distinguish set and unset.
+	  - Reword 'Create DNS object' to 'Create or Update DNS object' in creating web
+	    server (etc) which is more in line what it actually does...
+	    + Don't check the 'Update QLC object(s)' by default.
+	    + Urldecode the $_REQUEST["host"] before use (so that it can be used in
+	      the setting of $_REQUEST["server"] which is needed to be able to show the
+	      new object).
+	  - Fix the changing of record type (from CNAME to A record for example) in the
+	    DNS manager
+	  - Catch a physical host with a webserver container, but no virtual hosts.
+	    > Make sure this container is 'remembered'.
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
 	    another.
+	  - Disable the 'Create DNS object' checkbox when adding a new physical host. It's
+	    not implemented in host_add.php anyway and the question is missleading.
+	  - Enable a 'Create or Update DNS object' when copying or moving a virtual host
+	    from one webserver to another.
+	    + Also change the IP address of/in the virtual host to the new location.
+	  - Long standing problem/bug finaly fixed - initial folded branch tree in Opera! 
+	    Many thanx to Jose Silva @ PT for this fix!
 
 	API changes
 	Misc changes
 	  - Move all the 'if debug die, othervise call pql_header()'. Had to make a small
 	    API change to pql_header() for this to work propperly - a 'force' option which
 	    bypasses the 'if debug die' thing...
+	  - When deleting a virtual host/webserver or physical host, don't try to show
+	    the just deleted object! Unset the relevant variable(s) and show the object
+	    'one step up'.
 
 phpQLAdmin 2.3.6 Release (Mar  5 2007)
 	Bug fixes
