@@ -1,6 +1,6 @@
 phpQLAdmin 2.3 Change Log
 
-phpQLAdmin 2.3.7 TO BE ANNOUNCED
+phpQLAdmin 2.3.7 Release (May 10 2007)
 	Bug fixes
 	  - Almost a complete rewrite of the automount manager:
 	    + Support creating a submount (mountpoint link)
