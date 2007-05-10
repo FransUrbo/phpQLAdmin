@@ -10,7 +10,6 @@ doc/README.hostControl
 doc/README.internationalization
 doc/README.Memcache
 doc/README.misc
-doc/README.Monitor
 doc/README.overlays
 doc/README.radius
 doc/README.samba
