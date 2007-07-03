@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.231 2007-03-14 12:10:55 turbo Exp $
+// $Id: pql.inc,v 2.232 2007-07-03 22:15:49 turbo Exp $
 //
 
 // ----------------------------
@@ -82,7 +82,7 @@ class pql {
 	$dns = $this->_find_base_option("namingContexts");
 	for($i=0; $dns[$i]; $i++) {
 	  $value = $this->get_attribute($dns[$i], 'structuralObjectClass', 1);
-	  if(!eregi('auditContainer', $value)) 
+	  if(!eregi('auditContainer', $value) and !eregi('cn%3Dlog', $dns[$i]))
 		// I'm using the overlay-accesslog on the 'cn=LOG1'
 		// backend - filter that out (if structuralObjectClass=auditContainer,
 		// then it should NOT be used)!
