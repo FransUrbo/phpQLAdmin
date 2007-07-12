@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.19 2007-03-14 12:10:49 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.20 2007-07-12 11:17:53 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -81,6 +81,10 @@ switch($_REQUEST["type"]) {
   case "txt";
 	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_TXTRECORD");
 	break;
+  case "ptr";
+	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_PTRRECORD");
+	break;
+
 
   default:
 	if($_REQUEST["action"] != "del") {
