@@ -88,6 +88,9 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    the just deleted object! Unset the relevant variable(s) and show the object
 	    'one step up'.
 	  - Catch the '2.X' version (which is CVS - hopfully it's >2.4).
+	  - Create a userSearchFilter attribute (which can be set in 'Home->phpQLAdmin Configuration->[branch]'.
+	    This can be used instead of the userReference attribute to find users etc. If
+	    not defined, the userReference attribute is still required...
 
 phpQLAdmin 2.3.6 Release (Mar  5 2007)
 	Bug fixes

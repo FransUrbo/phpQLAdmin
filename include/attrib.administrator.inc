@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.67 2007-03-06 10:19:54 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.68 2007-07-13 11:12:04 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -247,9 +247,11 @@ function attribute_print_form($action) {
 					// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 					$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
 
-					// Create a user search filter (only look for mail users - !?!?).
-					$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
-					$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+					// Create a user search filter
+					if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
+					  $filter = pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]);
+					else
+					  $filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
 						
 					// Retreive all users in this branch/domain.
 					$users   = $_pql->get_dn($domain, $filter);

@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.143 2007-03-05 10:33:18 turbo Exp $
+// $Id: user_add.php,v 2.144 2007-07-13 11:12:01 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -316,9 +316,11 @@ switch($_REQUEST["page_curr"]) {
 	  
 	  // {{{ Step 3: Selected account type (see how many users there can be)
 	  if($maxusers and !$_SESSION["ALLOW_BRANCH_CREATE"]) {
-		// Create a user search filter (only look for mail users - !?!?).
-		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
-		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+		// Create a user search filter
+		if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
+		  $filter = pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]);
+		else
+		  $filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
 
 		// Retreive all users in this branch/domain.
 	    $users   = $_pql->get_dn($_REQUEST["domain"], $filter);

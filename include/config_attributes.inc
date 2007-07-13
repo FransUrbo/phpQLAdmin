@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.63 2007-07-13 09:55:36 turbo Exp $
+// $Id: config_attributes.inc,v 2.64 2007-07-13 11:12:05 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -409,6 +409,7 @@ pql_set_define("PQL_ATTR_LOCK_ACCOUNTTYPE",					strtolower('lockAccountType'),		
 pql_set_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY",			strtolower("radiusConfigIdentity"),			false);
 pql_set_define("PQL_ATTR_ADMINISTRATOR_WEBSRV",				strtolower("webSrvAdministrator"),			false);
 pql_set_define("PQL_ATTR_ADMINISTRATOR_BIND9",				strtolower("dNSAdministrator"),				false);
+pql_set_define("PQL_ATTR_USER_FILTER",						strtolower("userSearchFilter"),				false);
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - USER configuration
@@ -519,7 +520,8 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SIMSCAN_ATTACHMENTS"			=> pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"),
 								 "PQL_CONF_RADIUS_CONFIG_IDENTITY"		=> pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"),
 								 "PQL_CONF_SAMBASID"					=> pql_get_define("PQL_ATTR_SAMBASID"),
-								 "PQL_CONF_DAYSUNTILEXPIRE"				=> pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"));
+								 "PQL_CONF_DAYSUNTILEXPIRE"				=> pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"),
+								 "PQL_CONF_USER_FILTER"					=> pql_get_define("PQL_ATTR_USER_FILTER"));
 // }}}
 
 // {{{ Map attribute to configuration define - USER

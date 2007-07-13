@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.37 2007-02-26 12:21:56 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.38 2007-07-13 11:12:04 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -273,9 +273,11 @@ function attribute_save($type) {
 		break;
 		
 	  case "fulldomain":
-		// Create a user search filter (only look for mail users - !?!?).
-		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
-		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+		// Create a user search filter
+		if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
+		  $filter = pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]);
+		else
+		  $filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
 
 		// Retreive all users in this branch/domain.
 	    $users   = $_pql->get_dn($_REQUEST["domain"], $filter);

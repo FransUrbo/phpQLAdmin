@@ -1,6 +1,6 @@
 <?php
 // Manage the uniqueMember attribute
-// $Id: attrib.uniquemember.inc,v 2.2 2007-02-15 12:08:11 turbo Exp $
+// $Id: attrib.uniquemember.inc,v 2.3 2007-07-13 11:12:05 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -62,9 +62,11 @@ function attribute_print_form() {
 	  // Get root DN of domain/branch
 	  $rootdn = pql_get_rootdn($domain);
 	  
-	  // Create a user search filter (only look for mail users - !?!?).
-	  $filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(";
-	  $filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+	  // Create a user search filter
+	  if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
+		$filter = pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]);
+	  else
+		$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
 	  
 	  // Retreive all users in this branch/domain.
 	  $users   = $_pql->get_dn($domain, $filter);

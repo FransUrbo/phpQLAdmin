@@ -60,7 +60,11 @@
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('users'))); ?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["branch"])?></td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["branch"])?>
+<?php } ?>
+        </td>
         <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH")?>"></a>
@@ -69,10 +73,30 @@
       </tr>
 
       <!-- -------------------- -->
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('LDAP filter to be used to find users')?></td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["branch"])?>
+<?php } ?>
+        </td>
+        <td class="<?=$class?>">
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_USER_FILTER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_ATTR_USER_FILTER")?>"></a>
+<?php } ?>
+        </td>
+      </tr>
+
+      <!-- -------------------- -->
 <?php $class=pql_format_table(0);  ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('domains'))); ?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["branch"])?></td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["branch"])?>
+<?php } ?>
+        </td>
         <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH")?>"></a>
@@ -84,7 +108,11 @@
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Minimum UID Number to be used for shell and system accounts')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $_REQUEST["branch"])?></td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $_REQUEST["branch"])?>
+<?php } ?>
+        </td>
         <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set <?=pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER")?>"></a>
@@ -113,7 +141,11 @@
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title">UID <?=$LANG->_('number to be used for forwarding accounts')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["branch"])?></td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["branch"])?>
+<?php } ?>
+        </td>
         <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_FORWARDINGACCOUNT_UIDNUMBER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_ATTR_FORWARDINGACCOUNT_UIDNUMBER")?>"></a>
@@ -125,7 +157,11 @@
       <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('RADIUS configuration identity (DN)')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_RADIUS_CONFIG_IDENTITY", $_REQUEST["branch"]); ?>&nbsp;</td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_RADIUS_CONFIG_IDENTITY", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_RADIUS_CONFIG_IDENTITY", $_REQUEST["branch"])?>
+<?php } ?>
+        </td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")?>"></a></td>
       </tr>
 <?php }
@@ -303,6 +339,21 @@
 		pql_format_table_single($txt, $url, $admins, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $class);
       }
 ?>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td colspan="3">
+          <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
+          <table>
+            <tr>
+              <td>
+                <?=$LANG->_('You can either define an attribute to use to find users or specify your own search filter.')?><br>
+                <?=$LANG->_('If using an attribute, the search filter will be generates as \b\iattribute\I=*\B to find all users.')?><br>
+                <?=$LANG->_('If setting a search filter, this will take precedence, but you will still need to set a user reference attribute. This will be used else were in phpQLAdmin.')?>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </th>
   </table>
 

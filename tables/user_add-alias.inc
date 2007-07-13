@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-alias.inc,v 1.10 2007-02-15 12:08:18 turbo Exp $ */
+<?php /* $Id: user_add-alias.inc,v 1.11 2007-07-13 11:12:12 turbo Exp $ */
       // Retreive domain branches for this domain (for the subbranch value below)
       $branches = pql_unit_get($_REQUEST["domain"]);
 ?>
@@ -67,9 +67,11 @@
             <div id="el<?=$j?>Child" class="child">
 <?php		}
         
-			// Create a user search filter (only look for mail users - !?!?).
-			$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(|(";
-			$filter .= pql_get_define("PQL_ATTR_MAIL")."=*)(sambaSID=*)))";
+			// Create a user search filter
+			if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
+			  $filter = pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]);
+			else
+			  $filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
 
 			// Retreive all users in this branch/domain.
 			$users   = $_pql->get_dn($domain, $filter);

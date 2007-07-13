@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.32 2007-02-15 12:07:16 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.33 2007-07-13 11:12:03 turbo Exp $
 
 /* DLW:   When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *        I think it's having problems with time zones.  Look into it.
@@ -169,9 +169,11 @@ function attribute_save($type) {
 			else
 			  $msg = $LANG->_('Successfully set account expiration date');
 		} else {
-			// Create a user search filter (only look for mail users - !?!?).
-			$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
-			$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+			// Create a user search filter
+			if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
+			  $filter = pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]);
+			else
+			  $filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
 			
 			// Retreive all users in this branch/domain.
 			$users   = $_pql->get_dn($_REQUEST["domain"], $filter);

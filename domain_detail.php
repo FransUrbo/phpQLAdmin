@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.113 2007-03-12 10:13:24 turbo Exp $
+// $Id: domain_detail.php,v 2.114 2007-07-13 11:12:01 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -341,7 +341,11 @@ if($_REQUEST["view"] == 'owner') {
 } elseif($_REQUEST["view"] == 'chval') {
 	include("./tables/domain_details-users_chval.inc");
 } elseif($_REQUEST["view"] == 'users') {
-	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(mail=*))";
+	if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
+	  $filter = pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]);
+    else
+	  $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
+
 	$users = $_pql->get_dn($_REQUEST["domain"], $filter);
 	include("./tables/domain_details-users.inc");
 } elseif($_REQUEST["view"] == 'action') {

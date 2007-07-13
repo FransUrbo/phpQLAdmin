@@ -126,13 +126,14 @@
 #            dNSAdministrator                28
 #            passwordPolicyName              29
 #            passwordPolicyDesc              30
+#            userSearchFilter                31
 # --------------------------------------------
 #
 # *mod_cfg_ldap => Also defined (with other name) in mod_cfg_ldap
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.72 2007-07-13 09:55:38 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.73 2007-07-13 11:12:06 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -798,6 +799,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.30 NAME 'passwordPolicyDesc'
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{64}
   SINGLE-VALUE )
 
+# PQL_ATTR_USER_FILTER
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.31 NAME 'userSearchFilter'
+  DESC 'LDAP Filter to be used by phpQLAdmin to find users'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{64}
+  SINGLE-VALUE )
+
 # -----------------------------------------
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.1
@@ -851,7 +859,8 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.3
         lockEmailAddress $ lockDomainAddress $
         lockPassword $ lockAccountType $ 
         webSrvAdministrator $ dNSAdministrator $
-        startinmyaccount $ daysuntilexpire $ sambaSID )
+        startinmyaccount $ daysuntilexpire $ sambaSID $
+        userSearchFilter )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.5

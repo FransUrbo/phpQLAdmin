@@ -9,3 +9,9 @@ Warnings of the day:
     Moved Samba defines PQL_CONF_SAMBA_SID and PQL_CONF_DAYSUNTILEXPIRE
     to the LDAP directory. Please re-read doc/README.samba if you use
     the samba/SMB manager of phpQLAdmin!
+  * Previously, phpQLAdmin have had problems in finding users (actually
+    distinguish users from other objects), and I've been fine tuning
+    the search filters all the times. This have prieviously been hardcoded
+    in the source, but can no be changed/set in 'Home->phpQLAdmin Configuration->[branch]'.
+    You will still need to set the user reference attribute, but it
+    is not used to find a user if a search filter is set.

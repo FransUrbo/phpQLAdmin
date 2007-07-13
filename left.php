@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.129 2007-02-19 11:03:07 turbo Exp $
+// $Id: left.php,v 2.130 2007-07-13 11:12:01 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -128,9 +128,11 @@ if(!isset($domains) or !is_array($domains)) {
 	// Get Root DN
 	$rootdn = pql_get_rootdn($domain, 'left.php');
 
-	// Create a user search filter (only look for mail users - !?!? - or Samba accounts).
-	$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(|(";
-	$filter .= pql_get_define("PQL_ATTR_MAIL")."=*)(sambaSID=*)))";
+	// Create a user search filter
+	if(pql_get_define("PQL_CONF_USER_FILTER", $rootdn))
+	  $filter = pql_get_define("PQL_CONF_USER_FILTER", $rootdn);
+	else
+	  $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*";
 	
 	// Get the subbranches in this domain
 	$branches = pql_unit_get($domain);
