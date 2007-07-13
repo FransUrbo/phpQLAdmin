@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin/Password Policies - global entries
-// $Id: attrib.config.ppolicy.inc,v 2.2 2007-03-06 10:22:06 turbo Exp $
+// $Id: attrib.config.ppolicy.inc,v 2.3 2007-07-13 10:08:01 turbo Exp $
 
 // {{{ attribute_check_ppolicy(void)
 function attribute_check_ppolicy() {
@@ -63,7 +63,11 @@ function attribute_print_form_ppolicy($error_text) {
 <?php		} else { ?>
           &nbsp;&nbsp;
 <?php		} ?>
+<?php		if($attrib == pql_get_define("PQL_ATTR_PPOLICY_MINLEN")) { ?>
+          <input type="text" name="<?=$attrib?>" size="7" value="<?=$_REQUEST[$attrib]?>">&nbsp;<?=$LANG->_('characters')?>
+<?php		} else { ?>
           <input type="text" name="<?=$attrib?>" size="20" value="<?=$_REQUEST[$attrib]?>">
+<?php		} ?>
 <?php	} elseif(($attrib == pql_get_define("PQL_ATTR_PPOLICY_MINAGE")) or
 				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_MAXAGE")) or
 				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING")) or
@@ -123,8 +127,11 @@ function attribute_print_form_ppolicy($error_text) {
 // {{{ attribute_save_ppolicy(void)
 function attribute_save_ppolicy() {
   global $_pql, $table_columns, $LANG;
-  
+
   // {{{ Create the organizationalUnit leading up to the templates...
+  if(!pql_get_define("PQL_CONF_SUBTREE_PPOLICY"))
+	die('The PQL_CONF_SUBTREE_PPOLICY is not set! Please change the include/config.inc file.');
+
   if(!pql_unit_add($_REQUEST["rootdn"], pql_get_define("PQL_CONF_SUBTREE_PPOLICY")))
 	die("pql_write_add(ou): failure<br>");
   // }}}
@@ -163,6 +170,10 @@ function attribute_save_ppolicy() {
 	  // Other value - use as is
 	  $entry[$attrib] = $_REQUEST[$attrib];
 	}
+  }
+
+  if(pql_get_define("PQL_ATTR_ACI_USE") and function_exists("user_generate_aci")) {
+	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($_SESSION["USER_DN"], 'ppolicy');
   }
   // }}}
 
