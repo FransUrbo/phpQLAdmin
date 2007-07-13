@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.28 2007-03-14 12:10:50 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.29 2007-07-13 09:38:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -54,6 +54,9 @@ function attribute_forward($msg, $rlnb = false) {
 	  pql_set_define("PQL_CONF_DEBUG_ME", 'TRUE');
 	  unset($debugging);
 	}
+
+	if($_REQUEST["view"])
+	  $url .= "&view=".$_REQUEST["view"];
 
 	pql_header($url);
 }

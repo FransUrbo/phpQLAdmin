@@ -39,6 +39,8 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    DNS manager
 	  - Catch a physical host with a webserver container, but no virtual hosts.
 	    > Make sure this container is 'remembered'.
+	  - Make sure any 'Home->phpQLAdmin Configuration->Global configuration' changes
+	    goes back to the 'Global configuration' view.
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
