@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.80 2007-03-12 11:40:36 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.81 2007-07-13 09:55:35 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -122,13 +122,6 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 
 // ----------------------------
 // => Please see doc/README.samba <=
-//
-// PQL_CONF_SAMBA_SID
-// The base of your SID
-//pql_set_define("PQL_CONF_SAMBA_SID", 'S-1-5-21-2168627515-2449411438-2839018642');
-//
-// How many days before expiring/requesting to change password
-//pql_set_define("PQL_CONF_DAYSUNTILEXPIRE", '90');
 //
 // Full path to the mkntpw binary
 //pql_set_define("PQL_CONF_MKNTPW_PATH", '/usr/local/sbin/mkntpwd');

@@ -41,6 +41,21 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    > Make sure this container is 'remembered'.
 	  - Make sure any 'Home->phpQLAdmin Configuration->Global configuration' changes
 	    goes back to the 'Global configuration' view.
+	  - Put the Samba defines (PQL_CONF_SAMBA_USE - new, etc) into the LDAP database,
+	    managed by the 'Home->phpQLAdmin Configuration->{Global configuration,[branch]'
+	    views.
+	    + Rewrite part of doc/README.samba to reflect these changes.
+	    + Remove the samba defines from include/config.inc.
+	  - If the global Security ID is set, try to generate a user SID, based on the
+	    global SID _and_ the user UID.
+	  - Only show the 'Samba Settings' (renamed to 'SMB Settings') in the user view
+	    if useSamba attribute is set in the root DN.
+	    + If not the user SID is set, do not show the rest of the samba/SMB values.
+	      Only allow to change/view these if the user SID is set.
+	  - Add the 'sambaSamAccount' object class to a user if it is not set. Do this
+	    when adding a user SID to a user object.
+	  - Hide some stuff (buttons) from the user view if not running in advanced mode,
+	    and not admin.
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to

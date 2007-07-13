@@ -25,19 +25,34 @@ function attribute_init() {
 
 // {{{ attribute_print_form(void)
 function attribute_print_form() {
-    global $error, $LANG;
+    global $error, $LANG, $_pql;
+
+	$sid = pql_get_define("PQL_CONF_SAMBASID", $_REQUEST["rootdn"]);
+	if(!$_REQUEST["sambasid"] and $sid) {
+	  // Generate a SambaSID
+	  $sid .= '-';
+
+	  $uidnr = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_QMAILUID"));
+	  if($uidnr)
+		$_REQUEST["sambasid"] = (3 * $uidnr);
+	}
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Samba SID')?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Samba SID')?></td>
-          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_ATTR_CN")]); ?><input type="text" name="sambasid" value="<?=$_REQUEST["sambasid"]?>" size="52"></td>
+          <td>
+            <?php echo pql_format_error_span($error[pql_get_define("PQL_ATTR_CN")]); ?>
+            <?=$sid?>
+            <input type="text" name="sambasid" value="<?=$_REQUEST["sambasid"]?>" size="5">
+          </td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="1">
+    <input type="hidden" name="sid"      value="<?=urlencode($sid)?>">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
     <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
@@ -61,6 +76,11 @@ function attribute_save($type) {
 		break;
 
       case "modify":
+		$success = 0;
+
+		if($_REQUEST["sid"] and $_REQUEST["sambasid"])
+			$_REQUEST["sambasid"] = $_REQUEST["sid"].$_REQUEST["sambasid"];
+
 		if($_REQUEST["sambasid"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Samba SID')));
@@ -68,15 +88,32 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if($_REQUEST["oldvalue"])
-		  // Replace specific value.
-		  $old = $_REQUEST["oldvalue"];
-		else
-		  // Completely replace the attribute
-		  $old = 1;
+		// Make sure that the user have the 'sambaSamAccount' object class!
+		$ocs = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_OBJECTCLASS"));
+		if(!in_array('sambaSamAccount', $ocs)) {
+		  $object = array();
+		  $object[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $ocs;
+		  $object[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'sambaSamAccount';
+
+		  $attrib = $_REQUEST["attrib"];
+		  $object[$attrib] = $_REQUEST["sambasid"];
+
+		  if(pql_modify_attribute($_REQUEST["user"], '', '', $object))
+		    $success = 1;
+		} else {
+		  if($_REQUEST["oldvalue"])
+			// Replace specific value.
+			$old = $_REQUEST["oldvalue"];
+		  else
+			// Completely replace the attribute
+			$old = 1;
 		
-		// {{{ Replace the specified attribute
-		if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["sambasid"]))
+		  // {{{ Replace the specified attribute
+		  if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["sambasid"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('Samba SID'),
 											 'new'  => $_REQUEST["sambasid"]));
@@ -84,7 +121,6 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('Samba SID')))
 			. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-		// }}}
 
 		attribute_forward($msg, true);
 		break;

@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.62 2007-03-06 10:24:16 turbo Exp $
+// $Id: config_attributes.inc,v 2.63 2007-07-13 09:55:36 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -243,6 +243,7 @@ pql_set_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT", 	strtolower('ezmlmRemote
 // }}}
 
 // {{{ Attributes used by the Samba config
+pql_set_define("PQL_ATTR_SAMBA_USE",						strtolower('useSamba'),						false);
 pql_set_define("PQL_ATTR_SAMBASID",							strtolower('sambaSID'),						false);
 pql_set_define("PQL_ATTR_SAMBAPROFILEPATH",					strtolower('sambaProfilePath'),				false);
 pql_set_define("PQL_ATTR_SAMBAHOMEDRIVE",					strtolower('sambaHomeDrive'),				false);
@@ -275,7 +276,7 @@ pql_set_define("PQL_ATTR_ACI_USE",							strtolower('useACI'),						false);
 // }}}
 
 // {{{ Attributes used by the Strong Password Enforcement
-pql_set_define("PQL_ATTR_STRONGPASSWD_USE",					strtolower('useStrongPasswd'),					false);
+pql_set_define("PQL_ATTR_STRONGPASSWD_USE",					strtolower('useStrongPasswd'),				false);
 // }}}
 
 // {{{ Attributes used by the Automount config
@@ -322,7 +323,7 @@ pql_set_define("PQL_ATTR_PPOLICY_RESET",					strtolower('pwdReset'),						false)
 // {{{ Miscellaneous external attributes
 pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
 pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
-pql_set_define("PQL_ATTR_DAYSUNTILEXPIRE",     				strtolower('daysuntilexpire'),				false);
+pql_set_define("PQL_ATTR_DAYSUNTILEXPIRE",     				strtolower('daysUntilExpire'),				false);
 pql_set_define("PQL_ATTR_PHOTO",							strtolower('jpegPhoto'),					false);
 // }}}
 
@@ -451,9 +452,10 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
 								 "PQL_CONF_HOSTACL_USE"					=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
 								 "PQL_CONF_SUDO_USE"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
-								 "PQL_CONF_STRONGPASSWD_USE"				=> pql_get_define("PQL_ATTR_STRONGPASSWD_USE"),
+								 "PQL_CONF_STRONGPASSWD_USE"			=> pql_get_define("PQL_ATTR_STRONGPASSWD_USE"),
 								 "PQL_CONF_AUTOMOUNT_USE"				=> pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
 								 "PQL_CONF_RADIUS_USE"					=> pql_get_define("PQL_ATTR_RADIUS_USE"),
+								 "PQL_CONF_SAMBA_USE"					=> pql_get_define("PQL_ATTR_SAMBA_USE"),
 								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"),
 								 "PQL_CONF_DEBUG_ME"					=> pql_get_define("PQL_ATTR_DEBUG_ME"),
 								 "PQL_CONF_EZMLM_REMOTE"				=> pql_get_define("PQL_ATTR_EZMLM_REMOTE"),
@@ -515,7 +517,9 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SIMSCAN_TROPHIE"				=> pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
 								 "PQL_CONF_SIMSCAN_SPAM_HITS"			=> pql_get_define("PQL_ATTR_SIMSCAN_SPAM_HITS"),
 								 "PQL_CONF_SIMSCAN_ATTACHMENTS"			=> pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"),
-								 "PQL_CONF_RADIUS_CONFIG_IDENTITY"		=> pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"));
+								 "PQL_CONF_RADIUS_CONFIG_IDENTITY"		=> pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"),
+								 "PQL_CONF_SAMBASID"					=> pql_get_define("PQL_ATTR_SAMBASID"),
+								 "PQL_CONF_DAYSUNTILEXPIRE"				=> pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"));
 // }}}
 
 // {{{ Map attribute to configuration define - USER

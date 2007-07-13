@@ -5,4 +5,7 @@ Please check it every time you've done a cvs update, because you MIGHT
 ruin your system/db or something else if you don't take notice!!
 
 Warnings of the day:
-[nothing so far]
+  * Fri Jul 13 11:53:05 CEST 2007
+    Moved Samba defines PQL_CONF_SAMBA_SID and PQL_CONF_DAYSUNTILEXPIRE
+    to the LDAP directory. Please re-read doc/README.samba if you use
+    the samba/SMB manager of phpQLAdmin!

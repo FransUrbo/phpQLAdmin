@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.31 2007-03-06 10:24:17 turbo Exp $
+// $Id: config_plugins.inc,v 2.32 2007-07-13 09:55:36 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -230,6 +230,10 @@ pql_plugin_register(pql_get_define("PQL_ATTR_SAMBAPROFILEPATH"), "",
 pql_plugin_register(pql_get_define("PQL_ATTR_SAMBAHOMEPATH"), "",
 					"attrib.sambahomepath.inc",
 					pql_get_define("PQL_ATTR_SAMBAHOMEPATH"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"), "",
+					"attrib.userpassword.inc",
+					pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPACI"), "",
 					"attrib.aci.inc",

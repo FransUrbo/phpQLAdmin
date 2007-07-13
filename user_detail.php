@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.105 2007-03-09 17:22:52 turbo Exp $
+// $Id: user_detail.php,v 2.106 2007-07-13 09:55:32 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -293,9 +293,8 @@ if(empty($USER_IS_GROUP)) {
 	$buttons = $buttons + $new;
 }
 
-// If they had the objectClass, then show them the menu
-if(!empty($USER_IS_SAMBA)) {
-	$new = array('samba'			=> 'Samba Settings');
+if(pql_get_define("PQL_CONF_SAMBA_USE")) {
+	$new = array('samba'			=> 'SMB Settings');
 	$buttons = $buttons + $new;
 }
 
@@ -322,11 +321,13 @@ pql_generate_button($buttons, "user=".$url["user"]); echo "  <br>\n";
 // {{{ Load the correct view page
 if($_GET["view"] == 'basic')					include("./tables/user_details-basic.inc");
 if($_GET["view"] == 'personal')					include("./tables/user_details-personal.inc");
-if($_SESSION["ADVANCED_MODE"]) {
+if($_SESSION["ADVANCED_MODE"] and !$_SESSION["SINGLE_USER"]) {
   if($_GET["view"] == 'ppolicy')				include("./tables/user_details-ppolicy.inc");
 }
 if($_GET["view"] == 'email')					include("./tables/user_details-email.inc");
-if($_GET["view"] == 'status')					include("./tables/user_details-status.inc");
+if($_SESSION["ADVANCED_MODE"] and !$_SESSION["SINGLE_USER"]) {
+  if($_GET["view"] == 'status')					include("./tables/user_details-status.inc");
+}
 if($_GET["view"] == 'delivery')					include("./tables/user_details-delivery.inc");
 if($_GET["view"] == 'group')					include("./tables/user_details-group.inc");
 if($_SESSION["ADVANCED_MODE"]) {
@@ -336,8 +337,8 @@ if($_SESSION["ADVANCED_MODE"]) {
 if($_GET["view"] == 'forwards_from')			include("./tables/user_details-forwards_from.inc");
 if($_GET["view"] == 'forwards_to')				include("./tables/user_details-forwards_to.inc");
 if($_GET["view"] == 'antispam')					include("./tables/user_details-antispam.inc");
-if($_GET["view"] == 'samba')					include("./tables/user_details-samba.inc");
 if($_SESSION["ADVANCED_MODE"] and !$_SESSION["SINGLE_USER"]) {
+	if($_GET["view"] == 'samba')				include("./tables/user_details-samba.inc");
 	if($_GET["view"] == 'access')				include("./tables/user_details-access.inc");
 	if($_GET["view"] == 'aci')					include("./tables/user_details-aci.inc");
 }

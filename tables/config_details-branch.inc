@@ -133,6 +133,40 @@
 	  pql_format_table_empty(2);
 
 	  if($_SESSION["ADVANCED_MODE"]) {
+	    if(pql_get_define("PQL_CONF_SAMBA_USE")) {
+?>
+
+      <!-- -------------------- -->
+<?php	$class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('SMB Security ID')?></td>
+        <td class="<?=$class?>">
+<?php	  if(pql_get_define("PQL_CONF_SAMBASID", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_SAMBASID", $_REQUEST["branch"])?>
+<?php	  } ?>
+        </td>
+<?php	$new_tr = 0; ?>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_SAMBASID")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_SAMBASID")?>"></a>
+        </td>
+      </tr>
+
+<?php	$class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Days until expiring/requesting password change')?></td>
+        <td class="<?=$class?>">
+<?php	  if(pql_get_define("PQL_CONF_DAYSUNTILEXPIRE", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_DAYSUNTILEXPIRE", $_REQUEST["branch"])?>
+<?php	  } ?>
+        </td>
+<?php	$new_tr = 0; ?>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE")?>"></a>
+        </td>
+      </tr>
+
+<?php	  pql_format_table_empty(2);
+		}
 ?>
 
       <!-- -------------------- -->

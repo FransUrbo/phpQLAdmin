@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.52 2007-03-05 10:33:21 turbo Exp $
+// $Id: user_add-save.inc,v 1.53 2007-07-13 09:55:45 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -294,8 +294,9 @@ if(in_array(pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS"), $template["userobjectcl
   } else {
 	$acctflags = '[UX ]';
   }
-  $sid = pql_get_define("PQL_CONF_SAMBA_SID");
-  //$entry[pql_get_define("PQL_ATTR_QMAILUID")]
+  $sid = pql_get_define("PQL_CONF_SAMBASID", $_REQUEST["branch"]);
+  if(!$sid)
+	die("Branch Security ID is not set!");
   // }}}
   
   // {{{ Convert uid to lowercase
