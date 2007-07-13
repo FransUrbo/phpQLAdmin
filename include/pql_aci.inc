@@ -2,7 +2,7 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.17 2007-02-19 12:07:15 turbo Exp $
+// $Id: pql_aci.inc,v 2.18 2007-07-13 10:12:09 turbo Exp $
 
 // {{{ pql_aci_get(dn, number)
 // Get ACI entries from object
@@ -145,7 +145,7 @@ function pql_validate_acis($acis) {
 	  // OpenLDAPaci: 1#entry#grant;w,r,s,c;[children]#access-id#uid=turbo,ou=People,o=Fredriksson,c=SE
 	  // =>
 	  // OpenLDAPaci: 1#children#grant;w,r,s,c;[all]#access-id#uid=turbo,ou=people,o=fredriksson,c=se
-	  $access = preg_replace('/\[children\]/', '\[all\]', $aci_parts[2]);
+	  $access = preg_replace('/\[children\]/', '[all]', $aci_parts[2]);
 
 	  $acis[$OID]  = "$OID#children#$access#".$aci_parts[3]."#";
 	  if($aci_parts[4])

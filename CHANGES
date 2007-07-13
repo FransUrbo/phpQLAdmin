@@ -58,6 +58,8 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    and not admin.
 	  - Catch a missing 'PQL_CONF_SUBTREE_PPOLICY' define in include/attrib.config.ppolicy.inc.
 	  - If using ACI's, add that when adding a PPolicy template.
+	  - Faulty OID generated in include/pql_aci.inc:pql_validate_acis() (generated
+	    '\[all\]' instead of '[all]' - bad use of preg_replace()).
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
