@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.72 2007-03-12 11:54:44 turbo Exp $
+// $Id: pql_search.inc,v 2.73 2007-07-13 10:15:54 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -435,7 +435,7 @@ function pql_validate_object($dn, $object, $type) {
   
   // Retreive all objectclasses the LDAP server knows about
   $ldap = pql_get_subschema("objectclasses");
-  
+
   // {{{ Go through the WANTED objectclasses, checking for a MUST attribute we don't have
   if(is_array($ocs)) {
 	foreach($ocs as $oc) {
@@ -522,7 +522,10 @@ function pql_validate_object($dn, $object, $type) {
   // }}}
   
   // {{{ Add the OpenLDAPaci attribute (maybe)
-  if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and empty($entry[pql_get_define("PQL_ATTR_LDAPACI")]))
+  global $_pql;
+  $acis = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_LDAPACI"), 1);
+  if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and
+     empty($entry[pql_get_define("PQL_ATTR_LDAPACI")]) and !is_array($acis))
 	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($dn, $type);
   // }}}
   

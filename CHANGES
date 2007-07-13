@@ -63,6 +63,7 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	  - Faulty use of PQL_CONF_SUBTREE_PPOLICIES - should have been PQL_CONF_SUBTREE_PPOLICY
 	    in include/pql_ppolicy.inc.
 	    + Faulty use of pql_add2array(). Don't work with flat arrays.
+	  - Don't generate the ACI's if the object already have it (in include/pql_search.inc:pql_validate_object()).
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
