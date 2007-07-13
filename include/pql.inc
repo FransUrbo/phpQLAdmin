@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.232 2007-07-03 22:15:49 turbo Exp $
+// $Id: pql.inc,v 2.233 2007-07-13 10:09:40 turbo Exp $
 //
 
 // ----------------------------
@@ -634,7 +634,7 @@ class pql {
 	// If there's ACI's and we're running OpenLDAP >2.3, then make sure
 	// the ACI's in the correct form (OpenLDAP changed the syntax in 2.3).
 	if(@is_array($entry[pql_get_define("PQL_ATTR_LDAPACI")]) and
-	   ereg('^2\.3', $this->find_ldap_version()))
+	   ereg('^2\.[3-5X]', $this->find_ldap_version()))
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = pql_validate_acis($entry[pql_get_define("PQL_ATTR_LDAPACI")]);
 	
 	// Create a LDIF object to print in case of error
@@ -682,7 +682,7 @@ class pql {
 	if(eregi("^dNSTTL=", $dn))
 	  $dn = pql_recreate_dnsttl($dn);
 	$dn = pql_maybe_encode($dn);
-	
+
 	$count++;
 	
 	// Create a LDIF object to print in case of error

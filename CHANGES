@@ -56,6 +56,8 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    when adding a user SID to a user object.
 	  - Hide some stuff (buttons) from the user view if not running in advanced mode,
 	    and not admin.
+	  - Catch a missing 'PQL_CONF_SUBTREE_PPOLICY' define in include/attrib.config.ppolicy.inc.
+	  - If using ACI's, add that when adding a PPolicy template.
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
@@ -67,6 +69,8 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    + Also change the IP address of/in the virtual host to the new location.
 	  - Long standing problem/bug finaly fixed - initial folded branch tree in Opera! 
 	    Many thanx to Jose Silva @ PT for this fix!
+	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
+	    form.
 
 	API changes
 	Misc changes
@@ -76,6 +80,7 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	  - When deleting a virtual host/webserver or physical host, don't try to show
 	    the just deleted object! Unset the relevant variable(s) and show the object
 	    'one step up'.
+	  - Catch the '2.X' version (which is CVS - hopfully it's >2.4).
 
 phpQLAdmin 2.3.6 Release (Mar  5 2007)
 	Bug fixes
