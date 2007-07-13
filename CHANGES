@@ -60,6 +60,9 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	  - If using ACI's, add that when adding a PPolicy template.
 	  - Faulty OID generated in include/pql_aci.inc:pql_validate_acis() (generated
 	    '\[all\]' instead of '[all]' - bad use of preg_replace()).
+	  - Faulty use of PQL_CONF_SUBTREE_PPOLICIES - should have been PQL_CONF_SUBTREE_PPOLICY
+	    in include/pql_ppolicy.inc.
+	    + Faulty use of pql_add2array(). Don't work with flat arrays.
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
