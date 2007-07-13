@@ -64,6 +64,7 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    in include/pql_ppolicy.inc.
 	    + Faulty use of pql_add2array(). Don't work with flat arrays.
 	  - Don't generate the ACI's if the object already have it (in include/pql_search.inc:pql_validate_object()).
+	  - Generate the ACI's (if in use) when creating a organizationUnit.
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
