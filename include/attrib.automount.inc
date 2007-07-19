@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for automount maps
-// $Id: attrib.automount.inc,v 2.8 2007-03-12 11:37:49 turbo Exp $
+// $Id: attrib.automount.inc,v 2.9 2007-07-19 10:16:22 turbo Exp $
 
 // {{{ attribute_find_automaster(hostdn)
 // Called from attribute_init() and attribute_save() to find
@@ -1404,12 +1404,15 @@ Make sure you include this object information (I'm mostly interested in the <b><
 			}
 
 			if(pql_unit_add($parentdn, $dnparts[0]))
-			  $msg = '<br>'.$LANG->_('Successfully added automountpoint');
+			  $msg = '<br>'.pql_complete_constant($LANG->_('Successfully added %what%'),
+												  array('what' => $LANG->_('automountpoint')));
 			else
-			  $msg = '<br>'.$LANG->_('Failed to add automountpoint');
+			  $msg = '<br>'.pql_complete_constant($LANG->_('Failed to add %what%'),
+												  array('what' => $LANG->_('automountpoint')));
 		  }
 
-		  $msg = $LANG->_('Successfully added automount');
+		  $msg = '<br>'.pql_complete_constant($LANG->_('Successfully added %what%'),
+											  array('what' => $LANG->_('automountpoint')));
 		} else
 		  $msg = $LANG->_('Failed to add automount').": ".ldap_error($_pql->ldap_linkid);
 // }}}
