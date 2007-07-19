@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.71 2007-03-05 10:38:13 turbo Exp $
+// $Id: pql_formating.inc,v 2.72 2007-07-19 10:25:03 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline, show_debug)
 // Create a LDIF object to print in case of error
@@ -29,9 +29,15 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0, $show_debug = 1
   
   if(is_array($entry)) {
 	foreach($entry as $key => $e) {
+	  if(ereg('_save', $func) or ereg('_add', $func))
+		$modify = 0;
+	  else
+		$modify = 1;
+
 	  if(is_array($entry[$key])) {
 		// ... in an array. Go through each one, creating the LDAP entry
-		if($func and !ereg('_add', $func)) {
+		if($func and $modify) {
+		  // MODIFY
 		  if($entry[$key]) {
 			if($command)
 			  $LDIF .= "-\n";
@@ -55,7 +61,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0, $show_debug = 1
 		}
 	  } else {
 		// ... not an array, create the LDAP entry
-		if($func and !ereg('_add', $func)) {
+		if($func and $modify) {
 		  if($entry[$key]) {
 			if($command)
 			  $LDIF .= "-\n";

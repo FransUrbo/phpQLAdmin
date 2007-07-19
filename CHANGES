@@ -69,6 +69,8 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	  - Only offer to create the DNS object if Bind9 manager is active.
 	  - When checking LDAP version, also check if ACI's is in use.
 	  - In include/pql.inc:pql_header(), only add the URI if it's not already set.
+	  - Fixup the check for add/save in include/pql_formating.inc:pql_create_ldif()
+	    only one ereg()!
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
