@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.233 2007-07-13 10:09:40 turbo Exp $
+// $Id: pql.inc,v 2.234 2007-07-19 10:19:29 turbo Exp $
 //
 
 // ----------------------------
@@ -634,8 +634,12 @@ class pql {
 	// If there's ACI's and we're running OpenLDAP >2.3, then make sure
 	// the ACI's in the correct form (OpenLDAP changed the syntax in 2.3).
 	if(@is_array($entry[pql_get_define("PQL_ATTR_LDAPACI")]) and
-	   ereg('^2\.[3-5X]', $this->find_ldap_version()))
+	   ereg('^2\.[3-5X]', $this->find_ldap_version())) {
+	  if(!function_exists("pql_validate_acis"))
+		include($_SESSION["path"]."/include/pql_aci.inc");
+
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = pql_validate_acis($entry[pql_get_define("PQL_ATTR_LDAPACI")]);
+	}
 	
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
@@ -1447,7 +1451,10 @@ function pql_recreate_dnsttl($dn) {
 
 // {{{ pql_header(url, force)
 function pql_header($url, $force = 0) {
-  $uri = $_SESSION["URI"].$url;
+  if(!ereg('^/', $url) and !eregi('^http', $url))
+	$uri = $_SESSION["URI"].$url;
+  else
+	$uri = $url;
   
   if(pql_get_define("PQL_CONF_DEBUG_ME") and !$force) {
     echo "<p>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";

@@ -67,6 +67,8 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	  - Generate the ACI's (if in use) when creating a organizationUnit.
 	  - Generate a URL encoded DN for the hostname after added a physical host.
 	  - Only offer to create the DNS object if Bind9 manager is active.
+	  - When checking LDAP version, also check if ACI's is in use.
+	  - In include/pql.inc:pql_header(), only add the URI if it's not already set.
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
