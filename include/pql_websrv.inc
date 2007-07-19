@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.27 2007-03-14 12:21:50 turbo Exp $
+// $Id: pql_websrv.inc,v 1.28 2007-07-19 10:26:18 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(dn, entry, type)
@@ -101,7 +101,7 @@ function pql_websrv_get_virtual_host_objects($server) {
 				   pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS"));
   
   // Retreive the Apache web server virtual host object(s)
-  $result = $pql->search($server, $filter, "ONELEVEL");
+  $result = $_pql->search($server, $filter, "ONELEVEL");
   if($result["dn"]) {
 	// Oups, flat object - i.e. only ONE object
 	$tmp = $result;		// Save the array
