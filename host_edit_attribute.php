@@ -1,6 +1,6 @@
 <?php
 // Edit attribute of a physical host
-// $Id: host_edit_attribute.php,v 2.7 2007-03-14 12:10:52 turbo Exp $
+// $Id: host_edit_attribute.php,v 2.8 2007-07-19 10:27:57 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -22,6 +22,10 @@ function attribute_forward($msg) {
 	  $link .= "&virthost=".$_REQUEST["virthost"];
 	if($_REQUEST["ref"])
 	  $link .= "&ref=".$_REQUEST["ref"];
+	if(!$_REQUEST["server"] and !$_REQUEST["virthost"] and !$_REQUEST["ref"])
+	  $link .= "&ref=physical";
+	if($_REQUEST["subnet"])
+	  $link .= "&subnet=".$_REQUEST["subnet"];
 
 	if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 	  $now = pql_format_return_unixtime();

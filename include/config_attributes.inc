@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.64 2007-07-13 11:12:05 turbo Exp $
+// $Id: config_attributes.inc,v 2.65 2007-07-19 10:28:01 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -320,6 +320,88 @@ pql_set_define("PQL_ATTR_PPOLICY_GRACEUSE",					strtolower('pwdGraceUseTime'),		
 pql_set_define("PQL_ATTR_PPOLICY_RESET",					strtolower('pwdReset'),						false);
 // }}}
 
+// {{{ Attributes used by the DHCP3 config
+// phpQLAdmin attributes
+pql_set_define("PQL_ATTR_DHCP3_USE",						strtolower("useDHCP3"),						false);
+
+// DHCP3 schema attributes
+pql_set_define("PQL_ATTR_DHCP3_PRIMARYDN",					strtolower("dhcpPrimaryDN"),				false);
+pql_set_define("PQL_ATTR_DHCP3_SECONDARYDN",				strtolower("dhcpSecondaryDN"),				false);
+pql_set_define("PQL_ATTR_DHCP3_OPTIONSDN",					strtolower("dhcpOptionsDN"),				false);
+pql_set_define("PQL_ATTR_DHCP3_HOSTDN",						strtolower("dhcpHostDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_POOLDN",						strtolower("dhcpPoolDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_GROUPDN",					strtolower("dhcpGroupDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_SUBNETDN",					strtolower("dhcpSubnetDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_LEASEDN",					strtolower("dhcpLeaseDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_LEASESDN",					strtolower("dhcpLeasesDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_CLASSESDN",					strtolower("dhcpClassesDN"),				false);
+pql_set_define("PQL_ATTR_DHCP3_SUBCLASSESDN",				strtolower("dhcpSubclassesDN"),				false);
+pql_set_define("PQL_ATTR_DHCP3_SHAREDNETWORKDN",			strtolower("dhcpSharedNetworkDN"),			false);
+pql_set_define("PQL_ATTR_DHCP3_SERVICEDN",					strtolower("dhcpServiceDN"),				false);
+pql_set_define("PQL_ATTR_DHCP3_LOCATORDN",					strtolower("dhcpLocatorDN"),				false);
+pql_set_define("PQL_ATTR_DHCP3_KEYDN",						strtolower("dhcpKeyDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_ZONEDN",						strtolower("dhcpZoneDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_SERVERDN",					strtolower("dhcpServerDN"),					false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_PEERDN",			strtolower("dhcpFailOverPeerDN"),			false);
+
+pql_set_define("PQL_ATTR_DHCP3_STATEMENTS",					strtolower("dhcpStatements"),				false);
+pql_set_define("PQL_ATTR_DHCP3_RANGE",						strtolower("dhcpRange"),					false);
+pql_set_define("PQL_ATTR_DHCP3_PERMIT_LIST",				strtolower("dhcpPermitList"),				false);
+pql_set_define("PQL_ATTR_DHCP3_NETMASK",					strtolower("dhcpNetMask"),					false);
+pql_set_define("PQL_ATTR_DHCP3_OPTION",						strtolower("dhcpOption"),					false);
+pql_set_define("PQL_ATTR_DHCP3_CLASS_DATA",					strtolower("dhcpClassData"),				false);
+pql_set_define("PQL_ATTR_DHCP3_VERSION",					strtolower("dhcpVersion"),					false);
+pql_set_define("PQL_ATTR_DHCP3_IMPLEMENTATION",				strtolower("dhcpImplementation"),			false);
+pql_set_define("PQL_ATTR_DHCP3_ADDRESS_STATE",				strtolower("dhcpAddressState"),				false);
+pql_set_define("PQL_ATTR_DHCP3_EXPIRATION_TIME",			strtolower("dhcpExpirationTime"),			false);
+pql_set_define("PQL_ATTR_DHCP3_START_TIME_OF_STATE",		strtolower("dhcpStartTimeOfState"),			false);
+pql_set_define("PQL_ATTR_DHCP3_LAST_TRANSACTION_TIME",		strtolower("dhcpLastTransactionTime"),		false);
+pql_set_define("PQL_ATTR_DHCP3_BOOTP_FLAG",					strtolower("dhcpBootpFlag"),				false);
+pql_set_define("PQL_ATTR_DHCP3_DOMAIN_NAME",				strtolower("dhcpDomainName"),				false);
+pql_set_define("PQL_ATTR_DHCP3_DNS_STATUS",					strtolower("dhcpDnsStatus"),				false);
+pql_set_define("PQL_ATTR_DHCP3_REQUESTED_HOSTNAME",			strtolower("dhcpRequestedHostName"),		false);
+pql_set_define("PQL_ATTR_DHCP3_ASSIGNED_HOSTNAME",			strtolower("dhcpAssignedHostName"),			false);
+pql_set_define("PQL_ATTR_DHCP3_RESERVED_FOR_CLIENT",		strtolower("dhcpReservedForClient"),		false);
+pql_set_define("PQL_ATTR_DHCP3_ASSIGNED_TO_CLIENT",			strtolower("dhcpAssignedToClient"),			false);
+pql_set_define("PQL_ATTR_DHCP3_RELAY_AGENT_INFO",			strtolower("dhcpRelayAgentInfo"),			false);
+pql_set_define("PQL_ATTR_DHCP3_HW_ADDRESS",					strtolower("dhcpHWAddress"),				false);
+pql_set_define("PQL_ATTR_DHCP3_HASH_BUCKET_ASSIGNMENT",		strtolower("dhcpHashBucketAssignment"),		false);
+pql_set_define("PQL_ATTR_DHCP3_DELAYED_SERVICE_PARAMETER",	strtolower("dhcpDelayedServiceParameter"),	false);
+pql_set_define("PQL_ATTR_DHCP3_MAX_CLIENT_LEAD_TIME",		strtolower("dhcpMaxClientLeadTime"),		false);
+pql_set_define("PQL_ATTR_DHCP3_ERROR_LOG",					strtolower("dhcpErrorLog"),					false);
+pql_set_define("PQL_ATTR_DHCP3_KEY_ALGORITHM",				strtolower("dhcpKeyAlgorithm"),				false);
+pql_set_define("PQL_ATTR_DHCP3_KEY_SECRET",					strtolower("dhcpKeySecret"),				false);
+pql_set_define("PQL_ATTR_DHCP3_DNS_ZONE_SERVER",			strtolower("dhcpDnsZoneServer"),			false);
+pql_set_define("PQL_ATTR_DHCP3_COMMENTS",					strtolower("dhcpComments"),					false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_END_POINT_STATE",	strtolower("dhcpFailOverEndpointState"),	false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_PRIMARY_SERVER",	strtolower("dhcpFailOverPrimaryServer"),	false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_SECONDARY_SERVER",	strtolower("dhcpFailOverSecondaryServer"),	false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_PRIMARY_PORT",		strtolower("dhcpFailOverPrimaryPort"),		false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_SECONDARY_PORT",	strtolower("dhcpFailOverSecondaryPort"),	false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_RESPONSE_DELAY",	strtolower("dhcpFailOverResponseDelay"),	false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_UNACKED_UPDATES",	strtolower("dhcpFailOverUnackedUpdates"),	false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_SPLIT",			strtolower("dhcpFailOverSplit"),			false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_LOAD_BALANCETIME",	strtolower("dhcpFailOverLoadBalanceTime"),	false);
+
+// DHCP3 schema object classes
+pql_set_define("PQL_ATTR_DHCP3_SERVICE",					strtolower("dhcpService"),					false);
+pql_set_define("PQL_ATTR_DHCP3_SHARED_NETWORK",				strtolower("dhcpSharedNetwork"),			false);
+pql_set_define("PQL_ATTR_DHCP3_SUBNET",						strtolower("dhcpSubnet"),					false);
+pql_set_define("PQL_ATTR_DHCP3_POOL",						strtolower("dhcpPool"),						false);
+pql_set_define("PQL_ATTR_DHCP3_GROUP",						strtolower("dhcpGroup"),					false);
+pql_set_define("PQL_ATTR_DHCP3_HOST",						strtolower("dhcpHost"),						false);
+pql_set_define("PQL_ATTR_DHCP3_CLASS",						strtolower("dhcpClass"),					false);
+pql_set_define("PQL_ATTR_DHCP3_SUBCLASS",					strtolower("dhcpSubClass"),					false);
+pql_set_define("PQL_ATTR_DHCP3_OPTIONS",					strtolower("dhcpOptions"),					false);
+pql_set_define("PQL_ATTR_DHCP3_LEASES",						strtolower("dhcpLeases"),					false);
+pql_set_define("PQL_ATTR_DHCP3_LOG",						strtolower("dhcpLog"),						false);
+pql_set_define("PQL_ATTR_DHCP3_SERVER",						strtolower("dhcpServer"),					false);
+pql_set_define("PQL_ATTR_DHCP3_TSIGKEY",					strtolower("dhcpTSigKey"),					false);
+pql_set_define("PQL_ATTR_DHCP3_DNSZONE",					strtolower("dhcpDnsZone"),					false);
+pql_set_define("PQL_ATTR_DHCP3_FAIL_OVER_PEER",				strtolower("dhcpFailOverPeer"),				false);
+pql_set_define("PQL_ATTR_DHCP3_LOCATOR",					strtolower("dhcpLocator"),					false);
+// }}}
+
 // {{{ Miscellaneous external attributes
 pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
 pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
@@ -424,6 +506,7 @@ pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG",			strtolower("userTemplateDes
 pql_set_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER",			strtolower('autoCreateUGidNumber'),			false);
 // }}}
 
+
 // {{{ Map attribute to configuration define - GLOBAL
 // Format:   Define to set => Attribute where value is located
 // Location: In the base DN(s)
@@ -462,7 +545,8 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_EZMLM_REMOTE"				=> pql_get_define("PQL_ATTR_EZMLM_REMOTE"),
 								 "PQL_CONF_EZMLM_REMOTE_HOST"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST"),
 								 "PQL_CONF_EZMLM_REMOTE_USER"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER"),
-								 "PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT"=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT"));
+								 "PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT"=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT"),
+								 "PQL_CONF_DHCP3_USE"					=> pql_get_define("PQL_ATTR_DHCP3_USE"));
 
 // }}}
 

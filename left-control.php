@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.41 2007-03-12 10:45:23 turbo Exp $
+// $Id: left-control.php,v 2.42 2007-07-19 10:27:57 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -171,7 +171,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 		  //	2. User is global webserver administrator
 		  //	3. User is global mailserver administrator
 		  //	4. User have access to virtual hosts in any of the containers of this host		<- TODO
-		  pql_format_tree($host, "host_detail.php?host=".urlencode($physical_dn)."&ref=physical", $links, 0);
+		  pql_format_tree($host, "host_detail.php?host=".urlencode($physical_dn)."&ref=physical&view=physical", $links, 0);
 		} else
 		  // MUST show the physical host, even if there's no links.
 		  pql_format_tree($host, '', '', 0);

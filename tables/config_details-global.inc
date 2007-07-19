@@ -5,14 +5,18 @@
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('LDAP host')?></td>
-        <td class="<?=$class?>"><?=urldecode($_SESSION["USER_HOST"])?>&nbsp;</td>
+        <td class="<?=$class?>"><?=urldecode($_SESSION["USER_HOST"])?></td>
         <td class="<?=$class?>"></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Language')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_LANG")?>&nbsp;</td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_LANG")) { ?>
+          <?=pql_get_define("PQL_CONF_LANG")?>
+<?php } ?>
+        </td>
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?view=default&attrib=<?=pql_get_define("PQL_ATTR_LANG")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_CONF_LANG")?>"></a></td>
 <?php } else { ?>
@@ -23,14 +27,22 @@
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Who are we')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_WHOAREWE")?>&nbsp;</td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_WHOAREWE")) { ?>
+          <?=pql_get_define("PQL_CONF_WHOAREWE")?>
+<?php } ?>
+        </td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?view=default&attrib=<?=pql_get_define("PQL_ATTR_WHOAREWE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_WHOAREWE")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Hostmaster')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_HOSTMASTER")?>&nbsp;</td>
+        <td class="<?=$class?>">
+<?php if(pql_get_define("PQL_CONF_HOSTMASTER")) { ?>
+          <?=pql_get_define("PQL_CONF_HOSTMASTER")?>
+<?php } ?>
+        </td>
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?view=default&attrib=<?=pql_get_define("PQL_ATTR_HOSTMASTER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_HOSTMASTER")?>"></a></td>
 <?php } else { ?>
@@ -182,6 +194,17 @@ if(pql_get_define("PQL_CONF_DEBUG_ME")) {
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_SAMBA_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?view=default&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_SAMBA_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_SAMBA_USE")?>"></a></td>
+<?php } else { ?>
+        <td class="<?=$class?>"></td>
+<?php } ?>
+      </tr>
+
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('DHCP3 configuration')?></td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_DHCP3_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?view=default&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_DHCP3_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_DHCP3_USE")?>"></a></td>
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>

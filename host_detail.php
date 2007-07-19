@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 2.7 2007-03-14 12:10:52 turbo Exp $
+// $Id: host_detail.php,v 2.8 2007-07-19 10:27:57 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -13,8 +13,8 @@ require($_SESSION["path"]."/left-head.html");
 // {{{ Retreive and setup physical hosts array
 if($_REQUEST["host"] == 'Global') {
   $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
-					  '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))',
-					  'ONELEVEL');
+						 '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))',
+						 'ONELEVEL');
   $host = 'Global';
 } else {
   $hosts = array($_REQUEST["host"]);
@@ -88,49 +88,34 @@ foreach($_pql->ldap_basedn as $dn)  {
 // }}}
 
 // {{{ For each physical host, find web containers and their virtual hosts
-$DATA = array();
-foreach($hosts as $host_dn) {
-  $tmp = pql_websrv_get_data($host_dn);
-  if(is_array($tmp)) {
-	foreach($tmp as $host => $data)
-	  $DATA[$host] = $data;
-  } else {
-	// This host does not have any web containers, but we still want it
-	// in the list - add it 'empty'
-	$host = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_CN"));
-	$DATA[$host_dn] = array();
+if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+  $DATA = array();
+
+  foreach($hosts as $host_dn) {
+	$tmp = pql_websrv_get_data($host_dn);
+	if(is_array($tmp)) {
+	  foreach($tmp as $host => $data)
+		$DATA[$host] = $data;
+	} else {
+	  // This host does not have any web containers, but we still want it
+	  // in the list - add it 'empty'
+	  $host = $_pql->get_attribute($host_dn, pql_get_define("PQL_ATTR_CN"));
+	  $DATA[$host_dn] = array();
+	}
   }
 }
 // }}}
 
 // {{{ Setup default view if not set
-if(empty($_REQUEST["view"])) {
-  if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
-	$_REQUEST["view"] = 'hostacl';
-  } elseif(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
-	$_REQUEST["view"] = 'automount';
-  } elseif(pql_get_define("PQL_CONF_CONTROL_USE") and ($_SESSION["ALLOW_BRANCH_CREATE"] or $controls_admin)) {
-	// Only do this if:
-	//	1.  Mail server administration is on
-	//	2a. User is super admin
-	//	2b. User is global controls administrator
-	$_REQUEST["view"] = 'mailsrv';
-  } elseif(pql_get_define("PQL_CONF_WEBSRV_USE") and ($_SESSION["ALLOW_BRANCH_CREATE"] or is_array($DATA))) {
-	// Only do this if:
-	//	1.  Mail server administration is on
-	//	2a. User is controls administrator OR
-	//	2b. User is super admin
-	$_REQUEST["view"] = 'websrv';
-
-  } elseif(pql_get_define("PQL_CONF_RADIUS_USE")) {
-	$_REQUEST["view"] = 'radius';
-  }
+if(empty($_REQUEST["view"]) and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+	$_REQUEST["view"] = 'physical';
 }
 // }}}
 
 // {{{ Setup nav buttons
-if(($_REQUEST["server"] != 'Global') and
-   (($_REQUEST["ref"] == 'physical') or (($_REQUEST["host"] == 'Global') and ($_REQUEST["ref"] == 'global'))))
+if(((($_REQUEST["server"] != 'Global') or (($_REQUEST["ref"] == 'physical') and ($_REQUEST["view"] == 'physical'))) and
+	(($_REQUEST["ref"] == 'physical') or (($_REQUEST["host"] == 'Global') and ($_REQUEST["ref"] == 'global')))) or
+   ($_REQUEST["host"] and ($_REQUEST["servicedn"] or $_REQUEST["subnet"] or $_REQUEST["subhost"])))
 {
   // Do NOT show if:
   //	Left host frame/Webserver - Global
@@ -161,6 +146,11 @@ if(($_REQUEST["server"] != 'Global') and
 	$new = array('websrv' => 'Webserver Administration');
 	$buttons = $buttons + $new;
   }				 
+
+  if(pql_get_define("PQL_CONF_DHCP3_USE")) {
+	$new = array('dhcp3' => 'DHCP3 Administration');
+	$buttons = $buttons + $new;
+  }
 
   if(pql_get_define("PQL_CONF_RADIUS_USE")) {
 	$new = array('radius' => 'RADIUS Administration');
@@ -195,6 +185,27 @@ if($_REQUEST["view"] == 'hostacl') {
   pql_header("control_detail.php?host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 1);
 } elseif($_REQUEST["view"] == 'websrv') {
   include("./tables/host_details-websrv.inc");
+} elseif($_REQUEST["view"] == 'dhcp3') {
+  require($_SESSION["path"]."/include/pql_dhcp3.inc");
+  $_REQUEST["host"] = urldecode($_REQUEST["host"]);
+
+  // Get the actual service DN
+  $servicedn = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_DHCP3_SERVICEDN"));
+
+  // Retreive subnetworks and subhosts
+  $subnets  = pql_dhcp3_get_subnets($servicedn);
+  $subhosts = pql_dhcp3_get_subhosts($servicedn);
+
+  $subentries = array();
+  pql_add2array($subentries, $subnets);
+  pql_add2array($subentries, $subhosts);
+
+  if(@$_REQUEST["subnet"])
+	include("./tables/host_details-dhcp3_subnet.inc");
+  elseif(@$_REQUEST["subhost"])
+	include("./tables/host_details-dhcp3_subhost.inc");
+  else
+	include("./tables/host_details-dhcp3.inc");
 } elseif($_REQUEST["view"] == 'radius') {
   include("./tables/host_details-radius.inc");
 } elseif($_REQUEST["view"] == 'sudo') {
@@ -203,6 +214,8 @@ if($_REQUEST["view"] == 'hostacl') {
   include("./tables/host_details-dns.inc");
 } elseif($_REQUEST["view"] == 'action') {
   include("./tables/host_details-action.inc");
+} elseif($_REQUEST["view"] == 'physical') {
+  include("./tables/host_details-physical.inc");
 }
 // }}}
 

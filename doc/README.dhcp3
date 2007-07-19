@@ -1,0 +1,12 @@
+DHCP3 v3.x configuration
+~~~~~~~~~~~~~~~~~~~~~~~~
+As of 2.3.7, phpQLAdmin have support for having the DHCP3 (from
+isc.org) configuration in the LDAP server. You will have to have
+the DHCP3 sources patched with the LDAP patch by Brian Masney.
+This patch is on his project page, at the URL http://home.ntelos.net/~masneyb/.
+
+
+Unfortunatly, the DHCP schema definition won't work correctly
+with the rest of phpQLAdmin, and I have not been able to circumvent
+it. To fix it, you will have to make the 'dhcpServer' object class
+an AUXILIARY object class.

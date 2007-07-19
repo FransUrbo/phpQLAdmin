@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.32 2007-07-13 09:55:36 turbo Exp $
+// $Id: config_plugins.inc,v 2.33 2007-07-19 10:28:01 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -302,6 +302,23 @@ pql_plugin_register(pql_get_define("PQL_ATTR_PPOLICY_ENTRY"), "",
 						  pql_get_define("PQL_ATTR_PPOLICY_HISTORY"),
 						  pql_get_define("PQL_ATTR_PPOLICY_GRACEUSE"),
 						  pql_get_define("PQL_ATTR_PPOLICY_RESET")));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_IPHOSTNUMBER"), "",
+					"attrib.hostdhcp.inc",
+					array(pql_get_define("PQL_ATTR_IPHOSTNUMBER"),
+						  pql_get_define("PQL_ATTR_DHCP3_SERVICEDN")));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_DHCP3_STATEMENTS"), "",
+					"attrib.dhcpstatements.inc",
+					pql_get_define("PQL_ATTR_DHCP3_STATEMENTS"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_DHCP3_OPTION"), "",
+					"attrib.dhcpoption.inc",
+					pql_get_define("PQL_ATTR_DHCP3_OPTION"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_DHCP3_RANGE"), "",
+					"attrib.dhcprange.inc",
+					pql_get_define("PQL_ATTR_DHCP3_RANGE"));
 
 /* This is actually a fake, but it's the easiest way 
  * Used in [domain]->[user]->Antispam configuration->Add header line to mail */

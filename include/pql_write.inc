@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.51 2007-03-12 12:02:13 turbo Exp $
+// $Id: pql_write.inc,v 2.52 2007-07-19 10:28:02 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -211,7 +211,7 @@ function pql_user_add($domain, $dn, $entry, $type, $branch) {
 	// failed to add user
 	$failed = 1; pql_format_error(1);
 	
-	$errno = ldap_errno($ldap_linkid);
+	$errno = ldap_errno($_pql->ldap_linkid);
 	if($errno == 32) {
 	  // No such object - try adding the ou before it
 	  if($branch)
@@ -286,10 +286,15 @@ function pql_user_add($domain, $dn, $entry, $type, $branch) {
 // {{{ pql_add_computer(hostname, ip)
 function pql_add_computer($hostname, $ip) {
   global $_pql;
+
+  $objectclasses = pql_get_subschema('objectclasses');
   
   $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $_SESSION["USER_SEARCH_DN_CTR"];
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'ipHost';
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
+  if(array_key_exists('dhcpserver', $objectclasses))
+	// Don't have any MUST, so it's safe to add if it's availible
+	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'dhcpServer';
   $entry[pql_get_define("PQL_ATTR_CN")] = $hostname;
   $entry[pql_get_define("PQL_ATTR_IPHOSTNUMBER")] = $ip;
   
