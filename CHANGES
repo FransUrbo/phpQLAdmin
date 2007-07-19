@@ -97,6 +97,7 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	  - Create a userSearchFilter attribute (which can be set in 'Home->phpQLAdmin Configuration->[branch]'.
 	    This can be used instead of the userReference attribute to find users etc. If
 	    not defined, the userReference attribute is still required...
+	  - Create a DHCP3 manager for the DHCP3 patch at http://home.ntelos.net/~masneyb/.
 
 phpQLAdmin 2.3.6 Release (Mar  5 2007)
 	Bug fixes
