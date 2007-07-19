@@ -1,6 +1,6 @@
 <?php
 // Add physical host
-// $Id: host_add.php,v 2.3 2007-03-14 12:10:51 turbo Exp $
+// $Id: host_add.php,v 2.4 2007-07-19 10:12:34 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -19,7 +19,7 @@ if(isset($_REQUEST['action'])) {
       $_SESSION["USER_SEARCH_DN_CTR"] = $dn;
 
       // Call ourself again to get the 'Add New Computer' form...
-      pql_header($_SERVER["PHP_SELF"], 1);
+      pql_header($_SERVER["HTTP_REFERER"], 0);
     }
 // }}}
   } else {
@@ -37,10 +37,10 @@ if(isset($_REQUEST['action'])) {
     } else {
       // Inputs look good, lets add them
       if(pql_add_computer($_REQUEST['hostname'], $_REQUEST['hostip'])) {
-	$msg = pql_complete_constant($LANG->_("Host %host% added successfully."), array('host' => $_REQUEST['hostname']));
-	$url = 'host_detail.php?host=' . urlencode(pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST['hostname'] . "," . $_SESSION["USER_SEARCH_DN_CTR"]).
-	  "&msg=$msg&rlnb=1";
-      } else {
+	$msg  = pql_complete_constant($LANG->_("Host %host% added successfully."), array('host' => $_REQUEST['hostname']));
+	$host = urlencode(pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST['hostname'] . "," . $_SESSION["USER_SEARCH_DN_CTR"]);
+	$url  = "host_detail.php?host=$host&msg=$msg&rlnb=1&ref=physical&server=$host&view=physical";
+     } else {
 	$msg = pql_complete_constant($LANG->_("Failed to add %host%"), array('host' => $_REQUEST['hostname']));
 	$url = 'host_detail.php?host=Global';
       }
@@ -146,15 +146,17 @@ require($_SESSION["path"]."/header.html");
               <?php if(!empty($error_text["hostip"])) { echo pql_format_error_span($error_text["hostip"]); } ?>
             </td>
           </tr>
+<?php if(pql_get_define("PQL_CONF_BIND9_USE")) { ?>
 
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?=$LANG->_('Create DNS object')?></td>
             <td><input type="checkbox" name="dns"<?php if(!@empty($_REQUEST["dns"])) { echo "CHECKED"; } ?>>&nbsp;<?=$LANG->_('Yes')?></td>
           </tr>
+<?php } ?>
         </th>
       </table>
 
-      <input type="hidden" name="view"   value="hostacl">
+      <input type="hidden" name="view"   value="newhost">
       <input type="hidden" name="action" value="add_host">
       <input type="submit" name="Submit" value="<?=$LANG->_('Add New Host')?>">
     </form>
