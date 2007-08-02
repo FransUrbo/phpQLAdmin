@@ -36,6 +36,19 @@ function attribute_print_form() {
 	  if($uidnr)
 		$_REQUEST["sambasid"] = (3 * $uidnr);
 	}
+
+	if(!$_REQUEST["sambasid"]) {
+	  echo pql_format_error_span($LANG->_("No SMB Security ID defined!"));
+	  echo "<br>";
+	  
+	  if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+		echo pql_complete_constant($LANG->_("Please see %url% ('SMB Security ID')"),
+								   array('url' => "<a href='config_detail.php?view=".urlencode($_REQUEST["rootdn"])."'>phpQLAdmin configuration</a>"));
+	  } else {
+		echo $LANG->_("Please notify Administrator!");
+	  }
+	  die();
+	}
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -108,7 +121,7 @@ function attribute_save($type) {
 			// Completely replace the attribute
 			$old = 1;
 		
-		  // {{{ Replace the specified attribute
+		  // Replace the specified attribute
 		  if(pql_modify_attribute($_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["sambasid"]))
 			$success = 1;
 		}
