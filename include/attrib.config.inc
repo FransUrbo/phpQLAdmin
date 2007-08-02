@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.59 2007-03-02 15:48:45 turbo Exp $
+// $Id: attrib.config.inc,v 1.60 2007-08-02 22:17:21 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -213,131 +213,138 @@ function attribute_print_form() {
 <?php   	if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
 			   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")))
 			{
-				 if($attrib == 'userobjectclass')
-				 $existing = pql_get_define("PQL_CONF_OBJECTCLASS_USER", $dn);
-				 else
-				 $existing = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn);
-				 if(is_array($existing))
-				 $existing = pql_split_oldvalues($existing); // Convert to array
-				 else
-				 $existing = array();
-				 
-				 $objectclasses = pql_get_subschema("objectclasses");
-				 if(is_array($objectclasses)) {
-				   $i = 0; $new_tr = 0;
-				   $div_counter = 10; // Initialize the global counter
-				   
-				   foreach($objectclasses as $key => $oc) {
-					 $print = 1; $gotit = 0;
-					 
-					 if($key == 'ALIAS')
-					   break;
-					 
-					 foreach($existing as $e) {
-					   if((($e == $key) or eregi('phpQLAdmin', $key)) and !$gotit) {
-						 $print = 0; $gotit = 1;
-					   }
-					 }
-					 
-					 if($print) {
-					   $class=pql_format_table(0);
-					   if($new_tr) {
+			  if($attrib == 'userobjectclass') {
+				$existing = pql_get_define("PQL_CONF_OBJECTCLASS_USER", $dn);
+			  } else {
+				$existing = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn);
+			  } if(is_array($existing)) {
+				$existing = pql_split_oldvalues($existing); // Convert to array
+			  } else {
+				$existing = array();
+			  }
+
+			  $objectclasses = pql_get_subschema("objectclasses");
+			  if(is_array($objectclasses)) {
+				$i = 0; $new_tr = 0;
+				$div_counter = 10; // Initialize the global counter
+				
+				foreach($objectclasses as $key => $oc) {
+				  $print = 1; $gotit = 0;
+				  
+				  if($key == 'ALIAS')
+					break;
+				  
+				  foreach($existing as $e) {
+					if((($e == $key) or eregi('phpQLAdmin', $key)) and !$gotit) {
+					  $print = 0; $gotit = 1;
+					}
+				  }
+				  
+				  if($print) {
+					$class=pql_format_table(0);
+					if($new_tr) {
 ?>
 
         <tr>
           <td class="title"></td>
           <td class="<?=$class?>">
-<?php					}
-						$new_tr = 1;
+<?php			  }
+				  $new_tr = 1;
 
-						$txt  = '<input type="checkbox" name="'.$attrib.'_'.$i.'" value="'.$key.'" size="50">';
-						$txt .= $objectclasses[$key]["NAME"];
-						pql_format_tree($txt, '');
-
-						if($objectclasses[$key]["MUST"]["count"]) {
+				  $txt  = '<input type="checkbox" name="'.$attrib.'_'.$i.'" value="'.$key.'" size="50">';
+				  $txt .= $objectclasses[$key]["NAME"];
+				  pql_format_tree($txt, '');
+				  
+				  if($objectclasses[$key]["MUST"]["count"]) {
 ?>
             <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Must:</b>
-<?php						echo "            ";
-							for($counter=0; $counter < $objectclasses[$key]["MUST"]["count"]; $counter++) {
-								echo $objectclasses[$key]["MUST"][$counter];
-								if(!empty($objectclasses[$key]["MUST"][$counter+1]))
-								  echo ", ";
-							}
-						}
+<?php				echo "            ";
+					for($counter=0; $counter < $objectclasses[$key]["MUST"]["count"]; $counter++) {
+					  echo $objectclasses[$key]["MUST"][$counter];
+					  if(!empty($objectclasses[$key]["MUST"][$counter+1]))
+						echo ", ";
+					}
+				  }
 
-						if($objectclasses[$key]["MAY"]["count"]) {
+				  if($objectclasses[$key]["MAY"]["count"]) {
 ?>
 
             <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>May:</b> &nbsp;
-<?php						echo "            ";
-							for($counter=0; $counter < $objectclasses[$key]["MAY"]["count"]; $counter++) {
-								echo $objectclasses[$key]["MAY"][$counter];
-								if(!empty($objectclasses[$key]["MAY"][$counter+1]))
-								  echo ", ";
-							}
-						}
+<?php				echo "            ";
+					for($counter=0; $counter < $objectclasses[$key]["MAY"]["count"]; $counter++) {
+					  echo $objectclasses[$key]["MAY"][$counter];
+					  if(!empty($objectclasses[$key]["MAY"][$counter+1]))
+						echo ", ";
+					}
+				  }
 
-						// This an ending for the domain tree
-						echo "\n"; pql_format_tree_end();
+				  // This an ending for the domain tree
+				  echo "\n"; pql_format_tree_end();
 ?>
           </td>
         </tr>
-<?php					$i++;
-					 } // if(print) 
-				   } // foreach(objectclasses)
+<?php			  $i++;
+				} // if(print) 
+			  } // foreach(objectclasses)
 ?>
       <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
       <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
-<?php			 } else {
-				// No objectclasses in LDAP!
+<?php		} else {
+			  // No objectclasses in LDAP!
 ?>
           <td class="<?=$class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
 <?php
-				 }
-			} elseif($attrib == pql_get_define("PQL_ATTR_LANG")) {
-			  // We're to change the language -> show a select box with existing languages
-			  $languages = $LANG->get_supported();
+			}
+		  } elseif($attrib == pql_get_define("PQL_ATTR_LANG")) {
+			// We're to change the language -> show a select box with existing languages
+			$languages = $LANG->get_supported();
 ?>
             <select name="<?=$attrib?>">
-<?php			foreach($languages as $l => $lang) { ?>
+<?php		foreach($languages as $l => $lang) { ?>
               <option value="<?=$l?>"><?=$lang?></option>
-<?php			} ?>
+<?php		} ?>
             </select>
 <?php
-			} else {
-			  // Not a userObjectClass or branchObjectClass
-			  if($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
-				$values = array('CRYPT', 'MD5', 'SHA', 'CLEAR', 'KERBEROS');
-				if(is_array($values)) {
+		  } else {
+			// Not a userObjectClass or branchObjectClass
+			if($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
+			  $values = array('CRYPT', 'MD5', 'SHA', 'CLEAR', 'KERBEROS');
+			  if(is_array($values)) {
 ?>
           <td>
-<?php				for($i=0, $j=0; $i < count($values); $i++) {
-						if(!eregi($values[$i], pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
-							// We don't want to include schemes we've already
-							// configured branch to use...
+<?php			for($i=0, $j=0; $i < count($values); $i++) {
+				  if(!eregi($values[$i], pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
+					// We don't want to include schemes we've already
+					// configured branch to use...
 ?>
             <input type="checkbox" name="<?=$attrib?>_<?=$j?>" value="<?=$values[$i]?>"><?=$values[$i]?><br>
-<?php						$j++;
-						}
-					}
+<?php				$j++;
+				  }
+				}
 ?>
             <input type="hidden"   name="<?=$attrib?>"   value="<?=$j?>">
           </td>
-<?php			}
-			  } else {
+<?php		  }
+			} else {
 ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($attrib != 'whoarewe') { echo $oldvalue; } ?>" size="40">
           </td>
-<?php		  }
-			}
+<?php		}
+		  }
 ?>
         </tr>
       </th>
     </table>
 <?php
 // }}}
+		if($attrib == pql_get_define("PQL_ATTR_SAMBASID")) {
+?>
+    <img src="images/info.png" width="16" height="16" alt="" border="0"><?=pql_complete_constant($LANG->_("This can be retreived by executing the command \b%what%\B (as root)"),
+																								 array('what' => 'net getlocalsid'))?>
+<?php
 		}
+	  }
 ?>
 
     <input type="hidden" name="submit"   value="1">
