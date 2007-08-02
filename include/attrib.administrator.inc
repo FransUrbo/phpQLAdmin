@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.68 2007-07-13 11:12:04 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.69 2007-08-02 22:14:35 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -251,7 +251,7 @@ function attribute_print_form($action) {
 					if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
 					  $filter = pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]);
 					else
-					  $filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
+					  $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
 						
 					// Retreive all users in this branch/domain.
 					$users   = $_pql->get_dn($domain, $filter);
@@ -263,8 +263,13 @@ function attribute_print_form($action) {
 							$tmp = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_CN"));
 							if(is_array($tmp))
 							  $cns[$dn] = $tmp[0];
-							else
+							elseif($tmp)
 							  $cns[$dn] = $tmp;
+							else {
+							  // No CN - use the xx attribute.
+							  $attr = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
+							  $cns[$dn] = $_pql->get_attribute($dn, $attr);
+							}
 						}
 
 						if(is_array($cns)) {
