@@ -3,7 +3,7 @@
 // pql_templates.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.14 2007-03-05 10:33:19 turbo Exp $
+// $Id: pql_templates.inc,v 2.15 2007-08-02 22:21:18 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -38,65 +38,68 @@ function pql_get_templates() {
   $filter    = '(&(objectClass=phpQLAdminUserTemplate)('.pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME").'=*))';
   $templates = $_pql->get_dn(pql_get_define("PQL_CONF_SUBTREE_TEMPLATES").','.$_SESSION["BASE_DN"][0], $filter, 'ONELEVEL');
 
-  // {{{ Setup attributes to retreive.
-  $attribs = array("name"            		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME"),
-				   "short"           		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT"),
-				   "long"            		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG"),
-				   "userobjectclass" 		=> pql_get_define("PQL_ATTR_OBJECTCLASS_USER"),
-				   "passwordscheme"  		=> pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"),
-				   "autocreateugidnumber"	=> pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER"));
-  // }}}
-
-  for($i=0; $i < count($templates); $i++) {
-	// Remember the DN
-	$TEMPLATE[$i]["dn"] = $templates[$i];
-    
-    // {{{ Get all information of interest about this template
-    foreach($attribs as $key => $attrib) {
-      $value = $_pql->get_attribute($templates[$i], $attrib);
-	  if($value) {
-		if(!is_array($value) and ($key != "name") and ($key != "short") and ($key != "long") and
-		   ($key != "reference") and ($key != "autocreateugidnumber"))
-		{
-		  // Must be an array for pql_format_table_single() to work...
-		  // At the time of this writing, the only stuff that should be an array is 'userObjectClass'
-		  // and 'passWordScheme' but I'm predicting a change :)
-		  $TEMPLATE[$i][$key] = array($value);
-		} else
-		  // name, short or long description. Isn't used with pql_format_table_single().
-		  $TEMPLATE[$i][$key] = $value;
-	  }
-
-	  // Deal with the boolean(s)
-	  if($attrib == pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")) {
-		if(empty($TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]))
-		  $TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")] = 'FALSE';
-		pql_format_bool($TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]);
-	  }
-	}
+  if(is_array($templates)) {
+	// {{{ Setup attributes to retreive.
+	$attribs = array("name"            		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME"),
+					 "short"           		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT"),
+					 "long"            		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG"),
+					 "userobjectclass" 		=> pql_get_define("PQL_ATTR_OBJECTCLASS_USER"),
+					 "passwordscheme"  		=> pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"),
+					 "autocreateugidnumber"	=> pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER"));
 	// }}}
-
-	// {{{ The old way (pre 2.1.4) of doing it was to have the values in the root DN(s).
-	// Look for the password scheme
-	if(!@$TEMPLATE[$i]["passwordscheme"]) {
-	  $passwordscheme = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"));
-	  if($passwordscheme) {
-		$TEMPLATE[$i]["passwordscheme"] = $passwordscheme;
-		$TEMPLATE[$i]["oldformat"][pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")] = $passwordscheme;
-	  }
-	}
 	
-	// Look for the user object class
-	if(!$TEMPLATE[$i]["userobjectclass"]) {
-	  $userobjectclass = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_OBJECTCLASS_USER"));
-	  if($userobjectclass) {
-		$TEMPLATE[$i]["userobjectclass"] = $userobjectclass;
-		$TEMPLATE[$i]["oldformat"][pql_get_define("PQL_ATTR_OBJECTCLASS_USER")] = $userobjectclass;
+	for($i=0; $i < count($templates); $i++) {
+	  // Remember the DN
+	  $TEMPLATE[$i]["dn"] = $templates[$i];
+	  
+	  // {{{ Get all information of interest about this template
+	  foreach($attribs as $key => $attrib) {
+		$value = $_pql->get_attribute($templates[$i], $attrib);
+		if($value) {
+		  if(!is_array($value) and ($key != "name") and ($key != "short") and ($key != "long") and
+			 ($key != "reference") and ($key != "autocreateugidnumber"))
+			{
+			  // Must be an array for pql_format_table_single() to work...
+			  // At the time of this writing, the only stuff that should be an array is 'userObjectClass'
+			  // and 'passWordScheme' but I'm predicting a change :)
+			  $TEMPLATE[$i][$key] = array($value);
+			} else
+			  // name, short or long description. Isn't used with pql_format_table_single().
+			  $TEMPLATE[$i][$key] = $value;
+		}
+		
+		// Deal with the boolean(s)
+		if($attrib == pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")) {
+		  if(empty($TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]))
+			$TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")] = 'FALSE';
+		  pql_format_bool($TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]);
+		}
 	  }
+	  // }}}
+	  
+	  // {{{ The old way (pre 2.1.4) of doing it was to have the values in the root DN(s).
+	  // Look for the password scheme
+	  if(!@$TEMPLATE[$i]["passwordscheme"]) {
+		$passwordscheme = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"));
+		if($passwordscheme) {
+		  $TEMPLATE[$i]["passwordscheme"] = $passwordscheme;
+		  $TEMPLATE[$i]["oldformat"][pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")] = $passwordscheme;
+		}
+	  }
+	  
+	  // Look for the user object class
+	  if(!$TEMPLATE[$i]["userobjectclass"]) {
+		$userobjectclass = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_OBJECTCLASS_USER"));
+		if($userobjectclass) {
+		  $TEMPLATE[$i]["userobjectclass"] = $userobjectclass;
+		  $TEMPLATE[$i]["oldformat"][pql_get_define("PQL_ATTR_OBJECTCLASS_USER")] = $userobjectclass;
+		}
+	  }
+	  // }}}
 	}
-	// }}}
-  }
-  
+  } else
+	$i = 0;
+
   // Add the group template to the list of templates
   $TEMPLATE[$i] = pql_templates_group();
 
