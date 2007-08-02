@@ -69,3 +69,7 @@ LDIF EXAMPLE
   posixAccount objectclass and the LDAP server will refuse to add
   the user if those values isn't available.
 
+EXISTING USERS
+  To modify a existing user, which is not 'samba enabled', the command
+  'smbldap-usermod' is used. On Debian GNU/Linux (and derived) systems,
+  this is in the 'smbldap-tools' package.
