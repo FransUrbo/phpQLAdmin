@@ -4,7 +4,8 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Branch DN')?></td>
         <td><?=$_REQUEST["domain"]?></td>
-        <td><?=// TODO: Should we be able to rename the RDN? ?></td>
+        <!-- TODO: Should we be able to rename the RDN? -->
+        <td></td>
       </tr>
   
 <?php } ?>
