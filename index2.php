@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.52 2007-03-14 12:10:52 turbo Exp $
+// $Id: index2.php,v 2.53 2007-08-16 07:43:13 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -99,6 +99,13 @@ if($_SESSION["mozilla"]) {
     $border = 0;
 }
 // }}}
+
+$startinmyaccount  = $_pql->get_attribute($_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"),
+										  0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
+if($startinmyaccount) {
+  $_REQUEST["advanced"] = $_SESSION["ADVANCED_MODE"] = 1;
+  $adv_uri = "?advanced=1";
+}
 ?>
 <html>
   <head>
@@ -167,11 +174,7 @@ if($_SESSION["mozilla"]) {
     <!-- RIGHT frame -->
 <?php
 	  // {{{ Right frame
-	  $value = $_pql->get_attribute($_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"),
-									0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
-      if($value) {
-		// BUG: This be true if ANY domain have the startInMyAccount attribute set!!!
-		//      That CAN NOT be what we want! (?)
+      if($startinmyaccount) {
 ?>
     <frame src="user_detail.php?rootdn=<?php
     if(empty($rootdn) and empty($_REQUEST["rootdn"]))
