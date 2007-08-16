@@ -261,8 +261,10 @@
 		  $hosts[] = "$physical => $container";
 		}
 
-		if(count($hosts) > 0)
+		if(count($hosts) > 0) {
 		  asort($hosts);
+		  $hosts = pql_uniq($hosts);
+		}
 
 		$txt = array('tit' => $LANG->_('Round-robin'));
 		pql_format_table_single($txt, $link_url,
