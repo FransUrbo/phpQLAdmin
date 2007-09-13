@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.67 2007-03-14 12:10:50 turbo Exp $
+// $Id: config_detail.php,v 2.68 2007-09-13 17:44:39 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -69,9 +69,29 @@ foreach($_SESSION["BASE_DN"] as $dn) {
 // {{{ Create the button array with domain buttons
 $buttons    = array('default'  => 'Global configuration');
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-  $button   = array('template' => 'User templates',
-					'ppolicy'  => 'Password Policies');
+  $button   = array('template' => 'User templates');
   $buttons += $button;
+
+  // {{{ Try to figure out if the ppolicy overlay is loaded
+  require($_SESSION["path"]."/include/pql_status.inc");
+  if($_pql->get_dn("cn=Overlay,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
+	// OpenLDAP <2.4
+	$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlay,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
+  } elseif($_pql->get_dn("cn=Overlays,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
+	// OpenLDAP >2.4
+	$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlays,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
+  }
+
+  if(in_array('ppolicy', $overlays)) {
+	$button   = array('ppolicy'  => 'Password Policies');
+	$buttons += $button;
+  }
+  // }}}
+
+  if(pql_get_define("PQL_CONF_RADIUS_USE")) {
+	$button   = array('radius' => 'RADIUS Profiles');
+	$buttons += $button;
+  }
 }
 foreach($_SESSION["BASE_DN"] as $dn) {
   $button   = array($dn => $dn);
@@ -110,6 +130,8 @@ if($_REQUEST["view"] == 'default') {
     include("./tables/config_details-template.inc");
 } elseif($_REQUEST["view"] == 'ppolicy') {
     include("./tables/config_details-ppolicy.inc");
+} elseif($_REQUEST["view"] == 'radius') {
+    include("./tables/config_details-radius.inc");
 } elseif($_SESSION["lynx"] and ($_REQUEST["view"] == 'index2')) {
     $link = "index2.php";
     if(isset($_SESSION["ADVANCED_MODE"]))
