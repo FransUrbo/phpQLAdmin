@@ -1,11 +1,14 @@
 <?php
 // Edit attribute of a physical host
-// $Id: host_edit_attribute.php,v 2.8 2007-07-19 10:27:57 turbo Exp $
+// $Id: host_edit_attribute.php,v 2.9 2007-09-13 17:57:16 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/config_plugins.inc");
+if(pql_get_define("PQL_CONF_DHCP3_USE")) {
+  require($_SESSION["path"]."/include/pql_dhcp3.inc");
+}
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 include($_SESSION["path"]."/header.html");
