@@ -1,11 +1,11 @@
 <?php
 // Plugin for the ppolicy overlay in OpenLDAP >v2.3
-// $Id: config_details-ppolicy.inc,v 1.1 2007-03-05 10:12:27 turbo Exp $
+// $Id: config_details-ppolicy.inc,v 1.2 2007-09-13 18:19:24 turbo Exp $
 require($_SESSION["path"]."/include/pql_ppolicy.inc");
 $ppolicies = pql_get_ppolicies();
 
-// Simplicity - with this we can have ONE single foreach() loop to output
-// the whole view!
+// {{{ Simplicity - with this we can have ONE single foreach() loop
+// to output the whole view!
 // TODO: Do this elsewhere to :)
 $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('Password Policy Name'),
 					   pql_get_define("PQL_ATTR_PPOLICY_DESC")					=> $LANG->_('Password Policy Description'),
@@ -25,24 +25,41 @@ $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('
 					   pql_get_define("PQL_ATTR_PPOLICY_ALLOW_USER_CHANGE")		=> $LANG->_('Allow user to change password'),
 					   pql_get_define("PQL_ATTR_PPOLICY_SAFE_MODIFY")			=> $LANG->_('Force the use of old password when changing'),
 					   pql_get_define("PQL_ATTR_PPOLICY_CHECK_MODULE")			=> $LANG->_('Additional password check module'));
+// }}}
 ?>
   <br>
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Global Password Policies')?>
-<?php for($i=0; $ppolicies[$i]; $i++) { ?>
-<?php	foreach($table_columns as $attrib => $text) {
-	  $link = 'config_edit_attribute.php?attrib='.$attrib;
-	  $class=pql_format_table(0);
+<?php for($i=0; $ppolicies[$i]; $i++) {
+		foreach($table_columns as $attrib => $text) {
+		  $link = 'config_edit_attribute.php?rootdn='.urlencode($ppolicies[$i]["dn"]).'&attrib='.$attrib;
+		  $class=pql_format_table(0);
 ?>
       <tr>
         <td class="title"><?=$text?></td>
-<?php if($attrib == pql_get_define("PQL_ATTR_PPOLICY_NAME")) { ?>
+<?php	  if($attrib == pql_get_define("PQL_ATTR_PPOLICY_NAME")) { ?>
         <td class="title">
-<?php } else { ?>
+<?php	  } else { ?>
         <td class="<?=$class?>">
-<?php } ?>
-          <?=$ppolicies[$i][$attrib]?>
+<?php	  }
+
+		  if($ppolicies[$i][$attrib]) {
+			if(($attrib == pql_get_define("PQL_ATTR_PPOLICY_MINAGE")) or
+			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_MAXAGE")) or
+			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING")) or
+			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION")) or
+			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL")))
+			{
+			  $time = pql_format_timestamp_human($ppolicies[$i][$attrib], false);
+			  echo $time;
+			} else {
+			  echo $ppolicies[$i][$attrib];
+			}
+		  } else {
+			echo "<i>".$LANG->_('Not set')."</i>";
+		  }
+?>
         </td>
 
         <td class="<?=$class?>" align="right">
