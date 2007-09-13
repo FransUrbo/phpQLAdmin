@@ -1,5 +1,56 @@
 phpQLAdmin 2.3 Change Log
 
+phpQLAdmin 2.3.8 TO BE ANNOUNCED
+	Bug fixes
+	  - Make sure any 'Home->phpQLAdmin Configuration->Global configuration' changes
+	    goes back to the 'Global configuration' view.
+	  - Put the Samba defines (PQL_CONF_SAMBA_USE - new, etc) into the LDAP database,
+	    managed by the 'Home->phpQLAdmin Configuration->{Global configuration,[branch]'
+	    views.
+	    + Rewrite part of doc/README.samba to reflect these changes.
+	    + Remove the samba defines from include/config.inc.
+	  - If the global Security ID is set, try to generate a user SID, based on the
+	    global SID _and_ the user UID.
+	  - Only show the 'Samba Settings' (renamed to 'SMB Settings') in the user view
+	    if useSamba attribute is set in the root DN.
+	    + If not the user SID is set, do not show the rest of the samba/SMB values.
+	      Only allow to change/view these if the user SID is set.
+	  - Add the 'sambaSamAccount' object class to a user if it is not set. Do this
+	    when adding a user SID to a user object.
+	  - Hide some stuff (buttons) from the user view if not running in advanced mode,
+	    and not admin.
+	  - Catch a missing 'PQL_CONF_SUBTREE_PPOLICY' define in include/attrib.config.ppolicy.inc.
+	  - If using ACI's, add that when adding a PPolicy template.
+	  - Faulty OID generated in include/pql_aci.inc:pql_validate_acis() (generated
+	    '\[all\]' instead of '[all]' - bad use of preg_replace()).
+	  - Faulty use of PQL_CONF_SUBTREE_PPOLICIES - should have been PQL_CONF_SUBTREE_PPOLICY
+	    in include/pql_ppolicy.inc.
+	    + Faulty use of pql_add2array(). Don't work with flat arrays.
+	  - Don't generate the ACI's if the object already have it (in include/pql_search.inc:pql_validate_object()).
+	  - Generate the ACI's (if in use) when creating a organizationUnit.
+	  - Generate a URL encoded DN for the hostname after added a physical host.
+	  - Only offer to create the DNS object if Bind9 manager is active.
+	  - When checking LDAP version, also check if ACI's is in use.
+	  - In include/pql.inc:pql_header(), only add the URI if it's not already set.
+	  - Fixup the check for add/save in include/pql_formating.inc:pql_create_ldif()
+	    only one ereg()!
+
+ 	GUI layout changes
+	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
+	    form.
+	  - Rewrite of the DHCP3 manager - domain oriented instead of host. DHCP information
+	    is now under a/the domain branch, not under the physical server.
+	  - Work on a RADIUS profile manager started.
+	    + Missing: Adding RADIUS profile object. Waiting for explanation of what the
+		       different attributes are for...
+
+ 	Misc changes
+	  - Catch the '2.X' version (which is CVS - hopfully it's >2.4).
+	  - Create a userSearchFilter attribute (which can be set in 'Home->phpQLAdmin Configuration->[branch]'.
+	    This can be used instead of the userReference attribute to find users etc. If
+	    not defined, the userReference attribute is still required...
+	  - Create a DHCP3 manager for the DHCP3 patch at http://home.ntelos.net/~masneyb/.
+
 phpQLAdmin 2.3.7 Release (May 10 2007)
 	Bug fixes
 	  - Almost a complete rewrite of the automount manager:
@@ -39,38 +90,6 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    DNS manager
 	  - Catch a physical host with a webserver container, but no virtual hosts.
 	    > Make sure this container is 'remembered'.
-	  - Make sure any 'Home->phpQLAdmin Configuration->Global configuration' changes
-	    goes back to the 'Global configuration' view.
-	  - Put the Samba defines (PQL_CONF_SAMBA_USE - new, etc) into the LDAP database,
-	    managed by the 'Home->phpQLAdmin Configuration->{Global configuration,[branch]'
-	    views.
-	    + Rewrite part of doc/README.samba to reflect these changes.
-	    + Remove the samba defines from include/config.inc.
-	  - If the global Security ID is set, try to generate a user SID, based on the
-	    global SID _and_ the user UID.
-	  - Only show the 'Samba Settings' (renamed to 'SMB Settings') in the user view
-	    if useSamba attribute is set in the root DN.
-	    + If not the user SID is set, do not show the rest of the samba/SMB values.
-	      Only allow to change/view these if the user SID is set.
-	  - Add the 'sambaSamAccount' object class to a user if it is not set. Do this
-	    when adding a user SID to a user object.
-	  - Hide some stuff (buttons) from the user view if not running in advanced mode,
-	    and not admin.
-	  - Catch a missing 'PQL_CONF_SUBTREE_PPOLICY' define in include/attrib.config.ppolicy.inc.
-	  - If using ACI's, add that when adding a PPolicy template.
-	  - Faulty OID generated in include/pql_aci.inc:pql_validate_acis() (generated
-	    '\[all\]' instead of '[all]' - bad use of preg_replace()).
-	  - Faulty use of PQL_CONF_SUBTREE_PPOLICIES - should have been PQL_CONF_SUBTREE_PPOLICY
-	    in include/pql_ppolicy.inc.
-	    + Faulty use of pql_add2array(). Don't work with flat arrays.
-	  - Don't generate the ACI's if the object already have it (in include/pql_search.inc:pql_validate_object()).
-	  - Generate the ACI's (if in use) when creating a organizationUnit.
-	  - Generate a URL encoded DN for the hostname after added a physical host.
-	  - Only offer to create the DNS object if Bind9 manager is active.
-	  - When checking LDAP version, also check if ACI's is in use.
-	  - In include/pql.inc:pql_header(), only add the URI if it's not already set.
-	  - Fixup the check for add/save in include/pql_formating.inc:pql_create_ldif()
-	    only one ereg()!
 
 	GUI layout changes
 	  - Support for copying or moving a virtual host from one physical webserver to
@@ -82,13 +101,6 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    + Also change the IP address of/in the virtual host to the new location.
 	  - Long standing problem/bug finaly fixed - initial folded branch tree in Opera! 
 	    Many thanx to Jose Silva @ PT for this fix!
-	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
-	    form.
-	  - Rewrite of the DHCP3 manager - domain oriented instead of host. DHCP information
-	    is now under a/the domain branch, not under the physical server.
-	  - Work on a RADIUS profile manager started.
-	    + Missing: Adding RADIUS profile object. Waiting for explanation of what the
-		       different attributes are for...
 
 	API changes
 	Misc changes
@@ -98,11 +110,6 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	  - When deleting a virtual host/webserver or physical host, don't try to show
 	    the just deleted object! Unset the relevant variable(s) and show the object
 	    'one step up'.
-	  - Catch the '2.X' version (which is CVS - hopfully it's >2.4).
-	  - Create a userSearchFilter attribute (which can be set in 'Home->phpQLAdmin Configuration->[branch]'.
-	    This can be used instead of the userReference attribute to find users etc. If
-	    not defined, the userReference attribute is still required...
-	  - Create a DHCP3 manager for the DHCP3 patch at http://home.ntelos.net/~masneyb/.
 
 phpQLAdmin 2.3.6 Release (Mar  5 2007)
 	Bug fixes
