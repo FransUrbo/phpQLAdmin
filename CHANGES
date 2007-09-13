@@ -84,6 +84,11 @@ phpQLAdmin 2.3.7 Release (May 10 2007)
 	    Many thanx to Jose Silva @ PT for this fix!
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
 	    form.
+	  - Rewrite of the DHCP3 manager - domain oriented instead of host. DHCP information
+	    is now under a/the domain branch, not under the physical server.
+	  - Work on a RADIUS profile manager started.
+	    + Missing: Adding RADIUS profile object. Waiting for explanation of what the
+		       different attributes are for...
 
 	API changes
 	Misc changes
