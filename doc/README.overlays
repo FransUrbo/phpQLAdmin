@@ -23,5 +23,22 @@ Configuration->phpQLAdmin Configuration->Password Policies'
 view. You can specify any number of password policies there,
 much like you do with/in the 'User Templates' view.
 
+Note:
+If you get an error while trying to add a password policy, then
+try to run in debug mode and try to add the object manually using
+'ldapadd'. If the error is the following:
+
+----- s n i p -----
+ldap_add: Invalid syntax (21)
+        additional info: pwdattribute: value #0 invalid per syntax
+----- s n i p -----
+
+This can be because of two reasons:
+  1. The ppolicy.schema file is not loaded in the LDAP server
+  2. The overlay is not enabled in the database.
+     I.e. the line:
+	overlay ppolicy
+     does not exist in the database configuration of choice.
+
 TODO
 
