@@ -1,6 +1,6 @@
 <?php
 // View DHCP3 details for a physical host
-// $Id: host_details-dhcp3.inc,v 1.1 2007-07-19 10:28:06 turbo Exp $
+// $Id: host_details-dhcp3.inc,v 1.2 2007-09-13 18:20:17 turbo Exp $
 
 $attrib    = pql_get_define("PQL_ATTR_DHCP3_SERVICEDN");
 $alt       = pql_complete_constant($LANG->_('Modify attribute %attribute% for %server%'),
@@ -109,24 +109,6 @@ $link = array('add' => $tmp."&type=add",
 pql_format_table_single($txt, $link, $options["options"], pql_get_define("PQL_ATTR_DHCP3_OPTION"), $class);
 // }}}
 ?>
-
-        <tr><th><td></td></th></tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td colspan="3">
-            <a href="dhcp3_add.php?host=<?=urlencode($_REQUEST["host"])?>&servicedn=<?=urlencode($servicedn)?>&action=subnet&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP subnetwork')?>">
-              <?=$LANG->_('Add DHCP subnetwork')?>
-            </a>
-          </td>
-        </tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td colspan="3">
-            <a href="dhcp3_add.php?host=<?=urlencode($_REQUEST["host"])?>&servicedn=<?=urlencode($servicedn)?>&action=host&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP host statement')?>">
-              <?=$LANG->_('Add DHCP host statement')?>
-            </a>
-          </td>
-        </tr>
       </th>
     </table>
 <?php
