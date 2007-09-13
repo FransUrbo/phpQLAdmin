@@ -1,38 +1,76 @@
 <?php
 // attribute for phpQLAdmin/Physical host IP address
-// $Id: attrib.hostdhcp.inc,v 2.1 2007-07-19 10:28:01 turbo Exp $
+// $Id: attrib.hostdhcp.inc,v 2.2 2007-09-13 18:00:14 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
   global $error, $LANG;
 
   $attrib = $_REQUEST["attrib"];
- 
+  $ok = 1;
+
   // is typed in ?
-  if(empty($_REQUEST[$attrib])) {
+  for($i=0; $i < $_REQUEST[$attrib]; $i++) {
+	$var_name = $attrib . "_$i";
+	if($_POST[$var_name])  {
+	  // Not equal to old value
+	  if($_POST[$var_name] == @$_REQUEST["oldvalue"]) {
+		$error[$attrib] = $LANG->_('Same as old value');
+		return false;
+	  }
+	}
+  }
+
+  if(!$ok) {
 	$error[$attrib] = $LANG->_('Missing');
 	return false;
-  }
-
-  // Not equal to old value
-  if($_REQUEST[$attrib] == @$_REQUEST["oldvalue"]) {
-	$error[$attrib] = $LANG->_('Same as old value');
-	return false;
-  }
-
-  return true;
+  } else
+	return true;
 }
 // }}}
 
 // {{{ attribute_print_form(void)
 function attribute_print_form() {
-  global $LANG, $error;
+  global $LANG, $error, $_pql;
 
   $attrib = $_REQUEST["attrib"];
   if($_REQUEST[$attrib])
     $_REQUEST["oldvalue"] = $_REQUEST[$attrib];
   else
 	$_REQUEST[$attrib] = "cn=DHCP,".$_REQUEST["host"];
+
+  // Retreive all DHCP configuration options
+  if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+	// We're a super-admin, we can give/take
+	// adminstration on ANY branch/domain
+	// that exists in the system
+	$domains = pql_get_domains();
+  } else {
+	// We can only give user access to a branch we (the logged in user)
+	// have access to. Otherwise, we could 'steal' access to any domain
+	// in the system. Only a branch owner/admin can give someone access
+	// to the current branch. Am I making myself clear?
+	foreach($_SESSION["BASE_DN"] as $dn)  {
+	  $dom = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+								  $_SESSION["USER_DN"], 1);
+	  if($dom)
+		foreach($dom as $d)
+		  $domains[] = $d;
+	}
+  }
+
+  if(is_array($domains)) {
+	$domains = pql_uniq($domains);
+	foreach($domains as $domain) {
+	  // Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
+	  $d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
+
+	  $configs = pql_dhcp3_get_configs($domain);
+	  if(is_array($configs)) {
+		$DATA[$d] = $configs;
+	  }
+	}
+  }
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -47,13 +85,72 @@ function attribute_print_form() {
 <?php if($attrib == pql_get_define("PQL_ATTR_IPHOSTNUMBER")) { ?>
           <td class="title"><?=$LANG->_('IP address')?></td>
 <?php } elseif($attrib == pql_get_define("PQL_ATTR_DHCP3_SERVICEDN")) { ?>
-          <td class="title"><?=$LANG->_('DN')?></td>
+          <td class="title"><?=$LANG->_('DHCP Service')?></td>
 <?php } else { ?>
           <td class="title"></td>
 <?php } ?>
           <td>
-            <?php echo pql_format_error_span($error[$attrib]); ?>
-            <input type="input" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>"<?php if($attrib == pql_get_define("PQL_ATTR_DHCP3_SERVICEDN")) { ?> size="50"<?php } ?>>
+<?php echo pql_format_error_span($error[$attrib]);
+
+	  if(@is_array($DATA)) {
+		// {{{ We have DHCP configuration!
+		$links = array(); $i =0;
+		
+		asort($DATA);
+		foreach($DATA as $key => $data) {
+		  if(is_array($data)) {
+			for($j=0; $data[$j]; $j++) {
+			  // {{{ Get the common name for this config
+			  $tmp = $_pql->get_attribute($data[$j]["dn"], pql_get_define("PQL_ATTR_CN"));
+			  if(is_array($tmp))
+				$cn = $tmp[0];
+			  elseif($tmp)
+				$cn = $tmp;
+			  else {
+				// No CN - use the xx attribute.
+				$attr = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
+				$cn = $_pql->get_attribute($data[$j]["dn"], $attr);
+			  }
+			  // }}}
+
+			  $new   = array($cn => array($attrib, $i, $data[$j]["dn"]));
+			  $links = $links + $new;
+			  
+			  $i++;
+			}
+		  } else {
+			// {{{ Get the common name for this config
+			$tmp = $_pql->get_attribute($data["dn"], pql_get_define("PQL_ATTR_CN"));
+			if(is_array($tmp))
+			  $cn = $tmp[0];
+			elseif($tmp)
+			  $cn = $tmp;
+			else {
+			  // No CN - use the xx attribute.
+			  $attr = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
+			  $cn = $_pql->get_attribute($data["dn"], $attr);
+			}
+			// }}}
+
+			$new   = array($cn => array($attrib, $i, $data["dn"]));
+			$links = $links + $new;
+			
+			$i++;
+		  }
+		  
+		  pql_format_tree($key, 0, $links, 0);
+		}
+
+		// This an ending for the domain tree
+		pql_format_tree_end();
+		// }}}
+?>
+            <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
+<?php } else {
+		// No DHCP configuration!
+		echo $LANG->_('There is no configuration to choose from. You will have to go to a\nbranch/domain and create them before you can choose them here');
+	  }
+?>
           </td>
         </tr>
       </th>
@@ -76,15 +173,13 @@ function attribute_print_form() {
 // {{{ attribute_save(void)
 function attribute_save($type) {
   global $_pql, $LANG;
+
   $attrib = $_REQUEST["attrib"];
   
   switch($type) {
-  case "add":
-	// no add function for ipHostNumber
-	break;
-	
   case "modify":
 	if($attrib == pql_get_define("PQL_ATTR_IPHOSTNUMBER")) {
+	  // {{{ ipHostNumber
 	  if(pql_modify_attribute($_REQUEST["host"], $attrib, 1, $_REQUEST[$attrib])) {
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									 array('what' => $LANG->_('IP address')));
@@ -95,9 +190,12 @@ function attribute_save($type) {
 	  } else
 		$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									 array('what' => $LANG->_('IP address'))) . ": " . pql_format_error(0);
+	  // }}}
 	} elseif($attrib == pql_get_define("PQL_ATTR_DHCP3_SERVICEDN")) {
-	  // Setup the physical host object.
+	  // {{{ dhcpServiceDN
+	  $entry = array();
 
+	  // {{{ Setup object classes
 	  // Get the current object classes of the object.
 	  $ocs   = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 
@@ -108,41 +206,42 @@ function attribute_save($type) {
 	  }
 	  $ocs = $new;
 
-	  // Add: object class dhcpServer (if it wasn't added when creating the physical host)
 	  // Add: object class dhcpService
-	  if(!in_array(pql_get_define("PQL_ATTR_DHCP3_SERVICE"), $ocs))
+	  // TODO: Should we really add the dhcpServer object class!?
+	  // Add: object class dhcpServer (if it wasn't added when creating the physical host)
+	  $exists_service = 0; $exists_server = 0;
+	  for($i=0; $ocs[$i]; $i++) {
+		if($ocs[$i] == lc(pql_get_define("PQL_ATTR_DHCP3_SERVICE")))
+		  $exists_service = 1;
+//		if($ocs[$i] == lc(pql_get_define("PQL_ATTR_DHCP3_SERVER")))
+//		  $exists_server = 1;
+	  }
+
+	  if($exists_service)
 		$ocs[] = pql_get_define("PQL_ATTR_DHCP3_SERVICE");
-	  if(!in_array(pql_get_define("PQL_ATTR_DHCP3_SERVER"), $ocs))
-		$ocs[] = pql_get_define("PQL_ATTR_DHCP3_SERVER");
+//	  if($exists_server)
+//		$ocs[] = pql_get_define("PQL_ATTR_DHCP3_SERVER");
 
-	  $entry = array();
-	  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $ocs;
-	  $entry[$attrib] = $_REQUEST[$attrib];
+	  if($exists_service or $exists_server)
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $ocs;
+	  // }}}
 
-	  if($_pql->modify($_REQUEST["host"], $entry, 'attrib.hostdhcp.inc')) {
+	  // {{{ Setup the dhcpServiceDN attribute
+	  for($i=0; $i < $_REQUEST[$attrib]; $i++) {
+		$var_name = $attrib . "_$i";
+		if($_POST[$var_name])
+		  $entry[$attrib] = $_POST[$var_name];
+	  }
+	  // }}}
+
+	  // Do the actual modification
+	  if($_pql->modify($_REQUEST["host"], $entry, 'attrib.hostdhcp.inc'))
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									 array('what' => $LANG->_('DHCP service DN')));
-
-		// Create the DHCP service object
-		$dn = $_REQUEST[$attrib];
-		
-		$cn = split(',', $_REQUEST[$attrib]);
-		$cn = split('=', $cn[0]);
-		
-		$entry = array();
-		$entry[pql_get_define("PQL_ATTR_CN")] = $cn[1];
-		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_get_define("PQL_ATTR_DHCP3_SERVICE");
-		$entry[pql_get_define("PQL_ATTR_DHCP3_PRIMARYDN")] = urldecode($_REQUEST["host"]);
-		
-		if($_pql->add($dn, $entry, 'dhcp3', 'attrib.hostdhcp.inc:attribute_save'))
-		  $msg .= '<br>'.pql_complete_constant($LANG->_('Successfully added %what%'),
-											   array('what' => $LANG->_('DHCP service DN')));
-		else
-		  $msg .= '<br>'.pql_complete_constant($LANG->_('Failed to add %what%'),
-											   array('what' => $LANG->_('DHCP service DN')));
-	  } else
+	  else
 		$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									 array('what' => $LANG->_('DHCP service DN'))) . ": " . pql_format_error(0);
+	  // }}}
 	}
 
 	attribute_forward($msg);
