@@ -1,6 +1,6 @@
 <?php
 // Add DHCP3 subnetwork
-// $Id: dhcp3_add.php,v 2.1 2007-07-19 10:27:57 turbo Exp $
+// $Id: dhcp3_add.php,v 2.2 2007-09-13 17:47:52 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -11,11 +11,12 @@ if(isset($_REQUEST['action'])) {
   if($_REQUEST['action'] == 'subnet') {
     if($_REQUEST["Submit"]) {
       // {{{ Add the subnet
-      $dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["network"].','.$_REQUEST["servicedn"];
+      $dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["network"].','.$_REQUEST["config"];
 
       $entry = array();
       $entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["network"];
-      $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_get_define("PQL_ATTR_DHCP3_SUBNET");
+      $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = pql_get_define("PQL_ATTR_DHCP3_SUBNET");
+      $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = pql_get_define("PQL_ATTR_DHCP3_OPTIONS");
       $entry[pql_get_define("PQL_ATTR_DHCP3_NETMASK")] = $_REQUEST["netmask"];
       $entry[pql_get_define("PQL_ATTR_DHCP3_RANGE")] = $_REQUEST["range"];
 
@@ -26,8 +27,8 @@ if(isset($_REQUEST['action'])) {
 	$msg  = pql_complete_constant($LANG->_("Failed to add DHCP subhost %subnet%."),
 				      array('subnet' => $_REQUEST['subnet']));
 
-      $link  = "host_detail.php?host=".urlencode($_REQUEST["host"])."&view=".$_REQUEST["view"];
-      $link .= "&subnet=".urlencode($dn);
+      $link = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"])."&view=".$_REQUEST["view"];
+      $link .= "&config=".$_REQUEST["config"]."&setup=".urlencode($dn);
       $link .= "&msg=".urlencode($msg);
       pql_header($link);
 // }}}
@@ -59,23 +60,28 @@ if(isset($_REQUEST['action'])) {
         </th>
       </table>
 
-      <input type="hidden" name="view"      value="dhcp3">
+      <input type="hidden" name="view"      value="dhcp">
+      <input type="hidden" name="rootdn"    value="<?=$_REQUEST["rootdn"]?>">
+      <input type="hidden" name="domain"    value="<?=$_REQUEST["domain"]?>">
       <input type="hidden" name="host"      value="<?=$_REQUEST["host"]?>">
-      <input type="hidden" name="servicedn" value="<?=$_REQUEST["servicedn"]?>">
+      <input type="hidden" name="config"    value="<?=$_REQUEST["config"]?>">
       <input type="hidden" name="action"    value="<?=$_REQUEST["action"]?>">
       <input type="submit" name="Submit"    value="<?=$LANG->_('Add New Host')?>">
     </form>
+  </body>
+</html>
 <?php
 // }}}
     }
   } elseif($_REQUEST['action'] == 'host') {
     if($_REQUEST["Submit"]) {
       // {{{ Add the host
-      $dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["hostname"].','.$_REQUEST["servicedn"];
+      $dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["hostname"].','.$_REQUEST["config"];
 
       $entry = array();
       $entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["hostname"];
-      $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_get_define("PQL_ATTR_DHCP3_HOST");
+      $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = pql_get_define("PQL_ATTR_DHCP3_HOST");
+      $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = pql_get_define("PQL_ATTR_DHCP3_OPTIONS");
 
       if($_pql->add($dn, $entry, 'dhcp3', 'dhcp3_add.php/host'))
 	$msg  = pql_complete_constant($LANG->_("DHCP subhost %subnet% added successfully."),
@@ -84,8 +90,8 @@ if(isset($_REQUEST['action'])) {
 	$msg  = pql_complete_constant($LANG->_("Failed to add DHCP subhost %subnet%."),
 				      array('subnet' => $_REQUEST['subnet']));
 
-      $link  = "host_detail.php?host=".urlencode($_REQUEST["host"])."&view=".$_REQUEST["view"];
-      $link .= "&subhost=".urlencode($dn);
+      $link = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"])."&view=".$_REQUEST["view"];
+      $link .= "&config=".$_REQUEST["config"]."&setup=".urlencode($dn);
       $link .= "&msg=".urlencode($msg);
       pql_header($link);
 // }}}
@@ -105,12 +111,16 @@ if(isset($_REQUEST['action'])) {
         </th>
       </table>
 
-      <input type="hidden" name="view"      value="dhcp3">
+      <input type="hidden" name="view"      value="dhcp">
+      <input type="hidden" name="rootdn"    value="<?=$_REQUEST["rootdn"]?>">
+      <input type="hidden" name="domain"    value="<?=$_REQUEST["domain"]?>">
       <input type="hidden" name="host"      value="<?=$_REQUEST["host"]?>">
-      <input type="hidden" name="servicedn" value="<?=$_REQUEST["servicedn"]?>">
+      <input type="hidden" name="config"    value="<?=$_REQUEST["config"]?>">
       <input type="hidden" name="action"    value="<?=$_REQUEST["action"]?>">
       <input type="submit" name="Submit"    value="<?=$LANG->_('Add New Host')?>">
     </form>
+  </body>
+</html>
 <?php
 // }}}
     }
