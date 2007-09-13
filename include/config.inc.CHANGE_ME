@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.81 2007-07-13 09:55:35 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.82 2007-09-13 18:01:55 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -107,10 +107,11 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // ----------------------------
 // PQL_CONF_SUBTREE_PPOLICY
 // Below what sub-DN is all of your password policies located?
+// This sub-DN is also used for RADIUS profiles if you use this.
 //
 // NOTE: The DN of the root suffix will be appended to the
 //       end of this DN when used.
-//pql_set_define("PQL_CONF_SUBTREE_PPOLICY", "ou=PPolicies");
+//pql_set_define("PQL_CONF_SUBTREE_PPOLICY", "ou=Policies");
 
 // ----------------------------
 // PQL_CONF_SUBTREE_TEMPLATES
