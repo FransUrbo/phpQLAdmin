@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.65 2007-07-19 10:28:01 turbo Exp $
+// $Id: config_attributes.inc,v 2.66 2007-09-13 18:02:34 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -287,6 +287,68 @@ pql_set_define("PQL_ATTR_AUTOMOUNT_INFO",					strtolower('autoMountInformation')
 // {{{ Attributes used by the RADIUS config
 pql_set_define("PQL_ATTR_RADIUS_USE",						strtolower('useRadius'),					false);
 pql_set_define("PQL_ATTR_RADIUS_FILTERID",					strtolower('radiusFilterId'),				false);
+
+// Used by the RADIUS profile manager
+pql_set_define("PQL_ATTR_RADIUS_ARAP_FEATURES",				strtolower('radiusArapFeatures'),			false);
+pql_set_define("PQL_ATTR_RADIUS_ARAP_SECURITY",				strtolower('radiusArapSecurity'),			false);
+pql_set_define("PQL_ATTR_RADIUS_ARAP_ZONE_ACCESS",			strtolower('radiusArapZoneAccess'),			false);
+pql_set_define("PQL_ATTR_RADIUS_AUTH_TYPE",					strtolower('radiusAuthType'),				false);
+pql_set_define("PQL_ATTR_RADIUS_CALLBACK_ID",				strtolower('radiusCallbackId'),				false);
+pql_set_define("PQL_ATTR_RADIUS_CALLBACK_NR",				strtolower('radiusCallbackNumber'),			false);
+pql_set_define("PQL_ATTR_RADIUS_CALLED_STATION_ID",			strtolower('radiusCalledStationId'),		false);
+pql_set_define("PQL_ATTR_RADIUS_CALLING_STATION_ID",		strtolower('radiusCallingStationId'),		false);
+pql_set_define("PQL_ATTR_RADIUS_CLASS",						strtolower('radiusClass'),					false);
+pql_set_define("PQL_ATTR_RADIUS_CLIENT_IP",					strtolower('radiusClientIPAddress'),		false);
+pql_set_define("PQL_ATTR_RADIUS_FILTER_ID",					strtolower('radiusFilterId'),				false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_APPLETALK_LINK",		strtolower('radiusFramedAppleTalkLink'),	false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_APPLETALK_NETW",		strtolower('radiusFramedAppleTalkNetwork'),	false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_APPLETALK_ZONE",		strtolower('radiusFramedAppleTalkZone'),	false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_COMPRESSION",		strtolower('radiusFramedCompression'),		false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_IP_ADDR",			strtolower('radiusFramedIPAddress'),		false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_IP_NET",				strtolower('radiusFramedIPNetmask'),		false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_IPX_NET",			strtolower('radiusFramedIPXNetwork'),		false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_MTU",				strtolower('radiusFramedMTU'),				false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_PROTO",				strtolower('radiusFramedProtocol'),			false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_ROUTE",				strtolower('radiusFramedRoute'),			false);
+pql_set_define("PQL_ATTR_RADIUS_FRAMED_ROUTING",			strtolower('radiusFramedRouting'),			false);
+pql_set_define("PQL_ATTR_RADIUS_GROUP_NAME",				strtolower('radiusGroupName'),				false);
+pql_set_define("PQL_ATTR_RADIUS_HINT",						strtolower('radiusHint'),					false);
+pql_set_define("PQL_ATTR_RADIUS_HUNTGROUP_NAME",			strtolower('radiusHuntgroupName'),			false);
+pql_set_define("PQL_ATTR_RADIUS_IDLE_TIMEOUT",				strtolower('radiusIdleTimeout'),			false);
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_IP_HOST",				strtolower('radiusLoginIPHost'),			false);
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_LAT_GROUP",			strtolower('radiusLoginLATGroup'),			false);
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_LAT_NODE",			strtolower('radiusLoginLATNode'),			false);
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_LAT_PORT",			strtolower('radiusLoginLATPort'),			false);
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_LAT_SERVICE",			strtolower('radiusLoginLATService'),		false);
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_SERVICE",				strtolower('radiusLoginService'),			false);
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_TCP_PORT",			strtolower('radiusLoginTCPPort'),			false);
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_TIME",				strtolower('radiusLoginTime'),				false);
+pql_set_define("PQL_ATTR_RADIUS_PASSWORD_RETRY",			strtolower('radiusPasswordRetry'),			false);
+pql_set_define("PQL_ATTR_RADIUS_PORT_LIMIT",				strtolower('radiusPortLimit'),				false);
+pql_set_define("PQL_ATTR_RADIUS_PROFILE_DN",				strtolower('radiusProfileDn'),				false);
+pql_set_define("PQL_ATTR_RADIUS_PROMPT",					strtolower('radiusPrompt'),					false);
+pql_set_define("PQL_ATTR_RADIUS_PROXY2REALM",				strtolower('radiusProxyToRealm'),			false);
+pql_set_define("PQL_ATTR_RADIUS_REPLICATE2REALM",			strtolower('radiusReplicateToRealm'),		false);
+pql_set_define("PQL_ATTR_RADIUS_REALM",						strtolower('radiusRealm'),					false);
+pql_set_define("PQL_ATTR_RADIUS_SERVICE_TYPE",				strtolower('radiusServiceType'),			false);
+pql_set_define("PQL_ATTR_RADIUS_SESSION_TIMEOUT",			strtolower('radiusSessionTimeout'),			false);
+pql_set_define("PQL_ATTR_RADIUS_TERMINATE_ACTION",			strtolower('radiusTerminationAction'),		false);
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_ASSIGN_ID",			strtolower('radiusTunnelAssignmentId'),		false);
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_MEDIUM_TYPE",		strtolower('radiusTunnelMediumType'),		false);
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PASSWORD",			strtolower('radiusTunnelPassword'),			false);
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PREFS",				strtolower('radiusTunnelPreference'),		false);
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PRIVATE_GROUP_ID",	strtolower('radiusTunnelPrivateGroupId'),	false);
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_SERVER_ENDPOINT",	strtolower('radiusTunnelServerEndpoint'),	false);
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_CLIENT_ENDPOINT",	strtolower('radiusTunnelClientEndpoint'),	false);
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_TYPE",				strtolower('radiusTunnelType'),				false);
+pql_set_define("PQL_ATTR_RADIUS_VSA",						strtolower('radiusVSA'),					false);
+pql_set_define("PQL_ATTR_RADIUS_SIMULT_USE",				strtolower('radiusSimultaneousUse'),		false);
+pql_set_define("PQL_ATTR_RADIUS_USER_CATEGORY",				strtolower('radiusUserCategory'),			false);
+pql_set_define("PQL_ATTR_RADIUS_STRIP_USER_NAME",			strtolower('radiusStripUserName'),			false);
+pql_set_define("PQL_ATTR_RADIUS_DIALUP_ACCESS",				strtolower('dialupAccess'),					false);
+pql_set_define("PQL_ATTR_RADIUS_EXPIRATION",				strtolower('radiusExpiration'),				false);
+pql_set_define("PQL_ATTR_RADIUS_CHECK_ITEM",				strtolower('radiusCheckItem'),				false);
+pql_set_define("PQL_ATTR_RADIUS_REPLY_ITEM",				strtolower('radiusReplyItem'),				false);
 // }}}
 
 // {{{ Attributes used by the Password Policy config
