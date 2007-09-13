@@ -3,7 +3,7 @@
 // pql_ppolicies.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ppolicy.inc,v 2.2 2007-07-13 10:13:57 turbo Exp $
+// $Id: pql_ppolicy.inc,v 2.3 2007-09-13 18:14:04 turbo Exp $
 
 // {{{ pql_get_ppolicies()
 function pql_get_ppolicies() {
@@ -22,7 +22,10 @@ function pql_get_ppolicies() {
 	  if(!is_array($tmp))
 		$tmp = array($tmp);
 
-	  $policies[] = $tmp;
+	  if(!$tmp[0])
+		$policies[] = $tmp;
+	  else
+		$policies = $tmp;
 	}
   }
 
