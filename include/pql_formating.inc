@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.72 2007-07-19 10:25:03 turbo Exp $
+// $Id: pql_formating.inc,v 2.73 2007-09-13 18:12:38 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline, show_debug)
 // Create a LDIF object to print in case of error
@@ -631,6 +631,10 @@ function pql_left_htmlify_userlist($rootdn, $domain, $subbranch, $users, &$links
 	
 	if($links != NULL) {
 	  foreach($cns as $dn => $cn) {
+		if(is_array($cn) and $cn[1])
+		  // Multiple CN's - take the first one (might not be the first, but...)
+		  $cn = $cn[0];
+
 		// Only get these two so that we don't show root user(s)!
 		$uid   = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_UID"));
 		$uidnr = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_QMAILUID"));
@@ -658,65 +662,175 @@ function pql_left_htmlify_userlist($rootdn, $domain, $subbranch, $users, &$links
 function pql_format_timestamp_human($beg, $end) {
   global $LANG;
   
-  $seconds = $end - $beg;
-  
-  // {{{ Get number of DAYS of uptime
-  $tmp  = $seconds / 86400;
-  if(ereg('\.', $tmp)) {
-	$tmp = split('\.', $tmp);
-	$uptime['days'] = $tmp[0];
-  } else
-	$uptime['days'] = $tmp;
+  if($end)
+	$seconds = $end - $beg;
+  else {
+	// tables/config_details-ppolicy.inc - I already know number
+	// of seconds (in the '$beg' variable) - translate this to
+	// 'human readable' text
+	$seconds = $beg;
+  }
+
+  // {{{ Get number of YEARS of uptime
+  $tmp  = round($seconds / (60 * 60 * 24 * 7 * 52)); // => 31449600
+  if($tmp)
+	$uptime['years'] = $tmp;
+
+  if($uptime['years']) {
+	$rest = $uptime['years'] * 60 * 60 * 24 * 7 * 52;
+	if($rest > 0)
+	  $seconds -= $rest;
+  }
   // }}}
-  
-  $uptime['weeks'] = round($uptime['days'] / 7);
-  $uptime['years'] = round($uptime['weeks'] / 52);
+
+  // {{{ Get number of WEEKS of uptime
+  if($seconds > 0) {
+	$tmp  = round($seconds / (60 * 60 * 24 * 7)); // => 604800
+	if($tmp)
+	  $uptime['weeks'] = $tmp;
+	
+	if($uptime['weeks']) {
+	  $rest = $uptime['weeks'] * 60 * 60 * 24 * 7;
+	  if($rest > 0)
+		$seconds -= $rest;
+	}
+  }
+  // }}}
+
+  // {{{ Get number of DAYS of uptime
+  if($seconds > 0) {
+	$tmp  = round($seconds / (60 * 60 * 24)); // => 86400
+	if($tmp)
+	  $uptime['days'] = $tmp;
+	
+	if($uptime['days']) {
+	  $rest = $uptime['days'] * 60 * 60 * 24;
+	  if($rest > 0)
+		$seconds -= $rest;
+	}
+  }
+  // }}}
   
   // {{{ Get number of HOURS of uptime
-  $tmp = $seconds / 3600;
-  if(ereg('\.', $tmp)) {
-	$tmp = split('\.', $tmp);
-	$uptime['hour'] = $tmp[0];
-  } else
-	$uptime['hour'] = $tmp;
+  if($seconds > 0) {
+	$tmp = round($seconds / (60 * 60)); // => 3600
+	if($tmp)
+	  $uptime['hours'] = $tmp;
+	
+	if($uptime['hours']) {
+	  $rest = $uptime['hours'] * 60 * 60;
+	  if($rest > 0)
+		$seconds -= $rest;
+	}
+  }
   // }}}
   
-  // Take into account that we might have days as well.
-  // Othervise we'll get '1 day, 24 hours, -1374 minutes'
-  // when it's actually '1 day, 7 minutes'
-  $uptime['hour'] = $uptime['hour'] - ($uptime['days'] * 24);
-  
   // {{{ Get number of MINUTES of uptime
-  $uptime['min']   = round( ($seconds - (($uptime['days'] * 86400) + ($uptime['hour'] * 3600))) / 60);
-  if($uptime['min'] < 0) {
-	$uptime['min']--;
-	$uptime['min'] = 60 + $uptime['min'];
+  if($seconds > 0) {
+	$tmp = round($seconds / 60);
+	if($tmp)
+	  $uptime['minutes'] = $tmp;
+
+	if($uptime['minutes']) {
+	  $rest = $uptime['minutes'] * 60;
+	  if($rest > 0)
+		$seconds -= $rest;
+	}
   }
   // }}}
   
   // {{{ Get number of SECONDS of uptime
-  $uptime['sec']   = $seconds - (($uptime['days'] * 86400) + ($uptime['hour'] * 3600) + ($uptime['min'] * 60));
-  if($uptime['sec'] < 0) {
-	$uptime['min']--;
-	$uptime['sec']--;
-	
-	$uptime['sec'] = 60 + $uptime['sec'];
-  }
+  if($seconds > 0)
+	$uptime['seconds'] = $seconds;
   // }}}
   
   // {{{ Prettify the uptime
-  $uptime_string['years']   = ($uptime['years']) ? $uptime['years']." ".$LANG->_('years').", " : "";
-  $uptime_string['weeks']   = ($uptime['weeks']) ? $uptime['weeks']." ".$LANG->_('weeks').", " : "";
-  $uptime_string['days']    = ($uptime['days'])  ? $uptime['days']." ".$LANG->_('days').", "   : "";
-  $uptime_string['hours']   = ($uptime['hour'])  ? $uptime['hour']." ".$LANG->_('hours').", " : "";
-  $uptime_string['minutes'] = ($uptime['min'])   ? $uptime['min']." ".$LANG->_('minutes').", " : "";
-  $uptime_string['seconds'] = ($uptime['sec'])   ? $uptime['sec']." ".$LANG->_('seconds')."." : "";
-  
-  $string  = $uptime_string['years'].$uptime_string['weeks'].$uptime_string['days'];
-  $string .= $uptime_string['hours'].$uptime_string['minutes'].$uptime_string['seconds']."\n";
+  // {{{ YEARS
+  if($uptime['years']) {
+	if($uptime['years'] > 1)
+	  $string = $LANG->_('years');
+	else
+	  $string = $LANG->_('year');
+
+	$uptime_string['years'] = $uptime['years']." ".$string;
+
+	if($uptime_string['weeks'])
+	  $uptime_string['years'] .= ", ";
+  }
+  // }}}
+
+  // {{{ WEEKS
+  if($uptime['weeks']) {
+	if($uptime['weeks'] > 1)
+	  $string = $LANG->_('weeks');
+	else
+	  $string = $LANG->_('week');
+
+	$uptime_string['weeks'] = $uptime['weeks']." ".$string;
+
+	if($uptime['days'])
+	  $uptime_string['weeks'] .= ", ";
+  }
+  // }}}
+
+  // {{{ DAYS
+  if($uptime['days']) {
+	if($uptime['days'] > 1)
+	  $string = $LANG->_('days');
+	else
+	  $string = $LANG->_('day');
+
+	$uptime_string['days'] = $uptime['days']." ".$string;
+
+	if($uptime['hours'])
+	  $uptime_string['days'] .= ", ";
+  }
+  // }}}
+
+  // {{{ HOURS
+  if($uptime['hours']) {
+	if($uptime['hours'] > 1)
+	  $string = $LANG->_('hours');
+	else
+	  $string = $LANG->_('hours');
+
+	$uptime_string['hours'] = $uptime['hours']." ".$string;
+
+	if($uptime['minutes'])
+	  $uptime_string['hours'] .= ", ";
+  }
+  // }}}
+
+  // {{{ MINUTES
+  if($uptime['minutes']) {
+	if($uptime['minutes'] > 1)
+	  $string = $LANG->_('minutes');
+	else
+	  $string = $LANG->_('minute');
+
+	$uptime_string['minutes'] = $uptime['minutes']." ".$string;
+
+	if($uptime['seconds'])
+	  $uptime_string['minutes'] .= ", ";
+  }
+  // }}}
+
+  // {{{ SECONDS
+  if($uptime['seconds']) {
+	if($uptime['seconds'] > 1)
+	  $string = $LANG->_('seconds');
+	else
+	  $string = $LANG->_('second');
+
+	$uptime_string['seconds'] = $uptime['seconds']." ".$string;
+  }
   // }}}
   
-  return($string);
+  $string  = $uptime_string['years'].$uptime_string['weeks'].$uptime_string['days'];
+  $string .= $uptime_string['hours'].$uptime_string['minutes'].$uptime_string['seconds'];
+  // }}}
+  
+  return($string."\n");
 }
 // }}}
 
