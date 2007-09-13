@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.234 2007-07-19 10:19:29 turbo Exp $
+// $Id: pql.inc,v 2.235 2007-09-13 18:06:46 turbo Exp $
 //
 
 // ----------------------------
@@ -608,8 +608,12 @@ class pql {
 	if(!empty($objects[0])) {
 	  for($i=0; $i < count($objects); $i++)
 		$entry[] = pql_maybe_idna_decode(pql_format_normalize_dn($objects[$i]['dn']));
-	} elseif($objects and $objects['dn'])
+	} elseif($objects and $objects['dn']) {
 	  $entry[] = pql_maybe_idna_decode(pql_format_normalize_dn($objects['dn']));
+	} elseif($objects and $objects["objectclass"]) {
+	  // Bummer! The DN isn't availible in the object, but there IS an object there!
+	  $entry[] = $dn;
+	}
 	
 	if(@is_array($entry))
 	  return($entry);
@@ -1253,6 +1257,21 @@ function pql_check_hostaddress($host, $force_dot = 0) {
 	return preg_match("/^([0-9a-z-]+\.[0-9a-z-]+)+$/i", $host);
   else
 	return preg_match("/[^0-9a-z]/i", $host);
+}
+// }}}
+
+// {{{ pql_check_ipaddress(address)
+// Validate an IP address.
+// Taken from http://www.jimgrill.com/pages/content/validateip
+// by Jim Grill (?)
+function pql_check_ipaddress($address) {
+  if (($longip = ip2long($address)) !== false) {
+	if ($address == long2ip($longip))
+	  return 1;
+	else
+	  return 0;
+  } else
+	return 0;
 }
 // }}}
 
