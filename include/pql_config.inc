@@ -1,7 +1,7 @@
 <?php
 // Load basic configuration
 //
-// $Id: pql_config.inc,v 1.100 2007-03-12 11:50:48 turbo Exp $
+// $Id: pql_config.inc,v 1.101 2007-09-13 18:09:11 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -151,91 +151,102 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$_SESSION["BASE_DN"][] = $dn;
   
   // 3b. Load configurations from LDAP base DN, override defaults
-  $sr = @ldap_read($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')
-	or pql_format_error(1);
-  $info = ldap_get_entries($_pql->ldap_linkid, $sr)
-	or pql_format_error(1);
-
-  // Go through the PQL_ATTRIBUTE defined in include/config_attributes.inc
-  // once for each level (GLOBAL, SUFFIX, USER), looking for the attribute.
-  // If it have a value (usually TRUE/FALSE), then set the appropriate define.
-  for($i=0; $i < $info["count"]; $i++) {
-	foreach($PQL_ATTRIBUTE as $level => $level_array) {
-	  if($level != 'USER') {
-		foreach($level_array as $define_name => $define_attribute) {
-		  $define_attribute = strtolower($define_attribute);
-		  $pql_config_private_array_which_irritates_me = NULL;
-
-		  if(!empty($info[$i][$define_attribute])) {
-			for($k=0; $k < $info[$i][$define_attribute]["count"]; $k++) {
-			  if($pql_config_private_array_which_irritates_me)
-				$pql_config_private_array_which_irritates_me .= ",".$info[$i][$define_attribute][$k];
+  $sr = @ldap_read($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
+  if($sr) {
+	$info = ldap_get_entries($_pql->ldap_linkid, $sr)
+	  or pql_format_error(1);
+	
+	// Go through the PQL_ATTRIBUTE defined in include/config_attributes.inc
+	// once for each level (GLOBAL, SUFFIX, USER), looking for the attribute.
+	// If it have a value (usually TRUE/FALSE), then set the appropriate define.
+	for($i=0; $i < $info["count"]; $i++) {
+	  foreach($PQL_ATTRIBUTE as $level => $level_array) {
+		if($level != 'USER') {
+		  foreach($level_array as $define_name => $define_attribute) {
+			$define_attribute = strtolower($define_attribute);
+			$pql_config_private_array_which_irritates_me = NULL;
+			
+			if(!empty($info[$i][$define_attribute])) {
+			  for($k=0; $k < $info[$i][$define_attribute]["count"]; $k++) {
+				if($pql_config_private_array_which_irritates_me)
+				  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$define_attribute][$k];
+				else
+				  $pql_config_private_array_which_irritates_me = $info[$i][$define_attribute][$k];
+			  }
+			  
+			  if($level == 'GLOBAL')
+				pql_set_define($define_name, $pql_config_private_array_which_irritates_me, true);
 			  else
-				$pql_config_private_array_which_irritates_me = $info[$i][$define_attribute][$k];
+				pql_set_define($define_name, $pql_config_private_array_which_irritates_me, true, $dn);
+			  
+			  unset($pql_config_private_array_which_irritates_me);
 			}
-
-			if($level == 'GLOBAL')
-			  pql_set_define($define_name, $pql_config_private_array_which_irritates_me, true);
-			else
-			  pql_set_define($define_name, $pql_config_private_array_which_irritates_me, true, $dn);
-
-			unset($pql_config_private_array_which_irritates_me);
 		  }
 		}
 	  }
 	}
-  }
-  
-  // 4a. Verify if the user is administrator on the topmost DN (i.e. 'super admin') -> Allow creation of domain/branches.
-  if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_BRANCH_CREATE"])) {
-	$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
-																  $_SESSION["USER_DN"]);
-
-	// User is super administrator - allow for administrating QmailLDAP/Control objects and ezmlm lists as well.
-	if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-	  $_SESSION["ALLOW_CONTROL_CREATE"] = 1;
-	  $_SESSION["ALLOW_EZMLM_CREATE"]   = 1;
+	
+	// 4a. Verify if the user is administrator on the topmost DN (i.e. 'super admin') -> Allow creation of domain/branches.
+	if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_BRANCH_CREATE"])) {
+	  $_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+																	$_SESSION["USER_DN"]);
+	  
+	  // User is super administrator - allow for administrating QmailLDAP/Control objects and ezmlm lists as well.
+	  if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+		$_SESSION["ALLOW_CONTROL_CREATE"] = 1;
+		$_SESSION["ALLOW_EZMLM_CREATE"]   = 1;
+	  }
 	}
-  }
-  
-  // 4b. Verify if the user is controlsAdministrator in the topmost DN -> Allow administration of QmailLDAP/Control objects.
-  if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"]))
-	$_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
-																   $_SESSION["USER_DN"]);
-  
-  // 4c. Verify if the user is ezmlmAdministrator in the topmost DN -> Allow administration of Ezmlm lists.
-  if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_EZMLM_CREATE"]))
-	$_SESSION["ALLOW_EZMLM_CREATE"] = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_SESSION["USER_DN"]);
-
-  // 4d. Find out which attribute to use to reference users with in this root DN
-  $ref = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
-  pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
-
-  // 4e. Find out which attribute to use to reference domains with in this root DN
-  $ref = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH"));
-  pql_set_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $ref, false, $dn);
-
-  // 4f. Find the computer DN
-  if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
-	$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
-	$tmp = $_pql->get_dn($dn, $filter, 'ONELEVEL');
-
-	if(@$tmp[0])
-	  $_SESSION["USER_SEARCH_DN_CTR"] = $tmp[0];
-
-	unset($filter); unset($tmp);
-  }
-
-  // ----------------------------
-  if(!pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn)) {
-	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {
-	  $objectclass_domain = "domain dcOrganizationNameForm";
-	} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "ou") {
+	
+	// 4b. Verify if the user is controlsAdministrator in the topmost DN -> Allow administration of QmailLDAP/Control objects.
+	if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"]))
+	  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+																	 $_SESSION["USER_DN"]);
+	
+	// 4c. Verify if the user is ezmlmAdministrator in the topmost DN -> Allow administration of Ezmlm lists.
+	if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_EZMLM_CREATE"]))
+	  $_SESSION["ALLOW_EZMLM_CREATE"] = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_SESSION["USER_DN"]);
+	
+	// 4d. Find out which attribute to use to reference users with in this root DN
+	$ref = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
+	pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
+	
+	// 4e. Find out which attribute to use to reference domains with in this root DN
+	$ref = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH"));
+	pql_set_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $ref, false, $dn);
+	
+	// 4f. Find the computer DN
+	if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
+	  $filter = '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
+	  $tmp = $_pql->get_dn($dn, $filter, 'ONELEVEL');
+	  
+	  if(@$tmp[0])
+		$_SESSION["USER_SEARCH_DN_CTR"] = $tmp[0];
+	  
+	  unset($filter); unset($tmp);
+	}
+	
+	// ----------------------------
+	if(!pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn)) {
+	  if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {
+		$objectclass_domain = "domain dcOrganizationNameForm";
+	  } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "ou") {
 	  $objectclass_domain = "organizationalUnit";
-	} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "o") {
-	  $objectclass_domain = "organization";
+	  } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "o") {
+		$objectclass_domain = "organization";
+	  }
+	  pql_set_define("PQL_CONF_OBJECTCLASS_DOMAIN", $objectclass_domain . " phpQLAdminBranch", false, $dn);
 	}
-	pql_set_define("PQL_CONF_OBJECTCLASS_DOMAIN", $objectclass_domain . " phpQLAdminBranch", false, $dn);
+
+	if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"])) {
+	  // 4g. Verify that the user have access to write the global phpQLAdmin config
+	  $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($dn,
+																		 pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+																		 $_SESSION["USER_DN"]);
+	}
+  } elseif(count($_pql->ldap_basedn) == 1) {
+	// We only have one Base DN -> failure here is grave!
+	pql_format_error(1);
   }
 }
 unset($dn);
@@ -259,14 +270,6 @@ $LANG = new pql_lang($_pql);
 
 // 8. Include the plugin API
 require($_SESSION["path"]."/include/pql_plugins.inc");
-
-if(!empty($_SESSION["USER_DN"])) {
-  // 9. Verify that the user have access to write the global phpQLAdmin config
-  //    in the first base DN
-  $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_basedn[0],
-																	 pql_get_define("PQL_ATTR_ADMINISTRATOR"),
-																	 $_SESSION["USER_DN"]);
-}
 
 if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
   $ocs = pql_get_subschema('attributeTypes');
