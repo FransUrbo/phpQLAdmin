@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.25 2007-07-13 10:17:09 turbo Exp $
+// $Id: pql_units.inc,v 1.26 2007-09-13 18:16:24 turbo Exp $
 //
 
 // {{{ pql_unit_get(dn, filter)
@@ -57,6 +57,11 @@ function pql_unit_add($parentdn, $unit) {
   // What's the Root DN (namingContexts) for this domain
   $parentdn = urldecode($parentdn);
   $unit   = pql_maybe_encode($unit);
+
+  if(!$_pql->get_dn($parentdn, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE')) {
+	echo "The parent DN '$parentdn' don't exists!?<br>";
+	return false;
+  }
   
   if(ereg('=', $unit)) {
 	$tmp = split('=', $unit);
