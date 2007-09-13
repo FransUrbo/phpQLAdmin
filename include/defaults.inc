@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.37 2007-02-12 15:11:52 turbo Exp $
+// $Id: defaults.inc,v 2.38 2007-09-13 18:04:31 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -109,6 +109,14 @@ pql_set_define("PQL_CONF_EZMLM_PATH", "/usr/sbin", false);
 // have access to a 'root' key that have access to
 // update the DNS.
 pql_set_define("PQL_CONF_BIND9_USE", false, false);
+
+// ----------------------------
+// Should we enable the DHCP (ISC DHCP3) editor?
+pql_set_define("PQL_CONF_DHCP3_USE", false, false);
+
+// ----------------------------
+// Should we enable the RADIUS (FreeRADIUS) editor?
+pql_set_define("PQL_CONF_RADIUS_USE", false, false);
 
 // ----------------------------
 // Should we enable the webserver administration editor?
