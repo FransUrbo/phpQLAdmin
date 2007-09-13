@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.114 2007-07-13 11:12:01 turbo Exp $
+// $Id: domain_detail.php,v 2.115 2007-09-13 17:52:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -295,10 +295,16 @@ if($_SESSION["ADVANCED_MODE"]) {
 	  $new = array('hostacl'	=> 'Host Control');
 	  $buttons = $buttons + $new;
 	}
-        if(pql_get_define("PQL_CONF_SUDO_USE")) {
-          $new = array('sudo'   => 'Sudo Administration');
-          $buttons = $buttons + $new;
-        }
+
+	if(pql_get_define("PQL_CONF_SUDO_USE")) {
+	  $new = array('sudo'   => 'Sudo Administration');
+	  $buttons = $buttons + $new;
+	}
+
+    if(pql_get_define("PQL_CONF_DHCP3_USE")) {
+	  $new = array('dhcp'   => 'DHCP Administration');
+	  $buttons = $buttons + $new;
+	}
 }
 
 if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
@@ -365,6 +371,8 @@ if($_REQUEST["view"] == 'owner') {
 	  include("./tables/domain_details-aci.inc");
 	elseif($_REQUEST["view"] == 'websrv')
 	  include("./tables/domain_details-websrv.inc");
+	elseif($_REQUEST["view"] == 'dhcp')
+	  include("./tables/domain_details-dhcp.inc");
 	elseif($_REQUEST["view"] == 'hostacl')
 	  include($_SESSION["path"]."/host_modify.php");
 	elseif($_REQUEST["view"] == 'sudo')
