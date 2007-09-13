@@ -4,8 +4,68 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for DHCP3 server configuration)
 //
-// $Id: pql_dhcp3.inc,v 2.1 2007-07-19 10:28:01 turbo Exp $
+// $Id: pql_dhcp3.inc,v 2.2 2007-09-13 18:10:57 turbo Exp $
 //
+
+// {{{ pql_dhcp3_get_configs(domain)
+function pql_dhcp3_get_configs($domain) {
+  global $_pql;
+
+  $filter  = '(&';
+  $filter .= '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=dhcpService'.')';
+  $filter .= '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=dhcpOptions'.')';
+  $filter .= ')';
+
+  $objects = $_pql->search($domain, $filter);
+  if(is_array($objects)) {
+	// Instead of creating a new array with stuff we need/want,
+	// remove the crud we DON'T need...
+	if($objects[0]) {
+	  // More than one object...
+	  for($i=0; $objects[$i]; $i++) {
+		unset($objects[$i][pql_get_define("PQL_ATTR_DHCP3_PRIMARYDN")]);
+		unset($objects[$i][pql_get_define("PQL_ATTR_CN")]);
+		unset($objects[$i][pql_get_define("PQL_ATTR_OBJECTCLASS")]);
+	  }
+	} else {
+	  unset($objects[pql_get_define("PQL_ATTR_DHCP3_PRIMARYDN")]);
+	  unset($objects[pql_get_define("PQL_ATTR_CN")]);
+	  unset($objects[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
+	}
+
+	return $objects;
+  }
+}
+// }}}
+
+// {{{ pql_dhcp3_get_setup(config)
+function pql_dhcp3_get_setup($config) {
+  global $_pql;
+
+  $filter  = '(&';
+  $filter .=   '(|';
+  $filter .=     '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=dhcpSubnet'.')';
+  $filter .=     '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=dhcpHost'.')';
+  $filter .=   ')';
+  $filter .= '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=dhcpOptions'.')';
+  $filter .= ')';
+
+  $objects = $_pql->search($config, $filter);
+  if(is_array($objects)) {
+	// Instead of creating a new array with stuff we need/want,
+	// remove the crud we DON'T need...
+	if($objects[0]) {
+	  // More than one object...
+	  for($i=0; $objects[$i]; $i++)
+		unset($objects[$i][pql_get_define("PQL_ATTR_OBJECTCLASS")]);
+	} else
+	  unset($objects[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
+
+	return $objects;
+  }
+}
+// }}}
+
 
 // {{{ pql_dhcp3_get_subnets(dn)
 function pql_dhcp3_get_subnets($dn) {
