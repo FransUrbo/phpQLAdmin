@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.33 2007-07-19 10:28:01 turbo Exp $
+// $Id: config_plugins.inc,v 2.34 2007-09-20 15:18:50 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -286,9 +286,9 @@ pql_plugin_register(pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), "",
 					"attrib.automount.inc",
 					pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_RADIUS_FILTERID"), "",
+pql_plugin_register(pql_get_define("PQL_ATTR_RADIUS_FILTER_ID"), "",
 					"attrib.radiusfilterid.inc",
-					pql_get_define("PQL_ATTR_RADIUS_FILTERID"));
+					pql_get_define("PQL_ATTR_RADIUS_FILTER_ID"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_UNIQUE_GROUP"), "",
 					"attrib.uniquemember.inc",

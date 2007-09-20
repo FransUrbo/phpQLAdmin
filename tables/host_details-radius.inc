@@ -1,6 +1,6 @@
 <?php
 // View RADIUS details about/for a physical host
-// $Id: host_details-radius.inc,v 1.4 2007-02-19 15:40:26 turbo Exp $
+// $Id: host_details-radius.inc,v 1.5 2007-09-20 15:18:51 turbo Exp $
 
 // {{{ Include RADIUS API etc
 //require($_SESSION["path"]."/include/pql_radius.inc");
@@ -14,7 +14,7 @@ if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 // {{{ Get all needed RADIUS values for this physical host
 $server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 
-$attribs = array("radiusfilterid"	=> pql_get_define("PQL_ATTR_RADIUS_FILTERID"));
+$attribs = array("radiusfilterid"	=> pql_get_define("PQL_ATTR_RADIUS_FILTER_ID"));
 foreach($attribs as $key => $attrib) {
 	$value = $_pql->get_attribute($_REQUEST["host"], $attrib);
 	if(is_array($value))
