@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.201.2.5.2.1 2005-09-26 09:02:53 turbo Exp $
+// $Id: pql.inc,v 2.201.2.5.2.1.2.1 2007-09-27 10:59:23 turbo Exp $
 //
 
 // ----------------------------
@@ -84,6 +84,11 @@ class pql {
 		// constructor, connect to ldap host
 		if($no_connect == true)
 		  return false;
+
+		if(ereg(';', $host)) {
+		  $tmp = split(';', $host);
+		  $host = $tmp[0];
+		}
 
 		// Open a connection to the host
 		$this->connect($host) or die("<b>could not connect to ldap server</b>");
