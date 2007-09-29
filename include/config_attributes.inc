@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.67 2007-09-20 15:18:05 turbo Exp $
+// $Id: config_attributes.inc,v 2.68 2007-09-29 21:04:04 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -330,32 +330,32 @@ pql_set_define("PQL_ATTR_RADIUS_TERMINATE_ACTION",			strtolower('radiusTerminati
 pql_set_define("PQL_ATTR_RADIUS_REPLY_ITEM",				strtolower('radiusReplyItem'),				false); // replyItem $GENERIC$
 
 // These don't have a RADIUS dictionary attributes
-pql_set_define("PQL_ATTR_RADIUS_ARAP_FEATURES",				strtolower('radiusArapFeatures'),			false);
-pql_set_define("PQL_ATTR_RADIUS_ARAP_SECURITY",				strtolower('radiusArapSecurity'),			false);
-pql_set_define("PQL_ATTR_RADIUS_ARAP_ZONE_ACCESS",			strtolower('radiusArapZoneAccess'),			false);
-pql_set_define("PQL_ATTR_RADIUS_CLIENT_IP",					strtolower('radiusClientIPAddress'),		false);
-pql_set_define("PQL_ATTR_RADIUS_GROUP_NAME",				strtolower('radiusGroupName'),				false);
-pql_set_define("PQL_ATTR_RADIUS_HINT",						strtolower('radiusHint'),					false);
-pql_set_define("PQL_ATTR_RADIUS_HUNTGROUP_NAME",			strtolower('radiusHuntgroupName'),			false);
-pql_set_define("PQL_ATTR_RADIUS_LOGIN_TIME",				strtolower('radiusLoginTime'),				false);
-pql_set_define("PQL_ATTR_RADIUS_PASSWORD_RETRY",			strtolower('radiusPasswordRetry'),			false);
-pql_set_define("PQL_ATTR_RADIUS_PROFILE_DN",				strtolower('radiusProfileDn'),				false);
-pql_set_define("PQL_ATTR_RADIUS_PROMPT",					strtolower('radiusPrompt'),					false);
-pql_set_define("PQL_ATTR_RADIUS_PROXY2REALM",				strtolower('radiusProxyToRealm'),			false);
-pql_set_define("PQL_ATTR_RADIUS_REPLICATE2REALM",			strtolower('radiusReplicateToRealm'),		false);
-pql_set_define("PQL_ATTR_RADIUS_REALM",						strtolower('radiusRealm'),					false);
-pql_set_define("PQL_ATTR_RADIUS_TUNNEL_ASSIGN_ID",			strtolower('radiusTunnelAssignmentId'),		false);
-pql_set_define("PQL_ATTR_RADIUS_TUNNEL_MEDIUM_TYPE",		strtolower('radiusTunnelMediumType'),		false);
-pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PASSWORD",			strtolower('radiusTunnelPassword'),			false);
-pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PREFS",				strtolower('radiusTunnelPreference'),		false);
-pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PRIVATE_GROUP_ID",	strtolower('radiusTunnelPrivateGroupId'),	false);
-pql_set_define("PQL_ATTR_RADIUS_TUNNEL_SERVER_ENDPOINT",	strtolower('radiusTunnelServerEndpoint'),	false);
-pql_set_define("PQL_ATTR_RADIUS_TUNNEL_CLIENT_ENDPOINT",	strtolower('radiusTunnelClientEndpoint'),	false);
-pql_set_define("PQL_ATTR_RADIUS_TUNNEL_TYPE",				strtolower('radiusTunnelType'),				false);
+pql_set_define("PQL_ATTR_RADIUS_ARAP_FEATURES",				strtolower('radiusArapFeatures'),			false); // ARAP-Features
+pql_set_define("PQL_ATTR_RADIUS_ARAP_SECURITY",				strtolower('radiusArapSecurity'),			false); // ARAP-Security
+pql_set_define("PQL_ATTR_RADIUS_ARAP_ZONE_ACCESS",			strtolower('radiusArapZoneAccess'),			false); // ARAP-Zone-Access
+pql_set_define("PQL_ATTR_RADIUS_CLIENT_IP",					strtolower('radiusClientIPAddress'),		false); // Client-IP-Address
+pql_set_define("PQL_ATTR_RADIUS_GROUP_NAME",				strtolower('radiusGroupName'),				false); // Group-Name
+pql_set_define("PQL_ATTR_RADIUS_HINT",						strtolower('radiusHint'),					false); // Hint
+pql_set_define("PQL_ATTR_RADIUS_HUNTGROUP_NAME",			strtolower('radiusHuntgroupName'),			false); // Huntgroup-Name
+pql_set_define("PQL_ATTR_RADIUS_LOGIN_TIME",				strtolower('radiusLoginTime'),				false); // Login-Time
+pql_set_define("PQL_ATTR_RADIUS_PASSWORD_RETRY",			strtolower('radiusPasswordRetry'),			false); // Password-Retry
+pql_set_define("PQL_ATTR_RADIUS_PROFILE_DN",				strtolower('radiusProfileDn'),				false); // Regular-Profile
+pql_set_define("PQL_ATTR_RADIUS_PROMPT",					strtolower('radiusPrompt'),					false); // Prompt
+pql_set_define("PQL_ATTR_RADIUS_PROXY2REALM",				strtolower('radiusProxyToRealm'),			false); // Proxy-To-Realm
+pql_set_define("PQL_ATTR_RADIUS_REPLICATE2REALM",			strtolower('radiusReplicateToRealm'),		false); // Deprecated in FreeRADIUS v1.0.0
+pql_set_define("PQL_ATTR_RADIUS_REALM",						strtolower('radiusRealm'),					false); // Realm
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_ASSIGN_ID",			strtolower('radiusTunnelAssignmentId'),		false); // Tunnel-Assignment-ID
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_MEDIUM_TYPE",		strtolower('radiusTunnelMediumType'),		false); // Tunnel-Medium-Type
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PASSWORD",			strtolower('radiusTunnelPassword'),			false); // Tunnel-Password
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PREFS",				strtolower('radiusTunnelPreference'),		false); // Tunnel-Preference
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_PRIVATE_GROUP_ID",	strtolower('radiusTunnelPrivateGroupId'),	false); // Tunnel-Private-Group-ID
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_SERVER_ENDPOINT",	strtolower('radiusTunnelServerEndpoint'),	false); // Tunnel-Server-Endpoint
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_CLIENT_ENDPOINT",	strtolower('radiusTunnelClientEndpoint'),	false); // radiusTunnelClientEndpoint
+pql_set_define("PQL_ATTR_RADIUS_TUNNEL_TYPE",				strtolower('radiusTunnelType'),				false); // Tunnel-Type
 pql_set_define("PQL_ATTR_RADIUS_VSA",						strtolower('radiusVSA'),					false);
 pql_set_define("PQL_ATTR_RADIUS_USER_CATEGORY",				strtolower('radiusUserCategory'),			false);
-pql_set_define("PQL_ATTR_RADIUS_STRIP_USER_NAME",			strtolower('radiusStripUserName'),			false);
-pql_set_define("PQL_ATTR_RADIUS_DIALUP_ACCESS",				strtolower('dialupAccess'),					false);
+pql_set_define("PQL_ATTR_RADIUS_STRIP_USER_NAME",			strtolower('radiusStripUserName'),			false); // Strip-User-Name
+pql_set_define("PQL_ATTR_RADIUS_DIALUP_ACCESS",				strtolower('dialupAccess'),					false); // Dialup-Access
 // }}}
 
 // {{{ Attributes used by the Password Policy config
