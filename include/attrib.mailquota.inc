@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.38 2007-07-13 11:12:04 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.39 2007-09-29 21:15:13 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -295,7 +295,7 @@ function attribute_save($type) {
 	  case "modify":
 		// remove attribute if it is set to ""
 
-		if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA")) {
+		if($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_BASEQUOTA"))) {
 			$domaindn = urldecode($_REQUEST["domain"]);
 
 			// Setup the array to send to LDAP server

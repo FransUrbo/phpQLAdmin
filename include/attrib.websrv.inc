@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.19 2007-02-15 12:08:11 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.20 2007-09-29 21:15:13 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -129,7 +129,7 @@ function attribute_save($action) {
 
 	  case "mod":
 		// {{{ Modify a avalue
-		if(($attrib == pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")) and eregi('^ldapi', $_REQUEST[$attrib])) {
+		if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER"))) and eregi('^ldapi', $_REQUEST[$attrib])) {
 			// It is an LDAP URI - urlencode.
 			
 			// Extract the path 

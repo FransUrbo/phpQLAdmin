@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.36 2007-03-14 12:10:50 turbo Exp $
+// $Id: control_add_server.php,v 2.37 2007-09-29 21:15:09 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -42,16 +42,16 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			  $value = $tmp;
 			
 			foreach($value as $val) {
-			  if(($key == pql_get_define("PQL_ATTR_RCPTHOSTS")) or ($key == pql_get_define("PQL_ATTR_LOCALS"))) {
+			  if(($key == sprintf("%s", pql_get_define("PQL_ATTR_RCPTHOSTS"))) or ($key == vsprintf("%s", pql_get_define("PQL_ATTR_LOCALS")))) {
 				// {{{ rcptHosts or locals
-				if(($key == pql_get_define("PQL_ATTR_RCPTHOSTS")) and isset($_REQUEST["include_rcpthosts"])) {
+				if(($key == sprintf("%s", pql_get_define("PQL_ATTR_RCPTHOSTS"))) and isset($_REQUEST["include_rcpthosts"])) {
 				  if($val == $_REQUEST["cloneserver"]) {
 					// rcptHosts have the FQDN of the cloned server -
 					// Replace that with the FQDN of the resulting server.
 					$entry[$key][] = ereg_replace($_REQUEST["cloneserver"], $_REQUEST["fqdn"], $val);
 				  } else
 					$entry[$key][] = $val;
-				} elseif(($key == pql_get_define("PQL_ATTR_LOCALS")) and isset($_REQUEST["include_locals"])) {
+				} elseif(($key == sprintf("%s", pql_get_define("PQL_ATTR_LOCALS"))) and isset($_REQUEST["include_locals"])) {
 				  if($val == $_REQUEST["cloneserver"]) {
 					// locals have the FQDN of the cloned server -
 					// Replace that with the FQDN of the resulting server.
@@ -60,14 +60,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					$entry[$key][] = $val;
 				}
 // }}}
-			  } elseif((($key == pql_get_define("PQL_ATTR_LDAPPASSWORD")) or
-						($key == pql_get_define("PQL_ATTR_LDAPLOGIN")))
+			  } elseif((($key == sprintf("%s", pql_get_define("PQL_ATTR_LDAPPASSWORD"))) or
+						($key == sprintf("%s", pql_get_define("PQL_ATTR_LDAPLOGIN"))))
 					   and
 					   !isset($_REQUEST["include_password"])) {
 				next;
-			  } elseif(($key == pql_get_define("PQL_ATTR_CN")) or
-					   ($key == pql_get_define("PQL_ATTR_DEFAULTHOST")) or
-					   ($key == pql_get_define("PQL_ATTR_HELOHOST")))
+			  } elseif(($key == sprintf("%s", pql_get_define("PQL_ATTR_CN"))) or
+					   ($key == sprintf("%s", pql_get_define("PQL_ATTR_DEFAULTHOST"))) or
+					   ($key == sprintf("%s", pql_get_define("PQL_ATTR_HELOHOST"))))
 				$entry[$key] = $_REQUEST["fqdn"];
 			  elseif($key != 'dn')
 				$entry[$key][] = $val;

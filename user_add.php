@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.144 2007-07-13 11:12:01 turbo Exp $
+// $Id: user_add.php,v 2.145 2007-09-29 21:15:10 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -415,14 +415,14 @@ switch($_REQUEST["page_curr"]) {
 		// {{{ Verify username
 		unset($filter);
 		if(pql_templates_check_attribute($template_attribs, 'sn') and
-		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")))
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_CN"))))
 		{
 			// 1. Template allows attribute 'sn'
 			// 2. 'sn' is used to reference users
 			$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))";
 			$error_user = $user;
 		} elseif(pql_templates_check_attribute($template_attribs, 'uid') and
-		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID"))))
 		{
 			// 1. Template allows attribute 'uid'
 			// 2. 'uid' is used to reference users
@@ -615,7 +615,7 @@ switch($_REQUEST["page_curr"]) {
 		  if(!empty($basemaildir)) {
 			if(function_exists("user_generate_mailstore")) {
 			  // {{{ Function user_generate_mailstore() exists
-			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID")))
 				 and $_REQUEST["uid"])
 				$reference = $_REQUEST["uid"];
 			  elseif($_REQUEST["surname"] and $_REQUEST["name"])
@@ -678,7 +678,7 @@ switch($_REQUEST["page_curr"]) {
 		if(($_REQUEST["dosave"] != 'yes') and pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_HOMEDIR"), 'MUST')) {
 		  if(!empty($basehomedir)) {
 			if(function_exists("user_generate_homedir")) {
-			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID")))
 				 and $_REQUEST["uid"])
 				$reference = $_REQUEST["uid"];
 			  elseif($_REQUEST["surname"] and $_REQUEST["name"])

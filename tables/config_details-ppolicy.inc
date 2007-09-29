@@ -1,6 +1,6 @@
 <?php
 // Plugin for the ppolicy overlay in OpenLDAP >v2.3
-// $Id: config_details-ppolicy.inc,v 1.2 2007-09-13 18:19:24 turbo Exp $
+// $Id: config_details-ppolicy.inc,v 1.3 2007-09-29 21:15:15 turbo Exp $
 require($_SESSION["path"]."/include/pql_ppolicy.inc");
 $ppolicies = pql_get_ppolicies();
 
@@ -38,18 +38,18 @@ $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('
 ?>
       <tr>
         <td class="title"><?=$text?></td>
-<?php	  if($attrib == pql_get_define("PQL_ATTR_PPOLICY_NAME")) { ?>
+<?php	  if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_NAME"))) { ?>
         <td class="title">
 <?php	  } else { ?>
         <td class="<?=$class?>">
 <?php	  }
 
 		  if($ppolicies[$i][$attrib]) {
-			if(($attrib == pql_get_define("PQL_ATTR_PPOLICY_MINAGE")) or
-			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_MAXAGE")) or
-			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING")) or
-			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION")) or
-			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL")))
+			if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MINAGE"))) or
+			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MAXAGE"))) or
+			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING"))) or
+			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION"))) or
+			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL"))))
 			{
 			  $time = pql_format_timestamp_human($ppolicies[$i][$attrib], false);
 			  echo $time;

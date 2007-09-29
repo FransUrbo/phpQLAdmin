@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin/RADIUS Profiles - global entries
-// $Id: attrib.config.radius.inc,v 1.1 2007-09-13 18:25:13 turbo Exp $
+// $Id: attrib.config.radius.inc,v 1.2 2007-09-29 21:15:12 turbo Exp $
 
 // {{{ attribute_check_radprofile(void)
 function attribute_check_radprofile() {
@@ -30,43 +30,42 @@ function attribute_print_form_radprofile($error_text) {
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Add RADIUS profile'); ?>
-<?php foreach($table_columns as $attrib => $text) {
-	  $link = 'config_edit_attribute.php?attrib='.$attrib;
-	  $class=pql_format_table(0);
-?>
-
+<?php foreach($table_columns as $attrib => $text) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$text?></td>
         <td>
           <?=pql_format_error_span($error_text[$attrib]); ?>
-<?php	if(($attrib == pql_get_define("PQL_ATTR_RADIUS_NAME")) or
-		   ($attrib == pql_get_define("PQL_ATTR_RADIUS_DESC")) or
-		   ($attrib == pql_get_define("PQL_ATTR_RADIUS_CHECK_MODULE")) or
-		   ($attrib == pql_get_define("PQL_ATTR_RADIUS_INHIST")) or
-		   ($attrib == pql_get_define("PQL_ATTR_RADIUS_MINLEN")) or
-		   ($attrib == pql_get_define("PQL_ATTR_RADIUS_GRACEAUTHLIMIT")) or
-		   ($attrib == pql_get_define("PQL_ATTR_RADIUS_MAXFAILURE"))) {
-			// String/Integer value
-
-			if(($attrib == pql_get_define("PQL_ATTR_RADIUS_NAME")) or
-			   ($attrib == pql_get_define("PQL_ATTR_RADIUS_DESC"))) {
-				// Required value
+<?php	if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_NAME"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_DESC"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_CHECK_MODULE"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_INHIST"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MINLEN"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_GRACEAUTHLIMIT"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MAXFAILURE"))))
+		{
+		  // String/Integer value
+		  if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_NAME"))) or
+			 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_DESC"))))
+		  {
+			// Required value
+			echo "          <font color=\"red\">*</font>\n";
+		  } else {
+			echo "          &nbsp;&nbsp;\n";
+		  }
+		  
+		  if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MINLEN"))) {
 ?>
-          <font color="red">*</font>
-<?php		} else { ?>
-          &nbsp;&nbsp;
-<?php		} ?>
-<?php		if($attrib == pql_get_define("PQL_ATTR_RADIUS_MINLEN")) { ?>
           <input type="text" name="<?=$attrib?>" size="7" value="<?=$_REQUEST[$attrib]?>">&nbsp;<?=$LANG->_('characters')?>
-<?php		} else { ?>
+<?php	  } else { ?>
           <input type="text" name="<?=$attrib?>" size="20" value="<?=$_REQUEST[$attrib]?>">
-<?php		} ?>
-<?php	} elseif(($attrib == pql_get_define("PQL_ATTR_RADIUS_MINAGE")) or
-				 ($attrib == pql_get_define("PQL_ATTR_RADIUS_MAXAGE")) or
-				 ($attrib == pql_get_define("PQL_ATTR_RADIUS_EXPIRE_WARNING")) or
-				 ($attrib == pql_get_define("PQL_ATTR_RADIUS_LOCKOUT_DURATION")) or
-				 ($attrib == pql_get_define("PQL_ATTR_RADIUS_FAILURE_COUNT_INTERVAL"))) {
-			// Seconds value
+<?php	  } ?>
+<?php	} elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MINAGE"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MAXAGE"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_EXPIRE_WARNING"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_LOCKOUT_DURATION"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_FAILURE_COUNT_INTERVAL"))))
+		{
+		  // Seconds value
 ?>
           &nbsp;&nbsp;
           <input type="text" name="<?=$attrib?>" size="9" value="<?=$_REQUEST[$attrib]?>">
@@ -79,10 +78,10 @@ function attribute_print_form_radprofile($error_text) {
             <option value="months"><?=$LANG->_('Months')?></option>
             <option value="years"><?=$LANG->_('Years')?></option>
           </select>
-<?php	} elseif(($attrib == pql_get_define("PQL_ATTR_RADIUS_LOCKOUT")) or
-				 ($attrib == pql_get_define("PQL_ATTR_RADIUS_MUST_CHANGE")) or
-				 ($attrib == pql_get_define("PQL_ATTR_RADIUS_ALLOW_USER_CHANGE")) or
-				 ($attrib == pql_get_define("PQL_ATTR_RADIUS_SAFE_MODIFY"))) {
+<?php	} elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_LOCKOUT"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MUST_CHANGE"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_ALLOW_USER_CHANGE"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_SAFE_MODIFY")))) {
 			// Boolean value
 ?>
           &nbsp;&nbsp;
@@ -90,16 +89,19 @@ function attribute_print_form_radprofile($error_text) {
             <option value="TRUE" SELECTED><?=$LANG->_('TRUE')?></option>
             <option value="FALSE"><?=$LANG->_('FALSE')?></option>
           </select>
-<?php	} elseif($attrib == pql_get_define("PQL_ATTR_RADIUS_CHKQUAL")) {
+<?php	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_CHKQUAL"))) {
 			// enum(0,1,2) value
 ?>
           &nbsp;<input type="radio" name="<?=$attrib?>" value="0"><?=$LANG->_('No syntax checking')?><br>
           &nbsp;<input type="radio" name="<?=$attrib?>" value="1"><?=$LANG->_('Server checks syntax - return true if failed to check password')?><br>
           &nbsp;<input type="radio" name="<?=$attrib?>" value="2" CHECKED><?=$LANG->_('Server checks syntax - return false if failed to check password')?><br>
-<?php	} elseif($attrib == pql_get_define("PQL_ATTR_RADIUS_ATTR")) { ?>
+<?php	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_ATTR"))) { ?>
           <font color="red">*</font>
           userPassword (harcoded)
           <input type="hidden" name="<?=$attrib?>" value="userPassword">
+<?php	} else { ?>
+
+          <input type="text" name="<?=$attrib?>" size="20" value="<?=$_REQUEST[$attrib]?>">
 <?php	} ?>
         </td>
       </tr>
@@ -130,15 +132,17 @@ function attribute_save_radprofile() {
   // }}}
 
   // {{{ Create the template object 'LDIF'
+
   $entry = array();
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'radiusProfile';
   foreach($table_columns as $attrib => $text) {
 	if($_REQUEST[$attrib] and
-	   (($attrib == pql_get_define("PQL_ATTR_RADIUS_MINAGE")) or
-		($attrib == pql_get_define("PQL_ATTR_RADIUS_MAXAGE")) or
-		($attrib == pql_get_define("PQL_ATTR_RADIUS_EXPIRE_WARNING")) or
-		($attrib == pql_get_define("PQL_ATTR_RADIUS_LOCKOUT_DURATION")) or
-		($attrib == pql_get_define("PQL_ATTR_RADIUS_FAILURE_COUNT_INTERVAL")))) {
+	   (($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MINAGE"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MAXAGE"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_EXPIRE_WARNING"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_LOCKOUT_DURATION"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_FAILURE_COUNT_INTERVAL")))))
+	{
 	  // Seconds value - special case
 	  $newvalue = $_REQUEST[$attrib];
 
@@ -167,6 +171,7 @@ function attribute_save_radprofile() {
   if(pql_get_define("PQL_ATTR_ACI_USE") and function_exists("user_generate_aci")) {
 	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($_SESSION["USER_DN"], 'radius');
   }
+
   // }}}
 
   // {{{ Generate the DN

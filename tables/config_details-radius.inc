@@ -1,6 +1,6 @@
 <?php
 // Plugin for RADIUS Policies
-// $Id: config_details-radius.inc,v 1.2 2007-09-20 15:15:47 turbo Exp $
+// $Id: config_details-radius.inc,v 1.3 2007-09-29 21:15:15 turbo Exp $
 require($_SESSION["path"]."/include/texts.radius.inc");
 require($_SESSION["path"]."/include/pql_radius.inc");
 $radprofiles = pql_get_radprofiles();
@@ -16,7 +16,7 @@ $radprofiles = pql_get_radprofiles();
 ?>
       <tr>
         <td class="title"><?=$text?></td>
-<?php if($attrib == pql_get_define("PQL_ATTR_CN")) { ?>
+<?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_CN"))) { ?>
         <td class="title">
 <?php } else { ?>
         <td class="<?=$class?>">

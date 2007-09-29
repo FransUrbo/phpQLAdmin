@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.42 2007-03-14 12:10:53 turbo Exp $
+// $Id: user_del_attribute.php,v 2.43 2007-09-29 21:15:10 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -40,17 +40,17 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
     
     // {{{ Setup the information header
-    if(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
+    if(lc($_REQUEST["attrib"]) == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")))
       $what = $LANG->_('group moderator');
-    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))
+    elseif(lc($_REQUEST["attrib"]) == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")))
       $what = $LANG->_('group member');
-    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))
+    elseif(lc($_REQUEST["attrib"]) == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
       $what = $LANG->_('group allowed sender');
-    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT"))
+    elseif(lc($_REQUEST["attrib"]) == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT")))
       $what = $LANG->_('QmailGroup confirmation text');
-    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT"))
+    elseif(lc($_REQUEST["attrib"]) == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT")))
       $what = $LANG->_('QmailGroup moderator text');
-    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_SPAMASSASSIN"))
+    elseif(lc($_REQUEST["attrib"]) == sprintf("%s", pql_get_define("PQL_ATTR_SPAMASSASSIN")))
       $what = $LANG->_('Additional mail header');
     else
       $what = $LANG->_('alias');
@@ -65,7 +65,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	  $msg = pql_complete_constant($LANG->_('Successfully removed %what% %oldvalue%'), array("what" => $what, "oldvalue" => pql_maybe_idna_decode($_REQUEST["oldvalue"])));
 	  $success = true;
 
-	  if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_MAILALTERNATE")) {
+	  if($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_MAILALTERNATE"))) {
 		// {{{ Make sure we enable local delivery (again).
 		// Retreive the 'deliveryMode attribute(s) and remove the 'noprogram' value if it's there
 		$modes = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
@@ -87,7 +87,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 // }}}
     
     // {{{ Remove any forwarders TO this mail address
-    if (lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_MAILALTERNATE") and $success and isset($_REQUEST["delete_forwards"])) {
+    if (lc($_REQUEST["attrib"]) == sprintf("%s", pql_get_define("PQL_ATTR_MAILALTERNATE")) and $success and isset($_REQUEST["delete_forwards"])) {
 	  // does another account forward to this alias?
 	  $sr = ldap_search($_pql->ldap_linkid, $_REQUEST["user"], "(|(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
 	  if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {

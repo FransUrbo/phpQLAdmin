@@ -5,7 +5,7 @@
         <td class="title"></td>
         <td class="title"><?=$LANG->_('Status')?></td>
         <td class="title"><?=$LANG->_('Address')?></td>
-<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) { ?>
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID"))) { ?>
         <td class="title"><?=$LANG->_('Username')?></td>
 <?php } else { ?>
         <td class="title"><?php echo pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);?></td>
@@ -94,7 +94,7 @@
 					pql_format_tree_end();
 ?>
         </td>
-<?php				if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) { ?>
+<?php				if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID"))) { ?>
         <!-- Username -->
         <td><?=$uid?></td>
 <?php				} ?>

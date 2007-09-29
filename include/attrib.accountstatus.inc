@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.33 2007-07-13 11:12:03 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.34 2007-09-29 21:15:11 turbo Exp $
 
 /* DLW:   When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *        I think it's having problems with time zones.  Look into it.
@@ -103,7 +103,7 @@ function attribute_print_form($type = "set") {
     </table>
 
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-<?php if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ISACTIVE")) { ?>
+<?php if($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_ISACTIVE"))) { ?>
     <input type="hidden" name="submit"   value="5">
     <input type="hidden" name="action"   value="set">
     <input type="hidden" name="set"      value="<?=$_REQUEST["set"]?>">
@@ -142,7 +142,7 @@ function attribute_save($type) {
       case "fulldomain":
       case "modify":
 		// {{{ Modify or Fulldomain
-		if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_EXPIRATION")) {
+		if($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_EXPIRATION"))) {
 			// Set the shadowExpire attribute for this user
 			
 			// Get the objectClasses of this user
@@ -203,7 +203,7 @@ function attribute_save($type) {
 										 array('what' => $LANG->_('Status'),
 											   'new'  => pql_ldap_accountstatus($_REQUEST["set"])));
 
-			if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ISACTIVE")) {
+			if($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_ISACTIVE"))) {
 			  if($_REQUEST["set"] == "deleted") {
 				// Convert YYYYMMDD to epoc
 				$epoc = pql_format_timestamp_unixtime($_REQUEST["date"]);

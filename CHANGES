@@ -34,6 +34,10 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	  - In include/pql.inc:pql_header(), only add the URI if it's not already set.
 	  - Fixup the check for add/save in include/pql_formating.inc:pql_create_ldif()
 	    only one ereg()!
+	  - If pql_get_define() finds an undefined value, it will return '0'. And
+	    the problem is that: if("text" == 0) will evaluate to TRUE. Solve this
+	    by using sprintf() like this: if("text" == sprintf("%s", 0).
+
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'

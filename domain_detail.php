@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.115 2007-09-13 17:52:03 turbo Exp $
+// $Id: domain_detail.php,v 2.116 2007-09-29 21:15:09 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -105,7 +105,7 @@ if(is_array($attribs)) {
 	  $value = $value[0];
 	$$key = $value;
 	
-	if($attrib == pql_get_define("PQL_ATTR_INFO")) {
+	if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_INFO"))) {
 	  // Special circumstance - multiple lines...
 	  $$key = eregi_replace("\n", "<br>", $$key);
 	}

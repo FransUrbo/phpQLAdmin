@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.29 2007-07-13 09:38:03 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.30 2007-09-29 21:15:09 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -8,7 +8,7 @@ require($_SESSION["path"]."/include/pql_config.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_DEBUG_ME")) and pql_get_define("PQL_CONF_DEBUG_ME")) {
+if(($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_DEBUG_ME"))) and pql_get_define("PQL_CONF_DEBUG_ME")) {
   // We're modifying the runInDebugMode, but we're alredy doing that (running in debug mode),
   // so we must first turn debugging of - othervise we'll never be able to turn it of (any LDAP modify
   // will only show the LDIF).

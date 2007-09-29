@@ -1,6 +1,6 @@
 <?php
 // attribute for phpQLAdmin/Physical host IP address
-// $Id: attrib.hostdhcp.inc,v 2.2 2007-09-13 18:00:14 turbo Exp $
+// $Id: attrib.hostdhcp.inc,v 2.3 2007-09-29 21:15:12 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -74,17 +74,17 @@ function attribute_print_form() {
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-<?php if($attrib == pql_get_define("PQL_ATTR_IPHOSTNUMBER")) { ?>
+<?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_IPHOSTNUMBER"))) { ?>
       <th colspan="3" align="left"><?=$LANG->_('Change IP address')?></th>
-<?php } elseif($attrib == pql_get_define("PQL_ATTR_DHCP3_SERVICEDN")) { ?>
+<?php } elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_DHCP3_SERVICEDN"))) { ?>
       <th colspan="3" align="left"><?=$LANG->_('Change DN')?></th>
 <?php } else { ?>
       <th colspan="3" align="left"></th>
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
-<?php if($attrib == pql_get_define("PQL_ATTR_IPHOSTNUMBER")) { ?>
+<?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_IPHOSTNUMBER"))) { ?>
           <td class="title"><?=$LANG->_('IP address')?></td>
-<?php } elseif($attrib == pql_get_define("PQL_ATTR_DHCP3_SERVICEDN")) { ?>
+<?php } elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_DHCP3_SERVICEDN"))) { ?>
           <td class="title"><?=$LANG->_('DHCP Service')?></td>
 <?php } else { ?>
           <td class="title"></td>
@@ -178,12 +178,12 @@ function attribute_save($type) {
   
   switch($type) {
   case "modify":
-	if($attrib == pql_get_define("PQL_ATTR_IPHOSTNUMBER")) {
+	if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_IPHOSTNUMBER"))) {
 	  // {{{ ipHostNumber
 	  if(pql_modify_attribute($_REQUEST["host"], $attrib, 1, $_REQUEST[$attrib])) {
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									 array('what' => $LANG->_('IP address')));
-		if(pql_get_define("PQL_ATTR_BIND9_USE") and ($attrib == pql_get_define("PQL_ATTR_IPHOSTNUMBER"))) {
+		if(pql_get_define("PQL_ATTR_BIND9_USE") and ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_IPHOSTNUMBER")))) {
 		  // TODO: Change a DNS record
 		  $x = 'x';
 		}
@@ -191,7 +191,7 @@ function attribute_save($type) {
 		$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									 array('what' => $LANG->_('IP address'))) . ": " . pql_format_error(0);
 	  // }}}
-	} elseif($attrib == pql_get_define("PQL_ATTR_DHCP3_SERVICEDN")) {
+	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_DHCP3_SERVICEDN"))) {
 	  // {{{ dhcpServiceDN
 	  $entry = array();
 

@@ -3,7 +3,7 @@
 // pql_templates.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.15 2007-08-02 22:21:18 turbo Exp $
+// $Id: pql_templates.inc,v 2.16 2007-09-29 21:15:14 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -16,7 +16,7 @@ function pql_templates_group() {
 
 	// We need the 'person' object class because 'qmailGroup' (and 'qmailUser')
 	// is AUXILIARY, and OpenLDAP >2.2 _require one_ STRUCTURAL.
-	if(@pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+	if(@pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID")))
 	  // Need 'uidObject' because of the 'uid' attribute we're referencing users with...
 	  $TEMPLATE["userobjectclass"] = array('person', 'uidObject', 'qmailGroup');
 	else
@@ -69,7 +69,7 @@ function pql_get_templates() {
 		}
 		
 		// Deal with the boolean(s)
-		if($attrib == pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")) {
+		if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER"))) {
 		  if(empty($TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]))
 			$TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")] = 'FALSE';
 		  pql_format_bool($TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]);

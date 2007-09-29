@@ -7,7 +7,7 @@ $attribs = array("senderconfirm"	=> pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
 foreach($attribs as $key => $attrib) {
 	// Get default value
 	$value = $_pql->get_attribute($_REQUEST["user"], $attrib);
-	if(($key == pql_get_define("PQL_ATTR_GROUP_CONFIRM")) or ($key == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"))) {
+	if(($key == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_CONFIRM"))) or ($key == vsprintf("%s", pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")))) {
 	    // It's a user toggle
 		$$key = $value[0];
 	    if(!$$key)
@@ -15,7 +15,7 @@ foreach($attribs as $key => $attrib) {
 	    else
 	      // Convert the boolean value to an integer
 	      $$key = pql_format_bool($$key);
-	} elseif(($key == pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT")) or ($key == pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT")))
+	} elseif(($key == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT"))) or ($key == vsprintf("%s", pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT"))))
 	  // It's a multi-line text
 	  $$key = eregi_replace("\n", "<br>", $value);
 
@@ -24,7 +24,7 @@ foreach($attribs as $key => $attrib) {
 	$$link  = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib";
 	$$link .= "&user=".$url["user"]."&oldvalue=".$$attrib."&view=".$_GET["view"]."\"><img src=\"images/edit.png\" ";
 	$$link .= "width=\"12\" height=\"12\" alt=\"".$LANG->_('Change value')."\" border=\"0\"></a>";
-	if(($key == pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT")) or ($key == pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT"))) {
+	if(($key == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT"))) or ($key == vsprintf("%s", pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT")))) {
 		$$link .= "&nbsp;<a href=\"user_del_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib";
 		$$link .= "&user=".$url["user"]."&oldvalue=".$$attrib."&view=".$_GET["view"]."&ok=1\"><img src=\"images/del.png\" ";
 		$$link .= "width=\"12\" height=\"12\" alt=\"".$LANG->_('Delete value')."\" border=\"0\"></a>";

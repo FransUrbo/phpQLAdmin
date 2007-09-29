@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.33 2007-02-15 12:08:08 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.34 2007-09-29 21:15:13 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -74,7 +74,7 @@ function attribute_print_form() {
 <?php } ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
-            <?php if($attrib == pql_get_define("PQL_ATTR_INFO")) { ?><textarea name="<?=$attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30">
+            <?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_INFO"))) { ?><textarea name="<?=$attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30">
           </td><?php } ?>
 
         </tr>
@@ -125,9 +125,9 @@ function attribute_save($type) {
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
 
-			if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_VAT_NUMBER")) or
-			   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_MOBILE")) or
-			   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_INFO")))
+			if(($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_VAT_NUMBER"))) or
+			   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_MOBILE"))) or
+			   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_INFO"))))
 			{
 			  // Special circumstances - an attribute that exists not only in one of my own schemas
 			  // (phpQLAdminInfo) but also in other schemas (which takes precedene).

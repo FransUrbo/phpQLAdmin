@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.63 2007-03-14 12:10:51 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.64 2007-09-29 21:15:09 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -154,10 +154,10 @@ $_REQUEST["orgname"] = $orgname;
 if(!$_REQUEST["type"]) {
   if (!empty($_REQUEST["action"])) { // DLW: I'm wingining it here.
 	$_REQUEST["type"] = $_REQUEST["action"];
-  } elseif($_REQUEST['attrib'] == pql_get_define("PQL_ATTR_ISACTIVE") or
-		   $_REQUEST['attrib'] == pql_get_define("PQL_ATTR_MODE") or
-		   $_REQUEST['attrib'] == pql_get_define("PQL_ATTR_MAILALTERNATE") or
-		   $_REQUEST['attrib'] == pql_get_define("PQL_ATTR_QUOTA_VALUE")) {
+  } elseif($_REQUEST['attrib'] == sprintf("%s", pql_get_define("PQL_ATTR_ISACTIVE")) or
+		   $_REQUEST['attrib'] == sprintf("%s", pql_get_define("PQL_ATTR_MODE")) or
+		   $_REQUEST['attrib'] == sprintf("%s", pql_get_define("PQL_ATTR_MAILALTERNATE")) or
+		   $_REQUEST['attrib'] == sprintf("%s", pql_get_define("PQL_ATTR_QUOTA_VALUE"))) {
 	$_REQUEST["type"] = 'fulldomain';
   } else {
 	$_REQUEST["type"] = 'modify';
@@ -178,7 +178,7 @@ if(@$_REQUEST["submit"] == 1) {
 	//	tables/domain_details-dnszone.inc
 	//	tables/domain_details-options.inc
 
-	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA")) {
+	if($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_BASEQUOTA"))) {
 		attribute_save("modify");
 	} else {
 	    if(attribute_check($_REQUEST["type"]))
@@ -235,21 +235,21 @@ if(@$_REQUEST["submit"] == 1) {
 // }}} 
 // {{{ submit == else
 } else {
-	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA")) {
+	if($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_BASEQUOTA"))) {
 	  attribute_init();
 	  attribute_print_form();
-	} elseif(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_SPAM")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_CLAM")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_USERNAME")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_PASSWORD")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT")))
+	} elseif(($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_SIMSCAN_SPAM"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_SIMSCAN_CLAM"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_LOCK_USERNAME"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_LOCK_PASSWORD"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE"))) or
+		   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"))))
 	  // A toggle or boolean change - jump to 'save changes' directly
 	  attribute_save();
 	else

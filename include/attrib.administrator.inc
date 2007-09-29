@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.69 2007-08-02 22:14:35 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.70 2007-09-29 21:15:11 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -113,7 +113,7 @@ function attribute_setup_aci($dn, $userdn, $action) {
 		}
 
 		if(!$added_user_full and ($action == 'add') and
-		   (($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
+		   (($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR"))) or
 			($dn != $_REQUEST["domain"])))
 		{
 		  // Only do this if it's a branch admin OR it's not the branch DN
@@ -181,19 +181,19 @@ function attribute_print_form($action) {
     <table cellspacing="0" cellpadding="3" border="0">
 <?php
 	// {{{ Show a header
-	if($attrib == pql_get_define("PQL_ATTR_SEEALSO"))
+	if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_SEEALSO")))
 	  $what = $LANG->_('contact person');
-	elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"))
+	elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")))
 	  $what = $LANG->_('mailinglist administrator');
-	elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"))
+	elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")))
 	  $what = $LANG->_('webserver administrator');
-	elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"))
+	elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")))
 	  $what = $LANG->_('DNS administrator');
-	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
+	elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")))
 	  $what = $LANG->_('group moderator');
-	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))
+	elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")))
 	  $what = $LANG->_('group member');
-	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))
+	elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
 	  $what - $LANG->_('group allowed sender');
 
 	 if($_REQUEST["user"]) {
@@ -232,9 +232,9 @@ function attribute_print_form($action) {
 <?php } else {
 		// TODO: This is a REALLY bad idea. If we have a 'huge' database
 		// (hundred, thousands or more users), this will take AGES!
-		if(!$_REQUEST["user"] or ($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
-								 ($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) or
-								 ($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
+		if(!$_REQUEST["user"] or ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))) or
+								 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))) or
+								 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))))
 		{
 			// {{{ Show branches and users
 			// We're giving user access to a known domain/branch
@@ -396,10 +396,10 @@ function attribute_save($type) {
 	//       and only if it's an administrator we're adding!
 	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and
 	   ($_REQUEST["view"] != 'group') and
-	   (($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
-		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) or
-		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or
-		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"))))
+	   (($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")))))
 	  $use_aci = 1;
 	
 	if($value and $_REQUEST["oldvalue"] and ($value == $_REQUEST["oldvalue"])) {
@@ -556,7 +556,7 @@ function attribute_save($type) {
 		// {{{ Using ACI's and got either <attribute=XXX> or user=XXX?
 		if($use_aci and ($value or @$_REQUEST["user"])) {
 		  // {{{ Adding/removing an administrator?
-		  if($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR")) {
+		  if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR"))) {
 			// Get all the objects below this branch.
 			for($i=0; $DN[$i]; $i++) {
 			  $dn = $DN[$i];
@@ -631,7 +631,7 @@ function attribute_save($type) {
 
 		  // {{{ Adding/removing an DNS administrator?
 		  if(pql_get_define("PQL_CONF_BIND9_USE") and
-			 ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")) and
+			 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"))) and
 			 pql_get_define("PQL_CONF_SUBTREE_BIND9"))
 		  {
 			$filter   = '(&('.pql_get_define("PQL_CONF_SUBTREE_BIND9").')';
@@ -678,7 +678,7 @@ function attribute_save($type) {
 		  // }}}
 		
 		  // {{{ Adding/removing an controlsAdministrator?
-		  if(($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
+		  if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))) and $_SESSION["USER_SEARCH_DN_CTR"]) {
 			$objects = array();
 
 			// If we're adding a super admin, he/she needs access to the
@@ -734,7 +734,7 @@ function attribute_save($type) {
 		  // }}}
 
 		  // {{{ Adding/removing an webSrvAdministrator?
-		  if(($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
+		  if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"))) and $_SESSION["USER_SEARCH_DN_CTR"]) {
 			// Include Webserver API etc
 			require($_SESSION["path"]."/include/pql_websrv.inc");
 			$objects = array();
@@ -805,13 +805,13 @@ function attribute_save($type) {
 		// }}}
 
 		// {{{ Setup message and forward to correct details page
-		if($attrib == pql_get_define("PQL_ATTR_SEEALSO"))
+		if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_SEEALSO")))
 		  $what = $LANG->_('contact person');
-		elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
+		elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")))
 		  $what = $LANG->_('group moderator');
-		elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))
+		elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")))
 		  $what = $LANG->_('group member');
-		elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))
+		elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
 		  $what = $LANG->_('group allowed sender');
 		else
 		  $what = $LANG->_('domain administrator');
@@ -829,12 +829,12 @@ function attribute_save($type) {
 }
 // }}}
 
-if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
-   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SEEALSO")) or
-   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) or
-   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
-   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) or
-   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
+if(($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR"))) or
+   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_SEEALSO"))) or
+   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"))) or
+   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))) or
+   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))) or
+   ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))))
 {
 	require("./left-trailer.html");
 }

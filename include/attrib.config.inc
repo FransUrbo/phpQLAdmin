@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.60 2007-08-02 22:17:21 turbo Exp $
+// $Id: attrib.config.inc,v 1.61 2007-09-29 21:15:12 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -120,8 +120,8 @@ function attribute_print_form() {
   <br><br>
 
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="phpqladmin_modify">
-<?php   if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
- 		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
+<?php   if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_USER"))) or
+ 		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")))) {
 			 // {{{ Special header/table if it's a '{branch,user}ObjectClass' value
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
@@ -141,7 +141,7 @@ function attribute_print_form() {
 // }}}
 		}
 
-		if($attrib == pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")) {
+		if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"))) {
 		  // {{{ Changing the RADIUS identity
 		  // Find all 'simpleSecurityObject' or 'account' objects
 		  $filter = '(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=simpleSecurityObject)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=account))';
@@ -210,8 +210,8 @@ function attribute_print_form() {
           </td>
 <?php		$class=pql_format_table(0); ?>
           <td class="<?=$class?>">
-<?php   	if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
-			   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")))
+<?php   	if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_USER"))) or
+			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))))
 			{
 			  if($attrib == 'userobjectclass') {
 				$existing = pql_get_define("PQL_CONF_OBJECTCLASS_USER", $dn);
@@ -295,7 +295,7 @@ function attribute_print_form() {
           <td class="<?=$class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
 <?php
 			}
-		  } elseif($attrib == pql_get_define("PQL_ATTR_LANG")) {
+		  } elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_LANG"))) {
 			// We're to change the language -> show a select box with existing languages
 			$languages = $LANG->get_supported();
 ?>
@@ -307,7 +307,7 @@ function attribute_print_form() {
 <?php
 		  } else {
 			// Not a userObjectClass or branchObjectClass
-			if($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
+			if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"))) {
 			  $values = array('CRYPT', 'MD5', 'SHA', 'CLEAR', 'KERBEROS');
 			  if(is_array($values)) {
 ?>
@@ -338,7 +338,7 @@ function attribute_print_form() {
     </table>
 <?php
 // }}}
-		if($attrib == pql_get_define("PQL_ATTR_SAMBASID")) {
+		if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_SAMBASID"))) {
 ?>
     <img src="images/info.png" width="16" height="16" alt="" border="0"><?=pql_complete_constant($LANG->_("This can be retreived by executing the command \b%what%\B (as root)"),
 																								 array('what' => 'net getlocalsid'))?>
@@ -426,12 +426,12 @@ function attribute_save() {
 	elseif(($oldvalue == 0) or empty($oldvalue) or eregi('^false$', $oldvalue))
 	  $entry[$attrib][] = 'TRUE';
 	// }}}
-  } elseif(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
-		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
+  } elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_USER"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")))) {
 	// {{{ One of the many multivalued values (add or del)
-	// ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))
-	// ($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"))
-	// ($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"))
+	// ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")))
+	// ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")))
+	// ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")))
 
 	// {{{ Retreive the old value(s).
 	if($dn)
@@ -470,7 +470,7 @@ function attribute_save() {
 	}
 	// }}}
 	// }}}
-  } elseif($attrib == pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")) {
+  } elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"))) {
 	// {{{ Changing the RADIUS identity
 	if($_REQUEST['radius_identity_name']) 
 	  $entry[$attrib][] = pql_get_define("PQL_ATTR_UID").'='.$_REQUEST["radius_identity_name"].','.$_REQUEST["ou_dn"];
@@ -480,7 +480,7 @@ function attribute_save() {
   } else {
 	if($action == 'del')
 	  $entry[$attrib] = array();
-	elseif($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
+	elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"))) {
 	  echo "value: '$attrib_val'<br>"; 
 	  for($i=0; $i < $attrib_val; $i++) {
 		$name = $attrib."_$i";
@@ -503,7 +503,7 @@ function attribute_save() {
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 								   array('what' => $attrib));
 	// }}}
-  } elseif(empty($rootdn) or ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or $toggle) {
+  } elseif(empty($rootdn) or ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))) or $toggle) {
 	// {{{ We don't have a DN, we're changing controlsAdministrator OR it's a toggle.
 	// This means it's a global variable, and should be set in every namingContexts
 	foreach($_SESSION["BASE_DN"] as $dn) {
@@ -521,7 +521,7 @@ function attribute_save() {
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 								   array('what' => $attrib));
 
-	  if($attrib == pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")) {
+	  if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"))) {
 		// Check to see if the choosen DN exists
 		$dn = $_pql->get_dn($entry[$attrib][0], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
 		if(!@$dn) {

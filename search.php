@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.42 2007-03-14 12:10:52 turbo Exp $
+// $Id: search.php,v 2.43 2007-09-29 21:15:10 turbo Exp $
 //
 // {{{ Includes
 require("./include/pql_session.inc");
@@ -41,7 +41,7 @@ if(empty($_REQUEST["attribute"]) or empty($_REQUEST["filter_type"]) or empty($_R
 }
 // }}}
 
-if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAILHOST")) {
+if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_MAILHOST"))) {
 	// IDNA decode the FQDN
 	$_REQUEST["search_string"] = pql_maybe_idna_encode($_REQUEST["search_string"]);
 
@@ -55,7 +55,7 @@ $filter = "";
 if($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_ARECORD")) {
 switch($_REQUEST["filter_type"]) {
   case "is":
-	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+	if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_MAIL"))) {
 		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'='.$_REQUEST["search_string"];
 		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'='.$_REQUEST["search_string"];
 		$filter .= '))';
@@ -63,7 +63,7 @@ switch($_REQUEST["filter_type"]) {
 	  $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"];
     break;
   case "ends_with":
-	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+	if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_MAIL"))) {
 		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'=*'.$_REQUEST["search_string"];
 		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'=*'.$_REQUEST["search_string"];
 		$filter .= '))';
@@ -71,7 +71,7 @@ switch($_REQUEST["filter_type"]) {
 	  $filter = $_REQUEST["attribute"] . "=*" . $_REQUEST["search_string"];
     break;
   case "starts_with":
-	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+	if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_MAIL"))) {
 		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'='.$_REQUEST["search_string"].'*';
 		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'='.$_REQUEST["search_string"].'*';
 		$filter .= '))';
@@ -79,7 +79,7 @@ switch($_REQUEST["filter_type"]) {
 	  $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"] . "*";
     break;
   case "not":
-	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+	if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_MAIL"))) {
 		$filter  = '(&(!(('.pql_get_define("PQL_ATTR_MAIL").'='.$_REQUEST["search_string"].'*';
 		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'='.$_REQUEST["search_string"].'*';
 		$filter .= '))))';
@@ -92,7 +92,7 @@ switch($_REQUEST["filter_type"]) {
 	}
 	break;
   default:
-	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+	if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_MAIL"))) {
 		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'=*'.$_REQUEST["search_string"].'*';
 		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'=*'.$_REQUEST["search_string"].'*';
 		$filter .= '))';
@@ -234,7 +234,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			$host   = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"));
 			$ip     = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_ARECORD"));
 
-			if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) {
+			if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) {
 			  // Looking for hostname - special case regarding IP
 			  if(empty($ip)) {
 				$ip   = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_CNAMERECORD"));
@@ -244,7 +244,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 
 			  // Add the domain name to the hostname
 			  $host .= $dns_domain_name;
-			} elseif($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_ARECORD")) {
+			} elseif($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_ARECORD"))) {
 			  // Looking for IP address - special case regarding hostname
 			  if($host == '@')
 				// The SOA -> Replace with zoneName
@@ -316,10 +316,10 @@ if(!$_SESSION["SINGLE_USER"]) {
 			// {{{ DNS Hostname
 ?>
       <tr class="<?php pql_format_table(); ?>">
-<?php		if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) { ?>
+<?php		if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) { ?>
         <td><?=$host?></td>
         <td><?=$ip?></td>
-<?php		} elseif($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_ARECORD")) { ?>
+<?php		} elseif($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_ARECORD"))) { ?>
         <td><?=$ip?></td>
         <td><?=$host?></td>
 <?php		} ?>

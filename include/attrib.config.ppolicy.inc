@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin/Password Policies - global entries
-// $Id: attrib.config.ppolicy.inc,v 2.3 2007-07-13 10:08:01 turbo Exp $
+// $Id: attrib.config.ppolicy.inc,v 2.4 2007-09-29 21:15:12 turbo Exp $
 
 // {{{ attribute_check_ppolicy(void)
 function attribute_check_ppolicy() {
@@ -46,33 +46,33 @@ function attribute_print_form_ppolicy($error_text) {
         <td class="title"><?=$text?></td>
         <td>
           <?=pql_format_error_span($error_text[$attrib]); ?>
-<?php	if(($attrib == pql_get_define("PQL_ATTR_PPOLICY_NAME")) or
-		   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_DESC")) or
-		   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_CHECK_MODULE")) or
-		   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_INHIST")) or
-		   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_MINLEN")) or
-		   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_GRACEAUTHLIMIT")) or
-		   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_MAXFAILURE"))) {
+<?php	if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_NAME"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_DESC"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_CHECK_MODULE"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_INHIST"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MINLEN"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_GRACEAUTHLIMIT"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MAXFAILURE")))) {
 			// String/Integer value
 
-			if(($attrib == pql_get_define("PQL_ATTR_PPOLICY_NAME")) or
-			   ($attrib == pql_get_define("PQL_ATTR_PPOLICY_DESC"))) {
+			if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_NAME"))) or
+			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_DESC")))) {
 				// Required value
 ?>
           <font color="red">*</font>
 <?php		} else { ?>
           &nbsp;&nbsp;
 <?php		} ?>
-<?php		if($attrib == pql_get_define("PQL_ATTR_PPOLICY_MINLEN")) { ?>
+<?php		if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MINLEN"))) { ?>
           <input type="text" name="<?=$attrib?>" size="7" value="<?=$_REQUEST[$attrib]?>">&nbsp;<?=$LANG->_('characters')?>
 <?php		} else { ?>
           <input type="text" name="<?=$attrib?>" size="20" value="<?=$_REQUEST[$attrib]?>">
 <?php		} ?>
-<?php	} elseif(($attrib == pql_get_define("PQL_ATTR_PPOLICY_MINAGE")) or
-				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_MAXAGE")) or
-				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING")) or
-				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION")) or
-				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL"))) {
+<?php	} elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MINAGE"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MAXAGE"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL")))) {
 			// Seconds value
 ?>
           &nbsp;&nbsp;
@@ -86,10 +86,10 @@ function attribute_print_form_ppolicy($error_text) {
             <option value="months"><?=$LANG->_('Months')?></option>
             <option value="years"><?=$LANG->_('Years')?></option>
           </select>
-<?php	} elseif(($attrib == pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT")) or
-				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_MUST_CHANGE")) or
-				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_ALLOW_USER_CHANGE")) or
-				 ($attrib == pql_get_define("PQL_ATTR_PPOLICY_SAFE_MODIFY"))) {
+<?php	} elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MUST_CHANGE"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_ALLOW_USER_CHANGE"))) or
+				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_SAFE_MODIFY")))) {
 			// Boolean value
 ?>
           &nbsp;&nbsp;
@@ -97,13 +97,13 @@ function attribute_print_form_ppolicy($error_text) {
             <option value="TRUE" SELECTED><?=$LANG->_('TRUE')?></option>
             <option value="FALSE"><?=$LANG->_('FALSE')?></option>
           </select>
-<?php	} elseif($attrib == pql_get_define("PQL_ATTR_PPOLICY_CHKQUAL")) {
+<?php	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_CHKQUAL"))) {
 			// enum(0,1,2) value
 ?>
           &nbsp;<input type="radio" name="<?=$attrib?>" value="0"><?=$LANG->_('No syntax checking')?><br>
           &nbsp;<input type="radio" name="<?=$attrib?>" value="1"><?=$LANG->_('Server checks syntax - return true if failed to check password')?><br>
           &nbsp;<input type="radio" name="<?=$attrib?>" value="2" CHECKED><?=$LANG->_('Server checks syntax - return false if failed to check password')?><br>
-<?php	} elseif($attrib == pql_get_define("PQL_ATTR_PPOLICY_ATTR")) { ?>
+<?php	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_ATTR"))) { ?>
           <font color="red">*</font>
           userPassword (harcoded)
           <input type="hidden" name="<?=$attrib?>" value="userPassword">
@@ -142,11 +142,11 @@ function attribute_save_ppolicy() {
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'phpQLAdminPasswordPolicy';
   foreach($table_columns as $attrib => $text) {
 	if($_REQUEST[$attrib] and
-	   (($attrib == pql_get_define("PQL_ATTR_PPOLICY_MINAGE")) or
-		($attrib == pql_get_define("PQL_ATTR_PPOLICY_MAXAGE")) or
-		($attrib == pql_get_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING")) or
-		($attrib == pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION")) or
-		($attrib == pql_get_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL")))) {
+	   (($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MINAGE"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MAXAGE"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_EXPIRE_WARNING"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION"))) or
+		($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL"))))) {
 	  // Seconds value - special case
 	  $newvalue = $_REQUEST[$attrib];
 

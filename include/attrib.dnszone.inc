@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.30 2007-02-26 11:14:56 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.31 2007-09-29 21:15:12 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -117,7 +117,7 @@ function attribute_print_form() {
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?php
-	   if(lc($attrib) == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) {
+	   if(lc($attrib) == sprintf("%s", pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) {
 		 echo pql_complete_constant($LANG->_("Rename DNS host %host%"), array('host' => $host));
 	   } elseif($_REQUEST["host"] == 'Global') {
 		 echo $LANG->_("Replace value for all entries");
@@ -219,7 +219,7 @@ function attribute_print_form() {
       <input type="hidden" name="domain"          value="<?=$_REQUEST["domain"]?>">
       <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
       <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
-<?php	if(lc($attrib) == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) { ?>
+<?php	if(lc($attrib) == sprintf("%s", pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) { ?>
       <input type="hidden" name="action"          value="rename">
 <?php	} else { ?>
       <input type="hidden" name="action"          value="<?=$_REQUEST["action"]?>">
@@ -323,7 +323,7 @@ function attribute_save($action) {
 	  case "modify":
 		// {{{ mod
 		// {{{ if($attrib == relativeDomainName)
-		if($attrib == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) {
+		if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) {
 			// We must also change the RDN!
 			$dnattrs = explode(",", urldecode($dn));
 
@@ -442,7 +442,7 @@ function attribute_save($action) {
 				if(is_array($old)) {
 // NOTE: Untested...
 //				  for($j=0; $old[$j]; $j++) {
-//					if($attribs[$k] == pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")) {
+//					if($attribs[$k] == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"))) {
 //					  // Split the value to get ip:port
 //					  $tmp = split(':', $old[$j]);
 //					  
@@ -456,7 +456,7 @@ function attribute_save($action) {
 //					}
 //				  }
 //				  // Add the new value
-//				  if($attribs[$k] == pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"))
+//				  if($attribs[$k] == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")))
 //					$entry[$attribs[$k]] = $_REQUEST["newvalue"].":".$tmp[1];
 //				  else 
 //					$entry[$attribs[$k]] = $_REQUEST["newvalue"];
@@ -465,10 +465,10 @@ function attribute_save($action) {
 //					$success = 1;
 				} else {
 				  // Split the value to get ip:port
-				  if($attribs[$k] == pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")) {
+				  if($attribs[$k] == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"))) {
 					$tmp = split(':', $old);
 					$new = $_REQUEST["newvalue"].":".$tmp[1];
-				  } elseif($attribs[$k] == pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")) {
+				  } elseif($attribs[$k] == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"))) {
 					// Objects have this as DN. Do a modrdn!
 					$dnattrs = explode(",", $oldvalues[$i]); unset($parent);
 					$new_rdn = pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")."=".$_REQUEST["newvalue"];

@@ -20,8 +20,8 @@
   // user_edit_attribute.php->attrib.accountstatus.inc:attribute_print_form()
   // Example from http://dynarch.com/mishoo/calendar/simple-1.html
   if(!empty($_REQUEST["rootdn"]) && isset($_REQUEST["domain"]) && isset($_REQUEST["user"]) &&
-     isset($_REQUEST["view"]) && (@($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_EXPIRATION")) or
-				  @($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ISACTIVE"))))
+     isset($_REQUEST["view"]) && (@($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_EXPIRATION"))) or
+				  @($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_ISACTIVE")))))
      {
        //if(dlw_v('rootdn') && dlw_v('domain') && dlw_v('user') && dlw_v('view') && (dlw_v('attrib') == "shadowexpire")) {
 ?>

@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.53 2007-07-13 09:55:45 turbo Exp $
+// $Id: user_add-save.inc,v 1.54 2007-09-29 21:15:16 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -25,13 +25,13 @@ if(!empty($_REQUEST["uid"])) {
 if((!empty($_REQUEST["surname"])
 	or ($_REQUEST["uid"]
 		and
-		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID"))))
    and
    pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_GIVENNAME")))
 {
   if(!empty($_REQUEST["surname"])) 
 	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
-  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID")))
 	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["uid"];
 }
 // }}}
@@ -40,13 +40,13 @@ if((!empty($_REQUEST["surname"])
 if((!empty($_REQUEST["name"])
 	or ($_REQUEST["uid"]
 		and
-		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID"))))
    and
    pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_SN")))
 {
   if(!empty($_REQUEST["name"]))
 	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
-  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID")))
 	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["uid"];
 }
 // }}}
@@ -54,7 +54,7 @@ if((!empty($_REQUEST["name"])
 // {{{ Add full (common) name
 if(((((!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]))
 	  or ($_REQUEST["uid"] and
-		  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))))
+		  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID")))))
 	and
 	pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_SN")))
    or
@@ -62,7 +62,7 @@ if(((((!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]))
 {
   if(!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]))
 	$entry[pql_get_define("PQL_ATTR_CN")] = trim($_REQUEST["surname"]) . " " . trim($_REQUEST["name"]);
-  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID")))
 	$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["uid"];
 }
 // }}}
@@ -146,7 +146,7 @@ if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_QMA
   // Gecos is needed to do PAM/NSS LDAP login 
   if(!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]) and
 	 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_GECOS")) and
-	 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+	 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID"))))
 	{
 	  // We have first and last name, 'gecos' is allowed AND we're referencing users with 'uid'.
 	  
@@ -182,7 +182,7 @@ if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PAS
 	  // name directly in the password field! Use that as userPassword
 	  // and krb5PrincipalName.
 	  $entry[pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME")] = $_REQUEST["password"];
-	elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+	elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID")))
 	  // The password really IS a password!
 	  $entry[pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME")] = $_REQUEST["uid"] . "@" . pql_get_define("PQL_CONF_KRB5_REALM");
 	

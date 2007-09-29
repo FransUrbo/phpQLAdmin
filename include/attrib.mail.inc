@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.25 2007-02-15 12:08:07 turbo Exp $
+// $Id: attrib.mail.inc,v 2.26 2007-09-29 21:15:12 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -126,7 +126,7 @@ function attribute_save($type) {
 		}
 
 		// We use the mail attribute to reference users and it has just changed...
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user, 'attrib.mail.inc:attribute_save')) == pql_get_define("PQL_ATTR_MAIL")) {
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user, 'attrib.mail.inc:attribute_save')) == sprintf("%s", pql_get_define("PQL_ATTR_MAIL"))) {
 			// DLW: $_REQUEST["user"] is used by attribute_forward, and should be a paramater.
 			$_REQUEST["user"] = $_POST["mail"];
 			// Reload the navigation bar (if allowed by config)

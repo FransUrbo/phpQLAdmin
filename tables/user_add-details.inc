@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.47 2007-03-05 10:33:21 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.48 2007-09-29 21:15:15 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8" name="user_add">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -262,7 +262,7 @@
 	  if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_LOGINSHELL")) or
 		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAIL"))       or
 		 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_ISACTIVE"))   or
-		 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_MAIL"))       or
+		 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_MAIL")))       or
 		 ($_SESSION["ADVANCED_MODE"] and !empty($branches[1]))                                                           or
 		 ($_SESSION["ADVANCED_MODE"] and ($_SESSION["NEW_STYLE_QUOTA"] and ($_REQUEST["template"] == 'forward')))        or
 		 ($_REQUEST["template"] == "forward")) {

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.36 2007-02-15 12:08:07 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.37 2007-09-29 21:15:13 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -218,14 +218,14 @@ function attribute_save($type) {
 		if(pql_modify_attribute($_REQUEST["user"], '', '', $OLD))
 		  $success = 1;
 
-		if(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
-		   ($attrib == pql_get_define("PQL_ATTR_GROUP_822_MODERATOR")))
+		if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))) or
+		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_822_MODERATOR"))))
 		  $what = $LANG->_('group moderator');
-		elseif(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) or
-			   ($attrib == pql_get_define("PQL_ATTR_GROUP_822_MEMBER")))
+		elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))) or
+			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_822_MEMBER"))))
 		  $what = $LANG->_('group member');
-		elseif(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")) or
-			   ($attrib == pql_get_define("PQL_ATTR_GROUP_822_SENDER")))
+		elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))) or
+			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_822_SENDER"))))
 		  $what = $LANG->_('group allowed sender');
 
 		if($success)

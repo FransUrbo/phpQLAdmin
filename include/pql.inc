@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.235 2007-09-13 18:06:46 turbo Exp $
+// $Id: pql.inc,v 2.236 2007-09-29 21:15:13 turbo Exp $
 //
 
 // ----------------------------
@@ -466,7 +466,7 @@ class pql {
 		$value = ldap_get_values_len($this->ldap_linkid, $object, $attributes[$i]);
 		
 		if(eregi('^[a-z]', $key) and ($key != 'count')) {
-		  if($key == pql_get_define("PQL_ATTR_PHOTO")) {
+		  if($key == sprintf("%s", pql_get_define("PQL_ATTR_PHOTO"))) {
 			// A jpegPhoto. Save it in the resulting array as a base64 encoded value.
 			if($nr_entries > 1)
 			  $entry[$entries][$key] = base64_encode($value[0]);

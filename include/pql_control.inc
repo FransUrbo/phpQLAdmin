@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.57 2007-02-15 12:08:12 turbo Exp $
+// $Id: pql_control.inc,v 2.58 2007-09-29 21:15:14 turbo Exp $
 //
 
 // {{{ control connection class
@@ -54,7 +54,7 @@ function pql_control_update_domains($rootdn, $dn, $host, $domain = "", $type = "
 	  pql_add2array($entry, $tmp);
 	  
 	  // {{{ If we're replicating rcptHosts, get all non-primary MX host value(s) in this MX/QLC object
-	  if($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
+	  if($type == sprintf("%s", pql_get_define("PQL_ATTR_RCPTHOSTS"))) {
 		$nonprimmx = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
 		if($nonprimmx) {
 		  if(!is_array($nonprimmx))

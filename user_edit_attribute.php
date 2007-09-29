@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.65 2007-03-14 12:10:53 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.66 2007-09-29 21:15:10 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -118,12 +118,12 @@ if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
 } elseif($_REQUEST["submit"] == 4) {
   // SAVE change directly, no need for a form
   attribute_save($_REQUEST["action"]);
-} elseif(($_REQUEST["submit"] == 5) and ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ISACTIVE"))) {
+} elseif(($_REQUEST["submit"] == 5) and ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_ISACTIVE")))) {
 	attribute_save($_REQUEST["action"]);
 } else {
-  if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_CONFIRM")) or
-	 ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")) or
-	 ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_START_ADVANCED"))) {
+  if(($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_CONFIRM"))) or
+	 ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"))) or
+	 ($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_START_ADVANCED")))) {
 	// It's one of those user toggles - go save!
 	attribute_save($_REQUEST["action"]);
   } else {
