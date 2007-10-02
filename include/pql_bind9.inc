@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.54 2007-03-12 11:44:09 turbo Exp $
+// $Id: pql_bind9.inc,v 2.55 2007-10-02 06:17:23 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(branchname, domainname)
@@ -29,6 +29,9 @@ function pql_bind9_get_zone($branchname, $domainname = '') {
   
   for($i=0; @$objects[$i]['zonename']; $i++) {
 	$zone = $objects[$i]['zonename'];
+	if($objects[$i]['relativedomainname'][0])
+	  $host = $objects[$i]['relativedomainname'][0];
+	else 
 	$host = $objects[$i]['relativedomainname'];
 	
 	$ZONE[$zone][$host]['RDN']  = pql_maybe_idna_decode($objects[$i]['dn']);
@@ -50,6 +53,7 @@ function pql_bind9_get_zone($branchname, $domainname = '') {
 	// {{{ A Record(s)
 	if(@$objects[$i]['arecord']) {
 	  if(is_array($objects[$i]['arecord'])) {
+		$ZONE[$zone][$host]['A'] = array();
 		foreach($objects[$i]['arecord'] as $record)
 		  $ZONE[$zone][$host]['A'][] = pql_maybe_idna_decode($record);
 	  } else
@@ -89,6 +93,7 @@ function pql_bind9_get_zone($branchname, $domainname = '') {
 	// {{{ SRV Record
 	if(@$objects[$i]['srvrecord']) {
 	  if(is_array($objects[$i]['srvrecord'])) {
+		$ZONE[$zone][$host]['SRV'] = array();
 		foreach($objects[$i]['srvrecord'] as $record)
 		  $ZONE[$zone][$host]['SRV'][] = $record;
 	  } else
