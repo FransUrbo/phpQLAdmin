@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.68 2007-09-13 17:44:39 turbo Exp $
+// $Id: config_detail.php,v 2.69 2007-10-09 16:54:26 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -80,7 +80,8 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
   } elseif($_pql->get_dn("cn=Overlays,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
 	// OpenLDAP >2.4
 	$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlays,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
-  }
+  } else
+	$overlays = array();
 
   if(in_array('ppolicy', $overlays)) {
 	$button   = array('ppolicy'  => 'Password Policies');
