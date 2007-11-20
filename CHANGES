@@ -38,7 +38,6 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	    the problem is that: if("text" == 0) will evaluate to TRUE. Solve this
 	    by using sprintf() like this: if("text" == sprintf("%s", 0).
 
-
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
 	    form.
@@ -54,6 +53,10 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	    This can be used instead of the userReference attribute to find users etc. If
 	    not defined, the userReference attribute is still required...
 	  - Create a DHCP3 manager for the DHCP3 patch at http://home.ntelos.net/~masneyb/.
+	  - When domain admin (not superadmin) is adding a branch admin to 'his/her' branch,
+	    only get users from that/those branch(-es). Wanted by Ing. Fernando Villarreal - Silice S.A.
+	  - Allow to disable 'Advanced mode' selector for specific user. Wanted by
+	    Ing. Fernando Villarreal - Silice S.A.
 
 phpQLAdmin 2.3.7 Release (May 10 2007)
 	Bug fixes
