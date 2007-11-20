@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.34 2007-09-20 15:18:50 turbo Exp $
+// $Id: config_plugins.inc,v 2.35 2007-11-20 11:50:04 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -136,6 +136,7 @@ pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM"), "",
 						  pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
 						  pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"),
 						  pql_get_define("PQL_ATTR_START_ADVANCED"),
+						  pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE"),
 						  pql_get_define("PQL_ATTR_USERNAME_PREFIX")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_USERNAME_PREFIX"), "",

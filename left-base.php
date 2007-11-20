@@ -1,6 +1,6 @@
 <?php
 // LDAP host, user, login info etc
-// $Id: left-base.php,v 2.3 2007-03-12 10:38:40 turbo Exp $
+// $Id: left-base.php,v 2.4 2007-11-20 11:50:02 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -55,23 +55,26 @@ if($_REQUEST["advanced"] == 1) {
       </a>
     </nobr>
   </div>
+<?php if(!pql_get_define("PQL_CONF_DISABLE_ADVANCED_MODE")) { ?>
 
   <!-- Advanced Mode selector -->
   <div id="el4Parent" class="parent">
     <form method=post action="index2.php" target="_top">
-<?php if($_SESSION["konqueror"]) { ?>
+<?php	if($_SESSION["konqueror"]) { ?>
       <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
-<?php } elseif($_SESSION["lynx"]) { ?>
-<?php   if($_REQUEST["advanced"] == 1) { ?>
+<?php	} elseif($_SESSION["lynx"]) { ?>
+<?php	  if($_REQUEST["advanced"] == 1) { ?>
       <input type="hidden" name="advanced" value="0">
       <input type="submit" value="<?=$LANG->_('Simple mode')."\n"?>">
-<?php   } else { ?>
+<?php	  } else { ?>
       <input type="hidden" name="advanced" value="1">
       <input type="submit" value="<?=$LANG->_('Advanced mode')."\n"?>">
-<?php   } ?>
-<?php } else { ?>
+<?php	  } ?>
+<?php	} else { ?>
       <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
-<?php } ?>
+<?php	}
+	  }
+?>
     </form>
   </div>
 <?php

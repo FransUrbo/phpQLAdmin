@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.106 2007-07-13 09:55:32 turbo Exp $
+// $Id: user_detail.php,v 2.107 2007-11-20 11:50:03 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -139,6 +139,7 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "sambalogonscript"		=> pql_get_define("PQL_ATTR_SAMBALOGONSCRIPT"),
 				 "sambauserworkstations"=> pql_get_define("PQL_ATTR_SAMBAUSERWORKSTATIONS"),
 				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"),
+				 "disableadvancedmode"	=> pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE"),
 				 "ppolicy_entry"		=> pql_get_define("PQL_ATTR_PPOLICY_ENTRY"),);
 foreach($attribs as $key => $attrib) {
 	if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]))
@@ -163,7 +164,7 @@ foreach($attribs as $key => $attrib) {
     // Setup edit links
     $link = $key . "_link";
 
-	if($key == 'startwithadvancedmode')
+	if(($key == 'startwithadvancedmode') or ($key == 'disableadvancedmode'))
 	  // It's a toggle. Convert the boolean value to an integer
 	  $$key = pql_format_bool($value);
 

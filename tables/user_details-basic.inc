@@ -152,23 +152,43 @@
 	  	}
 	  }
 
-	  // {{{ When user do a login, should the advanced mode be loaded?
+	  // {{{ Disable or not to start in advanced mode (also affects the 'Advanced mode' selector in left-base.php).
 ?>
       <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Start in advanced mode')?></td>
-<?php if($startwithadvancedmode) { ?>
+        <td class="title"><?=$LANG->_('Disable advanced mode selector')?></td>
+<?php if($disableadvancedmode) { ?>
         <td><?=$LANG->_('Yes')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Do not start in advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user from select Advanced mode')?>"></a>
         </td>
 <?php } else { ?>
         <td><?=$LANG->_('No')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Make sure we start in advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to select Advanced mode')?>"></a>
         </td>
 <?php } ?>
       </tr>
 <?php
+// }}}
+
+	  // {{{ When user do a login, should the advanced mode be loaded?
+	  if(!pql_get_define("PQL_CONF_DISABLE_ADVANCED_MODE")) {
+?>
+      <tr class="<?=$class?>">
+        <td class="title"><?=$LANG->_('Start in advanced mode')?></td>
+<?php	if($startwithadvancedmode) { ?>
+        <td><?=$LANG->_('Yes')?></td>
+        <td>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Do not start in advanced mode')?>"></a>
+        </td>
+<?php	} else { ?>
+        <td><?=$LANG->_('No')?></td>
+        <td>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Make sure we start in advanced mode')?>"></a>
+        </td>
+<?php	} ?>
+      </tr>
+<?php }
 // }}}
 ?>
     </th>

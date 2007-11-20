@@ -22,7 +22,7 @@
 //          value). This is because phpQLAdmin will store these values
 //          in the memcached cache...
 //
-// $Id: config_attributes.inc,v 2.68 2007-09-29 21:04:04 turbo Exp $
+// $Id: config_attributes.inc,v 2.69 2007-11-20 11:50:04 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -565,7 +565,8 @@ pql_set_define("PQL_ATTR_USER_FILTER",						strtolower("userSearchFilter"),				f
 
 // {{{ These are the internal phpQLAdmin attributes - USER configuration
 // Toggles
-pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"),	false);
+pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"),		false);
+pql_set_define("PQL_ATTR_DISABLE_ADVANCED_MODE",			strtolower("disableAdvancedMode"),			false);
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - TEMPLATE configuration
@@ -680,7 +681,8 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 // {{{ Map attribute to configuration define - USER
 // Format:   Define to set => Attribute where value is located
 // Location: In the user DN(s)
-$PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"	=> pql_get_define("PQL_ATTR_START_ADVANCED"));
+$PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"				=> pql_get_define("PQL_ATTR_START_ADVANCED"),
+							   "PQL_CONF_DISABLE_ADVANCED_MODE"			=> pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE"));
 // }}}
 
 // {{{ Map attribute to configuration define - RADIUS/checkItem
