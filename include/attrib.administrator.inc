@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.70 2007-09-29 21:15:11 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.71 2007-11-20 11:51:03 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -240,8 +240,26 @@ function attribute_print_form($action) {
 			// We're giving user access to a known domain/branch
 			$i = 0; $div_counter = 0;
 
-			// Get all domains in the database.
-			$domains = pql_get_domains();
+			// {{{ ---------------- GET THE DOMAINS/BRANCHES
+			// NOTE: Identical to code in left.php!
+			if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+			  // This is a 'super-admin'. Should be able to read EVERYTHING!
+			  $domains = pql_get_domains();
+			} else {
+			  // {{{ Get ALL domains we have access to.
+			  //     I.e., all DN's with 'administrator: USER_DN'
+			  foreach($_SESSION["BASE_DN"] as $dn)  {
+				$dom = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=".$_SESSION["USER_DN"]);
+				if($dom) {
+				  foreach($dom as $d) {
+					$domains[] = $d;
+				  }
+				}
+			  }
+			  // }}}
+			}
+			// }}}
+			
 			if(isset($domains)) {
 				foreach($domains as $key => $domain) {
 					// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
@@ -275,7 +293,11 @@ function attribute_print_form($action) {
 						if(is_array($cns)) {
 							asort($cns);
 							foreach($cns as $dn => $cn) {
-								$new   = array($cn => array($_REQUEST["attrib"], $i, $dn));
+								if(is_array($cn)) {
+								  $new   = array($cn[0] => array($_REQUEST["attrib"], $i, $dn));
+								} else {
+								  $new   = array($cn => array($_REQUEST["attrib"], $i, $dn));
+								}
 								$links = $links + $new;
 
 								$i++;
