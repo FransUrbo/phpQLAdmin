@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.116 2007-09-29 21:15:09 turbo Exp $
+// $Id: domain_detail.php,v 2.117 2007-11-20 11:47:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -159,50 +159,6 @@ if(is_array($attribs)) {
   }
 }
 // }}}
-
-if($_REQUEST["view"] == 'access') {
-  // {{{ Get domain administrators
-  $domain_admins      = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
-  if($domain_admins and !is_array($domain_admins)) {
-	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	$domain_admins = array($domain_admins);
-  } elseif(!$domains_admins)
-	$domain_admins = array();
-// }}}
-  
-  // {{{ Get mailinglist administrators
-  if(pql_get_define("PQL_CONF_EZMLM_USE")) {
-	$mailinglist_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
-	if($mailinglist_admins and !is_array($mailinglist_admins)) {
-	  // It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	  $mailinglist_admins = array($mailinglist_admins);
-	} elseif(!$mailinglist_admins)
-	  $mailinglist_admins = array();
-  }
-// }}}
-
-  // {{{ Get webserver administrators
-  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
-	$websrv_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
-	if($websrv_admins and !is_array($websrv_admins)) {
-	  // It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	  $websrv_admins = array($websrv_admins);
-	} elseif(!$websrv_admins)
-	  $websrv_admins = array();
-  }
-// }}}
-
-  // {{{ Get DNS administrators
-  if(pql_get_define("PQL_CONF_BIND9_USE")) {
-	$bind9_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"));
-	if($bind9_admins and !is_array($bind9_admins)) {
-	  // It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	  $bind9_admins = array($bind9_admins);
-	} elseif(!$bind9_admins)
-	  $bind9_admins = array();
-  }
-// }}}
-}
 
 // {{{ Get the see-also value
 if($_REQUEST["view"] == 'owner') {

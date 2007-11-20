@@ -3,6 +3,15 @@
     <th colspan="2" align="left"><?=$LANG->_('Branch access')?>
 <?php
 // {{{ Domain administrators
+// Get domain administrators
+$domain_admins   = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+if($domain_admins and !is_array($domain_admins)) {
+  // It's defined, but it's not an array. Convert it so we don't get into trouble below.
+  $domain_admins = array($domain_admins);
+} elseif(!$domain_admins) {
+  $domain_admins = array();
+}
+  
 $class = pql_format_table(0);
 $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
 $url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR");
@@ -18,6 +27,14 @@ pql_format_table_single($tbl_txt, $tbl_url, $domain_admins,
 
 // {{{ Mailinglist administrators
 if(pql_get_define("PQL_CONF_EZMLM_USE")) {
+  // Get mailinglist administrators
+  $mailinglist_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
+  if($mailinglist_admins and !is_array($mailinglist_admins)) {
+	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	$mailinglist_admins = array($mailinglist_admins);
+  } elseif(!$mailinglist_admins)
+	$mailinglist_admins = array();
+
   $class = pql_format_table(0);
   $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
   $url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM");
@@ -33,6 +50,16 @@ if(pql_get_define("PQL_CONF_EZMLM_USE")) {
 // }}}
 
 // {{{ Webserver administrators
+// Get webserver administrators
+if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+  $websrv_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
+  if($websrv_admins and !is_array($websrv_admins)) {
+	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	$websrv_admins = array($websrv_admins);
+  } elseif(!$websrv_admins)
+	$websrv_admins = array();
+}
+
 if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
   $class = pql_format_table(0);
   $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
@@ -49,7 +76,16 @@ if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
 // }}}
 
 // {{{ DNS administrators
+// Get DNS administrators
 if(pql_get_define("PQL_CONF_BIND9_USE")) {
+  $bind9_admins = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"));
+  if($bind9_admins and !is_array($bind9_admins)) {
+	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	$bind9_admins = array($bind9_admins);
+  } elseif(!$bind9_admins) {
+	$bind9_admins = array();
+  }
+
   $class = pql_format_table(0);
   $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&branchdn=".$url["domain"];
   $url_tmp .= "&view=".$_REQUEST["view"]."&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9");
