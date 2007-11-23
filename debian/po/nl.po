@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE 'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the  package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: phpqladmin\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-03-08 04:33+0100\n"
+"PO-Revision-Date: 2007-10-25 19:06+0100\n"
+"Last-Translator: Bart Cornelis <cobaco@skolelinux.no>\n"
+"Language-Team: debian-l10n-dutch <debian-l10n-dutch@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Dutch\n"
+
+#. Type: select
+#. Choices
+#: ../templates:1001
+msgid "Apache, Apache-SSL, Both, None"
+msgstr "Apache, Apache-SSL, Beide, Geen"
+
+#. Type: select
+#. Description
+#: ../templates:1002
+msgid "Which web server would you like to reconfigure automatically?"
+msgstr "Welke webserver wilt u automatisch laten herconfigureren?"
+
+#. Type: select
+#. Description
+#: ../templates:1002
+msgid "phpQLAdmin supports any web server that PHP4 does, but this automatic configuration process only supports Apache and Apache-SSL."
+msgstr "phpQLAdmin ondersteund elke webserver die PHP4 aankan, dit automatische configuratieproces kan echter enkel met Apache en Apache-SSL overweg."
+
