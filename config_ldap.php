@@ -15,7 +15,9 @@ if($_REQUEST["type"] == 'config') {
   echo "Basically because ACL/ACI don't work properly yet in the LDAP server.";
   die();
 } elseif($_REQUEST["type"] == 'accesslog') {
+  // {{{ View the access logg
   if($_REQUEST["filter"]) {
+    // {{{ Filter output
 	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  echo "_REQUEST:";
 	  printr($_REQUEST);
@@ -69,6 +71,7 @@ if($_REQUEST["type"] == 'config') {
 	//       Instead, filter that out after retreiving all objects.
 
 	$filter .= ')';
+// }}}
   } else
 	// Do not filter output - retreive EVERYTHING!
 	// TODO: We really need to limit the number of objects!
@@ -148,7 +151,9 @@ if($_REQUEST["type"] == 'config') {
   }
   
   require($_SESSION["path"]."/tables/config_ldap-accesslog.inc");
+// }}}
 } else {
+  // {{{ View objectclasses, attributes etc
   $ldap = pql_get_subschemas();
   if($_REQUEST["type"]) {
 	$type = $_REQUEST["type"];
@@ -163,6 +168,7 @@ if($_REQUEST["type"] == 'config') {
   $j = 1; $oc_counter = 0;
 
   require($_SESSION["path"]."/tables/config_ldap-monitor.inc");
+// }}}
 }
 ?>
   </body>
@@ -173,7 +179,6 @@ pql_flush();
 /*
  * Local variables:
  * mode: php
- * mode: font-lock
  * tab-width: 4
  * End:
  */
