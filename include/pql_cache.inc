@@ -183,7 +183,7 @@ class pql_cache {
 	  
 	  $log = date("M d H:i:s");
 	  $log .= $msg;
-	  @error_log($log, 3, "phpQLadmin.log");
+	  @error_log($log, 3, $_SESSION["path"]."/phpQLadmin.log");
 	  
 	  // Fall back on global variable cache
 	  $this->cache = array();
