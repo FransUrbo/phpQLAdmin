@@ -293,7 +293,7 @@ function pql_bind9_add_zone($dn, $zone) {
   
   $dn = "dNSTTL=".$entry['dNSTTL']."+relativeDomainName=".$entry['relativeDomainName'].",$dn";
   
-  if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
+  if(!$_pql->get_dn($dn, 'objectClass=dNSZone', 'BASE')) {
 	if(!$_pql->add($dn, $entry, 'bind9/zone', 'pql_bind9_add_zone')) {
 	  // Can't add SOA record
 	  die();
