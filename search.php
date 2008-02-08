@@ -239,7 +239,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			  if(empty($ip)) {
 				$ip   = $_pql->get_attribute($entry, pql_get_define("PQL_ATTR_CNAMERECORD"));
 				if(empty($ip))
-				  $ip = '<b>unknown</b>';
+				  $ip = '<b>'.$LANG->_('Unknown').'</b>';
 			  }
 
 			  // Add the domain name to the hostname
