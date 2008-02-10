@@ -110,6 +110,7 @@ pql_set_define("PQL_ATTR_RBLLIST",							strtolower("rblList"),						false);
 pql_set_define("PQL_ATTR_GOODADDRESS",						strtolower("goodMailAddr"),					false);
 pql_set_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS",			strtolower("nonPrimaryRcptHosts"),			false);
 pql_set_define("PQL_ATTR_MAILSIZEMAX",						strtolower("mailSizeMax"),					false);
+pql_set_define("PQL_ATTR_MAIL_INFORMATION",				strtolower("useUserMailInformation"),		false);
 // }}}
 
 // {{{ Qmail-Group attributes in QmailLDAP
@@ -577,7 +578,6 @@ pql_set_define("PQL_ATTR_OLC_OBJECT_CLASSES", 				strtolower('olcObjectClasses')
 pql_set_define("PQL_ATTR_CONTROL_USE", 						strtolower('useControls'),					false);
 pql_set_define("PQL_ATTR_EZMLM_USE", 						strtolower('useEzmlm'),						false);
 pql_set_define("PQL_ATTR_BIND9_USE", 						strtolower('useBind9'),						false);
-pql_set_define("PQL_ATTR_ACI_USE", 							strtolower('useACI'),						false);
 pql_set_define("PQL_ATTR_AUTO_RELOAD", 						strtolower('autoReload'),					false);
 pql_set_define("PQL_ATTR_CHANGE_SERVER", 					strtolower('allowServerChange'),			false);
 pql_set_define("PQL_ATTR_CREATE_MBOX", 						strtolower('useMBox'),						false);
@@ -710,7 +710,8 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_EZMLM_REMOTE_HOST"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST"),
 								 "PQL_CONF_EZMLM_REMOTE_USER"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER"),
 								 "PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT"=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT"),
-								 "PQL_CONF_DHCP3_USE"					=> pql_get_define("PQL_ATTR_DHCP3_USE"));
+								 "PQL_CONF_DHCP3_USE"					=> pql_get_define("PQL_ATTR_DHCP3_USE"),
+								 "PQL_CONF_MAIL_INFORMATION"			=> pql_get_define("PQL_ATTR_MAIL_INFORMATION"));
 
 // }}}
 
