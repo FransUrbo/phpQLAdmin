@@ -524,10 +524,11 @@ pql_set_define("PQL_ATTR_OLC_MODULE_PATH", 					strtolower('olcModulePath'),				
 pql_set_define("PQL_ATTR_OLC_MODULE_LOAD", 					strtolower('olcModuleLoad'),				false);
 
 pql_set_define("PQL_ATTR_OLC_DB", 							strtolower('olcDatabase'),					false);
+pql_set_define("PQL_ATTR_OLC_DB_URI", 						strtolower('olcDbUri'),						false);
 pql_set_define("PQL_ATTR_OLC_DB_DIRECTORY", 				strtolower('olcDbDirectory'),				false);
 pql_set_define("PQL_ATTR_OLC_DB_CACHE_SIZE", 				strtolower('olcDbCacheSize'),				false);
 pql_set_define("PQL_ATTR_OLC_DB_CACHE_FREE", 				strtolower('olcDbCacheFree'),				false);
-pql_set_define("PQL_ATTR_OLC_DB_CHECK_POINT", 				strtolower('olcDbCheckpoint'),				false);
+pql_set_define("PQL_ATTR_OLC_DB_CHECK_POINT", 				strtolower('olcDbCheckPoint'),				false);
 pql_set_define("PQL_ATTR_OLC_DB_CONFIG", 					strtolower('olcDbConfig'),					false);
 pql_set_define("PQL_ATTR_OLC_DB_NO_SYNC", 					strtolower('olcDbNoSync'),					false);
 pql_set_define("PQL_ATTR_OLC_DB_DIRTY_READ", 				strtolower('olcDbDirtyRead'),				false);
@@ -559,13 +560,15 @@ pql_set_define("PQL_ATTR_OLC_PPOLICY_DEFAULT", 				strtolower('olcPPolicyDefault
 pql_set_define("PQL_ATTR_OLC_PPOLICY_HASH_CLEARTEXT", 		strtolower('olcPPolicyHashCleartext'),		false);
 pql_set_define("PQL_ATTR_OLC_PPOLICY_USE_LOCKOUT", 			strtolower('olcPPolicyUseLockout'),			false);
 pql_set_define("PQL_ATTR_OLC_VAL_SORT_ATTR", 				strtolower('olcValSortAttr'),				false);
-pql_set_define("PQL_ATTR_OLC_AUDIT_LOG_FILE", 				strtolower('olcAuditlogFile'),				false);
+pql_set_define("PQL_ATTR_OLC_AUDIT_LOG_FILE", 				strtolower('olcAuditLogFile'),				false);
 pql_set_define("PQL_ATTR_OLC_ACCESSLOG_DB", 				strtolower('olcAccessLogDB'),				false);
 pql_set_define("PQL_ATTR_OLC_ACCESSLOG_OPS", 				strtolower('olcAccessLogOps'),				false);
 pql_set_define("PQL_ATTR_OLC_ACCESSLOG_PURGE", 				strtolower('olcAccessLogPurge'),			false);
 pql_set_define("PQL_ATTR_OLC_ACCESSLOG_OLD", 				strtolower('olcAccessLogOld'),				false);
+
 pql_set_define("PQL_ATTR_OLC_ATTRIBUTE_TYPES", 				strtolower('olcAttributeTypes'),			false);
 pql_set_define("PQL_ATTR_OLC_OBJECT_CLASSES", 				strtolower('olcObjectClasses'),				false);
+
 // }}}
 
 
