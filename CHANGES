@@ -1,6 +1,6 @@
 phpQLAdmin 2.3 Change Log
 
-phpQLAdmin 2.3.8 Release ( Feb 10 2013)
+phpQLAdmin 2.3.8 Release (Feb 22 2013)
 	Bug fixes
 	  - Make sure any 'Home->phpQLAdmin Configuration->Global configuration' changes
 	    goes back to the 'Global configuration' view.
