@@ -74,10 +74,10 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 
   // {{{ Try to figure out if the ppolicy overlay is loaded
   require($_SESSION["path"]."/include/pql_status.inc");
-  if($_pql->get_dn("cn=Overlay,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
+  if(@$_pql->get_dn("cn=Overlay,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
 	// OpenLDAP <2.4
 	$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlay,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
-  } elseif($_pql->get_dn("cn=Overlays,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
+  } elseif(@$_pql->get_dn("cn=Overlays,".$_pql->ldap_monitor, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
 	// OpenLDAP >2.4
 	$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlays,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
   } else
