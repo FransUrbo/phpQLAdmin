@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.82 2007-09-13 18:01:55 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.83 2008-03-18 22:19:37 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -441,7 +441,7 @@ function user_generate_email($surname, $lastname, $domainname, $domain, $account
 // perfect, but it works for me...
 //function user_generate_aci($user, $type) {
 //	global $_pql; $_SESSION;
-//	$i = 0;
+//	$i = 0; // MUST start with 0 (changes to ldap_add() in PHP5 - array must be consecutive starting with 0!
 //
 //	// Public entries
 //	$aci[$i] = "$i#entry#grant;r,s,c;objectClass,[entry]#public#"; $i++;
