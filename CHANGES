@@ -59,6 +59,7 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	    only get users from that/those branch(-es). Wanted by Ing. Fernando Villarreal - Silice S.A.
 	  - Allow to disable 'Advanced mode' selector for specific user. Wanted by
 	    Ing. Fernando Villarreal - Silice S.A.
+	  - Add SSHA as password scheme.
 
 phpQLAdmin 2.3.7 Release (May 10 2007)
 	Bug fixes

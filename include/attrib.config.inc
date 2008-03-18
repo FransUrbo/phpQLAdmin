@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.61 2007-09-29 21:15:12 turbo Exp $
+// $Id: attrib.config.inc,v 1.62 2008-03-18 22:00:20 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -308,7 +308,7 @@ function attribute_print_form() {
 		  } else {
 			// Not a userObjectClass or branchObjectClass
 			if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"))) {
-			  $values = array('CRYPT', 'MD5', 'SHA', 'CLEAR', 'KERBEROS');
+			  $values = array('CRYPT', 'MD5', 'SHA', 'SSHA', 'CLEAR', 'KERBEROS');
 			  if(is_array($values)) {
 ?>
           <td>
