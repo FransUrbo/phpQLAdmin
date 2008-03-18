@@ -37,6 +37,8 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	  - If pql_get_define() finds an undefined value, it will return '0'. And
 	    the problem is that: if("text" == 0) will evaluate to TRUE. Solve this
 	    by using sprintf() like this: if("text" == sprintf("%s", 0).
+	  - If 'uid' is set and we're using that to reference users - Don't allow
+	    international characters.
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'

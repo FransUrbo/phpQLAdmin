@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.145 2007-09-29 21:15:10 turbo Exp $
+// $Id: user_add.php,v 2.146 2008-03-18 21:56:30 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -395,6 +395,15 @@ switch($_REQUEST["page_curr"]) {
 	} else {
 		// {{{ Verify all account types EXEPT 'alias'
 		// ------------------------
+
+		// {{{ Fix 'uid' attribute (no international characters)
+		// If 'uid' is set and we're using that to reference users - Don't allow international characters!
+		if($_REQUEST["uid"] and pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_SESSION["BASE_DN"][0]) == 'uid') {
+		  $new = pql_format_international(utf8_decode($_REQUEST["uid"]));
+		  if($_REQUEST["uid"] != $new)
+			$_REQUEST["uid"] = $new;
+		}
+		// }}}
 
 		// {{{ Verify surname
 		if(($_REQUEST["dosave"] != 'yes') and empty($_REQUEST["surname"]) and pql_templates_check_attribute($template_attribs, 'sn', 'MUST')) {
