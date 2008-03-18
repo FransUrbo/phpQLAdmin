@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.40 2007-02-15 12:08:05 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.41 2008-03-18 22:16:33 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -39,19 +39,20 @@ function attribute_print_form() {
           <td class="title"><?=$LANG->_('Default domain name')?></td>
           <td><?php echo pql_format_error_span($error[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")]); ?><input type="text" name="defaultdomain" value="<?=$defaultdomain?>" size="20"></td>
         </tr>
-<?php if(!function_exists("pql_control"))
-		require($_SESSION["path"]."/include/pql_control.inc");
+<?php if($_SESSION["USE_CONTROLS"]) {
+		if(!function_exists("pql_control"))
+		  require($_SESSION["path"]."/include/pql_control.inc");
 
-	  // Initiate a connection to the QmailLDAP/Controls DN
-	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+		// Initiate a connection to the QmailLDAP/Controls DN
+		$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		
-      // Get all QmailLDAP/Control hosts.
-      $result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
-                           '(&(cn=*)(objectclass=qmailControl))');
-      for($i=0; $i < count($result); $i++)
-        $hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
-
-	  if(is_array($hosts)) {
+		// Get all QmailLDAP/Control hosts.
+		$result = $_pql_control->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
+										'(&(cn=*)(objectclass=qmailControl))');
+		for($i=0; $i < count($result); $i++)
+		  $hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
+		
+		if(is_array($hosts)) {
 ?>
 
         <tr></tr>
@@ -95,8 +96,9 @@ function attribute_print_form() {
 <?php 		} ?>
           </td>
         </tr>
-<?php	} // if(is_array($hosts)) ?>
-
+<?php	} // if(is_array($hosts))
+      }
+?>
         <tr class="subtitle">
           <td colspan="2">
             <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_("If empty, \bremove\B ('unset') default domain name")?>
@@ -136,7 +138,7 @@ function attribute_save($type) {
   switch($type) {
   case "add":
   case "modify":
-	if(pql_modify_attribute($_REQUEST["domain"], $_REQUEST["attrib"], 1, $defaultdomain)) {
+	if(pql_modify_attribute($_REQUEST["domain"], $_REQUEST["attrib"], '', $defaultdomain)) {
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 								   array('what' => $LANG->_('Default domainname', 4),
 										 'new'  => $defaultdomain));

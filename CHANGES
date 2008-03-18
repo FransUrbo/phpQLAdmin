@@ -39,6 +39,8 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	    by using sprintf() like this: if("text" == sprintf("%s", 0).
 	  - If 'uid' is set and we're using that to reference users - Don't allow
 	    international characters.
+	  - Only show/offer domain replication (to QLC objects) if QMail-LDAP/Controls
+	    is enabled.
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
