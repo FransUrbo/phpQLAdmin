@@ -54,6 +54,7 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	  - Setup the Group DN after adding a user object in one of two ways:
 	    1. Known branch DN as suffix (NEW)
 	    2. Domain DN as suffix.
+	  - Include mailDirectory value as hidden input so that it survives to the save page.
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
