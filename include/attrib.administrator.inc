@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.71 2007-11-20 11:51:03 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.72 2008-03-18 23:24:49 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -54,7 +54,7 @@ function attribute_setup_aci($dn, $userdn, $action) {
 		//	$old_acis[?][RIGHTS][TARGET][?] == [children]
 		// Then the user we're giving admin access should be inserted in
 		//	$old_acis[?][SUBJECT]
-		for($i=0, $oid=0; $i < $old_acis["count"]; $i++, $oid++) {
+		for($i=1, $oid=0; $i < $old_acis["count"]; $i++, $oid++) {
 			// {{{ Generate a new ACI line (with updated OID number)
 			$line  = "$oid#";
 			$line .= $old_acis[$i]["SCOPE"]."#";
@@ -82,18 +82,18 @@ function attribute_setup_aci($dn, $userdn, $action) {
 			  if(!eregi('usertemplatename', $dn)) {
 				// (Re)create new ACI's.
 				if($old_acis[$i+1]["TYPE"] == "access-id") {
-					if((in_array('[entry]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) or in_array('[all]', $old_acis[$i+1]["RIGHTS"]["TARGET"])) and !$added_child) {
-						// Next ACI entry is an 'access-id/entry'. Put the 'access-id/children' here...
-						
-						$new_acis[]  = $line; $oid++;
-						for($j=0; $j < count($userdn); $j++) {
-						  $new_acis[]  = "$oid#entry#grant;w,r,s,c;[children]#access-id#".$userdn[$j];
-						  
-						  if($userdn[$j+1])
-							$oid++;
-						}
-						$added_child = 1;
-					} else
+//					if((in_array('[entry]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) or in_array('[all]', $old_acis[$i+1]["RIGHTS"]["TARGET"])) and !$added_child) {
+//						// Next ACI entry is an 'access-id/entry'. Put the 'access-id/children' here...
+//						
+//						$new_acis[]  = $line; $oid++;
+//						for($j=0; $j < count($userdn); $j++) {
+//						  $new_acis[]  = "$oid#entry#grant;w,r,s,c;[children]#access-id#".$userdn[$j];
+//						  
+//						  if($userdn[$j+1])
+//							$oid++;
+//						}
+//						$added_child = 1;
+//					} else
 					  $new_acis[] = $line;
 				} else
 				  $new_acis[] = $line;
