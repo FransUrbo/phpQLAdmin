@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.73 2007-09-13 18:12:38 turbo Exp $
+// $Id: pql_formating.inc,v 2.74 2008-03-18 22:31:21 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline, show_debug)
 // Create a LDIF object to print in case of error
@@ -27,16 +27,17 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0, $show_debug = 1
   elseif($entry["dn"])
 	$LDIF .= "dn: ".pql_maybe_decode($entry["dn"])."$nl\n";
   
+  if(ereg('_save', $func) or ereg('_add', $func))
+	$modify = 0;
+  else
+	$modify = 1;
+  
   if(is_array($entry)) {
 	foreach($entry as $key => $e) {
-	  if(ereg('_save', $func) or ereg('_add', $func))
-		$modify = 0;
-	  else
-		$modify = 1;
-
 	  if(is_array($entry[$key])) {
 		// ... in an array. Go through each one, creating the LDAP entry
 		if($func and $modify) {
+		  // ------------------------------------
 		  // MODIFY
 		  if($entry[$key]) {
 			if($command)
@@ -55,13 +56,16 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0, $show_debug = 1
 			$command = 1;
 		  }
 		} elseif($key != 'dn') {
+		  // ------------------------------------
 		  // We're (probably) ADDING an _object_. Print the values as is.
 		  foreach($entry[$key] as $x)
-			$LDIF .= "$key: ".pql_maybe_decode($x)."$nl\n";
+			$LDIF .= "$key: ".pql_maybe_encode($x, $key)."$nl\n";
 		}
 	  } else {
 		// ... not an array, create the LDAP entry
 		if($func and $modify) {
+		  // ------------------------------------
+		  // MODIFY
 		  if($entry[$key]) {
 			if($command)
 			  $LDIF .= "-\n";
@@ -78,8 +82,9 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0, $show_debug = 1
 			$command = 1;
 		  }
 		} elseif($key != 'dn') {
+		  // ------------------------------------
 		  // We're (probably) ADDING an _object_. Print the values as is.
-		  $LDIF .= "$key: ".pql_maybe_decode($entry[$key])."$nl\n";
+		  $LDIF .= "$key: ".pql_maybe_encode($entry[$key], $key)."$nl\n";
 		}
 	  }
 	}
@@ -1089,6 +1094,7 @@ function pql_format_international($string) {
   $new = strtr($string,
 			   "ÁÉÍÓÚÑÀÈÌÒÙÅÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùåäëïöüâêîôûç",
 			   "AEIOUNAEIOUAAEIOYAEIOUaeiounaeiouaaeioyaeiouc");
+
   return($new);
 }
 // }}}
@@ -1096,7 +1102,8 @@ function pql_format_international($string) {
 // {{{ pql_maybe_encode(string, attrib, linkid)
 // Check if we SHOULD encode the string...
 function pql_maybe_encode($string, $attrib = '', $linkid = '') {
-  $old = $string;
+  //$old = $string;
+  $old = utf8_decode($string);
   
   $new = pql_format_international($old);
   if($old != $new) {
@@ -1107,6 +1114,7 @@ function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 	  $ldap_attribs = pql_get_subschema("attributetypes");
 	  
 	  // Find the syntax for the attribute (or it's superior attribute)
+	  $syntax = '';
 	  if($ldap_attribs[$attrib]["SYNTAX"]) {
 		$syntax = $ldap_attribs[$attrib]["SYNTAX"];
 	  } else {
@@ -1117,32 +1125,35 @@ function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 		}
 	  }
 	  
-	  // Does this attribute allow a UTF-8 encoded string?
-	  // 1.3.6.1.4.1.1466.115.121.1.15	UTF-8 encoded string
-	  // 1.3.6.1.4.1.1466.115.121.1.41	? - not listed...
-	  //		Only attributes that uses .41 are:
-	  //		postalAddress, registeredAddress and homePostalAddress
-	  //		-> I hope that it's ok to UTF-8 encode these values.
-	  //		   The database (OpenLDAP 2.0) accepts it anyway.
-	  if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax) or
-		 eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.41', $syntax))
-		return(utf8_encode($string));
-	  else
-		// Oups, no! Replace any national character with it's
-		// international (ie US char) counter part...
+	  if($syntax) {
+		// Does this attribute allow a UTF-8 encoded string?
+		// 1.3.6.1.4.1.1466.115.121.1.15	UTF-8 encoded string
+		// 1.3.6.1.4.1.1466.115.121.1.41	? - not listed...
+		//		Only attributes that uses .41 are:
+		//		postalAddress, registeredAddress and homePostalAddress
+		//		-> I hope that it's ok to UTF-8 encode these values.
+		//		   The database (OpenLDAP 2.0) accepts it anyway.
+		if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax) or
+		   eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.41', $syntax))
+		  return(utf8_encode($old));
+		else
+		  // Oups, no! Replace any national character with it's
+		  // international (ie US char) counter part...
+		  return($new);
+	  } else
 		return($new);
 	} else
-	  return(utf8_encode($string));
+	  return(utf8_encode($old));
   }
   
-  return($string);
+  return($old);
 }
 // }}}
 
 // {{{ pql_maybe_decode(string)
 // Check if we SHOULD decode the string...
 function pql_maybe_decode($string) {
-  if(eregi("\=$", $string))
+  if(eregi("\=$", $string) and !eregi('^{', $string))
 	// It's a BASE64 string, decode it
 	$decoded = base64_decode($string);
   else

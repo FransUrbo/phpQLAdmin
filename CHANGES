@@ -42,6 +42,13 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	  - Only show/offer domain replication (to QLC objects) if QMail-LDAP/Controls
 	    is enabled.
 	  - Duplicate enclosing of password scheme.
+	  - Small changes to include/pql_formating.inc:pql_create_ldif()
+	    + Call pql_maybe_decode() with the attribute to be encodeded
+	      to make sure it's encoded correctly.
+	    + Documentation updates.
+	  - Fix include/pql_formating.inc:pql_maybe_encode(). First UTF-8 decode
+	    string, then check internationalization.
+	    + Return the 'new' value (w/o international characters) if UTF-8 isn't allowed.
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
