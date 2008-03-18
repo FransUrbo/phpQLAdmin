@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.236 2007-09-29 21:15:13 turbo Exp $
+// $Id: pql.inc,v 2.237 2008-03-18 23:19:37 turbo Exp $
 //
 
 // ----------------------------
@@ -631,7 +631,7 @@ class pql {
 
 	if(!eregi("^dNSTTL=", $dn))
 	  $dn = pql_maybe_encode(urldecode($dn));
-	
+
 	// Verify that the object have what it needs to be able to be added
 	$entry = pql_validate_object($dn, $entry, $type);
 
@@ -653,7 +653,7 @@ class pql {
 	  // Add this object to the database
 	  if(@$entry["dn"])
 		unset($entry["dn"]);
-	  
+
 	  if(!ldap_add($this->ldap_linkid, $dn, $entry)) {
 		// Failed!
 		
@@ -1158,9 +1158,9 @@ function pql_password_hash($password, $hash) {
   
   switch($hash) {
   case "{SSHA}":
-	// SHA1 hashing (salted)
+	// SHA256 hashing (salted)
 	if(function_exists("mhash"))
-	  return "{SSHA}" . base64_encode(mhash(MHASH_SHA1, $password, uniqid(microtime())));
+	  return "{SSHA}" . base64_encode(mhash(MHASH_SHA256, $password, uniqid(microtime())));
 	
   case "{SHA}":
 	// SHA1 hashing
