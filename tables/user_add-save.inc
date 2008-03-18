@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.54 2007-09-29 21:15:16 turbo Exp $
+// $Id: user_add-save.inc,v 1.55 2008-03-18 23:14:14 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -333,23 +333,31 @@ if(!empty($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["root
   die("I have no idea how to continue from here...");
 }
 
+if(pql_get_define("PQL_CONF_SUBTREE_USERS") and (!empty($_REQUEST["subbranch"]) and !eregi('^ou=', $_REQUEST["subbranch"]))) {
+  $userdn .= pql_get_define("PQL_CONF_SUBTREE_USERS").",";
+}
+
 if(!empty($_REQUEST["subbranch"])) {
-	if(eregi('^ou=', $_REQUEST["subbranch"]))
+	if(eregi('=', $_REQUEST["subbranch"]))
 	  $userdn .= urldecode($_REQUEST["subbranch"]);
 	else
 	  $userdn .= 'ou='.urldecode($_REQUEST["subbranch"].",".$_REQUEST["domain"]);
 } else { 
 	$userdn .= urldecode($_REQUEST["domain"]);
 }
-
-$userdn = pql_maybe_encode($userdn);
 // }}}
 
 // {{{ Add the user to the database
 // pql_user_add() will first URL encode the value, THEN UTF8 encode it
 // Hence, we must reverse this here ($_REQUEST["subbranch"] is already
 // URL decoded).
-$branch = pql_maybe_decode($_REQUEST["subbranch"]);
+if(!eregi('=', $_REQUEST["subbranch"])) {
+  // When there's multiple subbranches
+  $branch = 'ou='.pql_maybe_decode($_REQUEST["subbranch"]).','.$_REQUEST["domain"];
+} else {
+  // No subbranch
+  $branch = pql_maybe_decode($_REQUEST["subbranch"]);
+}
 $DNs = pql_user_add($_REQUEST["domain"], $userdn, $entry, 'user', $branch);
 if(!empty($DNs[0])) {
   // TODO: DNs[1] (the group object) might still be empty -> failed to add it.
