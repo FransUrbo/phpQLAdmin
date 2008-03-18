@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.48 2007-09-29 21:15:15 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.49 2008-03-18 23:11:29 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8" name="user_add">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -121,6 +121,17 @@
 																																																	
 <?php		  }
 			}
+		} elseif($_REQUEST["defaultpasswordscheme"]) {
+		  if(!@$_REQUEST["pwscheme"])
+			$_REQUEST["pwscheme"] = $schemes[0];
+		  else {
+			$schemes[0] = preg_replace('/\{/', '', $_REQUEST["pwscheme"]);
+			$schemes[0] = preg_replace('/\}/', '', $schemes[0]);
+		  }
+?>
+            <input type="radio" name="pwscheme" value="<?=$schemes[0]?>"><?=$schemes[0]?>
+            <input type="radio" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>" CHECKED><?=$_REQUEST["defaultpasswordscheme"]?>
+<?php
 		} else {
 		  if(!@$_REQUEST["pwscheme"])
 			$_REQUEST["pwscheme"] = $schemes[0];
@@ -387,26 +398,9 @@
 // }}}
 			} else {
 				// {{{ Only one subbranch
-				if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
-					$branch = pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"];
-					$branch = pql_format_urls($branch);
-					
-					// Just to make sure - does this subbranch exists?!
-					$xyz = $_pql->get_dn($branch, 'objectclass=*', 'BASE');
-					if(is_array($xyz)) {
-						// The object exists - we're not interested in the object
-						// itself, just that it exists (the array is initialized)...
-?>
-        <input type="hidden" name="subbranch" value="<?=$branch?>">
-<?php				} else { ?>
-        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
-<?php				}
-				} else {
 ?>
         <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
 <?php
-				}
-
 // }}}
 			}
 		} else {
@@ -545,6 +539,11 @@
 <?php } ?>
   </form>
 
+  <script language="JavaScript">
+    <!--
+    document.user_add.uid.focus();
+    // -->
+  </script>
 <?php
 /*
  * Local variables:
