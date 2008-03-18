@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.53 2007-09-29 21:15:14 turbo Exp $
+// $Id: pql_write.inc,v 2.54 2008-03-18 22:38:52 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -176,11 +176,14 @@ function pql_modify_attribute($dn, $attrib, $old, $new) {
 // Add a user to the LDAP database
 function pql_user_add($domain, $dn, $entry, $type, $branch) {
   global $_pql;
-  
+
+  if(pql_get_define("PQL_CONF_DEBUG_ME"))
+	echo "<b>pql_user_add('$domain', '$dn', '$entry', '$type', '$branch')</b><br>";
+
   // What's the Root DN (namingContexts) for this domain
   $rootdn = pql_get_rootdn($domain, 'pql_user_add');
   $rootdn = urldecode($rootdn);
-  
+
   // {{{ Setup the objectclasses
   if(empty($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")])) {
 	if($type == "group") {
@@ -265,8 +268,10 @@ function pql_user_add($domain, $dn, $entry, $type, $branch) {
 	  if(pql_get_define("PQL_CONF_SUBTREE_GROUPS"))
 		$subrdn = "," . pql_get_define("PQL_CONF_SUBTREE_GROUPS");
 	  
-	  $groupdn = pql_get_define("PQL_ATTR_CN")."=$rdnattr".$subrdn.','.urldecode($domain);
-	  
+	  if($branch)
+		$groupdn = pql_get_define("PQL_ATTR_CN")."=$rdnattr".$subrdn.','.$branch;
+	  else
+		$groupdn = pql_get_define("PQL_ATTR_CN")."=$rdnattr".$subrdn.','.urldecode($domain);
 	  // --------------------------
 	  if(!$_pql->add($groupdn, $entry, 'group', 'pql_user_add - group creation')) {
 		// failed to add user
