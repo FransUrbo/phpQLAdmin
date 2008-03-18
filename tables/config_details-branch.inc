@@ -268,6 +268,7 @@
 
 <?=pql_format_table_empty(2)?>
 
+<?php if($_SESSION["USE_CONTROLS"]) { ?>
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0); ?>
       <tr>
@@ -305,6 +306,7 @@
       </tr>
 
 <?=pql_format_table_empty(2)?>
+<?php } ?>
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0);
