@@ -49,6 +49,8 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	  - Fix include/pql_formating.inc:pql_maybe_encode(). First UTF-8 decode
 	    string, then check internationalization.
 	    + Return the 'new' value (w/o international characters) if UTF-8 isn't allowed.
+	  - Make sure that the LDAP linkid is availible in include/pql_search.inc:pql_validate_object()
+	    (it is used by pql_maybe_encode() called in the function).
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'

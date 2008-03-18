@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.73 2007-07-13 10:15:54 turbo Exp $
+// $Id: pql_search.inc,v 2.74 2008-03-18 22:34:24 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -411,6 +411,9 @@ function pql_validate_administrator($dn, $attrib, $admin) {
 // Returns a new, improved/correct object.
 // NOTE: $dn and $type is only used/needed for the ACI's...
 function pql_validate_object($dn, $object, $type) {
+  global $_pql;
+  $linkid = $_pql->ldap_linkid;
+
   // {{{ Encode values that needs to encoded and extract the object classes
   foreach($object as $key => $value) {
 	// Check if we have a MUST in the objectclasses choosen
@@ -427,7 +430,7 @@ function pql_validate_object($dn, $object, $type) {
 	  if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
 		// Remember the object class for later
 		$ocs[] = $value;
-	  else			
+	  else
 		$entry[$key] = pql_maybe_encode(trim($value), $key, $linkid);
 	}
   }
@@ -510,15 +513,15 @@ function pql_validate_object($dn, $object, $type) {
   // }}}
   
   // {{{ Go through each attribute, verifying that we have an object class for this.
-  foreach($object as $attrib => $value) {
-	$attrib = lc($attrib);
-	
+//  foreach($object as $attrib => $value) {
+//	$attrib = lc($attrib);
+//	
 //	if(!eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $attrib)) {
 //	  // This is a non-object class attribute
 //
 //	  // TODO: How do we check that this attribute have a object class specified in $entry!?
 //	}
-  }
+//  }
   // }}}
   
   // {{{ Add the OpenLDAPaci attribute (maybe)
