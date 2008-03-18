@@ -41,6 +41,7 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	    international characters.
 	  - Only show/offer domain replication (to QLC objects) if QMail-LDAP/Controls
 	    is enabled.
+	  - Duplicate enclosing of password scheme.
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'

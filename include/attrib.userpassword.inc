@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.42 2007-02-26 12:56:43 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.43 2008-03-18 22:18:43 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -96,7 +96,7 @@ function attribute_print_form() {
 	if($pw) {
 	  // Extract the scheme from the password field
 	  $tmp = split('}', $pw);
-	  $scheme = $tmp[0]."}";
+	  $scheme = preg_replace('/{/', '', $tmp[0]);
 	}
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
@@ -113,22 +113,22 @@ function attribute_print_form() {
 			$schemes = split(",", $passwordschemes);
 			foreach($schemes as $scheme) {
 ?>
-            <input type="radio" name="pwscheme" value="{<?=$scheme?>}" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
+            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 
 <?php		}
 		} elseif($passwordschemes) { ?>
             <?=$LANG->_('Scheme')?>: <b><?=$passwordschemes?></b>
-            <input type="hidden" name="pwscheme" value="{<?=$passwordschemes?>}">
+            <input type="hidden" name="pwscheme" value="<?=$passwordschemes?>">
 <?php	} else { ?>
             <input type="radio" name="pwscheme" value="<?=$scheme?>" CHECKED><?=$scheme?>
-            <input type="radio" name="pwscheme" value="{<?=$defaultpasswordscheme?>}"><?=$defaultpasswordscheme?>
+            <input type="radio" name="pwscheme" value="<?=$defaultpasswordscheme?>"><?=$defaultpasswordscheme?>
 <?php	} ?>
           </td>
         </tr>
 <?php } elseif($defaultpasswordscheme and !$principal) { ?>
-        <input type="hidden" name="pwscheme" value="{<?=$defaultpasswordscheme?>}">
+        <input type="hidden" name="pwscheme" value="<?=$defaultpasswordscheme?>">
 <?php } elseif($principal) { ?>
-        <input type="hidden" name="pwscheme" value="{KERBEROS}">
+        <input type="hidden" name="pwscheme" value="KERBEROS">
 <?php } ?>
 
 <?php if($principal) { ?>
