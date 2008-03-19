@@ -55,6 +55,13 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	    1. Known branch DN as suffix (NEW)
 	    2. Domain DN as suffix.
 	  - Include mailDirectory value as hidden input so that it survives to the save page.
+	  - Don't expect an array from get_attribute() in include/pql_write.inc:pql_user_del().
+	    + Get reference to/of user so that this can be used in the 'get group' filter.
+	      Don't just use uidNr and objectclass - not enough (might be multiple groups with
+	      the same gidNr - probably a fault but still).
+	    + Make sure there's only one user referencing the found group before deleting it.
+	    + Don't return false if the group failed to delete - this means we don't try to
+	      delete user and mail references (which is the main thing - group is secondary).
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'

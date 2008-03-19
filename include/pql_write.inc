@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.54 2008-03-18 22:38:52 turbo Exp $
+// $Id: pql_write.inc,v 2.55 2008-03-19 12:05:42 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -365,23 +365,34 @@ function pql_user_del($domain, $user, $delete_forwards) {
   
   // Get uidnr of user
   $uidnr = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_QMAILUID"));
-  $uidnr = $uidnr[0];
+  if(is_array($uidnr))
+	$uidnr = $uidnr[0];
+
+  // Get [reference] of user
+  $rootdn = pql_get_rootdn($domain, 'pql_user_del');
+  $ref = $_pql->get_attribute($user, pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn));
   
   // Delete the group object if it exists
   // TODO: Replace with '$_pql->search()'
-  $filter = "(&(".pql_get_define("PQL_ATTR_QMAILGID")."=$uidnr)(objectclass=posixGroup))";
+  $filter = "(&(".pql_get_define("PQL_ATTR_QMAILGID")."=$uidnr)(objectclass=posixGroup)(cn=$ref))";
   $sr = ldap_search($_pql->ldap_linkid, $domain, $filter);
   if(ldap_count_entries($_pql->ldap_linkid, $sr) > 0) {
 	$ed = ldap_first_entry($_pql->ldap_linkid, $sr);
 	$dn = ldap_get_dn($_pql->ldap_linkid, $ed);
-	
-	// delete the group
-	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
-	  echo "delete (group): '$dn'<br>";
-	  return TRUE;
-	} else {
-	  if(!$_pql->delete($dn))
-		return false;
+
+	// Find out if any other user have this gidNumber
+	$filter = "(&(".pql_get_define("PQL_ATTR_QMAILGID")."=$uidnr)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*))";
+	$sr = ldap_search($_pql->ldap_linkid, $domain, $filter);
+	if(ldap_count_entries($_pql->ldap_linkid, $sr) <= 1) {
+	  // Only one (or less) reference - delete the group.
+	  if(pql_get_define("PQL_CONF_DEBUG_ME"))
+		echo "delete (group): '$dn'<br>";
+	  else {
+		if(!$_pql->delete($dn)) {
+		  echo "<b>Failed to delete group</b>";
+		  pql_format_error(1);
+		}
+	  }
 	}
   }
 	
@@ -402,14 +413,16 @@ function pql_user_del($domain, $user, $delete_forwards) {
   }
   
   // Delete the user
-  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 	echo "delete (user): '$user'<br>";
-	return TRUE;
-  } else {
-	if(!$_pql->delete($user))
+  else {
+	if(!$_pql->delete($user)) {
+	  echo "<b>Failed to delete user</b>";
+	  pql_format_error(1);
 	  return false;
+	}
   }
-  
+
   // user entry has been removed -> remove the cached version
   $pql_cache->del($user);
   
@@ -426,6 +439,9 @@ function pql_user_del($domain, $user, $delete_forwards) {
 			// we found a forward -> remove it 
 			pql_modify_attribute($forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"), '',
 								 $fwd_addresses[$rem_key]);
+
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
+			  echo "removed reference from ".$forward['reference']."<br>";
 		  }
 		}
 	  }
