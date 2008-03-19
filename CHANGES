@@ -85,6 +85,7 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	  - Allow to disable 'Advanced mode' selector for specific user. Wanted by
 	    Ing. Fernando Villarreal - Silice S.A.
 	  - Add SSHA as password scheme.
+	  - Second option to pql_format_timestamp_human() - end time - is optional.
 
 phpQLAdmin 2.3.7 Release (May 10 2007)
 	Bug fixes

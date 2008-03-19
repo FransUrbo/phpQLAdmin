@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.74 2008-03-18 22:31:21 turbo Exp $
+// $Id: pql_formating.inc,v 2.75 2008-03-19 13:24:30 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline, show_debug)
 // Create a LDIF object to print in case of error
@@ -664,7 +664,7 @@ function pql_left_htmlify_userlist($rootdn, $domain, $subbranch, $users, &$links
 // }}}
 
 // {{{ pql_format_timestamp_human(beg, end)
-function pql_format_timestamp_human($beg, $end) {
+function pql_format_timestamp_human($beg, $end = NULL) {
   global $LANG;
   
   if($end)

@@ -1,6 +1,6 @@
 <?php
 // Plugin for the ppolicy overlay in OpenLDAP >v2.3
-// $Id: config_details-ppolicy.inc,v 1.3 2007-09-29 21:15:15 turbo Exp $
+// $Id: config_details-ppolicy.inc,v 1.4 2008-03-19 13:24:32 turbo Exp $
 require($_SESSION["path"]."/include/pql_ppolicy.inc");
 $ppolicies = pql_get_ppolicies();
 
@@ -51,7 +51,7 @@ $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('
 			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT_DURATION"))) or
 			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_FAILURE_COUNT_INTERVAL"))))
 			{
-			  $time = pql_format_timestamp_human($ppolicies[$i][$attrib], false);
+			  $time = pql_format_timestamp_human($ppolicies[$i][$attrib]);
 			  echo $time;
 			} else {
 			  echo $ppolicies[$i][$attrib];
