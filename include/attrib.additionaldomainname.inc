@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.39 2007-02-15 12:07:16 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.40 2008-03-19 12:17:49 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -176,7 +176,7 @@ function attribute_save($type) {
 	  
 	  // {{{ Update locals and/or rcptHosts
 	  // .. If control patch is enabled and we have decided to do auto replication
-	  if(pql_get_define("PQL_ATTR_CONTROL_USE")) {
+	  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		require($_SESSION["path"]."/include/pql_control.inc");
 		$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		

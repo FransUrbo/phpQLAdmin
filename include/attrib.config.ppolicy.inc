@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin/Password Policies - global entries
-// $Id: attrib.config.ppolicy.inc,v 2.4 2007-09-29 21:15:12 turbo Exp $
+// $Id: attrib.config.ppolicy.inc,v 2.5 2008-03-19 12:17:49 turbo Exp $
 
 // {{{ attribute_check_ppolicy(void)
 function attribute_check_ppolicy() {
@@ -172,7 +172,7 @@ function attribute_save_ppolicy() {
 	}
   }
 
-  if(pql_get_define("PQL_ATTR_ACI_USE") and function_exists("user_generate_aci")) {
+  if(pql_get_define("PQL_CONF_ACI_USE") and function_exists("user_generate_aci")) {
 	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($_SESSION["USER_DN"], 'ppolicy');
   }
   // }}}

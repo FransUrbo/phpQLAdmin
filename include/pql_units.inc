@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.26 2007-09-13 18:16:24 turbo Exp $
+// $Id: pql_units.inc,v 1.27 2008-03-19 12:17:50 turbo Exp $
 //
 
 // {{{ pql_unit_get(dn, filter)
@@ -75,7 +75,7 @@ function pql_unit_add($parentdn, $unit) {
   
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = "organizationalUnit";
 
-  if(pql_get_define("PQL_ATTR_ACI_USE") and function_exists("user_generate_aci")) {
+  if(pql_get_define("PQL_CONF_ACI_USE") and function_exists("user_generate_aci")) {
 	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($_SESSION["USER_DN"], 'unit');
   }
   

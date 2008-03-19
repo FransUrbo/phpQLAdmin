@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.26 2007-02-19 19:24:23 turbo Exp $
+// $Id: control_cat.php,v 2.27 2008-03-19 12:17:47 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -94,7 +94,7 @@ if($_REQUEST["ref"]) {
 	$buttons = $buttons + $new;
   }
 
-  if(pql_get_define("PQL_ATTR_BIND9_USE")) {
+  if(pql_get_define("PQL_CONF_BIND9_USE")) {
 	$new = array('dns' => 'DNS Administration');
 	$buttons = $buttons + $new;
   }

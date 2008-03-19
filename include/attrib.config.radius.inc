@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin/RADIUS Profiles - global entries
-// $Id: attrib.config.radius.inc,v 1.2 2007-09-29 21:15:12 turbo Exp $
+// $Id: attrib.config.radius.inc,v 1.3 2008-03-19 12:17:50 turbo Exp $
 
 // {{{ attribute_check_radprofile(void)
 function attribute_check_radprofile() {
@@ -168,7 +168,7 @@ function attribute_save_radprofile() {
 	}
   }
 
-  if(pql_get_define("PQL_ATTR_ACI_USE") and function_exists("user_generate_aci")) {
+  if(pql_get_define("PQL_CONF_ACI_USE") and function_exists("user_generate_aci")) {
 	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($_SESSION["USER_DN"], 'radius');
   }
 

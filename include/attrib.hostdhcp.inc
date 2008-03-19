@@ -1,6 +1,6 @@
 <?php
 // attribute for phpQLAdmin/Physical host IP address
-// $Id: attrib.hostdhcp.inc,v 2.3 2007-09-29 21:15:12 turbo Exp $
+// $Id: attrib.hostdhcp.inc,v 2.4 2008-03-19 12:17:50 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -183,7 +183,7 @@ function attribute_save($type) {
 	  if(pql_modify_attribute($_REQUEST["host"], $attrib, 1, $_REQUEST[$attrib])) {
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									 array('what' => $LANG->_('IP address')));
-		if(pql_get_define("PQL_ATTR_BIND9_USE") and ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_IPHOSTNUMBER")))) {
+		if(pql_get_define("PQL_CONF_BIND9_USE") and ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_IPHOSTNUMBER")))) {
 		  // TODO: Change a DNS record
 		  $x = 'x';
 		}

@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 2.9 2007-09-13 17:55:27 turbo Exp $
+// $Id: host_detail.php,v 2.10 2008-03-19 12:17:48 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -157,7 +157,7 @@ if(((($_REQUEST["server"] != 'Global') or (($_REQUEST["ref"] == 'physical') and 
 	$buttons = $buttons + $new;
   }				 
 
-  if(pql_get_define("PQL_ATTR_BIND9_USE") and ($_REQUEST["host"] == 'Global')) {
+  if(pql_get_define("PQL_CONF_BIND9_USE") and ($_REQUEST["host"] == 'Global')) {
 	$new = array('dns' => 'DNS Administration');
 	$buttons = $buttons + $new;
   }
