@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.42 2007-07-19 10:27:57 turbo Exp $
+// $Id: left-control.php,v 2.43 2008-03-19 12:10:47 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -365,7 +365,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 // }}}
 
 	  // {{{ Get all DNS domains in the system
-	  if(pql_get_define("PQL_ATTR_BIND9_USE") and ($physical_dn == 'Global')) {
+	  if(pql_get_define("PQL_CONF_BIND9_USE") and ($physical_dn == 'Global')) {
 		// {{{ ---------------- GET THE DOMAINS/BRANCHES
 		if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 		  // This is a 'super-admin'. Should be able to read EVERYTHING!

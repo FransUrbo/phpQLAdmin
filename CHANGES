@@ -62,6 +62,7 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	    + Make sure there's only one user referencing the found group before deleting it.
 	    + Don't return false if the group failed to delete - this means we don't try to
 	      delete user and mail references (which is the main thing - group is secondary).
+	  - Faulty use of pql_get_define("PQL_CONF_BIND9_USE") - was: PQL_ATTR_BIND9_USE.
 
  	GUI layout changes
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
