@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.237 2008-03-18 23:19:37 turbo Exp $
+// $Id: pql.inc,v 2.238 2008-03-19 00:12:44 turbo Exp $
 //
 
 // ----------------------------
@@ -631,7 +631,7 @@ class pql {
 
 	if(!eregi("^dNSTTL=", $dn))
 	  $dn = pql_maybe_encode(urldecode($dn));
-
+	
 	// Verify that the object have what it needs to be able to be added
 	$entry = pql_validate_object($dn, $entry, $type);
 
@@ -1099,12 +1099,21 @@ function pql_get_mx($domainname) {
 	if($_pql_control->ldap_linkid) {
 	  $filter = "(&(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_LOCALS")."=$domainname))";
 	  $info = $_pql_control->search($_SESSION["USER_SEARCH_DN_CTR"], $filter);
-	  for($i=0; $i < count($info); $i++) {
-		if($info[$i]["cn"]) {
-		  if(is_array($info[$i]["cn"]))
-			$mx["qlc"][] = $info[$i]["cn"][0];
+	  if($info[0]) {
+		for($i=0; $i < count($info); $i++) {
+		  if($info[$i]["cn"]) {
+			if(is_array($info[$i]["cn"]))
+			  $mx["qlc"][] = $info[$i]["cn"][0];
+			else
+			  $mx["qlc"][] = $info[$i]["cn"];
+		  }
+		}
+	  } elseif(is_array($info)) {
+		if($info["cn"]) {
+		  if(is_array($info["cn"]))
+			$mx["qlc"][] = $info["cn"][0];
 		  else
-			$mx["qlc"][] = $info[$i]["cn"];
+			$mx["qlc"][] = $info["cn"];
 		}
 	  }
 	  
