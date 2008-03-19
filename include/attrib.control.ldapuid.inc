@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.22 2007-02-15 12:07:33 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.23 2008-03-19 13:10:44 turbo Exp $
 
 // {{{ ldapuid_check(type)
 function ldapuid_check($type) {
@@ -57,7 +57,6 @@ function ldapuid_init($host) {
 	else
 	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = $_pql_control->get_attribute($host, $attrib);
-	}
 }
 // }}}
 
