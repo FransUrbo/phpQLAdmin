@@ -72,6 +72,7 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	  - Work on a RADIUS profile manager started.
 	    + Missing: Adding RADIUS profile object. Waiting for explanation of what the
 		       different attributes are for...
+	  - Translate queueLifeTime value from seconds to human readable.
 
  	Misc changes
 	  - Catch the '2.X' version (which is CVS - hopfully it's >2.4).

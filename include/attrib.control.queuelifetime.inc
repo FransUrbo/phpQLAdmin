@@ -2,7 +2,7 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.22 2007-02-15 12:08:04 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.23 2008-03-19 13:21:51 turbo Exp $
 
 // {{{ queuelifetime_check(type)
 function queuelifetime_check($type) {
@@ -48,13 +48,18 @@ function queuelifetime_print_view($host) {
 
 	// init data
 	queuelifetime_init($host);
+
+	if(!@$_REQUEST["queuelifetime"])
+	  $queuelifetime = pql_format_timestamp_human(604800);
+	else
+	  $queuelifetime = pql_format_timestamp_human($_REQUEST["queuelifetime"]);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">queuelifetime (<?=$LANG->_('Max lifetime of a message in queue')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Remain')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["queuelifetime"]) { echo $_REQUEST["queuelifetime"]; } else { echo $LANG->_('Default', 4).': 604800'; }?> <?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["queuelifetime"]) { echo $_REQUEST["queuelifetime"]; } else { echo $LANG->_('Default', 4).": $queuelifetime"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"></a></td>
       </tr>
     </th>
