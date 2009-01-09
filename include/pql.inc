@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.238 2008-03-19 00:12:44 turbo Exp $
+// $Id: pql.inc,v 2.239 2009-01-09 17:27:17 turbo Exp $
 //
 
 // ----------------------------
@@ -37,24 +37,18 @@ class pql {
   // {{{ string _find_base_option(attribute)
   function _find_base_option($attrib) {
 	$attrib = lc($attrib);
-	
-	$sr = @ldap_read($this->ldap_linkid, NULL, '(objectClass=*)', array($attrib));
-	if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
-	$entry = ldap_get_entries($this->ldap_linkid, $sr);
-	
-	// Build an array of base dn's. It's possible to have multiple in a database
-	for($i=0; $i < $entry["count"]; $i++) {
-	  if(is_array(@$entry[$i][$attrib])) {
-		for($j=0; $j < $entry[$i][$attrib]["count"]; $j++ )
-		  $val[] = urlencode(pql_maybe_encode($entry[$i][$attrib][$j], $attrib, $this->ldap_linkid));
-	  } elseif($entry[$i]["dn"]) {
-		$val[] = urlencode(pql_maybe_encode($entry[$i]["dn"], $attrib, $this->ldap_linkid));
-	  } else
-		$val[] = urlencode(pql_maybe_encode($entry[$i][$attrib][0], $attrib, $this->ldap_linkid));
-	  
+	$success = 0;
+
+	$entry = $this->search(NULL, '(objectClass=*)', 'BASE', 0, 1, 0);
+	if(is_array($entry[$attrib])) {
+	  for($i=0; $i < $entry[$attrib]["count"]; $i++)
+		$val[] = urlencode(pql_maybe_encode($entry[$attrib][$i], $attrib, $this->ldap_linkid));
+	  $success = 1;
+	} elseif(!empty($entry[$attrib])) {
+	  $val[] = urlencode(pql_maybe_encode($entry[$attrib], $attrib, $this->ldap_linkid));
 	  $success = 1;
 	}
-	
+
 	// If we got at least one DN, return the array. Else return false
 	if($success) {
 	  $new = NULL;
