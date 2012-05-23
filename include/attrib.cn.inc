@@ -118,7 +118,7 @@ function attribute_save($type) {
 		$givenname = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"));
 		if($givenname) {
 		  // Get first and last name from the 'CN'.
-		  $name = split(" ", $_REQUEST["cn"]);
+		  $name = explode(" ", $_REQUEST["cn"]);
 		  
 		  pql_modify_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $old, $name[0]);
 		}

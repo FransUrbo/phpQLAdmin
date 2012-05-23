@@ -15,7 +15,7 @@ function attribute_check($type) {
 	
 	// valid - A KERBEROS scheme is ALWAYS valid! We only check
 	// password validity if it ISN'T a kerberos scheme...
-	if(!eregi('KERBEROS', $_REQUEST["pwscheme"])) {
+	if(!preg_match('/KERBEROS/i', $_REQUEST["pwscheme"])) {
 		if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"]) and preg_match("/[^a-z0-9]/i", $_REQUEST["userpassword"])) {
 			$error["userpassword"] = $LANG->_('Invalid');
 			return false;
@@ -95,7 +95,7 @@ function attribute_print_form() {
 	$pw = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"));
 	if($pw) {
 	  // Extract the scheme from the password field
-	  $tmp = split('}', $pw);
+	  $tmp = explode('}', $pw);
 	  $scheme = preg_replace('/{/', '', $tmp[0]);
 	}
 ?>
@@ -108,9 +108,9 @@ function attribute_print_form() {
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
-<?php	if(eregi(',', $passwordschemes)) {
+<?php	if(preg_match('/,/', $passwordschemes)) {
 			// We got more than one password scheme...
-			$schemes = split(",", $passwordschemes);
+			$schemes = explode(",", $passwordschemes);
 			foreach($schemes as $scheme) {
 ?>
             <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
@@ -214,7 +214,7 @@ function attribute_save($type) {
 		  $objectclasses = array($objectclasses);
 
 		foreach($objectclasses as $oc) {
-		  if(eregi(pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS"), $oc))
+		  if(preg_match('/'.pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS").'/i', $oc))
 			$USER_IS_SAMBA = 1;
 		}
 		

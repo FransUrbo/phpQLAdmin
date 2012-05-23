@@ -216,7 +216,7 @@ function simscan_save($type, $host) {
 			// {{{ Make sure the QmailLDAP/Controls object contain the objectclass 'phpQLAdminMXHostAddition'.
 			$ocs = $_pql_control->get_attribute($host,
 									 pql_get_define("PQL_ATTR_OBJECTCLASS"));
-			if((!is_array($ocs) and !eregi('phpQLAdminMXHostAddition', $ocs)) or
+			if((!is_array($ocs) and !preg_match('/phpQLAdminMXHostAddition/i', $ocs)) or
 			   (is_array($ocs) and !in_array('phpQLAdminMXHostAddition', $ocs)))
 			  $add_oc = 1;
 

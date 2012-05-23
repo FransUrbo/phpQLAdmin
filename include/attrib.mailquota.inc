@@ -71,7 +71,7 @@ function attribute_init() {
 	  // Get default quota from domain
 	  $quota = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEQUOTA"));
 	  if($quota) {
-		$tmp = split(',', $quota);
+		$tmp = explode(',', $quota);
 		$_REQUEST["maxsize"] = $tmp[0];
 		$_REQUEST["maxmails"] = $tmp[1];
 

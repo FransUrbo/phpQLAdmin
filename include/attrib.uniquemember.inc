@@ -57,7 +57,7 @@ function attribute_print_form() {
 
 	foreach($domains as $key => $domain) {
 	  // Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
-	  $d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
+	  $d = explode(',', $domain); $d = explode('=', $d[0]); $d = $d[1];
 
 	  // Get root DN of domain/branch
 	  $rootdn = pql_get_rootdn($domain);

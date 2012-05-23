@@ -32,7 +32,7 @@ function attribute_print_form() {
   if($_REQUEST[$attrib]) {
     $_REQUEST["oldvalue"] = $_REQUEST[$attrib];
 
-	$tmp = split(' ', $_REQUEST[$attrib]);
+	$tmp = explode(' ', $_REQUEST[$attrib]);
 
 	$_REQUEST[$attrib] = $tmp[0];
 	$_REQUEST[$attrib."_value"] = $tmp[1];

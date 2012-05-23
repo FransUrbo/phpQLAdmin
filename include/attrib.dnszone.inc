@@ -75,7 +75,7 @@ function attribute_print_form() {
 		$_REQUEST["oldvalue"] = $_pql->get_attribute($dn, $attrib);
 		if(is_array($_REQUEST["oldvalue"])) {
 		  for($i=0; $i < count($_REQUEST["oldvalue"]); $i++) {
-			if(@eregi($type_value, $_REQUEST["oldvalue"][$i]))
+			if(@preg_match("/$type_value/i", $_REQUEST["oldvalue"][$i]))
 			  $oldvalue = $_REQUEST["oldvalue"][$i];
 		  }
 
@@ -86,7 +86,7 @@ function attribute_print_form() {
 
 	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) {
 		if($_REQUEST["oldvalue"]) {
-			$tmp  = split(' ', $_REQUEST["oldvalue"]);
+			$tmp  = explode(' ', $_REQUEST["oldvalue"]);
 			$prio = $tmp[0];
 			$_REQUEST["oldvalue"] = $tmp[1];
 		} else
@@ -277,7 +277,7 @@ function attribute_save($action) {
 	// }}}
 
 	// {{{ Recreate a new DN for pql_bind9_update_serial() below.
-	$dn_parts = split(',', $dn);
+	$dn_parts = explode(',', $dn);
 	for($i=1; $i < count($dn_parts); $i++) {
 	  $newdn .= $dn_parts[$i];
 	  if($dn_parts[$i+1])
@@ -444,7 +444,7 @@ function attribute_save($action) {
 //				  for($j=0; $old[$j]; $j++) {
 //					if($attribs[$k] == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"))) {
 //					  // Split the value to get ip:port
-//					  $tmp = split(':', $old[$j]);
+//					  $tmp = explode(':', $old[$j]);
 //					  
 //					  if($tmp[0] != $oldvalue)
 //						// Add old value (in LDAP) != old value (from form)
@@ -466,7 +466,7 @@ function attribute_save($action) {
 				} else {
 				  // Split the value to get ip:port
 				  if($attribs[$k] == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"))) {
-					$tmp = split(':', $old);
+					$tmp = explode(':', $old);
 					$new = $_REQUEST["newvalue"].":".$tmp[1];
 				  } elseif($attribs[$k] == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"))) {
 					// Objects have this as DN. Do a modrdn!
@@ -504,7 +504,7 @@ function attribute_save($action) {
 		}
 		// }}}
 
-		if(($attrib == 'dnsttl') and eregi('^dnsttl', $dn)) {
+		if(($attrib == 'dnsttl') and preg_match('/^dnsttl/i', $dn)) {
 		  // The DN is encoded with the dNSTTL value, so that must be changed as well!
 		  // dNSTTL=3600+relativeDomainName=@
 		  // =>
@@ -631,7 +631,7 @@ function attribute_save($action) {
 			  // No more oldvalues - remove the whole object
 
 			  // Extact the host part of the DN
-			  $host = split(',', $dn); $host = split('=', $host[0]); $host = $host[1];
+			  $host = explode(',', $dn); $host = explode('=', $host[0]); $host = $host[1];
 
 			  if($_pql->delete($dn)) {
 				$success = 1;
@@ -650,7 +650,7 @@ function attribute_save($action) {
 			pql_format_error(1);
 
 		  // Extact the host part of the DN
-		  $host = split(',', $dn); $host = split('=', $host[0]); $host = $host[1];
+		  $host = explode(',', $dn); $host = explode('=', $host[0]); $host = $host[1];
 
 		  if($success) {
 			$msg = pql_complete_constant($LANG->_('Successfully removed %value%'),

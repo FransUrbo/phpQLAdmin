@@ -29,14 +29,14 @@ function pql_unit_get($dn, $filter = 1) {
   for($i=0; $i < count($subd); $i++) {
 	if($filter) {
 	  // Filter out the most obvious subbranches we don't put users in...
-	  if(!eregi('qmail',  		$subd[$i]) and
-		 !eregi('auto\.', 		$subd[$i]) and
-		 !eregi('mailinglists',	$subd[$i]) and
-		 !eregi('templates',	$subd[$i]) and
-		 !(pql_get_define("PQL_CONF_SUBTREE_GROUPS")	and eregi(pql_get_define("PQL_CONF_SUBTREE_GROUPS"),	$subd[$i])) and
-		 !(pql_get_define("PQL_CONF_SUBTREE_BIND9")		and eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9"),		$subd[$i])) and
-		 !(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")	and eregi(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"),	$subd[$i])) and
-		 !(pql_get_define("PQL_CONF_SUBTREE_PPOLICY")	and eregi(pql_get_define("PQL_CONF_SUBTREE_PPOLICY"),	$subd[$i])))
+	  if(!preg_match('/qmail/i',  		$subd[$i]) and
+		 !preg_match('/auto\./i', 		$subd[$i]) and
+		 !preg_match('/mailinglists/i',	$subd[$i]) and
+		 !preg_match('/templates/i',	$subd[$i]) and
+		 !(pql_get_define("PQL_CONF_SUBTREE_GROUPS")	and preg_match('/'.pql_get_define("PQL_CONF_SUBTREE_GROUPS").'/i',	$subd[$i])) and
+		 !(pql_get_define("PQL_CONF_SUBTREE_BIND9")		and preg_match('/'.pql_get_define("PQL_CONF_SUBTREE_BIND9").'/i',	$subd[$i])) and
+		 !(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")	and preg_match('/'.pql_get_define("PQL_CONF_SUBTREE_SUDOERS").'/i',	$subd[$i])) and
+		 !(pql_get_define("PQL_CONF_SUBTREE_PPOLICY")	and preg_match('/'.pql_get_define("PQL_CONF_SUBTREE_PPOLICY").'/i',	$subd[$i])))
 		$branches[] = $subd[$i];
 	} else
 	  $branches[] = $info[$i];
@@ -63,8 +63,8 @@ function pql_unit_add($parentdn, $unit) {
 	return false;
   }
   
-  if(ereg('=', $unit)) {
-	$tmp = split('=', $unit);
+  if(preg_match('/=/', $unit)) {
+	$tmp = explode('=', $unit);
 	
 	$dn = $tmp[0]."=".$tmp[1].",$parentdn";
 	$entry[$tmp[0]] = $tmp[1];

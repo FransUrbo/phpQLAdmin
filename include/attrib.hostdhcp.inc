@@ -63,7 +63,7 @@ function attribute_print_form() {
 	$domains = pql_uniq($domains);
 	foreach($domains as $domain) {
 	  // Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
-	  $d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
+	  $d = explode(',', $domain); $d = explode('=', $d[0]); $d = $d[1];
 
 	  $configs = pql_dhcp3_get_configs($domain);
 	  if(is_array($configs)) {

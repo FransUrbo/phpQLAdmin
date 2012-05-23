@@ -142,7 +142,7 @@ class ezmlm {
 				for($i=0; $i < count($regexp); $i++) {
 				  $lookfor = $dir.'.*/'.$base.$regexp[$i];
 				  
-				  if(ereg($lookfor, $out[$j]))
+				  if(preg_match("/$lookfor/", $out[$j]))
 					$entries[] = $out[$j];
 				}
 			  }
@@ -165,7 +165,7 @@ class ezmlm {
 				for($i=0; $i < count($regexp); $i++) {
 					$lookfor = $dir.'.*/'.$base.$regexp[$i];
 
-					if(ereg($lookfor, $target)) {
+					if(preg_match("/$lookfor/", $target)) {
 						$entries[] = $target;
 					}
 				}
@@ -183,7 +183,7 @@ class ezmlm {
 	// load list of mailinglists in directory
 	function _readlists($loadtexts = 0) {
 	  if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
-		if(! ereg("/$", $user_home))
+		if(! preg_match("/\/$/", $user_home))
 		  $list_path = ($this->user_home.'\\*');
 		else
 		  $list_path = ($this->user_home.'/\\*');
@@ -261,7 +261,7 @@ class ezmlm {
 	function _readlistconfiguration($list, &$configuration, $loadtexts) {
 		$configuration["name"] = $list;
 
-		if(!ereg("/$", $this->user_home))
+		if(!preg_match("/\/$/", $this->user_home))
 		  $list_path = ($this->user_home.$list);
 		else
 		  $list_path = ($this->user_home."/$list");
@@ -400,7 +400,7 @@ class ezmlm {
 			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 
-			if(eregi('No such file or directory', $out[0])) {
+			if(preg_match('/No such file or directory/i', $out[0])) {
 			  unset($out); unset($res);
 			} else {
 			  unset($out); unset($res);
@@ -581,7 +581,7 @@ class ezmlm {
 		
 		$this->user_name = $user_name;
 
-		if(! ereg("/$", $user_home))
+		if(! preg_match("/\/$/", $user_home))
 		  $this->user_home = $user_home."/mailinglists/";
 		else
 		  $this->user_home = $user_home."mailinglists/";
@@ -711,7 +711,7 @@ class ezmlm {
 			}
 
 			if($dot_home) {
-				if(! ereg("/$", $dot_home))
+				if(! preg_match("/\/$/", $dot_home))
 				  $dotpath  = $dot_home . "/.qmail-" . $listname;
 				else
 				  $dotpath  = $dot_home . ".qmail-" . $listname;
@@ -922,14 +922,14 @@ class ezmlm {
 			$domain     = $this->mailing_lists[$listname]["host"];
 			$listname	= $this->mailing_lists[$listname]["name"];
 
-			if(!ereg("/$", $this->mailing_lists[$listname]["directory"]))
+			if(!preg_match("/\/$/", $this->mailing_lists[$listname]["directory"]))
 			  $listpath	= $this->mailing_lists[$listname]["directory"] . "/" . $listname;
 			else
 			  $listpath	= $this->mailing_lists[$listname]["directory"] . $listname;
 		} elseif(!empty($this->mailing_lists)) {
 			$domain     = $this->mailing_lists[0]["host"];
 
-			if(!ereg("/$", $this->user_home))
+			if(!preg_match("/\/$/", $this->user_home))
 			  $listpath	= $this->user_home . "/" . $listname;
 			else
 			  $listpath	= $this->user_home . $listname;

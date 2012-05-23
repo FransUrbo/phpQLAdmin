@@ -58,8 +58,8 @@ class pql_lang {
 	// Get default language from browser
 	function _get_browser_language() {
         $server_langs = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
-        $server_langs = split(';', $server_langs);
-        $langs		  = split(',', $server_langs[0]);
+        $server_langs = explode(';', $server_langs);
+        $langs		  = explode(',', $server_langs[0]);
 
         foreach($langs as $key => $value) {
 			if(preg_match("/(.*?)-.*/", $value))

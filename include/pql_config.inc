@@ -16,7 +16,7 @@ require($_SESSION["path"]."/include/pql_units.inc");			// Sub branch API
 // {{{ Start profiling - what time is it now?
 if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
   $now = pql_format_return_unixtime();
-  if(!eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+  if(!preg_match('/index2\.php$/i', $_SERVER["SCRIPT_FILENAME"]))
 	echo "Now: <b>$now</b><br>";
   $start = $now;
 }
@@ -52,7 +52,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	  $define .= ":".$dn;
 
 	// Cache this...
-	if(ereg('^PQL_CONF_', $define))
+	if(preg_match('/^PQL_CONF_/', $define))
 	  // Only use the defines cache for config values
 	  $pql_defines->add($define, $value);
 	else
@@ -66,13 +66,13 @@ function pql_get_define($define, $dn = NULL) {
 
 	if($dn) {
 	  $dn = pql_format_normalize_dn($dn);
-	  if(ereg('^PQL_CONF_', $define))
+	  if(preg_match('/^PQL_CONF_/', $define))
 		$value = $pql_defines->get($define.":".$dn);
 	  else
 		$value = $pql_cache->get($define.":".$dn);
 	} else {
 	  // Not called with a DN
-	  if(ereg('^PQL_CONF_', $define))
+	  if(preg_match('/^PQL_CONF_/', $define))
 		$value = $pql_defines->get($define);
 	  else
 		$value = $pql_cache->get($define);
@@ -84,7 +84,7 @@ function pql_get_define($define, $dn = NULL) {
 
 // ----------------------------
 // 1. Load site specific configuration
-if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"])) {
+if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !preg_match('/index2\.php$/i', $_SERVER["SCRIPT_FILENAME"])) {
   echo "<b>*</b> Loading base config<br>\n";
 }
 require($_SESSION["path"]."/include/config.inc");
@@ -94,11 +94,11 @@ require($_SESSION["path"]."/include/config_attributes.inc");
 
 // Get the LDAP host and port
 if(empty($_SESSION["USER_HOST"]) or ($_SESSION["USER_HOST"] == ';;')) {
-  if(! eregi('\+', pql_get_define("PQL_CONF_HOST")))
-	$host = split(';', pql_get_define("PQL_CONF_HOST"));
+  if(! preg_match('/\+/i', pql_get_define("PQL_CONF_HOST")))
+	$host = explode(';', pql_get_define("PQL_CONF_HOST"));
   else {
-	$tmp  = split('\+', pql_get_define("PQL_CONF_HOST"));
-	$host = split(';', $tmp[0]);
+	$tmp  = explode('\+', pql_get_define("PQL_CONF_HOST"));
+	$host = explode(';', $tmp[0]);
 
 	unset($tmp);
   }
@@ -136,14 +136,14 @@ foreach($_pql->ldap_basedn as $dn)  {
   
   // 3a. Load 'resonable defaults' for this top DN
   $_SESSION["loading_resonable_defaults"] = 1;
-  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !preg_match('/index2\.php$/i', $_SERVER["SCRIPT_FILENAME"]))
 	echo "<br>\n<b>*</b> Loading 'resonable defaults'<br>\n";
   require($_SESSION["path"]."/include/defaults.inc");
-  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !preg_match('/index2\.php$/i', $_SERVER["SCRIPT_FILENAME"]))
 	echo "</b>";
   unset($_SESSION["loading_resonable_defaults"]);
 
-  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !preg_match('/index2\.php$/i', $_SERVER["SCRIPT_FILENAME"]))
 	echo "<br>\n<b>*</b> Go through DN: '$dn'<br>\n";
 
   if(@(is_array($_SESSION["BASE_DN"]) and !in_array($dn, $_SESSION["BASE_DN"])) or !@$_SESSION["BASE_DN"])

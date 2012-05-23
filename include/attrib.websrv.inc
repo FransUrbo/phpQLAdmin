@@ -129,7 +129,7 @@ function attribute_save($action) {
 
 	  case "mod":
 		// {{{ Modify a avalue
-		if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER"))) and eregi('^ldapi', $_REQUEST[$attrib])) {
+		if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER"))) and preg_match('/^ldapi/i', $_REQUEST[$attrib])) {
 			// It is an LDAP URI - urlencode.
 			
 			// Extract the path 

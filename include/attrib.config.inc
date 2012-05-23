@@ -156,7 +156,7 @@ function attribute_print_form() {
           <td class="<?=pql_format_table(1)?>">
 <?php		for($i=0; $dns[$i]; $i++) {
 			  echo '            <input type="radio" name="radius_identity_dn" value="'.$dns[$i].'"';
-			  if(!$checked and (($dns[$i] == $oldvalue) or eregi('radius', $dns[$i]))) {
+			  if(!$checked and (($dns[$i] == $oldvalue) or preg_match('/radius/i', $dns[$i]))) {
 				$checked = 1;
 				echo " CHECKED";
 			  }
@@ -235,7 +235,7 @@ function attribute_print_form() {
 					break;
 				  
 				  foreach($existing as $e) {
-					if((($e == $key) or eregi('phpQLAdmin', $key)) and !$gotit) {
+					if((($e == $key) or preg_match('/phpQLAdmin/i', $key)) and !$gotit) {
 					  $print = 0; $gotit = 1;
 					}
 				  }
@@ -313,7 +313,7 @@ function attribute_print_form() {
 ?>
           <td>
 <?php			for($i=0, $j=0; $i < count($values); $i++) {
-				  if(!eregi($values[$i], pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
+				  if(!preg_match('/'.$values[$i].'/i', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
 					// We don't want to include schemes we've already
 					// configured branch to use...
 ?>
@@ -421,9 +421,9 @@ function attribute_save() {
 
 	// Reverse state
 	pql_format_bool($oldvalue);
-	if(($oldvalue == 1) or eregi('^true$', $oldvalue))
+	if(($oldvalue == 1) or preg_match('/^true$/i', $oldvalue))
 	  $entry[$attrib][] = 'FALSE';
-	elseif(($oldvalue == 0) or empty($oldvalue) or eregi('^false$', $oldvalue))
+	elseif(($oldvalue == 0) or empty($oldvalue) or preg_match('/^false$/i', $oldvalue))
 	  $entry[$attrib][] = 'TRUE';
 	// }}}
   } elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_USER"))) or
@@ -445,7 +445,7 @@ function attribute_save() {
 
 	  for($i=0; $i < count($oldvalue); $i++) {
 		if($action == 'del') {
-		  if(!eregi($attrib_val, $oldvalue[$i]))
+		  if(!preg_match("/$attrib_val/i", $oldvalue[$i]))
 			$entry[$attrib][] = $oldvalue[$i];
 		} else
 		  $entry[$attrib][] = $oldvalue[$i];

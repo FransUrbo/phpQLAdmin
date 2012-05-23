@@ -223,7 +223,7 @@ function pql_user_add($domain, $dn, $entry, $type, $branch) {
 		$ou_rdn .= pql_get_define("PQL_CONF_SUBTREE_USERS").",".urldecode($domain);
 	  $ou_rdn = pql_maybe_encode($ou_rdn);
 	  
-	  $reg = split("=", pql_get_define("PQL_CONF_SUBTREE_USERS"));
+	  $reg = explode("=", pql_get_define("PQL_CONF_SUBTREE_USERS"));
 	  $ou_entry[$reg[0]] = $reg[1];
 	  $ou_entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'organizationalUnit';
 	  
@@ -461,13 +461,13 @@ function pql_domain_del($domain, $delete_forwards) {
   $domain = pql_format_normalize_dn($domain);
   
   // {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
-  if(eregi("^dNSTTL=", $domain))
+  if(preg_match("/^dNSTTL=/i", $domain))
 	// 'dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE'
 	$domain = pql_recreate_dnsttl($domain);
   // }}}
   
   // {{{ Make sure that the logged in user isn't located under the domain/branch being deleted...
-  if(eregi($domain, $_SESSION["USER_DN"])) {
+  if(preg_match("/$domain/i", $_SESSION["USER_DN"])) {
 	$msg = urlencode(pql_format_error_span("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
 	pql_header("domain_detail.php?domain=$domain&msg=$msg");
   }

@@ -79,7 +79,7 @@ function attribute_setup_aci($dn, $userdn, $action) {
 
 			if($action == 'add') {
 			  // {{{ We're adding an administrator - add the user DN(s) to the '[entry]' ACI list as well.
-			  if(!eregi('usertemplatename', $dn)) {
+			  if(!preg_match('/usertemplatename/i', $dn)) {
 				// (Re)create new ACI's.
 				if($old_acis[$i+1]["TYPE"] == "access-id") {
 //					if((in_array('[entry]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) or in_array('[all]', $old_acis[$i+1]["RIGHTS"]["TARGET"])) and !$added_child) {
@@ -130,7 +130,7 @@ function attribute_setup_aci($dn, $userdn, $action) {
 			}
 			
 			if($add_user) {
-			  if(eregi('usertemplatename', $dn))
+			  if(preg_match('/usertemplatename/i', $dn))
 				$new_acis[] = "$oid#entry#grant;r,s,c;[all]#access-id#".$userdn[$j];
 			  else
 				$new_acis[] = "$oid#entry#grant;w,r,s,c;[all]#access-id#".$userdn[$j];
@@ -263,7 +263,7 @@ function attribute_print_form($action) {
 			if(isset($domains)) {
 				foreach($domains as $key => $domain) {
 					// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
-					$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
+					$d = explode(',', $domain); $d = explode('=', $d[0]); $d = $d[1];
 
 					// Create a user search filter
 					if(pql_get_define("PQL_CONF_USER_FILTER", $_REQUEST["rootdn"]))
@@ -453,11 +453,11 @@ function attribute_save($type) {
 	  foreach($admins as $dn => $adm) {
 		if(is_array($adm)) {
 		  for($i=0; $adm[$i]; $i++) {
-			if(!eregi($value, $adm[$i]))
+			if(!preg_match("/$value/i", $adm[$i]))
 			  $adms[$dn][] = $adm[$i];
 		  }
 		} else {
-		  if(!eregi($value, $adm))
+		  if(!preg_match("/$value/i", $adm))
 			$adms[$dn][] = $adm;
 		}
 	  }
@@ -612,7 +612,8 @@ function attribute_save($type) {
 			  //	* The current branch is a DNS branch
 			  //	* The user is DNS admin for this domain/branch
 			  if(pql_get_define("PQL_CONF_BIND9_USE") and
-				 eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9").',', $branches[$i]) and
+				 $match = pql_get_define("PQL_CONF_SUBTREE_BIND9").',';
+				 preg_match("/$match/i", $branches[$i]) and
 				 pql_validate_administrator($_REQUEST["branchdn"],
 											pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $value))
 				$skip = 1;
@@ -624,7 +625,8 @@ function attribute_save($type) {
 			  //	* The current branch is a webserver branch	Q: Now do I know that?!
 			  //	* The user is web server admin for this domain/branch
 			  //if(!$skip and pql_get_define("PQL_CONF_WEBSRV_USE") and
-			  // eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9").',', $branches[$i]) and
+			  // $match = pql_get_define("PQL_CONF_SUBTREE_BIND9").',';
+			  // preg_match("/$match/i", $branches[$i]) and
 			  // pql_validate_administrator($_REQUEST["branchdn"],
 			  //							pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $value))
 			  //$skip = 1;
@@ -743,7 +745,7 @@ function attribute_save($type) {
 				  pql_modify_attribute($objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 
 				  if(($_REQUEST["branchdn"] == "superadmin") and
-					 eregi('^'.pql_get_define("PQL_ATTR_OU").'=Computers,', $objects[$i]))
+					 preg_match('/^'.pql_get_define("PQL_ATTR_OU").'=Computers,/i', $objects[$i]))
 				  {
 					// This so that we don't add new ACI's to the 'ou=Computers,<rootdn>' object
 					// for each and every entry in $DN!
@@ -812,7 +814,7 @@ function attribute_save($type) {
 				  pql_modify_attribute($objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 
 				  if(($_REQUEST["branchdn"] == "superadmin") and
-					 eregi('^'.pql_get_define("PQL_ATTR_OU").'=Computers,', $objects[$i]))
+					 preg_match('/^'.pql_get_define("PQL_ATTR_OU").'=Computers,/i', $objects[$i]))
 				  {
 					// This so that we don't add new ACI's to the 'ou=Computers,<rootdn>' object
 					// for each and every entry in $DN!

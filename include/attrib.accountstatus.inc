@@ -44,7 +44,7 @@ function attribute_check($type) {
 		// Convert the YYYY.MM.DD date to UNIX std time (sec from 1 Jan 1970)
 		$_REQUEST["date"] = date("U", mktime(0,0,0,$month,$day,$year));
 		// Get 'days from Jan 1, 1970' which is the correct integer for shadowExpire
-		$_REQUEST["days"] = split('\.', $_REQUEST["date"] / (60 * 60 * 24));
+		$_REQUEST["days"] = explode('\.', $_REQUEST["date"] / (60 * 60 * 24));
 		$_REQUEST["days"] = $_REQUEST["days"][0];
 
 		if($_REQUEST["days"]) {

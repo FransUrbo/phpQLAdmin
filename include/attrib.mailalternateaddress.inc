@@ -15,7 +15,7 @@ function attribute_check($type) {
     }
     
 	// Build the COMPLETE email address
-	if(! ereg("@", $_REQUEST[$attrib])) {
+	if(! preg_match("/@/", $_REQUEST[$attrib])) {
 		if($_REQUEST["email_domain"])
 		  $_REQUEST[$attrib] = $_REQUEST[$attrib] . "@" . $_REQUEST["email_domain"];
 		elseif($_REQUEST["defaultdomain"])
@@ -29,7 +29,7 @@ function attribute_check($type) {
     }
     
     // if type is modify, check existance of old value, else the new one
-	if(!eregi('^rfc822', $attrib)) {
+	if(!preg_match('/^rfc822/i', $attrib)) {
 		if($type == "add") {
 			// add
 			if(pql_email_exists($_REQUEST[$attrib])) {
@@ -68,11 +68,11 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
 <?php
-	if(eregi('^rfc822member', $attrib)) {
+	if(preg_match('/^rfc822member/i', $attrib)) {
 		echo $LANG->_('Add subscriber address');
-	} elseif(eregi('^rfc822sender', $attrib)) {
+	} elseif(preg_match('/^rfc822sender/i', $attrib)) {
 		echo $LANG->_('Add allowed sender address');
-	} elseif(eregi('^rfc822moderator', $attrib)) {
+	} elseif(preg_match('/^rfc822moderator/i', $attrib)) {
 		echo $LANG->_('Add moderator address');
 	} else {
         if($_REQUEST["oldvalue"] == "") {
@@ -96,7 +96,7 @@ function attribute_print_form() {
         <td class="title"><?=$LANG->_('Email')?></td>
         <td>
           <?php echo pql_format_error_span($error[$attrib]); ?>
-<?php	if(!eregi('^rfc822', $attrib)) { ?>
+<?php	if(!preg_match('/^rfc822/i', $attrib)) { ?>
           <input type="text" name="<?=$attrib?>" value="">
 <?php	 	if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
@@ -117,7 +117,7 @@ function attribute_print_form() {
 
       <tr class="subtitle">
         <td colspan="2">
-<?php if(!eregi('^rfc822', $attrib)) { ?>
+<?php if(!preg_match('/^rfc822/i', $attrib)) { ?>
           <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('An alias must be unique to the domain')?></td>
 <?php } ?>
       </tr>
@@ -146,7 +146,7 @@ function attribute_save($type) {
     switch($type) {
       case "add":
 		if(pql_modify_attribute(urldecode($_REQUEST["user"]), $attrib, '', $_REQUEST[$attrib])) {
-			$tmp  = split('@', $_REQUEST[$attrib]);
+			$tmp  = explode('@', $_REQUEST[$attrib]);
 			$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 
 			$msg = pql_complete_constant($LANG->_('Successfully added %what% %new%'),
@@ -175,7 +175,7 @@ function attribute_save($type) {
 		
 		if(pql_modify_attribute(urldecode($_REQUEST["user"]), $attrib,
 									$_REQUEST["oldvalue"], $_REQUEST[$attrib])) {
-			$tmp  = split('@', $_REQUEST[$attrib]);
+			$tmp  = explode('@', $_REQUEST[$attrib]);
 			$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
@@ -210,7 +210,7 @@ function attribute_save($type) {
 
 		// Delete value from old values
 		foreach($OLD[$attrib] as $value) {
-			if(!eregi($_REQUEST[$attrib], $value))
+			if(!preg_match('/'.$_REQUEST[$attrib].'/i', $value))
 			  $values[] = $value;
 		}
 		$OLD[$attrib] = $values;

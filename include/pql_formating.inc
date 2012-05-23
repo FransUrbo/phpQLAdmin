@@ -27,7 +27,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0, $show_debug = 1
   elseif($entry["dn"])
 	$LDIF .= "dn: ".pql_maybe_decode($entry["dn"])."$nl\n";
   
-  if(ereg('_save', $func) or ereg('_add', $func))
+  if(preg_match('/_save/', $func) or preg_match('/_add/', $func))
 	$modify = 0;
   else
 	$modify = 1;
@@ -287,7 +287,7 @@ function pql_format_table_single($text, $url, $array, $attrib, $class = 0, $spac
 	  if(!$class)
 		$class  = pql_format_table(0);
 	  
-	  if(eregi('[a-z]=[a-z]', $value)) {
+	  if(preg_match('/[a-z]=[a-z]/i', $value)) {
 		// Hopfully this is a DN
 		$username = $_pql->get_attribute($value, pql_get_define("PQL_ATTR_CN"));
 		if(!$username[0])
@@ -452,7 +452,7 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
   }
   
   if($url) {
-	if(eregi('^http', $url))
+	if(preg_match('/^http/i', $url))
 	  $url = "href=\"$url\" target=\"_top\"";
 	else
 	  $url = "href=\"$url\"";
@@ -489,7 +489,7 @@ function pql_format_tree_span($text, $links, $level) {
 	// If it's a user, we want an icon before the list...
 	// TODO: An option to the function instead?
 	$icon = 0;
-	if(eregi("user_detail\.php", $link) or eregi("ezmlm_detail\.php", $link))
+	if(preg_match("/user_detail\.php/i", $link) or preg_match("/ezmlm_detail\.php/i", $link))
 	  $icon = 1;
 	
 	if($text) {
@@ -504,7 +504,7 @@ function pql_format_tree_span($text, $links, $level) {
     <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
 <?php	} else { ?>
 <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
-    <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
+    <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(preg_match('/^http:\/\//i', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
 <?php	} ?>
   </nobr>
   <br />
@@ -562,9 +562,9 @@ function pql_left_htmlify_userlist($rootdn, $domain, $subbranch, $users, &$links
 	if($cn) {
 	  // We have a commonName - split it up into two parts (which should be first and last name)
 	  if(is_array($cn))
-	    $cn = split(" ", $cn[0]);
+	    $cn = explode(" ", $cn[0]);
 	  else
-	    $cn = split(" ", $cn);
+	    $cn = explode(" ", $cn);
 	  
 	  if(!$cn[1]) {
 	    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
@@ -892,14 +892,14 @@ function pql_format_timestamp($timestamp) {
 
 // {{{ pql_format_urls(string)
 function pql_format_urls(&$string) {
-  if(ereg('%3D', $string))
+  if(preg_match('/%3D/', $string))
 	// The original string should be URL decoded
 	$string = urldecode($string);
   $tmp = $string;
   
   // Make sure we can have a ' in branch (also affects the user DN).
-  if(ereg("\'", $tmp)) {
-	if(ereg("\\\'", $tmp))
+  if(preg_match("/\'/", $tmp)) {
+	if(preg_match("/\\\'/", $tmp))
 	  // The string already contains \', remove it
 	  $tmp = ereg_replace("\\\'", "'", $tmp);
 	else
@@ -918,10 +918,10 @@ function pql_format_urls(&$string) {
 
 // {{{ pql_format_bool(string)
 function pql_format_bool(&$value) {
-  if(eregi('^true$', $value)) {
+  if(preg_match('/^true$/i', $value)) {
 	settype($value, "boolean");
 	$value = '1';
-  } elseif(eregi('^false$', $value)) {
+  } elseif(preg_match('/^false$/i', $value)) {
 	settype($value, "boolean");
 	$value = '0';
   } elseif($value == '1') {
@@ -1007,7 +1007,7 @@ function pql_ldap_mailquota($quota, $newline = 1) {
 // {{{ pql_strip_domain(email)
 // Get the username of an email address
 function pql_strip_domain($email) {
-  $email = split("@", $email);
+  $email = explode("@", $email);
   
   if(count($email) == 2)
 	return $email[0];
@@ -1019,7 +1019,7 @@ function pql_strip_domain($email) {
 // {{{ pql_strip_username(email)
 // Get the domainname of an email address
 function pql_strip_username($email) {
-  $email = split("@", $email);
+  $email = explode("@", $email);
   
   if(count($email) == 2)
 	return $email[1];
@@ -1032,7 +1032,7 @@ function pql_strip_username($email) {
 // Separate the domainname and hostname from the FQDN
 function pql_separate_host_domain($fqdn) {
   $fqdn = ereg_replace(':.*', '', $fqdn); // Remove any port
-  $tmp = split('\.', $fqdn);
+  $tmp = explode('\.', $fqdn);
   
   $cnt = count($tmp)-1;
   
@@ -1133,8 +1133,8 @@ function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 		//		postalAddress, registeredAddress and homePostalAddress
 		//		-> I hope that it's ok to UTF-8 encode these values.
 		//		   The database (OpenLDAP 2.0) accepts it anyway.
-		if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax) or
-		   eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.41', $syntax))
+		if(preg_match('/1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15/', $syntax) or
+		   preg_match('/1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.41/', $syntax))
 		  return(utf8_encode($old));
 		else
 		  // Oups, no! Replace any national character with it's
@@ -1153,7 +1153,7 @@ function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 // {{{ pql_maybe_decode(string)
 // Check if we SHOULD decode the string...
 function pql_maybe_decode($string) {
-  if(eregi("\=$", $string) and !eregi('^{', $string))
+  if(preg_match("/\=$/", $string) and !preg_match('/^{/', $string))
 	// It's a BASE64 string, decode it
 	$decoded = base64_decode($string);
   else
@@ -1176,7 +1176,7 @@ function pql_maybe_idna_encode($string) {
 	// The two strings isn't equal -> something have been replaced
 	
 	if(function_exists("idn_to_ascii")) {
-	  if(ereg("@", $old)) {
+	  if(preg_match("/@/", $old)) {
 		$domain = idn_to_ascii(pql_strip_domain($old));
 		
 		return(pql_strip_domain($old)."@".$domain);
@@ -1193,11 +1193,11 @@ function pql_maybe_idna_encode($string) {
 
 // {{{ pql_maybe_idna_decode(string)
 function pql_maybe_idna_decode($string) {
-  if(eregi("^xn--", $string) and function_exists("idn_to_utf8")) {
+  if(preg_match("/^xn--/i", $string) and function_exists("idn_to_utf8")) {
 	// It's an IDNA string, and we have the IDN module loaded
 	
 	// Catch email addresses (can't decode the @)
-	if(ereg("@", $string)) {
+	if(preg_match("/@/", $string)) {
 	  $domain = pql_maybe_decode(idn_to_utf8(pql_strip_username($old)));
 	  
 	  return(pql_strip_domain($old)."@".$domain);

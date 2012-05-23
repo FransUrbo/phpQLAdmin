@@ -76,7 +76,7 @@ function attribute_print_form($action) {
 		echo "<p>";
 	}
 
-	if(ereg('^2\.3', $_pql->find_ldap_version()))
+	if(preg_match('/^2\.3/', $_pql->find_ldap_version()))
 	  $olv = 23;
 	else
 	  $olv = 22;

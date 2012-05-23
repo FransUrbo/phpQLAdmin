@@ -44,7 +44,7 @@ function attribute_check() {
 function attribute_print_form($data) {
   global $_pql, $error, $LANG;
 
-  $info = split(' ', $data);
+  $info = explode(' ', $data);
 
   $value = '';
   for($j=1; $info[$j]; $j++) {
@@ -96,7 +96,7 @@ function attribute_save($type) {
   case "modify":
 	// Go through values and exchange the old with the new
 	for($i=0; $entry[$i]; $i++) {
-	  if(ereg("^$value", $entry[$i]))
+	  if(preg_match("/^$value/", $entry[$i]))
 		$entry[$i] = $newvalue;
 	}
 
@@ -106,7 +106,7 @@ function attribute_save($type) {
 	
   case "delete":
 	// The 'value' isn't known with a delete option, get it...
-	$tmp = split(' ', $_REQUEST[data]);
+	$tmp = explode(' ', $_REQUEST[data]);
 	$_REQUEST["value"] = $tmp[0];
 
 	// Go through values and remove the specified value

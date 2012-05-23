@@ -53,7 +53,7 @@ class pql {
 	  
 	  // Remove any spaces after the RDN separator
 	  foreach($val as $dn) {
-		while(eregi("%2C\+", $dn)) {
+		while(preg_match("/%2C\+/i", $dn)) {
 		  // Replace ', ' with ','
 		  $new  = eregi_replace("%2C\+", "%2C", $dn);
 		}
@@ -74,7 +74,7 @@ class pql {
 	$dns = $this->_find_base_option("namingContexts");
 	for($i=0; $dns[$i]; $i++) {
 	  $value = $this->get_attribute($dns[$i], 'structuralObjectClass', 1);
-	  if(!eregi('auditContainer', $value) and !eregi('cn%3Dlog', $dns[$i]))
+	  if(!preg_match('/auditContainer/i', $value) and !preg_match('/cn%3Dlog/i', $dns[$i]))
 		// I'm using the overlay-accesslog on the 'cn=LOG1'
 		// backend - filter that out (if structuralObjectClass=auditContainer,
 		// then it should NOT be used)!
@@ -242,8 +242,8 @@ class pql {
   // {{{ bool connect(hostname)
   function connect($host) {
 	// Check to see if we have a port defined in the host.
-	if(ereg(";", $host)) {
-	  $ldap = split(";", $host);
+	if(preg_match("/;/", $host)) {
+	  $ldap = explode(";", $host);
 	  
 	  $host = $ldap[0];
 	  $port = $ldap[1];
@@ -295,14 +295,14 @@ class pql {
 	if($sr) {
 	  $entry = ldap_get_entries($this->ldap_linkid, $sr);
 	  
-	  if(ereg('\$', $entry[0]['monitoredinfo'][0])) {
+	  if(preg_match('/\$/', $entry[0]['monitoredinfo'][0])) {
 		// Older OpenLDAP...
-		$tmp = split('\$', $entry[0]['monitoredinfo'][0]);
-		$tmp = split(' \(', $tmp[1]);
+		$tmp = explode('\$', $entry[0]['monitoredinfo'][0]);
+		$tmp = explode(' \(', $tmp[1]);
 		$version = $tmp[0];
 	  } else {
 		// Newer OpenLDAP (tested: 2.3.32)
-		$tmp = split(' ', $entry[0]['monitoredinfo'][0]);
+		$tmp = explode(' ', $entry[0]['monitoredinfo'][0]);
 		$version = $tmp[2];
 	  }
 	  
@@ -330,7 +330,7 @@ class pql {
 	$dn = pql_format_normalize_dn($dn);
 	
 	// {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
-	if(eregi("^dNSTTL=", $dn))
+	if(preg_match("/^dNSTTL=/i", $dn))
 	  // FROM: dNSTTL=3600 relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
 	  // TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
 	  $dn = pql_recreate_dnsttl($dn);
@@ -457,7 +457,7 @@ class pql {
 		$key   = lc($attributes[$i]); // Save some typing
 		$value = ldap_get_values_len($this->ldap_linkid, $object, $attributes[$i]);
 		
-		if(eregi('^[a-z]', $key) and ($key != 'count')) {
+		if(preg_match('/^[a-z]/i', $key) and ($key != 'count')) {
 		  if($key == sprintf("%s", pql_get_define("PQL_ATTR_PHOTO"))) {
 			// A jpegPhoto. Save it in the resulting array as a base64 encoded value.
 			if($nr_entries > 1)
@@ -538,7 +538,7 @@ class pql {
 	//		
 	//		// Add all referral references to the user array
 	//		if(is_array($referrals)) {
-	//			$host = split(';', $_SESSION["USER_HOST"]);
+	//			$host = explode(';', $_SESSION["USER_HOST"]);
 	//			
 	//			foreach($referrals as $ref) {
 	//				// Remove the LDAP host from the reference.
@@ -621,7 +621,7 @@ class pql {
   function add($dn, $entry, $type, $caller) {
 	global $pql_cache;
 
-	if(!eregi("^dNSTTL=", $dn))
+	if(!preg_match("/^dNSTTL=/i", $dn))
 	  $dn = pql_maybe_encode(urldecode($dn));
 	
 	// Verify that the object have what it needs to be able to be added
@@ -630,7 +630,7 @@ class pql {
 	// If there's ACI's and we're running OpenLDAP >2.3, then make sure
 	// the ACI's in the correct form (OpenLDAP changed the syntax in 2.3).
 	if(@is_array($entry[pql_get_define("PQL_ATTR_LDAPACI")]) and
-	   ereg('^2\.[3-5X]', $this->find_ldap_version())) {
+	   preg_match('/^2\.[3-5X]/', $this->find_ldap_version())) {
 	  if(!function_exists("pql_validate_acis"))
 		include($_SESSION["path"]."/include/pql_aci.inc");
 
@@ -679,7 +679,7 @@ class pql {
 	global $pql_cache;
 	
 	$dn = urldecode($dn);
-	if(eregi("^dNSTTL=", $dn))
+	if(preg_match("/^dNSTTL=/i", $dn))
 	  $dn = pql_recreate_dnsttl($dn);
 	$dn = pql_maybe_encode($dn);
 
@@ -1052,9 +1052,9 @@ function pql_get_valid_shells() {
   $fp = fopen("/etc/shells", "r");
   while (!feof ($fp)) {
 	$buffer = fgets($fp, 4096);
-	$shell = split(" ", $buffer);
+	$shell = explode(" ", $buffer);
 	
-	if(!eregi("^#", $shell[0]) and !eregi("^$", $shell[0]))
+	if(!preg_match("/^#/", $shell[0]) and !preg_match("/^$/", $shell[0]))
 	  $shells[] = rtrim($shell[0]);
   }
   fclose ($fp);
@@ -1220,7 +1220,7 @@ function pql_generate_password() {
 	  }
 	}
 	
-	if(ereg("^[a-zA-Z]{1}([a-zA-Z]+[0-9][a-zA-Z]+)+", $pwd))
+	if(preg_match("/^[a-zA-Z]{1}([a-zA-Z]+[0-9][a-zA-Z]+)+/", $pwd))
 	  break;
   }
   
@@ -1230,7 +1230,7 @@ function pql_generate_password() {
 
 // {{{ pql_check_email(email)
 function pql_check_email($email) {
-  $split = split("@", $email);
+  $split = explode("@", $email);
   
   if(count($split) != 2)
 	// Does not contain @ or has to much of it
@@ -1388,10 +1388,10 @@ function pql_ldap_deliverymode($mode) {
 // {{{ pql_split_oldvalues(value)
 function pql_split_oldvalues($value) {
   // (Possibly) split the old value array
-  if(eregi(" ", $value))
-	$values = split(" ", $value);
-  elseif(eregi(",", $value))
-	$values = split(",", $value);
+  if(preg_match("/ /", $value))
+	$values = explode(" ", $value);
+  elseif(preg_match("/,/", $value))
+	$values = explode(",", $value);
   elseif($value)
 	$values[] = $value;
   
@@ -1462,7 +1462,7 @@ function pql_recreate_dnsttl($dn) {
   }
   
   // Add the missing part
-  $tmp   = split(' ', $dn_parts[0]);
+  $tmp   = explode(' ', $dn_parts[0]);
   $newdn = $tmp[0]."+".$tmp[1].",".$newdn;
   
   return($newdn);
@@ -1471,7 +1471,7 @@ function pql_recreate_dnsttl($dn) {
 
 // {{{ pql_header(url, force)
 function pql_header($url, $force = 0) {
-  if(!ereg('^/', $url) and !eregi('^http', $url))
+  if(!preg_match('/^\//', $url) and !preg_match('/^http/i', $url))
 	$uri = $_SESSION["URI"].$url;
   else
 	$uri = $url;

@@ -177,8 +177,8 @@ function pql_templates_check_attribute($attribs, $attribute, $type = NULL) {
 
   if(!$type or (lc($type) == "must")) {
 	for($i=0; $i < count($attribs['must']); $i++) {
-	  if(ereg(":", $attribs['must'][$i])){
-		list($real, $alias) = split(":", $attribs['must'][$i]);
+	  if(preg_match("/:/", $attribs['must'][$i])){
+		list($real, $alias) = explode(":", $attribs['must'][$i]);
 		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)))
 		  return 1;
 	  }
@@ -190,8 +190,8 @@ function pql_templates_check_attribute($attribs, $attribute, $type = NULL) {
 
   if(!$type or (lc($type) == "may")) {
 	for($i=0; $i < count($attribs['may']); $i++) {
-	  if(ereg(":", $attribs['may'][$i])){
-		list($real, $alias) = split(":", $attribs['may'][$i]);
+	  if(preg_match("/:/", $attribs['may'][$i])){
+		list($real, $alias) = explode(":", $attribs['may'][$i]);
 		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)))
 		  return 2;
 	  }

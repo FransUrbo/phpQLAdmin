@@ -97,9 +97,9 @@ function pql_kadmin_get_principal($dn) {
   if(extension_loaded('kadm5') and function_exists("kadm5_init_with_password")) {	
 	$password = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_PASSWD"));
 
-	if(eregi('SASL', $password))
+	if(preg_match('/SASL/', $password))
 	  $principal = eregi_replace("{SASL}", "", $password);
-	elseif(eregi('KERBEROS', $password))
+	elseif(preg_match('/KERBEROS/', $password))
 	  $principal = eregi_replace("{KERBEROS}", "", $password);
 	
 	if($principal)

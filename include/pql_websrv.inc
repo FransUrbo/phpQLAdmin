@@ -57,8 +57,8 @@ function pql_websrv_find_servers($dn) {
 	  // Rearrange the array to be 'indexed' with FQDN
 	  unset($temp);
 	  foreach($servers as $srv) {
-		$tmp = split(',', $srv);
-		$tmp = split('=', $tmp[0]);
+		$tmp = explode(',', $srv);
+		$tmp = explode('=', $tmp[0]);
 		
 		$fqdn = $tmp[1];
 		$temp{$fqdn} = $srv;
@@ -263,7 +263,7 @@ function pql_websrv_get_data($host_dn) {
 		  // Is this virtual host FQDN part of any of the domain names the user have access to?
 		  for($j=0; $domains[$j]; $j++) {
 			if(!$_SESSION["ALLOW_BRANCH_CREATE"] and
-			   !eregi($domains[$j], $virthost_name) and
+			   !preg_match("/$domains[$j]/i", $virthost_name) and
 			   !$container_admin)
 			{
 			  // No:

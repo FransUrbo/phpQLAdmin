@@ -27,11 +27,11 @@ function attribute_find_mountpoints($mnt_pnt, $mnt_dn) {
   global $_pql, $extra_dns;
 
   $info = $_pql->get_attribute($mnt_dn, pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
-  if(eregi('ldap', $info)) {
+  if(preg_match('/ldap/i', $info)) {
 	// Get the mountpoint for the FS
-	$sub_mnt = split(',', $mnt_dn);
-	$sub_mnt = split('=', $sub_mnt[0]);
-	if(!ereg('^/', $sub_mnt[1]))
+	$sub_mnt = explode(',', $mnt_dn);
+	$sub_mnt = explode('=', $sub_mnt[0]);
+	if(!preg_match('/^\//', $sub_mnt[1]))
 	  $sub_mnt = '/'.$sub_mnt[1];
 	else
 	  $sub_mnt = $sub_mnt[1];
@@ -40,7 +40,7 @@ function attribute_find_mountpoints($mnt_pnt, $mnt_dn) {
 	$extra_dns["$mnt_pnt$sub_mnt"] = $mnt_dn;
 
 	// Since this is an LDAP link, find possible submounts
-	$dn = split(':', $info);
+	$dn = explode(':', $info);
 	if($dn[2])
 	  // info => 'ldap ldapi://%2fvar%2frun%2fslapd%2fldapi.provider:ou=auto.mnt,cn=pumba.bayour.com,ou=Computers,c=SE'
 	  $dn = $dn[2];
@@ -101,7 +101,7 @@ function attribute_setup() {
 	
 	// SMB mount
 	$automount .= " ://".$_REQUEST["smbserver"];
-	if(!ereg('^/', $_REQUEST["smbshare"]))
+	if(!preg_match('/^\//', $_REQUEST["smbshare"]))
 	  $automount .= "/";
 	$automount .= $_REQUEST["smbshare"];
 	// }}}
@@ -109,7 +109,7 @@ function attribute_setup() {
   } elseif(($_REQUEST["filesystem"] == 'nfs') or ($_REQUEST["filesystem"] == 'nfs4')) {
 	// {{{ FS: NFS/NFS4
 	$automount .= " ".$_REQUEST["nfsserver"];
-	if(!ereg('^/', $_REQUEST["nfsshare"]))
+	if(!preg_match('/^\//', $_REQUEST["nfsshare"]))
 	  $automount .= "/";
 	$automount .= ":".$_REQUEST["nfsshare"];
 	// }}}
@@ -117,7 +117,7 @@ function attribute_setup() {
   } elseif($_REQUEST["filesystem"] == 'ncpfs') {
 	// {{{ FS: NCP
 	$automount .= " ".$_REQUEST["ncpserver"];
-	if(!ereg('^/', $_REQUEST["ncpshare"]))
+	if(!preg_match('/^\//', $_REQUEST["ncpshare"]))
 	  $automount .= "/";
 	$automount .= ":".$_REQUEST["ncpshare"];
 	// }}}
@@ -183,7 +183,7 @@ function attribute_check() {
 		if(!$_REQUEST["mountpoint"])
 		  $error["mountpoint"] = $LANG->_('Missing');
 
-		if($_REQUEST["mountpoint"] and !ereg('^/', $_REQUEST["mountpoint"]))
+		if($_REQUEST["mountpoint"] and !preg_match('/^\//', $_REQUEST["mountpoint"]))
 		  $_REQUEST["mountpoint"] = '/'.$_REQUEST["mountpoint"];
 
 		if(!$_REQUEST["linktype"])
@@ -269,13 +269,13 @@ function attribute_init() {
 	if(@$dn and $_pql->get_dn($dn, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*')) {
 	  // I.e. everything below the auto.master DN
 	  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=autoMount))';
-	  if(!ereg('^/', $dn))
+	  if(!preg_match('/^\//', $dn))
 		$DNs = $_pql->get_dn($dn, $filter, 'ONELEVEL');
 	  
 	  // Rearrange the array based on the actual mountpoint in the FS
 	  for($i=0; $DNs[$i]; $i++) {
-		$mnt = split(',', $DNs[$i]);
-		$mnt = split('=', $mnt[0]);
+		$mnt = explode(',', $DNs[$i]);
+		$mnt = explode('=', $mnt[0]);
 		$new_array[$mnt[1]] = $DNs[$i];
 	  }
 	  $DNs = $new_array;
@@ -316,7 +316,7 @@ function attribute_init() {
 	// {{{ Figure out the basemount and the final mountpoint for this mount
 	if(!@$_REQUEST["basemount"]) {
 	  $_REQUEST["basemount"] = '/';
-	  $tmp = split('/', $_REQUEST["mountpoint"]);
+	  $tmp = explode('/', $_REQUEST["mountpoint"]);
 	  for($i=1; $tmp[$i]; $i++) {
 		$_REQUEST["basemount"] .= $tmp[$i];
 		if(!@$tmp[$i+2])
@@ -345,7 +345,7 @@ function attribute_init() {
 	// {{{ Extract the filesystem and mount options from the automountInfo attribute
 	$tmp = preg_replace('/-fstype=/', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
 	$opts = ereg_replace(' :.*', '', $tmp);
-	$opts = split(',', $opts);
+	$opts = explode(',', $opts);
 	$fs = $opts[0];
 	// }}}
 
@@ -368,7 +368,7 @@ function attribute_init() {
 	  } elseif($_REQUEST["filesystem"] == 'smbfs') {
 		// {{{ Extract SMB server and share
 		$tmp = ereg_replace('.*://', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
-		$tmp = split('/', $tmp);
+		$tmp = explode('/', $tmp);
 		
 		$_REQUEST["smbserver"] = $tmp[0];
 		$_REQUEST["smbshare"] = '';
@@ -382,7 +382,7 @@ function attribute_init() {
 	  } elseif(($_REQUEST["filesystem"] == 'nfs') or ($_REQUEST["filesystem"] == 'nfs4')) {
 		// {{{ Extract NFS server and 'share'
 		$tmp = ereg_replace('.*://', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
-		$tmp = split('/', $tmp);
+		$tmp = explode('/', $tmp);
 		
 		$_REQUEST["nfsserver"] = $tmp[0];
 		$_REQUEST["nfsshare"] = '';
@@ -405,19 +405,19 @@ function attribute_init() {
 	  for($i=1; $opts[$i]; $i++) {
 		if($_REQUEST["filesystem"] == 'smbfs') {
 		  // {{{ Extract SMB specific stuff
-		  if(eregi('username', $opts[$i])) {
+		  if(preg_match('/username/i', $opts[$i])) {
 			$_REQUEST["smbcredtype"] = 'manual';
 			$_REQUEST["smbcreduser"] = eregi_replace('username=', '', $opts[$i]);
-		  } elseif(eregi('password', $opts[$i])) {
+		  } elseif(preg_match('/password/i', $opts[$i])) {
 			$_REQUEST["smbcredtype"] = 'manual';
 			$_REQUEST["smbcredpasswd"] = eregi_replace('password=', '', $opts[$i]);
-		  } elseif(eregi('credentials', $opts[$i])) {
+		  } elseif(preg_match('/credentials/i', $opts[$i])) {
 			$_REQUEST["smbcredtype"] = 'file';
 			$_REQUEST["smbcredfile"] = eregi_replace('credentials=', '', $opts[$i]);
 			
-		  } elseif(eregi('uid', $opts[$i])) {
+		  } elseif(preg_match('/uid/i', $opts[$i])) {
 			$_REQUEST["smbcreduid"]  = eregi_replace('uid=', '', $opts[$i]);
-		  } elseif(eregi('gid', $opts[$i])) {
+		  } elseif(preg_match('/gid/i', $opts[$i])) {
 			$_REQUEST["smbcredgid"]  = eregi_replace('gid=', '', $opts[$i]);
 		  }
 		  // }}}
@@ -1326,16 +1326,16 @@ function attribute_save($type) {
 		$dn = $auto_master;
 	  } else {
 		$info = $_pql->get_attribute($_REQUEST["basemount"], pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
-		if(eregi('ldap', $info)) {
+		if(preg_match('/ldap/i', $info)) {
 		  // An LDAP link
-		  $dn = split(':', $info);
+		  $dn = explode(':', $info);
 		  if($dn[2])
 			// info => 'ldap ldapi://%2fvar%2frun%2fslapd%2fldapi.provider:ou=auto.mnt,cn=pumba.bayour.com,ou=Computers,c=SE'
 			$dn = $dn[2];
 		  elseif($dn[1])
 			// info => 'ldap localhost:ou=auto.share,cn=pumba.bayour.com,ou=Computers,c=SE'
 			$dn = $dn[1];
-		} elseif(eregi('file ', $info)) {
+		} elseif(preg_match('/file/i ', $info)) {
 		  // A file link - can't follow that!
 ?>
 Sorry, this base mount is a <b>file</b> link and I don''t know how to follow that...
@@ -1375,7 +1375,7 @@ Make sure you include this object information (I'm mostly interested in the <b><
 
 		// {{{ Retreive parent ACI attribute(s)
 		// Calculate parent object
-		$dn_parts = split(',', $dn);
+		$dn_parts = explode(',', $dn);
 		unset($dn); // Reuse
 		for($i=1; $dn_parts[$i]; $i++) {
 		  $dn .= $dn_parts[$i];
@@ -1395,7 +1395,7 @@ Make sure you include this object information (I'm mostly interested in the <b><
 			$mnt  = pql_get_define("PQL_ATTR_OU").'=auto.'.preg_replace('/\//', '', $_REQUEST["mountpoint"]);
 			$mnt .= ','.$_REQUEST["host"];
 
-			$dnparts = split(',', $mnt);
+			$dnparts = explode(',', $mnt);
 			$parentdn = '';
 			for($i=1; $dnparts[$i]; $i++) {
 			  $parentdn .= $dnparts[$i];

@@ -38,9 +38,9 @@ function pql_bind9_get_zone($branchname, $domainname = '') {
 	$ZONE[$zone][$host]['ZONE'] = pql_maybe_idna_decode($zone);
 	$ZONE[$zone][$host]['TTL']  = $objects[$i]['dnsttl'];
 	
-	if(eregi("in-addr.arpa", $zone) and ($host != '@')) {
+	if(preg_match("/in-addr\.arpa/i", $zone) and ($host != '@')) {
 	  $tmp = preg_replace('/.in-addr.arpa/', '', $zone);
-	  $tmp = split('\.', $tmp);
+	  $tmp = explode('\.', $tmp);
 	  
 	  unset($PTR);
 	  for($j=count($tmp)-1; !empty($tmp[$j]); $j--)
@@ -135,9 +135,9 @@ function pql_bind9_get_zone($branchname, $domainname = '') {
 	
 	// {{{ SOA Record
 	if(@$objects[$i]['soarecord']) {
-	  $soa = split(' ', $objects[$i]['soarecord']);
+	  $soa = explode(' ', $objects[$i]['soarecord']);
 	  
-	  $tmp   = split('\.', $soa[1]);
+	  $tmp   = explode('\.', $soa[1]);
 	  $admin = $tmp[0]."@";
 	  for($j=1; $j < count($tmp); $j++) {
 		$admin .= $tmp[$j];
@@ -240,7 +240,7 @@ function pql_bind9_add_zone($dn, $zone) {
   // }}}
   
   // Create each of the domain components in the domainname
-  $dc = split('\.', $zone);
+  $dc = explode('\.', $zone);
   
   unset($entry);
   $entry['objectclass'][] = 'top';
@@ -313,7 +313,7 @@ function pql_bind9_add_host($basedn, $entry) {
   $basedn = pql_maybe_encode(urldecode($basedn));
   
   // {{{ Create each of the domain components in the domainname
-  $dc = split('\.', $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
+  $dc = explode('\.', $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
   for($i=count($dc)-1; !empty($dc[$i]); $i--) {
 	$dc_tmp = pql_maybe_idna_encode($dc[$i]);
 	
@@ -326,8 +326,8 @@ function pql_bind9_add_host($basedn, $entry) {
   // Remember the hostname. Need it when/if a sub-domain 'host' is added...
   $tmp = $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")];
   
-  if(ereg('.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]) and
-	 !eregi('in-addr', $entry[pql_get_define("PQL_ATTR_ZONENAME")]))
+  if(preg_match('/./', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]) and
+	 !preg_match('/in-addr/i', $entry[pql_get_define("PQL_ATTR_ZONENAME")]))
   {
 	// {{{ This is a sub-zone!
 	// Create something like this:
@@ -335,7 +335,7 @@ function pql_bind9_add_host($basedn, $entry) {
 	//	dn: relativeDomainName=ns1.test,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
 	
 	// Split it up in dc components and add each one as a separate dc object.
-	$dc = split('\.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]);
+	$dc = explode('\.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]);
 	if(@$dc[1]) {
 	  // dc[1] is unset the second time around...
 	  
@@ -360,7 +360,7 @@ function pql_bind9_add_host($basedn, $entry) {
 	  unset($entry[$tmp_record]);
 	  
 	  // What type should the sub-domain be, CName or A record?
-	  if(ereg("^[0-9].*[0-9]", $tmp_value)) {
+	  if(preg_match("/^[0-9].*[0-9]/", $tmp_value)) {
 		// Starts and ends with a number - best guess is that it's an IP address.
 		$entry[pql_get_define("PQL_ATTR_ARECORD")] = $tmp_value;
 		$record_to_remove = pql_get_define("PQL_ATTR_ARECORD");
@@ -477,7 +477,7 @@ function pql_bind9_del_zone($dn, $zone) {
   global $_pql;
   
   $dn = pql_format_normalize_dn($dn);
-  $dnsparts = split('\.', $zone);
+  $dnsparts = explode('\.', $zone);
   for($i=0; $i < count($dnsparts); $i++) {
 	$dn_to_remove .= "dc=".$dnsparts[$i].",";
   }
@@ -508,7 +508,7 @@ function pql_bind9_del_zone($dn, $zone) {
   
   // Get the TLD DN
   $dn_to_remove = pql_format_normalize_dn($dn_to_remove);
-  $dnparts = split(',', $dn_to_remove);
+  $dnparts = explode(',', $dn_to_remove);
   for($i=1; $i < count($dnparts); $i++) {
 	$tld .= $dnparts[$i];
 	if(@$dnparts[$i+1])
@@ -530,7 +530,7 @@ function pql_bind9_del_zone($dn, $zone) {
   // PQL_CONF_SUBTREE_BIND9 as well.
   
   // Get the ou DN
-  $dnparts = split(',', $tld);
+  $dnparts = explode(',', $tld);
   for($i=1; $i < count($dnparts); $i++) {
 	$ou .= $dnparts[$i];
 	if(@$dnparts[$i+1])
@@ -576,7 +576,7 @@ function pql_bind9_update_serial($dn) {
   
   // {{{ Get the old serial number from the SOA
   // sOARecord: phpqladmin.com. registry.phpqladmin.com. 2005013001 172800 86400 2419200 604800
-  $tmp = split(' ', $soa["soa"]); $serial = $tmp[2];
+  $tmp = explode(' ', $soa["soa"]); $serial = $tmp[2];
   
   // Extract date and serial number from the SOA serial number.
   // This _SHOULD_ be in the form 'YYYMMDDxx'.

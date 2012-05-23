@@ -23,7 +23,7 @@ class pql_cache {
 	if(file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
 	  return;
 
-	if(ereg('=', $key) and !ereg('^PQL_', $key))
+	if(preg_match('/=/', $key) and !preg_match('/^PQL_/', $key))
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	
@@ -66,7 +66,7 @@ class pql_cache {
 	if(!isset($key))
 	  return(0);
 	
-	if(ereg('=', $key) and !ereg('^PQL_', $key))
+	if(preg_match('/=/', $key) and !preg_match('/^PQL_/', $key))
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	
@@ -112,7 +112,7 @@ class pql_cache {
 	if(!@$key)
 	  return(false);
 	
-	if(ereg('=', $key) and !ereg('^PQL_', $key))
+	if(preg_match('/=/', $key) and !preg_match('/^PQL_/', $key))
 	  // Looks like a DN - URL decode it
 	  $key = pql_format_normalize_dn($key);
 	

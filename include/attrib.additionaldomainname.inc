@@ -153,7 +153,7 @@ function attribute_save($type) {
 		$oldvalues = array($oldvalues);
 	  
 	  foreach($oldvalues as $val) {
-		if(!@eregi($delval, $val)) {
+		if(!@preg_match("/$delval/", $val)) {
 		  // Remove the one we don't want
 		  $entry[$attrib][] = $val;
 		}

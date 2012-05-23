@@ -66,9 +66,9 @@ function smtproutes_init($host) {
 		  return true;
 		elseif(is_array($value)) {
 			foreach($value as $route)
-			  $_REQUEST["smtproutes"][] = split(":", $route);
+			  $_REQUEST["smtproutes"][] = explode(":", $route);
 		} else
-		  $_REQUEST["smtproutes"][] = split(":", $value);
+		  $_REQUEST["smtproutes"][] = explode(":", $value);
 		
 		foreach($_REQUEST["smtproutes"] as $route) {
 			$_REQUEST["domain"][] = $route[0];
@@ -170,7 +170,7 @@ function smtproutes_print_form() {
 	  $_REQUEST["domainname"][0] = $_REQUEST["set"];
 	elseif(@$_REQUEST["attrib"] && @$_REQUEST["set"] && @$_REQUEST["mxhost"]) {
 		// We're called from the "QmailLDAP/Controls -> qmail-remote" page  - change value
-		$tmp = split(":", $_REQUEST["set"]); unset($_REQUEST["set"]);
+		$tmp = explode(":", $_REQUEST["set"]); unset($_REQUEST["set"]);
 
 		$ch_domainname = $tmp[0];
 		$ch_relay      = $tmp[1];
@@ -218,7 +218,7 @@ function smtproutes_print_form() {
 							"(&(cn=*)(objectclass=qmailControl)(".$_REQUEST["attrib"]."=".$_REQUEST["set"]."*))");
 		// Convert the DN into a host list
 		for($i=0; $i < count($hosts); $i++) {
-			$host = split(',', $hosts[$i]);
+			$host = explode(',', $hosts[$i]);
 			$host = eregi_replace(pql_get_define("PQL_ATTR_CN") . "=", "", $host[0]);
 			$newhosts[] = $host;
 		}
@@ -247,7 +247,7 @@ function smtproutes_print_form() {
 		if($ch_domainname && $ch_relay && $ch_port) {
 			// Remember what value to change
 			for($i=0; $i < count($_REQUEST["domain"]); $i++) {
-				if(eregi($ch_domainname, $_REQUEST["domain"][$i]))
+				if(preg_match("/$ch_domainname/i", $_REQUEST["domain"][$i]))
 				  $change = $i;
 			}
 		}
@@ -474,7 +474,7 @@ function smtproutes_save($type, $host) {
 												pql_get_define("PQL_ATTR_SMTPROUTES"));
 					// Go through the values, removing the specific domain
 					for($j=0; $j < count($values); $j++) {
-						if(!eregi($_REQUEST["domainname"][0], $values[$j]))
+						if(!preg_match("/".$_REQUEST["domainname"][0].'/i', $values[$j]))
 						  $newvals[] = $values[$j];
 					}
 					
@@ -502,7 +502,7 @@ function smtproutes_save($type, $host) {
 				if(is_array($routes)) {
 					// Go through the SMTP routes, remove the one in $relay
 					foreach($routes as $route)
-					  if(!eregi($_REQUEST["set"], $route))
+					  if(!preg_match('/'.$_REQUEST["set"].'/i', $route))
 						$newroutes[] = $route;
 				}
 				
@@ -528,7 +528,7 @@ function smtproutes_save($type, $host) {
 				if(is_array($routes)) {
 					// Go through the SMTP routes, remove the one in $set
 					foreach($routes as $route)
-					  if(!eregi($_REQUEST["set"], $route))
+					  if(!preg_match('/'.$_REQUEST["set"].'/i', $route))
 						$newroutes[] = $route;
 				}
 

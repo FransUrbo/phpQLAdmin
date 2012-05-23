@@ -6,7 +6,7 @@
 // (which is the only version of phpQLAdmin that
 // should output these warnings).
 function dlw_trigger_error($msg, $level) {
-  if(!eregi('CVS', $_SESSION["VERSION"])) {
+  if(!preg_match('/CVS/', $_SESSION["VERSION"])) {
     // We're running a released version - don't show varnings!
     return(NULL);
   } else {

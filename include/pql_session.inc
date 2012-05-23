@@ -24,7 +24,7 @@ $path = preg_replace("@/include/pql_session.inc@", '', __FILE__);
 
 // {{{ Get the path in the URI
 $uri = $_SERVER['REQUEST_URI'];
-if(eregi('\.php', $uri) or eregi('\.inc', $uri) or eregi('\.css', $uri)) {
+if(preg_match('/\.php/i', $uri) or preg_match('/\.inc/i', $uri) or preg_match('/\.css/i', $uri)) {
   // '[REQUEST_URI] => /phpQLAdmin-HEAD/index.php'
   // '[REQUEST_URI] => /phpQLAdmin-HEAD/tools/dnszonetemplate.php'
   // '[REQUEST_URI] => /phpQLAdmin-HEAD/control_detail.php?view=Accepted+domains&mxhost=mx1.domain.tld'
@@ -45,7 +45,7 @@ $pattern = array('@/include@',
 				 '@/tools@');
 
 $uri = preg_replace($pattern, "/", $uri);
-if(!ereg('/$', $uri)) {
+if(!preg_match('/\/$/', $uri)) {
   $uri .= '/';
 }
 // }}}
@@ -63,10 +63,10 @@ $_SESSION["path"] = $path;
 
 // {{{ Get user agent
 $br = strtolower($_SERVER["HTTP_USER_AGENT"]);
-$_SESSION["lynx"]      = (eregi("lynx", $br))		? 1 : 0;
-$_SESSION["konqueror"] = (eregi("konqueror", $br))	? 1 : 0;
-$_SESSION["opera"]     = (eregi("opera", $br))		? 1 : 0;
-$_SESSION["mozilla"]   = (eregi("mozilla", $br))	? 1 : 0;
+$_SESSION["lynx"]      = (preg_match("/lynx/i", $br))		? 1 : 0;
+$_SESSION["konqueror"] = (preg_match("/konqueror/i", $br))	? 1 : 0;
+$_SESSION["opera"]     = (preg_match("/opera/i", $br))		? 1 : 0;
+$_SESSION["mozilla"]   = (preg_match("/mozilla/i", $br))	? 1 : 0;
 // }}}
 
 // {{{ If you can't login correctly

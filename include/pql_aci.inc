@@ -29,20 +29,20 @@ function pql_aci_get($dn, $number = 0) {
 	  
 	  $got_more_rights = 0;
 	  // Split up the attribute value into it's (five) parts
-	  $tmp1 = split("#", $result[$j]);
+	  $tmp1 = explode("#", $result[$j]);
 	  
 	  $ACI[$n]["OID"]		= $tmp1[0]; // Irrelevant: Counter or dummy OID (Ex: 1.2.3)
 	  $ACI[$n]["SCOPE"]	= $tmp1[1]; // Irrelevant: Always 'entry'
 	  
 	  // --------------
-	  $tmp2 = split(";", $tmp1[2]); // The third part (RIGHTS) is further sub-devided (in _at least_ tree parts)
+	  $tmp2 = explode(";", $tmp1[2]); // The third part (RIGHTS) is further sub-devided (in _at least_ tree parts)
 	  $ACI[$n]["RIGHTS"]["ACTION"]		= $tmp2[0]; // 'grant' or 'deny'
 	  
-	  $tmp3 = split(",", $tmp2[1]); // Divide up the PERMISSIONS (w,r,s,c and/or x) into an array
+	  $tmp3 = explode(",", $tmp2[1]); // Divide up the PERMISSIONS (w,r,s,c and/or x) into an array
 	  for($k=0; $k < count($tmp3); $k++)
 		$ACI[$n]["RIGHTS"]["PERMISSIONS"][$k] = $tmp3[$k]; // w,r,s,c or x
 	  
-	  $tmp3 = split(",", $tmp2[2]); // Divide up the TARGET (attributes) into an array
+	  $tmp3 = explode(",", $tmp2[2]); // Divide up the TARGET (attributes) into an array
 	  for($k=0; $k < count($tmp3); $k++)
 		$ACI[$n]["RIGHTS"]["TARGET"][$k]	= $tmp3[$k];
 	  
@@ -65,11 +65,11 @@ function pql_aci_get($dn, $number = 0) {
 		  $ACI[$n]["RIGHTS"]["ACTION"] = $ACI[$n-1]["RIGHTS"]["ACTION"];
 		  
 		  // --------------
-		  $tmp3 = split(",", $tmp2[$k]); // Divide up the PERMISSIONS (w,r,s,c and/or x) into an array
+		  $tmp3 = explode(",", $tmp2[$k]); // Divide up the PERMISSIONS (w,r,s,c and/or x) into an array
 		  for($l=0; $l < count($tmp3); $l++)
 			$ACI[$n]["RIGHTS"]["PERMISSIONS"][$l] = $tmp3[$l];
 		  
-		  $tmp3 = split(",", $tmp2[$k+1]); // Divide up the TARGET (attributes) into an array
+		  $tmp3 = explode(",", $tmp2[$k+1]); // Divide up the TARGET (attributes) into an array
 		  for($l=0; $l < count($tmp3); $l++)
 			$ACI[$n]["RIGHTS"]["TARGET"][$l]	= $tmp3[$l];
 		  // --------------
@@ -117,13 +117,13 @@ function pql_validate_acis($acis) {
   // Go through the original ACI's, line by line
   $OID = 0;
   foreach($original as $aci) {
-	$aci_parts = split('#', $aci); // oid#scope#access#match#target
-	$access_parts = split(';', $aci_parts[2]); // rule;perm;what
+	$aci_parts = explode('#', $aci); // oid#scope#access#match#target
+	$access_parts = explode(';', $aci_parts[2]); // rule;perm;what
 
 	// It is the 'what' and 'match' that have changed
 	// Also, the target (if set) must be normalized!
 
-	if(ereg(',', $access_parts[2])) {
+	if(preg_match('/,/', $access_parts[2])) {
 	  // OpenLDAPaci: 1#entry#grant;c,x;userPassword,krb5PrincipalName,cn,mail,mailAlternateAddress#public#
 	  // =>
 	  // OpenLDAPaci: 1#entry#grant;c,x;userpassword#public#
@@ -131,7 +131,7 @@ function pql_validate_acis($acis) {
 	  // OpenLDAPaci: 3#entry#grant;c,x;cn#public#
 	  // OpenLDAPaci: 4#entry#grant;c,x;mail#public#
 	  // OpenLDAPaci: 5#entry#grant;c,x;mailalternateaddress#public#
-	  $attrs = split(',', $access_parts[2]);
+	  $attrs = explode(',', $access_parts[2]);
 	  foreach($attrs as $attr) {
 		$acis[$OID]  = "$OID#".$aci_parts[1].'#';
 		$acis[$OID] .= $access_parts[0].';'.$access_parts[1].';';
@@ -141,7 +141,7 @@ function pql_validate_acis($acis) {
 
 		$OID++;
 	  }
-	} elseif(ereg('\[children\]', $aci_parts[2])) {
+	} elseif(preg_match('/\[children\]/', $aci_parts[2])) {
 	  // OpenLDAPaci: 1#entry#grant;w,r,s,c;[children]#access-id#uid=turbo,ou=People,o=Fredriksson,c=SE
 	  // =>
 	  // OpenLDAPaci: 1#children#grant;w,r,s,c;[all]#access-id#uid=turbo,ou=people,o=fredriksson,c=se
@@ -152,7 +152,7 @@ function pql_validate_acis($acis) {
 		$acis[$OID] .= lc($aci_parts[4]);
 	  
 	  $OID++;
-	} elseif(ereg('\[entry\]', $aci_parts[2])) {
+	} elseif(preg_match('/\[entry\]/', $aci_parts[2])) {
 	  // OpenLDAPaci: 81#entry#grant;w,r,s,c;[entry]#access-id#uid=fernanda,ou=People,o=Bortheiry,c=SE
 	  // =>
 	  // OpenLDAPaci: 81#entry#grant;w,r,s,c;entry#access-id#uid=fernanda,ou=People,o=Bortheiry,c=SE

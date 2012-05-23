@@ -401,7 +401,7 @@ function attribute_save($type) {
   switch($type) {
   case "add":
 	// {{{ Add a sudo role (or add a value to existing attribute)
-	if(ereg('=', $_REQUEST["sudodn"])) {
+	if(preg_match('/=/', $_REQUEST["sudodn"])) {
 	  // Probably a DN - does it exist?
 	  if(!(($object = $_pql->search($_REQUEST["sudodn"], 'objectClass=*', 'BASE')) != true)) {
 		// {{{ It does - ADD options to this sudo role
@@ -484,7 +484,7 @@ function attribute_save($type) {
 	  $entry[$type][] = $old;
 	}
 
-	if(($_REQUEST["type"] == 'sudouser') and ereg('=', $_REQUEST["userdn"])) {
+	if(($_REQUEST["type"] == 'sudouser') and preg_match('/=/', $_REQUEST["userdn"])) {
 	  // Probably a DN - does it exist?
 	  if(!(($object = $_pql->search($_REQUEST["userdn"], 'objectClass=*', 'BASE')) != true))
 		// Yes. Extract the uid

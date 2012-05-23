@@ -58,7 +58,7 @@ function rbllist_print_view($host) {
 <?php
 	} else {
 		foreach($_REQUEST["rbllist"] as $server) {
-			$line = split(' ', $server);
+			$line = explode(' ', $server);
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$line[0]?></td>

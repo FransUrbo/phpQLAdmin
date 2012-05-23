@@ -37,7 +37,7 @@ function attribute_init() {
 function attribute_print_form() {
     global $error, $LANG;
 
-	$spamassassin = split(' ', $_REQUEST["spamassassin"]);
+	$spamassassin = explode(' ', $_REQUEST["spamassassin"]);
 
 	unset($tmp);
 	for($i=3; $spamassassin[$i]; $i++) {

@@ -123,8 +123,8 @@ function pql_get_domains() {
 	// and sort by that, not the DN ('ou=', 'o=', 'dc=' etc).
 	for($i=0; $i < count($domains); $i++) {
 	  // o=Bayour.COM,c=SE => Get 'Bayour.COM'
-	  $tmp = split(',', $domains[$i]);
-	  $tmp = split('=', $tmp[0]);
+	  $tmp = explode(',', $domains[$i]);
+	  $tmp = explode('=', $tmp[0]);
 	  $tmp = $tmp[1];
 	  
 	  $dom[$domains[$i]] = lc($tmp);
@@ -145,7 +145,7 @@ function pql_get_domains() {
 	unset($tmp); // I'm reusing this variable below...
 	foreach($dom as $dn => $value) {
 	  for($i=0; $i < count($domains); $i++) {
-		if((lc($dn) == lc($domains[$i])) and !eregi('^ou=computers,', lc($dn)))
+		if((lc($dn) == lc($domains[$i])) and !preg_match('/^ou=Computers/i,', lc($dn)))
 		  $tmp[] = $dn;
 	  }
 	}
@@ -218,7 +218,7 @@ function pql_get_email_domains($host) {
   
   // {{{ Extract only the domain name part from the email address(es)
   for($i=0; $i < count($mails); $i++) {
-	$tmp = split('@', $mails[$i]);
+	$tmp = explode('@', $mails[$i]);
 	$mails[$i] = pql_maybe_idna_encode($tmp[1]);
   }
   // }}}
@@ -298,7 +298,7 @@ function pql_get_automount_map($dn) {
 	  $cn = $maps[$i][pql_get_define("PQL_ATTR_CN")];
 	  unset($maps[$i]["objectclass"]);
 
-	  if(eregi('ldap', $maps[$i][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")])) {
+	  if(preg_match('/ldap/i', $maps[$i][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")])) {
 		// Extract any links to another LDAP automount map
 		// [automountinformation] => -fstype=autofs ldap:ou=auto.mnt.cdrom,ou=Automounts,o=Main Branch,c=SE
 		$dn = preg_replace('/.*:/', '', $maps[$i][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
@@ -420,14 +420,14 @@ function pql_validate_object($dn, $object, $type) {
 	// for creation for this attribute...
 	if(is_array($value)) {
 	  foreach($value as $val) {
-		if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
+		if(preg_match('/'.pql_get_define("PQL_ATTR_OBJECTCLASS").'/i', $key))
 		  // Remember the object class for later
 		  $ocs[] = $val;
 		else
 		  $entry[$key][] = pql_maybe_encode(trim($val), $key, $linkid);
 	  }
 	} else {
-	  if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
+	  if(preg_match('/'.pql_get_define("PQL_ATTR_OBJECTCLASS").'/i', $key))
 		// Remember the object class for later
 		$ocs[] = $value;
 	  else
@@ -460,9 +460,9 @@ function pql_validate_object($dn, $object, $type) {
 		  for($i=0; $i < $MUST["count"]; $i++) {
 			$must = lc($MUST[$i]);
 			
-			if(ereg(':', $must)) {
+			if(preg_match('/:/', $must)) {
 			  // We have alias(es). Check each for a match!
-			  $aliases = split(':', $must);
+			  $aliases = explode(':', $must);
 			  for($j=0; $j < count($aliases); $j++) {
 				if($attrib == $aliases[$j]) {
 				  unset($MUST[$i]);
@@ -516,7 +516,7 @@ function pql_validate_object($dn, $object, $type) {
 //  foreach($object as $attrib => $value) {
 //	$attrib = lc($attrib);
 //	
-//	if(!eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $attrib)) {
+//	if(!preg_match('/'.pql_get_define("PQL_ATTR_OBJECTCLASS").'/i', $attrib)) {
 //	  // This is a non-object class attribute
 //
 //	  // TODO: How do we check that this attribute have a object class specified in $entry!?
@@ -623,12 +623,12 @@ function pql_get_subschema($attrib) {
 
 	  for($i=0; $i < count($entry[0][$attrib]); $i++) {
 		// {{{ Retreive NAME
-		$words = split("NAME", $entry[0][$attrib][$i]);
+		$words = explode("NAME", $entry[0][$attrib][$i]);
 		if(!empty($words[1])) {
-		  if(ereg("^ \(", $words[1])) {
-			$words = split("\)", $words[1]);
+		  if(preg_match("/^ \(/", $words[1])) {
+			$words = explode("\)", $words[1]);
 			$words = ereg_replace("\'", "", $words[0]);
-			$words = split(" ", $words);
+			$words = explode(" ", $words);
 			$name  = lc($words[2]);
 			
 			$VALUE[$name]["NAME"] = $words[2];
@@ -639,46 +639,46 @@ function pql_get_subschema($attrib) {
 			  $VALUE[$name]["ALIAS"][] = $words[$j];
 			}
 		  } else {
-			$words = split("\' ", $words[1]);
-			$words = split(" \'", $words[0]);
+			$words = explode("\' ", $words[1]);
+			$words = explode(" \'", $words[0]);
 			$name  = lc($words[1]);
 			
 			$VALUE[$name]["NAME"] = $words[1];
 		  }
 		} elseif($attrib == 'ldapsyntaxes') {
-		  $words = split(" ", $entry[0][$attrib][$i]);
+		  $words = explode(" ", $entry[0][$attrib][$i]);
 		  $name  = lc($words[1]);
 		}
 		// }}}
 
 		// {{{ Get the OID number
-		$words = split(" ", $entry[0][$attrib][$i]);
+		$words = explode(" ", $entry[0][$attrib][$i]);
 		$VALUE[$name]["OID"] = $words[1];
 		// }}}
 		
 		// {{{ Retreive DESC
-		$words = split("DESC", $entry[0][$attrib][$i]);
+		$words = explode("DESC", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
-		  $words = split("\' ", $words[1]);
-		  $words = split(" \'", $words[0]);
+		  $words = explode("\' ", $words[1]);
+		  $words = explode(" \'", $words[0]);
 		  
 		  $VALUE[$name]["DESC"] = $words[1];
 		}
 		// }}}
 		
 		// {{{ Retreive MAY's
-		$words = split("MAY", $entry[0][$attrib][$i]);
+		$words = explode("MAY", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
-		  if(ereg("\(", $words[1])) {
-			$words = split("\(", $words[1]);
-			$words = split("\)", $words[1]);
+		  if(preg_match("/\(/", $words[1])) {
+			$words = explode("\(", $words[1]);
+			$words = explode("\)", $words[1]);
 		  } else {
-			$words = split("\)", $words[1]);
+			$words = explode("\)", $words[1]);
 		  }
 		  
 		  // Remove spaces
 		  $words = ereg_replace(" ", "", $words[0]);
-		  $words = split('\$', $words);
+		  $words = explode('\$', $words);
 		  
 		  $j = 0;
 		  foreach($words as $may) {
@@ -690,20 +690,20 @@ function pql_get_subschema($attrib) {
 		// }}}
 		
 		// {{{ Retreive MUST's
-		$words = split("MUST", $entry[0][$attrib][$i]);
+		$words = explode("MUST", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
-		  if(ereg("^ \(", $words[1])) {
-			$words = split("\(", $words[1]);
-			$words = split("\)", $words[1]);
+		  if(preg_match("/^ \(/", $words[1])) {
+			$words = explode("\(", $words[1]);
+			$words = explode("\)", $words[1]);
 			$word  = $words[0];
 		  } else {
-			$words = split(" ", $words[1]);
+			$words = explode(" ", $words[1]);
 			$word  = $words[1];
 		  }
 		  
 		  // Remove spaces
 		  $words = ereg_replace(" ", "", $word);
-		  $words = split('\$', $words);
+		  $words = explode('\$', $words);
 		  
 		  $j = 0;
 		  foreach($words as $must) {
@@ -715,45 +715,45 @@ function pql_get_subschema($attrib) {
 		// }}}
 		
 		// {{{ Retreive EQUALITY
-		$words = split("EQUALITY", $entry[0][$attrib][$i]);
+		$words = explode("EQUALITY", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
-		  $words = split(" ", $words[1]);
+		  $words = explode(" ", $words[1]);
 		  $VALUE[$name]["EQUALITY"] = $words[1];
 		}
 		// }}}
 		
 		// {{{ Retreive SYNTAX
-		$words = split("SYNTAX", $entry[0][$attrib][$i]);
+		$words = explode("SYNTAX", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
-		  $words = split(" ", $words[1]);
+		  $words = explode(" ", $words[1]);
 		  $VALUE[$name]["SYNTAX"] = $words[1];
 		}
 		// }}}
 
 		// {{{ Retreive USAGE
-		$words = split("USAGE", $entry[0][$attrib][$i]);
+		$words = explode("USAGE", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
-		  $words = split(" ", $words[1]);
+		  $words = explode(" ", $words[1]);
 		  $VALUE[$name]["USAGE"] = $words[1];
 		}
 		// }}}
 		
 		// {{{ Retreive SUP
-		if(eregi("SUP", $entry[0][$attrib][$i])) {
-		  $words = split("SUP", $entry[0][$attrib][$i]);
+		if(preg_match("/SUP/i", $entry[0][$attrib][$i])) {
+		  $words = explode("SUP", $entry[0][$attrib][$i]);
 		  if(! empty($words[1])) {
-			if(ereg("^ \(", $words[1])) {
-			  $words = split("\(", $words[1]);
-			  $words = split("\)", $words[1]);
+			if(preg_match("/^ \(/", $words[1])) {
+			  $words = explode("\(", $words[1]);
+			  $words = explode("\)", $words[1]);
 			  
 			  // Remove spaces
 			  $words = ereg_replace(" ", "", $words[0]);
-			  $words = split('\$', $words);
+			  $words = explode('\$', $words);
 			  
 			  for($j=0; $j < count($words); $j++)
 				$VALUE[$name]["SUP"][] = $words[$j];
 			} else {
-			  $words = split(" ",  $words[1]);
+			  $words = explode(" ",  $words[1]);
 			  
 			  // Remove spaces
 			  $VALUE[$name]["SUP"] = ereg_replace(" ", "", $words[1]);
@@ -763,32 +763,32 @@ function pql_get_subschema($attrib) {
 		// }}}
 		
 		// {{{ Retreive X-ORIGIN (Fedora Directory Server)
-		$words = split("X-ORIGIN", $entry[0][$attrib][$i]);
+		$words = explode("X-ORIGIN", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
-		  $words = split("\' ", $words[1]);
-		  $words = split(" \'", $words[0]);
+		  $words = explode("\' ", $words[1]);
+		  $words = explode(" \'", $words[0]);
 		  
 		  $VALUE[$name]["X-ORIGIN"] = $words[1];
 		}
 		// }}}
 
 		// {{{ Retreive SINGLE-VALUE
-		if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
+		if(preg_match("/SINGLE-VALUE/i", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["SINGLE-VALUE"] = 'TRUE';
 		// }}}
 		
 		// {{{ Retreive NO-USER-MODIFICATION
-		if(eregi("NO-USER-MODIFICATION", $entry[0][$attrib][$i]))
+		if(preg_match("/NO-USER-MODIFICATION/i", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["NO-USER-MODIFICATION"] = 'TRUE';
 		// }}}
 		
 		// {{{ Retreive X-BINARY-TRANSFER-REQUIRED
-		if(eregi("X-BINARY-TRANSFER-REQUIRED", $entry[0][$attrib][$i]))
+		if(preg_match("/X-BINARY-TRANSFER-REQUIRED/i", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["X-BINARY-TRANSFER-REQUIRED"] = 'TRUE';
 		// }}}
 		
 		// {{{ Retreive X-NOT-HUMAN-READABLE
-		if(eregi("X-NOT-HUMAN-READABLE", $entry[0][$attrib][$i]))
+		if(preg_match("/X-NOT-HUMAN-READABLE/i", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'TRUE';
 		// }}}
 	  }
@@ -880,7 +880,7 @@ function pql_get_rootdn($dn, $function = '') {
 	// there is at least FOUR possibilities (one for each and every branch - they can all be
 	// separate root DN's!
 	foreach($_SESSION["BASE_DN"] as $base) {
-	  if(eregi("$base\$", $dn))  {
+	  if(preg_match("/$base\$/i", $dn))  {
 		$counts++;
 		$DNs[] = $base;
 	  }
@@ -894,12 +894,12 @@ function pql_get_rootdn($dn, $function = '') {
 	  if(is_array($tmp)) {
 		// We got more than one namingContexts (i.e. an array). Go through each value...
 		foreach($tmp as $base) {
-		  if(eregi("$base\$", $dn))  {
+		  if(preg_match("/$base\$/i", $dn))  {
 			$counts++;
 			$DNs[] = $base;
 		  }
 		}
-	  } elseif(eregi($tmp, $dn)) {
+	  } elseif(preg_match("/$tmp/i", $dn)) {
 		// We've only got one namingContexts (i.e. not an array).
 		$counts++;
 		$DNs[] = $tmp;
@@ -949,7 +949,7 @@ function pql_get_rootdn($dn, $function = '') {
 	//
 	// Find the root dn the 'old fasioned' (ie,
 	// broken!) way.
-	$rootdn = split(',', $dn);
+	$rootdn = explode(',', $dn);
 	
 	if($rootdn[1]) {
 	  unset($rootdn[0]);
@@ -974,7 +974,7 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 	$sr     = @ldap_read($linkid, $dn, $object[0], array(pql_get_define("PQL_ATTR_OBJECTCLASS")));
 	$ocs    = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
 	for($j=0; $j < $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")]["count"]; $j++) {
-	  if(eregi('phpQLAdminBranch', $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")][$j]))
+	  if(preg_match('/phpQLAdminBranch/i', $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")][$j]))
 		$got_phpqladmin_objectclass_branch = 1;
 	  
 	  $objectclass[] = $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")][$j];
@@ -999,10 +999,10 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 	$ocs = pql_split_oldvalues($ocs);
 	foreach($ocs as $oc) {
 	  if($filter) {
-		if(!eregi('dcOrganizationNameForm', $oc))
+		if(!preg_match('/dcOrganizationNameForm/i', $oc))
 		  $entry .= "(objectClass=$oc)";
 	  } else {
-		if(eregi('phpQLAdminBranch', $oc))
+		if(preg_match('/phpQLAdminBranch/i', $oc))
 		  $got_phpqladmin_objectclass_branch = 1;
 		
 		$entry[] = $oc;

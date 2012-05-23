@@ -52,14 +52,14 @@ function attribute_init() {
 function attribute_print_form() {
     global $LANG, $error;
 
-	$dnparts = split(",", $_REQUEST["oldvalue"]);
+	$dnparts = explode(",", $_REQUEST["oldvalue"]);
 	for($i=1; $i < count($dnparts); $i++) {
 		$rdn .= $dnparts[$i];
 		if($dnparts[$i+1])
 		  $rdn .= ",";
 	}
 
-	$dnattrs = split("=", $dnparts[0]);
+	$dnattrs = explode("=", $dnparts[0]);
 	$len = strlen($dnattrs[1]);
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">

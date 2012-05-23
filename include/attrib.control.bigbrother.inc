@@ -56,7 +56,7 @@ function bigbrother_print_view($host) {
 <?php
 	} else {
 		foreach($_REQUEST["bigbrother"] as $addresses) {
-			$address = split(':', $addresses);
+			$address = explode(':', $addresses);
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$address[0]?></td>

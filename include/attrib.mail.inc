@@ -16,7 +16,7 @@ function attribute_check($type) {
 	$mail = $_POST["mail"];
     // Is it REALLY an email address (ie, does it have an "@" in there?)
 	// DLW: This change by side-effect should really be in the save code.
-    if(!ereg("@", $mail)) {
+    if(!preg_match("/@/", $mail)) {
 	  $mail = $mail . "@" . $defaultdomain;
 	  $_POST["mail"] = $mail;
 	}

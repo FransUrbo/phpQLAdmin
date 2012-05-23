@@ -36,7 +36,7 @@ function pql_control_update_domains($rootdn, $dn, $host, $domain = "", $type = "
   
   // {{{ Get the hostname (if we should add the hostname to each domain)
   if($host and ($host != "*") and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
-	$hostname = split("\.", $host);
+	$hostname = explode("\.", $host);
 	$hostname = pql_maybe_encode($hostname[0]);
   } else
 	$hostname = '';
@@ -158,7 +158,7 @@ function pql_control_update_domains($rootdn, $dn, $host, $domain = "", $type = "
 				  // }}}
 				} elseif(!$domain[0] and $domain[1]) {
 				  // {{{ We're ADDING a domainname. Add (all) the old one(s)
-				  if(eregi($value, $domain[1]))
+				  if(preg_match("/$value/i", $domain[1]))
 					$domain_to_add_already_exists = 1;
 
 				  $entry[$key][] = $value;

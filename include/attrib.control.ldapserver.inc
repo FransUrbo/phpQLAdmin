@@ -19,18 +19,18 @@ function ldapserver_check($type) {
 	  for($i=0; $i < count($_REQUEST["ldapserver"]); $i++) {
 		$server = $_REQUEST["ldapserver"][$i];
 
-		if(eregi('^ldap://', $server)) {
+		if(preg_match('/^ldap:\/\//i', $server)) {
 		  $uri = "ldap://";
 		  $server = eregi_replace($uri, '', $server);
-		} elseif(eregi('^ldaps://', $server)) {
+		} elseif(preg_match('/^ldaps:\/\//i', $server)) {
 		  $uri = "ldaps://";
 		  $server = eregi_replace($uri, '', $server);
-		} elseif(eregi('^ldapi://', $server)) {
+		} elseif(preg_match('/^ldapi:\/\//i', $server)) {
 		  $uri = "ldapi://";
 		  
 		  $server = eregi_replace($uri, '', $server);
 
-		  if(eregi('^/', $server))
+		  if(preg_match('/^\//', $server))
 			$_REQUEST["ldapserver"][$i] = $uri.urlencode($server);
 		}
 
@@ -117,7 +117,7 @@ function ldapserver_init($host) {
 	  $_REQUEST["ldaplogin_use"] = 1;
 	
 	// map different hostnames sperated by space to an array
-	$_REQUEST["ldapserver"] = split(" ", $_REQUEST["ldapserver"]);
+	$_REQUEST["ldapserver"] = explode(" ", $_REQUEST["ldapserver"]);
 	if(@empty($_REQUEST["srvcount"]))
 	  $_REQUEST["srvcount"] = count($_REQUEST["ldapserver"]) - 1;
 }

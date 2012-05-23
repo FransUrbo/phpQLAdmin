@@ -197,7 +197,7 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //		$branch = '%d%/';
 //	}
 //	
-//	if(! ereg("/$", $mailstore))
+//	if(! preg_match("/\/$/", $mailstore))
 //		// The base mail directory value doesn't end with a slash, add one.
 //		// The '$branch' variable will be empty for users, set if a branch.
 //		$mailstore = $mailstore . "/" . $branch . "%u%";
@@ -234,7 +234,7 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //	  // We're creating a branch, so add the domain to string
 //	  $branch = '%d%/';
 //	
-//	if(! ereg("/$", $mailstore))
+//	if(! preg_match("/\/$/", $mailstore))
 //		$mailstore = $mailstore . "/" . $branch . "%u%";
 //	elseif(!empty($branch))
 //		$mailstore = $mailstore . $branch . "%u%";
@@ -303,7 +303,7 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //
 //	// ----------------------------------------------
 //	// Add a trailing slash for Maildir's.
-//	if(! ereg("/$", $mailstore))
+//	if(! preg_match("/\/$/", $mailstore))
 //		$mailstore .= "/";
 //
 //	// Substitue the '%X%' values with real values...
@@ -341,7 +341,7 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //	  $branch = '%d%/';
 //	
 //  if(!empty($basemaildir)) {
-//	if(! ereg("/$", $basemaildir))
+//	if(! preg_match("/\/$/", $basemaildir))
 //	  $homedir = $homedir . "/" . $branch . "%u%";
 //	else
 //	  $homedir = $homedir . $branch . "%u%";
