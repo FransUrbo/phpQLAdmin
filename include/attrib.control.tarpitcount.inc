@@ -75,19 +75,19 @@ function tarpitcount_print_view($host) {
 	tarpitcount_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">tarpitcount, tarpitdelay (<?=$LANG->_('Tarpitting settings')?>)</th>
+    <th colspan="3" align="left">tarpitcount, tarpitdelay (<?php echo $LANG->_('Tarpitting settings')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Tarpitting settings')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["tarpitcount"]) { echo pql_complete_constant($LANG->_('Delay submitting after %value% RCPTO\'s'), array('value' => $_REQUEST["tarpitcount"])); } else { echo '<i>'.$LANG->_('Disabled').'</i>'; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TARPITCOUNT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITCOUNT")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Tarpitting settings')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["tarpitcount"]) { echo pql_complete_constant($LANG->_('Delay submitting after %value% RCPTO\'s'), array('value' => $_REQUEST["tarpitcount"])); } else { echo '<i>'.$LANG->_('Disabled').'</i>'; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TARPITCOUNT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITCOUNT")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Tarpit delay')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["tarpitdelay"]) { echo $_REQUEST["tarpitdelay"]; } else { echo $LANG->_('Default').': 5'; }?> <?=$LANG->_('Seconds', 4)?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TARPITDELAY")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITDELAY")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Tarpit delay')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["tarpitdelay"]) { echo $_REQUEST["tarpitdelay"]; } else { echo $LANG->_('Default').': 5'; }?> <?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TARPITDELAY")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITDELAY")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -99,35 +99,35 @@ function tarpitcount_print_view($host) {
 function tarpitcount_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">tarpitcount, tarpitdelay (<?=$LANG->_('Tarpitting settings')?>)</th>
+      <th colspan="3" align="left">tarpitcount, tarpitdelay (<?php echo $LANG->_('Tarpitting settings')?>)</th>
 <?php if($_REQUEST["attrib"] == "tarpitcount") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Tarpit count')?></td>
-          <td><?php echo pql_format_error_span($error["tarpitcount"]); ?><input type="text" name="tarpitcount" value="<?=$_REQUEST["tarpitcount"]?>"> RCPTOs</td>
+          <td class="title"><?php echo $LANG->_('Tarpit count')?></td>
+          <td><?php echo pql_format_error_span($error["tarpitcount"]); ?><input type="text" name="tarpitcount" value="<?php echo $_REQUEST["tarpitcount"]?>"> RCPTOs</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == "tarpitdelay") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Tarpit delay')?></td>
-          <td><?php echo pql_format_error_span($error["tarpitdelay"]); ?><input type="text" name="tarpitdelay" value="<?=$_REQUEST["tarpitdelay"]?>"> <?=$LANG->_('Seconds', 4)?></td>
+          <td class="title"><?php echo $LANG->_('Tarpit delay')?></td>
+          <td><?php echo pql_format_error_span($error["tarpitdelay"]); ?><input type="text" name="tarpitdelay" value="<?php echo $_REQUEST["tarpitdelay"]?>"> <?=$LANG->_('Seconds', 4)?></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Set tarpit count to 0 to disable tarpitting')?></td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('Set tarpit count to 0 to disable tarpitting')?></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
    </form>
 <?php
 }
@@ -190,13 +190,13 @@ function tarpitcount_help() {
 	// life with qmail-ldap (http://www.lifewithqmail.org/ldap/)
 ?>
 <?php if($_REQUEST["attrib"] == "tarpitcount") { ?>
-	<b><?=$LANG->_('Tarpit count')?></b>
+	<b><?php echo $LANG->_('Tarpit count')?></b>
 	<br>
 	The number of RCPT TOs you accept before you start tarpitting. Tarpitting means introducing an delay after each subsequent RCPT TO, therefore sending messages to lots of recipient takes a _lot_ of time and makes life for spammers harder.
 	Default: 0 (disabled)
 	<br><br>
 <?php } if($_REQUEST["attrib"] == "tarpitdelay") { ?>
-	<b><?=$LANG->_('Tarpit delay')?></b>
+	<b><?php echo $LANG->_('Tarpit delay')?></b>
 	<br>
 	The number of seconds of delay for tarpitting. Default: 5
 <?php }

@@ -104,11 +104,11 @@ if(is_array($computer_results)) {
   // {{{ Show this domains user access
 ?>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="POST">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_("Host Control Access")?>
+      <th colspan="3" align="left"><?php echo $LANG->_("Host Control Access")?>
         <tr class="c2">
-          <td class="title"><?=$LANG->_("Allow")?>&nbsp;</td>
+          <td class="title"><?php echo $LANG->_("Allow")?>&nbsp;</td>
 <?php
   if(isset($_REQUEST['userdn']) && isset($_REQUEST['uid'])) {
     // {{{ If user info is passed in the request string then their is no need to grab all the users from ldap
@@ -133,7 +133,7 @@ if(is_array($computer_results)) {
   // {{{ Host column
 ?>
 
-          <td class="title">&nbsp;<?=$LANG->_("access to physical host")."\n"?>&nbsp;</td>
+          <td class="title">&nbsp;<?php echo $LANG->_("access to physical host")."\n"?>&nbsp;</td>
           <td>
             <select name="computer">
 <?php
@@ -153,7 +153,7 @@ if(is_array($computer_results)) {
 
     <input type="hidden" name="view"   value="hostacl">
     <input type="hidden" name="action" value="add_user_to_host">
-    <input type="Submit" name="Submit" value="<?=$LANG->_("Add To Host ACL")?>">
+    <input type="Submit" name="Submit" value="<?php echo $LANG->_("Add To Host ACL")?>">
   </form>
 
 <?php

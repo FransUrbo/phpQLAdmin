@@ -38,35 +38,35 @@ function attribute_print_form() {
 	$_REQUEST[$attrib."_value"] = $tmp[1];
   }
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Add DHCP Statement')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Add DHCP Statement')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Statement')?></td>
+          <td class="title"><?php echo $LANG->_('Statement')?></td>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
-            <select name="<?=$attrib?>">
+            <select name="<?php echo $attrib?>">
               <option value="domain-name"<?php if($_REQUEST[$attrib] == "domain-name") { echo " SELECTED"; }?>>domain-name</option>
               <option value="domain-name-servers"<?php if($_REQUEST[$attrib] == "domain-name-servers") { echo " SELECTED"; }?>>domain-name-servers</option>
               <option value="broadcast-address"<?php if($_REQUEST[$attrib] == "broadcast-address") { echo " SELECTED"; }?>>broadcast-address</option>
               <option value="routers"<?php if($_REQUEST[$attrib] == "routers") { echo " SELECTED"; }?>>routers</option>
             </select>
-            <input type="input" name="<?=$attrib?>_value" value="<?=$_REQUEST[$attrib."_value"]?>">
+            <input type="input" name="<?php echo $attrib?>_value" value="<?=$_REQUEST[$attrib."_value"]?>">
           </td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"    value="1">
-    <input type="hidden" name="action"    value="<?=$_REQUEST["action"]?>">
-    <input type="hidden" name="attrib"    value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue"  value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="action"    value="<?php echo $_REQUEST["action"]?>">
+    <input type="hidden" name="attrib"    value="<?php echo $attrib?>">
+    <input type="hidden" name="oldvalue"  value="<?php echo $_REQUEST["oldvalue"]?>">
 
-    <input type="hidden" name="host"      value="<?=urlencode($_REQUEST["host"])?>">
-    <input type="hidden" name="servicedn" value="<?=urlencode($_REQUEST["servicedn"])?>">
-    <input type="hidden" name="view"      value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="host"      value="<?php echo urlencode($_REQUEST["host"])?>">
+    <input type="hidden" name="servicedn" value="<?php echo urlencode($_REQUEST["servicedn"])?>">
+    <input type="hidden" name="view"      value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

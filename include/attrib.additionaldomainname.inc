@@ -33,12 +33,12 @@ function attribute_init() {
 function attribute_print_form() {
     global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('additional domain name'), 'domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Additional domain name')?></td>
-          <td><?php echo pql_format_error_span($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?=$_REQUEST["additionaldomainname"]?>" size="20"></td>
+          <td class="title"><?php echo $LANG->_('Additional domain name')?></td>
+          <td><?php echo pql_format_error_span($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?php echo $_REQUEST["additionaldomainname"]?>" size="20"></td>
         </tr>
 <?php if(!function_exists("pql_control"))
 		require($_SESSION["path"]."/include/pql_control.inc");
@@ -65,15 +65,15 @@ function attribute_print_form() {
 
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$i?>" value="<?=$host?>"><?=pql_maybe_idna_decode($host)?><br>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?php echo $i?>" value="<?=$host?>"><?=pql_maybe_idna_decode($host)?><br>
 <?php	  			$i++;
 		  		}
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
-            <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>" value="<?=$i?>">
-            &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?php echo $i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
+            <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>" value="<?php echo $i?>">
+            &nbsp;<?php echo $LANG->_('If all left unset, no replication will take place')?>
 <?php		} else { ?>
-              &nbsp;<?=$LANG->_('Automatic replication configured')?>
+              &nbsp;<?php echo $LANG->_('Automatic replication configured')?>
 <?php		} ?>
           </td>
         </tr>
@@ -84,15 +84,15 @@ function attribute_print_form() {
 <?php		if(!pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$i?>" value="<?=$host?>"><?=pql_maybe_idna_decode($host)?><br>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?php echo $i?>" value="<?=$host?>"><?=pql_maybe_idna_decode($host)?><br>
 <?php	  			$i++;
 		  		}
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
-            <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>" value="<?=$i?>">
-            &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?php echo $i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
+            <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>" value="<?php echo $i?>">
+            &nbsp;<?php echo $LANG->_('If all left unset, no replication will take place')?>
 <?php 		} else { ?>
-              &nbsp;<?=$LANG->_('Automatic replication configured')?>
+              &nbsp;<?php echo $LANG->_('Automatic replication configured')?>
 <?php		} ?>
           </td>
         </tr>
@@ -100,7 +100,7 @@ function attribute_print_form() {
 <?php if(pql_get_define("PQL_CONF_BIND9_USE")) { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Create DNS template')?></td>
+          <td class="title"><?php echo $LANG->_('Create DNS template')?></td>
           <td><input type="checkbox" name="template"> Yes</td>
         </tr>
 <?php } ?>
@@ -108,14 +108,14 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit"   value="2">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="type"     value="<?=$_REQUEST["type"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["additionaldomainname"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="type"     value="<?php echo $_REQUEST["type"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["additionaldomainname"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

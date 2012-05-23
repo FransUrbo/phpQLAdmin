@@ -61,16 +61,16 @@ function doublebouncehost_print_view($host) {
     <th colspan="3" align="left">doublebouncehost, doublebounceto (Double bounce)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Receiver')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["doublebounceto"]) { echo $_REQUEST["doublebounceto"]; } else { echo $LANG->_('Default').": postmaster"; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DOUBLEBOUNCETO")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DOUBLEBOUNCETO")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Receiver')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["doublebounceto"]) { echo $_REQUEST["doublebounceto"]; } else { echo $LANG->_('Default').": postmaster"; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DOUBLEBOUNCETO")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DOUBLEBOUNCETO")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Host')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["doublebouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["doublebouncehost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'').")"; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Host')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["doublebouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["doublebouncehost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'').")"; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -83,24 +83,24 @@ function doublebouncehost_print_view($host) {
 function doublebouncehost_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Double bounce</th>
 <?php if($_REQUEST["attrib"] == "doublebouncehost") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Host')?></td>
-          <td><?php echo pql_format_error_span($error["doublebouncehost"]); ?><input type="text" name="doublebouncehost" value="<?=$_REQUEST["doublebouncehost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td class="title"><?php echo $LANG->_('Host')?></td>
+          <td><?php echo pql_format_error_span($error["doublebouncehost"]); ?><input type="text" name="doublebouncehost" value="<?php echo $_REQUEST["doublebouncehost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == "doublebounceto") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Receiver')?></td>
-          <td><?php echo pql_format_error_span($error["doublebounceto"]); ?><input type="text" name="doublebounceto" value="<?=$_REQUEST["doublebounceto"]?>"> <?=$LANG->_('Default')?>: postmaster</td>
+          <td class="title"><?php echo $LANG->_('Receiver')?></td>
+          <td><?php echo pql_format_error_span($error["doublebounceto"]); ?><input type="text" name="doublebounceto" value="<?php echo $_REQUEST["doublebounceto"]?>"> <?=$LANG->_('Default')?>: postmaster</td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to use default configuration')?>.
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('Leave the fields empty to use default configuration')?>.
           </td>
         </tr>
       </th>
@@ -108,11 +108,11 @@ function doublebouncehost_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }
@@ -173,13 +173,13 @@ function doublebouncehost_help() {
 	global $LANG;
 ?>
 <?php if($_REQUEST["attrib"] == "doublebouncehost") { ?>
-	<b><?=$LANG->_('Host')?> (doublebouncehost)</b><br>
-	Double-bounce host. Default: <b><?=$_REQUEST["mxhost"]?></b> (taken from 'me').
+	<b><?php echo $LANG->_('Host')?> (doublebouncehost)</b><br>
+	Double-bounce host. Default: <b><?php echo $_REQUEST["mxhost"]?></b> (taken from 'me').
 	If that is supplied; otherwise the literal name doublebouncehost, which is
 	probably not what you want.Host name of double bounce sender.
 	<br><br>
 <?php } if($_REQUEST["attrib"] == "doublebounceto") { ?>
-	<b><?=$LANG->_('Receiver')?> (doublebounceto)</b>
+	<b><?php echo $LANG->_('Receiver')?> (doublebounceto)</b>
 	<br>
 	User to receive double-bounces.  Default:  postmaster.
 	If a single-bounce notice is permanently undeliverable,

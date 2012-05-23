@@ -64,7 +64,7 @@ function attribute_print_form() {
 	$defaultdomain		  = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 	$additionaldomainname = $_pql->get_attribute($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
 <?php
@@ -93,24 +93,24 @@ function attribute_print_form() {
     }
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Email')?></td>
+        <td class="title"><?php echo $LANG->_('Email')?></td>
         <td>
           <?php echo pql_format_error_span($error[$attrib]); ?>
 <?php	if(!preg_match('/^rfc822/i', $attrib)) { ?>
-          <input type="text" name="<?=$attrib?>" value="">
+          <input type="text" name="<?php echo $attrib?>" value="">
 <?php	 	if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
-              <option value="<?=$defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
+              <option value="<?php echo $defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
 <?php			foreach($additionaldomainname as $additional) { ?>
-              <option value="<?=$additional?>"><?=pql_maybe_idna_decode($additional)?></option>
+              <option value="<?php echo $additional?>"><?=pql_maybe_idna_decode($additional)?></option>
 <?php   		} ?>
             </select>
 <?php 		} else { ?>
-            <b>@<?=pql_maybe_idna_decode($defaultdomain)?></b>
+            <b>@<?php echo pql_maybe_idna_decode($defaultdomain)?></b>
 <?php 		}
 		} else {
 ?>
-          <input type="text" name="<?=$attrib?>" value="" size="40">
+          <input type="text" name="<?php echo $attrib?>" value="" size="40">
 <?php	} ?>
         </td>
       </tr>
@@ -118,21 +118,21 @@ function attribute_print_form() {
       <tr class="subtitle">
         <td colspan="2">
 <?php if(!preg_match('/^rfc822/i', $attrib)) { ?>
-          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('An alias must be unique to the domain')?></td>
+          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo $LANG->_('An alias must be unique to the domain')?></td>
 <?php } ?>
       </tr>
     </table>
 
     <input type="hidden" name="submit"        value="1">
-    <input type="hidden" name="attrib"        value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue"      value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"        value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"        value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"          value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="defaultdomain" value="<?=$defaultdomain?>">
+    <input type="hidden" name="attrib"        value="<?php echo $attrib?>">
+    <input type="hidden" name="oldvalue"      value="<?php echo $_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"        value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"        value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"          value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"          value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="defaultdomain" value="<?php echo $defaultdomain?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

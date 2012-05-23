@@ -51,14 +51,14 @@ function custombouncetext_print_view($host) {
 	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">custombouncetext (<?=$LANG->_('Additional bounce text')?>) for host <u><?=$cn?></u></th>
+    <th colspan="3" align="left">custombouncetext (<?php echo $LANG->_('Additional bounce text')?>) for host <u><?=$cn?></u></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Message')?></td>
+        <td class="title"><?php echo $LANG->_('Message')?></td>
         <td><?php echo nl2br($_REQUEST["custombouncetext"]); ?></td>
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=custombouncetext"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=custombouncetext"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
@@ -70,35 +70,35 @@ function custombouncetext_print_view($host) {
 function custombouncetext_print_form() {
 	global $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">custombouncetext (<?=$LANG->_('Additional bounce text')?>)</th>
+      <th colspan="3" align="left">custombouncetext (<?php echo $LANG->_('Additional bounce text')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Use additional message')?></td>
+          <td class="title"><?php echo $LANG->_('Use additional message')?></td>
           <td>
-            <input type="radio" name="use_custombouncetext" value="0" <?php if($_REQUEST["use_custombouncetext"] == "0"){ echo "checked"; }?>> <?=$LANG->_('No')?>
-            <input type="radio" name="use_custombouncetext" value="1" <?php if($_REQUEST["use_custombouncetext"] == "1"){ echo "checked"; }?>> <?=$LANG->_('Yes')?>
+            <input type="radio" name="use_custombouncetext" value="0" <?php if($_REQUEST["use_custombouncetext"] == "0"){ echo "checked"; }?>> <?php echo $LANG->_('No')?>
+            <input type="radio" name="use_custombouncetext" value="1" <?php if($_REQUEST["use_custombouncetext"] == "1"){ echo "checked"; }?>> <?php echo $LANG->_('Yes')?>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Message')?></td>
-          <td><?php echo pql_format_error_span($error["custombouncetext"]); ?><textarea cols="40" rows="10" name="custombouncetext"><?=$_REQUEST["custombouncetext"]?></textarea></td>
+          <td class="title"><?php echo $LANG->_('Message')?></td>
+          <td><?php echo pql_format_error_span($error["custombouncetext"]); ?><textarea cols="40" rows="10" name="custombouncetext"><?php echo $_REQUEST["custombouncetext"]?></textarea></td>
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Additional custom text in bounce messages, eg. for providing contact information')?>.</td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('Additional custom text in bounce messages, eg. for providing contact information')?>.</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

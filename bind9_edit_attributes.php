@@ -45,7 +45,7 @@ function attribute_forward($msg) {
 }
 // }}}
 ?>
-    <span class="title1"><?=$LANG->_('Change DNS zone value')?></span>
+    <span class="title1"><?php echo $LANG->_('Change DNS zone value')?></span>
     <br><br>
 
 <?php

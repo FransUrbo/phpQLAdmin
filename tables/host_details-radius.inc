@@ -40,17 +40,17 @@ foreach($attribs as $key => $attrib) {
 // }}}
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_("RADIUS Controls")."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_("RADIUS Controls")."\n"?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">RDN</td>
-          <td><?=$_REQUEST["host"]?></td>
+          <td><?php echo $_REQUEST["host"]?></td>
           <td></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_("Filter ID")?></td>
+          <td class="title"><?php echo $LANG->_("Filter ID")?></td>
           <td><?php if(@$radiusfilterid) { echo "$radiusfilterid"; } else { echo "<i>".$LANG->_('Not set')."</i>"; } ?></td>
-          <td align="right"><?=$radiusfilterid_link?></td>
+          <td align="right"><?php echo $radiusfilterid_link?></td>
         </tr>
       </th>
     </table>

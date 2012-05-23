@@ -19,20 +19,20 @@ function attribute_print_form() {
 
   $attrib = $_REQUEST["attrib"];
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Change password policy')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Change password policy')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password policy')?></td>
+          <td class="title"><?php echo $LANG->_('Password policy')?></td>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
 <?php if(is_array($ppolicies)) {
 		for($i=0; $ppolicies[$i]; $i++) {
 ?>
-            <input type="radio" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>">
+            <input type="radio" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>">
 <?php	} ?>
 <?php } else { ?>
-            <?=$LANG->_('No password policies defined')?>.
+            <?php echo $LANG->_('No password policies defined')?>.
 <?php } ?>
           </td>
         </tr>
@@ -40,15 +40,15 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $attrib?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
 <?php if(is_array($ppolicies)) { ?>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
 <?php } ?>
   </form>
 <?php

@@ -65,19 +65,19 @@ function timeoutconnect_print_view($host) {
 	timeoutconnect_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">Timeoutconnect, timeoutremote (<?=$LANG->_('Timeouts')?>)</th>
+    <th colspan="3" align="left">Timeoutconnect, timeoutremote (<?php echo $LANG->_('Timeouts')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('SMTP connection')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["timeoutconnect"]) { echo $_REQUEST["timeoutconnect"]; } else { echo $LANG->_('Default', 4).': &nbsp;&nbsp;&nbsp;&nbsp;60 '; }?><?=$LANG->_('Seconds', 4)?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTCONNECT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTCONNECT")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('SMTP connection')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["timeoutconnect"]) { echo $_REQUEST["timeoutconnect"]; } else { echo $LANG->_('Default', 4).': &nbsp;&nbsp;&nbsp;&nbsp;60 '; }?><?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTCONNECT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTCONNECT")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Remote server')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["timeoutremote"]) { echo $_REQUEST["timeoutremote"]; } else { echo $LANG->_('Default', 4).': 1200 '; }?><?=$LANG->_('Seconds', 4)?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTREMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTREMOTE")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Remote server')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["timeoutremote"]) { echo $_REQUEST["timeoutremote"]; } else { echo $LANG->_('Default', 4).': 1200 '; }?><?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTREMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTREMOTE")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -92,35 +92,35 @@ function timeoutconnect_print_form() {
 	$string  = $LANG->_('Seconds', 4) . ". ";
 	$string .= $LANG->_('Default');
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">timeoutconnect, timeoutremote (<?=$LANG->_('Timeouts')?>)</th>
+      <th colspan="3" align="left">timeoutconnect, timeoutremote (<?php echo $LANG->_('Timeouts')?>)</th>
 <?php if($_REQUEST["attrib"] == "timeoutconnect") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('SMTP connection')?></td>
-          <td><?php echo pql_format_error_span($error["timeoutconnect"]); ?><input type="text" name="timeoutconnect" value="<?=$_REQUEST["timeoutconnect"]?>"><?=$string?>: 60</td>
+          <td class="title"><?php echo $LANG->_('SMTP connection')?></td>
+          <td><?php echo pql_format_error_span($error["timeoutconnect"]); ?><input type="text" name="timeoutconnect" value="<?php echo $_REQUEST["timeoutconnect"]?>"><?=$string?>: 60</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == "timeoutremote") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Remote server')?></td>
-          <td><?php echo pql_format_error_span($error["timeoutremote"]); ?><input type="text" name="timeoutremote" value="<?=$_REQUEST["timeoutremote"]?>"> <?=$string?>: 1200</td>
+          <td class="title"><?php echo $LANG->_('Remote server')?></td>
+          <td><?php echo pql_format_error_span($error["timeoutremote"]); ?><input type="text" name="timeoutremote" value="<?php echo $_REQUEST["timeoutremote"]?>"> <?=$string?>: 1200</td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"> <?=$LANG->_('Leave the fields empty to set the default values')?></td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"> <?php echo $LANG->_('Leave the fields empty to set the default values')?></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

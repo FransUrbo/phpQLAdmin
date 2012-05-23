@@ -42,7 +42,7 @@ function attribute_print_form() {
 	$url["domain"] = urlencode($domain);
 	$url["user"]   = urlencode($user);
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <?php if($_REQUEST["oldvalue"] == ""){echo $LANG->_('Create new forwarding address');}else{echo $LANG->_('Change forwarding address');} ?>
@@ -57,7 +57,7 @@ function attribute_print_form() {
 	}
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Forward to')?></td>
+        <td class="title"><?php echo $LANG->_('Forward to')?></td>
         <td>
           <?php echo pql_format_error_span($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value="">
         </td>
@@ -72,27 +72,27 @@ function attribute_print_form() {
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Force no local delivery')?></td>
+        <td class="title"><?php echo $LANG->_('Force no local delivery')?></td>
         <td><input type="checkbox" name="force_no_local_delivery"></td>
       </tr>
 
       <tr class="subtitle">
         <td colspan="2">
-          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_("If \bForce no local delivery\B isn't set, a copy will be saved in the local mailbox.")?>
+          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo $LANG->_("If \bForce no local delivery\B isn't set, a copy will be saved in the local mailbox.")?>
         </td>
       </tr>
 <?php } ?>
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 
 <?php

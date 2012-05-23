@@ -121,60 +121,60 @@ if(($error == 'true') or !$_REQUEST["type"] or
 
   <br><br>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
 <?php if($_REQUEST["virthost"]) {
 		// {{{ Input for a Virtual Host Location Object
 ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host location'))); ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Location mount point')?></td>
-          <td><?php echo pql_format_error_span($error_text["mountpoint"]); ?><input type="text" name="mountpoint" size="40" value="<?=$_REQUEST["mountpoint"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Location mount point')?></td>
+          <td><?php echo pql_format_error_span($error_text["mountpoint"]); ?><input type="text" name="mountpoint" size="40" value="<?php echo $_REQUEST["mountpoint"]?>"></td>
         </tr>
 
         <!-- -------------------- -->
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Access order')?></td>
+          <td class="title"><?php echo $LANG->_('Access order')?></td>
           <td>
             <select name="access_order">
-              <option value="deny_allow"><?=$LANG->_('Deny, Allow')?></option>
-              <option value="allow_deny"><?=$LANG->_('Allow, Deny')?></option>
+              <option value="deny_allow"><?php echo $LANG->_('Deny, Allow')?></option>
+              <option value="allow_deny"><?php echo $LANG->_('Allow, Deny')?></option>
             </select>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Access (Deny)')?></td>
-          <td><?php echo pql_format_error_span($error_text["access_deny"]); ?><input type="text" name="access_deny" size="40" value="<?=$_REQUEST["access_deny"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Access (Deny)')?></td>
+          <td><?php echo pql_format_error_span($error_text["access_deny"]); ?><input type="text" name="access_deny" size="40" value="<?php echo $_REQUEST["access_deny"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Access (Allow)')?></td>
-          <td><?php echo pql_format_error_span($error_text["access_allow"]); ?><input type="text" name="access_allow" size="40" value="<?=$_REQUEST["access_allow"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Access (Allow)')?></td>
+          <td><?php echo pql_format_error_span($error_text["access_allow"]); ?><input type="text" name="access_allow" size="40" value="<?php echo $_REQUEST["access_allow"]?>"></td>
         </tr>
 
         <!-- -------------------- -->
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Options')?></td>
+          <td class="title"><?php echo $LANG->_('Options')?></td>
           <td>
             <!-- See http://httpd.apache.org/docs/1.3/mod/core.html -->
             <?php echo pql_format_error_span($error_text["options"]); ?>
-            <input type="checkbox" name="all" CHECKED><?=$LANG->_('All')?><br>
-            <input type="checkbox" name="index"><?=$LANG->_('Indexes')?><br>
-            <input type="checkbox" name="multiview"><?=$LANG->_('MultiViews')?><br>
-            <input type="checkbox" name="execcgi"><?=$LANG->_('ExecCGI')?><br>
-            <input type="checkbox" name="followsym"><?=$LANG->_('FollowSymlinks')?><br>
-            <input type="checkbox" name="includes"><?=$LANG->_('Includes')?><br>
-            <input type="checkbox" name="includesnoexec"><?=$LANG->_('IncludesNOEXEC')?><br>
-            <input type="checkbox" name="symlinksifownermatch"><?=$LANG->_('SymLinksIfOwnerMatch')?><br>
+            <input type="checkbox" name="all" CHECKED><?php echo $LANG->_('All')?><br>
+            <input type="checkbox" name="index"><?php echo $LANG->_('Indexes')?><br>
+            <input type="checkbox" name="multiview"><?php echo $LANG->_('MultiViews')?><br>
+            <input type="checkbox" name="execcgi"><?php echo $LANG->_('ExecCGI')?><br>
+            <input type="checkbox" name="followsym"><?php echo $LANG->_('FollowSymlinks')?><br>
+            <input type="checkbox" name="includes"><?php echo $LANG->_('Includes')?><br>
+            <input type="checkbox" name="includesnoexec"><?php echo $LANG->_('IncludesNOEXEC')?><br>
+            <input type="checkbox" name="symlinksifownermatch"><?php echo $LANG->_('SymLinksIfOwnerMatch')?><br>
           </td>
         </tr>
 
         <input type="hidden" name="type"     value="location">
-        <input type="hidden" name="server"   value="<?=urlencode($_REQUEST["server"])?>">
-        <input type="hidden" name="virthost" value="<?=urlencode($_REQUEST["virthost"])?>">
+        <input type="hidden" name="server"   value="<?php echo urlencode($_REQUEST["server"])?>">
+        <input type="hidden" name="virthost" value="<?php echo urlencode($_REQUEST["virthost"])?>">
 <?php
 		// }}}
 
@@ -213,37 +213,37 @@ if(($error == 'true') or !$_REQUEST["type"] or
 ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host'))); ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Server FQDN')?></td>
-          <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?=$serverurl?>"></td>
+          <td class="title"><?php echo $LANG->_('Server FQDN')?></td>
+          <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?php echo $serverurl?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Server IP[:PORT]')?></td>
-          <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="serverip" size="40" value="<?=$serverip?>"></td>
+          <td class="title"><?php echo $LANG->_('Server IP[:PORT]')?></td>
+          <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="serverip" size="40" value="<?php echo $serverip?>"></td>
         </tr>
 <?php if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"] and is_array($servers) and (count($servers) > 1)) { ?>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=$LANG->_('The IP:PORT input is ignore if \imore\I than one\n\bAdd to existing server\B option below is selected!')?></td>
+          <td><?php echo $LANG->_('The IP:PORT input is ignore if \imore\I than one\n\bAdd to existing server\B option below is selected!')?></td>
         </tr>
 
-        <?=pql_format_table_empty(2)?>
+        <?php echo pql_format_table_empty(2)?>
 <?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Server Administrator')?></td>
-          <td><?php echo pql_format_error_span($error_text["serveradmin"]); ?><input type="text" name="serveradmin" size="40" value="<?=$_REQUEST["serveradmin"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Server Administrator')?></td>
+          <td><?php echo pql_format_error_span($error_text["serveradmin"]); ?><input type="text" name="serveradmin" size="40" value="<?php echo $_REQUEST["serveradmin"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Document root')?></td>
-          <td><?php echo pql_format_error_span($error_text["documentroot"]); ?><input type="text" name="documentroot" size="40" value="<?=$_REQUEST["documentroot"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Document root')?></td>
+          <td><?php echo pql_format_error_span($error_text["documentroot"]); ?><input type="text" name="documentroot" size="40" value="<?php echo $_REQUEST["documentroot"]?>"></td>
         </tr>
 <?php if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"] and is_array($servers) and (count($servers) > 1)) { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Add to existing server')?></td>
+          <td class="title"><?php echo $LANG->_('Add to existing server')?></td>
           <td>
             <?php
 			$i = 1;
@@ -257,20 +257,20 @@ if(($error == 'true') or !$_REQUEST["type"] or
 					$mark = ' CHECKED';
 				}
 ?>
-            <input type="checkbox" name="host_<?=$i?>" value="<?=urlencode($server_dn)?>"<?=$mark?>><b><?=$server_fqdn?></b><br>
+            <input type="checkbox" name="host_<?php echo $i?>" value="<?=urlencode($server_dn)?>"<?=$mark?>><b><?=$server_fqdn?></b><br>
 <?php		  } else { ?>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><?=$server_fqdn?></b>&nbsp;<font color=red>(<?=$LANG->_('Preselected')?>)</font><br>
-            <input type="hidden"   name="host_<?=$i?>" value="<?=urlencode($server_dn)?>">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><?php echo $server_fqdn?></b>&nbsp;<font color=red>(<?=$LANG->_('Preselected')?>)</font><br>
+            <input type="hidden"   name="host_<?php echo $i?>" value="<?=urlencode($server_dn)?>">
 <?php		  }
 
 			  $i++;
 	 		}
 ?>
-            <input type="hidden"   name="hosts"  value="<?=count($servers)?>">
+            <input type="hidden"   name="hosts"  value="<?php echo count($servers)?>">
           </td>
         </tr>
 <?php	} else { ?>
-        <input type="hidden" name="host_1" value="<?=urlencode($_REQUEST["server"])?>">
+        <input type="hidden" name="host_1" value="<?php echo urlencode($_REQUEST["server"])?>">
         <input type="hidden" name="hosts" value="1">
 <?php	} ?>
         <input type="hidden" name="type" value="vrtsrv">
@@ -280,8 +280,8 @@ if(($error == 'true') or !$_REQUEST["type"] or
 			// where the specific DNS domain is located)
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Create DNS object')?></td>
-          <td><input type="checkbox" name="dns" CHECKED>&nbsp;<?=$LANG->_('Yes')?></td>
+          <td class="title"><?php echo $LANG->_('Create DNS object')?></td>
+          <td><input type="checkbox" name="dns" CHECKED>&nbsp;<?php echo $LANG->_('Yes')?></td>
         </tr>
 
 <?php	}
@@ -291,8 +291,8 @@ if(($error == 'true') or !$_REQUEST["type"] or
 			// where the specific DNS domain is located)
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Update QLC object(s)')?></td>
-          <td><input type="checkbox" name="qlc" CHECKED>&nbsp;<?=$LANG->_('Yes')?></td>
+          <td class="title"><?php echo $LANG->_('Update QLC object(s)')?></td>
+          <td><input type="checkbox" name="qlc" CHECKED>&nbsp;<?php echo $LANG->_('Yes')?></td>
         </tr>
 
 <?php	}
@@ -309,13 +309,13 @@ if(($error == 'true') or !$_REQUEST["type"] or
 ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('web server'))); ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Server FQDN')?></td>
+          <td class="title"><?php echo $LANG->_('Server FQDN')?></td>
           <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?php if($_REQUEST["serverurl"]) { echo $_REQUEST["serverurl"]; } else { echo "$server_reference"; } ?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Listen port')?></td>
-          <td><?php echo pql_format_error_span($error_text["serverport"]); ?><input type="text" name="serverport" size="40" value="<?=$_REQUEST["serverport"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Listen port')?></td>
+          <td><?php echo pql_format_error_span($error_text["serverport"]); ?><input type="text" name="serverport" size="40" value="<?php echo $_REQUEST["serverport"]?>"></td>
         </tr>
 
         <input type="hidden" name="type" value="websrv">
@@ -328,17 +328,17 @@ if(($error == 'true') or !$_REQUEST["type"] or
 
     <input type="hidden" name="submit" value="submit">
     <input type="hidden" name="action" value="add">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="host"   value="<?=urlencode($_REQUEST["host"])?>">
-    <input type="hidden" name="server" value="<?=urlencode($_REQUEST["server"])?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="host"   value="<?php echo urlencode($_REQUEST["host"])?>">
+    <input type="hidden" name="server" value="<?php echo urlencode($_REQUEST["server"])?>">
 <?php if(@$_REQUEST["rootdn"]) { ?>
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
 <?php } ?>
 <?php if(@$_REQUEST["domain"]) { ?>
-    <input type="hidden" name="domain" value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="domain" value="<?php echo urlencode($_REQUEST["domain"])?>">
 <?php } ?>
 <?php if(@$_REQUEST["ref"]) { ?>
-    <input type="hidden" name="ref"    value="<?=urlencode($_REQUEST["ref"])?>">
+    <input type="hidden" name="ref"    value="<?php echo urlencode($_REQUEST["ref"])?>">
 <?php } ?>
     <br>
     <input type="submit" value="Create">

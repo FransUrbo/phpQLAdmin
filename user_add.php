@@ -274,9 +274,9 @@ switch($_REQUEST["page_curr"]) {
 	  if(!is_array($templates)) {
 		include($_SESSION["path"]."/header.html");
 ?>
-  <span class="title1"><?=$LANG->_('No user templates')?></span>
+  <span class="title1"><?php echo $LANG->_('No user templates')?></span>
   <br><br>
-  <?=$LANG->_('You do not have any user templates defined. As of phpQLAdmin version 2.1.4, this is the new way of doing things. No more hard coded stuff! Please go to <a href="config_detail.php?view=template">the template editor</a> and define some...')?>
+  <?php echo $LANG->_('You do not have any user templates defined. As of phpQLAdmin version 2.1.4, this is the new way of doing things. No more hard coded stuff! Please go to <a href="config_detail.php?view=template">the template editor</a> and define some...')?>
 <?php
 		die();
 	  }
@@ -299,10 +299,10 @@ switch($_REQUEST["page_curr"]) {
 	  if(!$attrib_is_availible) {
 		include("./header.html");
 ?>
-  <span class="title1"><?=pql_complete_constant($LANG->_('Attribute %attrib% is not availible.'), array("attrib" => pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])))?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Attribute %attrib% is not availible.'), array("attrib" => pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])))?></span>
   <br><br>
   Sorry, but the attribute you're choosen to use to reference users 
-  (<b><?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])?></b>)
+  (<b><?php echo pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])?></b>)
   with isn't availible as a <i>MUST</i> nor a <i>MAY</i> in any of the defined
   user templates.
   <p>
@@ -328,7 +328,7 @@ switch($_REQUEST["page_curr"]) {
 			// We have reached the maximum amount of users.
 			include($_SESSION["path"]."/header.html");
 ?>
-  <span class="title1"><?=pql_complete_constant($LANG->_('Maximum amount (%max%) of users reached'), array("max" => $maxusers))?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Maximum amount (%max%) of users reached'), array("max" => $maxusers))?></span>
   <br><br>
   Sorry, but the maximum amount of users have been reached in this domain. You are not allowed
   to create more. Please talk to your administrator if you think this is wrong.

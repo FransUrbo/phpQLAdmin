@@ -82,14 +82,14 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
     </tr>
 
     <tr align="center">
-      <td class="title1"><?=$LANG->_('Please login')?></td>
+      <td class="title1"><?php echo $LANG->_('Please login')?></td>
     </tr>
   </table>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method=post name="phpqladmin" accept-charset="UTF-8">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method=post name="phpqladmin" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0" align=center>
       <tr>
-        <td><?=$LANG->_('LDAP server')?>:</td>
+        <td><?php echo $LANG->_('LDAP server')?>:</td>
         <td align="left">
 <?php
 	if(eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
@@ -102,7 +102,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 			// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 			$host[0] = urldecode($host[0]);
 ?>
-            <option value="<?=$server?>"><?=$host[0]?><?php if(!eregi('^ldapi:', $host[0])) { ?>:<?=$host[1]?><?php } ?></option>
+            <option value="<?php echo $server?>"><?=$host[0]?><?php if(!eregi('^ldapi:', $host[0])) { ?>:<?=$host[1]?><?php } ?></option>
 <?php	} ?>
           </select>
 <?php
@@ -112,8 +112,8 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 		// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 		$server[0] = urldecode($server[0]);
 ?>
-        <b><?=$server[0].":".$server[1]?></b>
-        <input type="hidden" name="server" value="<?=$_SESSION["USER_HOST"]?>">
+        <b><?php echo $server[0].":".$server[1]?></b>
+        <input type="hidden" name="server" value="<?php echo $_SESSION["USER_HOST"]?>">
 <?php
 	}
 ?>
@@ -121,16 +121,16 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
       <tr>
 
           <tr>
-            <td bgcolor="#D0DCE0"><b><?=$LANG->_('Login ID')?>:</b></td>
-            <td><input type=text name="uname" value="<?=@$_GET["uname"]?>" size="30"></td>
+            <td bgcolor="#D0DCE0"><b><?php echo $LANG->_('Login ID')?>:</b></td>
+            <td><input type=text name="uname" value="<?php echo @$_GET["uname"]?>" size="30"></td>
           </tr>
 
           <tr>
-             <td bgcolor="#D0DCE0"><b><?=$LANG->_('Password')?>:</b></td>
+             <td bgcolor="#D0DCE0"><b><?php echo $LANG->_('Password')?>:</b></td>
              <td><input type=password name="passwd" size="30" onChange="this.form.submit()" autocomplete="OFF"></td>
           </tr>
 
-          <?=pql_format_table_empty(2)?>
+          <?php echo pql_format_table_empty(2)?>
 
           <tr>
             <td></td>

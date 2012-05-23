@@ -11,24 +11,24 @@ if(empty($_REQUEST["submit"])) {
   // scope=subtree. Ask for inclusion of operational attributes and if to follow referrals
   include($_SESSION["path"]."/header.html");
 ?>
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-      <input type="hidden" name="scope" value="<?=$_REQUEST["scope"]?>">
-      <input type="hidden" name="dn"    value="<?=urlencode($_REQUEST["dn"])?>">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
+      <input type="hidden" name="scope" value="<?php echo $_REQUEST["scope"]?>">
+      <input type="hidden" name="dn"    value="<?php echo urlencode($_REQUEST["dn"])?>">
 
-      <span class="title3"><?=$LANG->_('Search options')?></span><br>
+      <span class="title3"><?php echo $LANG->_('Search options')?></span><br>
       <!-- TODO: The code to follow referrals isn''t implemented in 'include/pql.inc:search()' -->
-      <!-- <input type="checkbox" name="referrals"> <?=$LANG->_('Follow referrals')?><br> -->
-      <input type="checkbox" name="operationals" CHECKED> <?=$LANG->_('Include operational attributes')?><br>
+      <!-- <input type="checkbox" name="referrals"> <?php echo $LANG->_('Follow referrals')?><br> -->
+      <input type="checkbox" name="operationals" CHECKED> <?php echo $LANG->_('Include operational attributes')?><br>
 
       <p>
 
-      <span class="title3"><?=$LANG->_('Output format/destination')?></span><br>
+      <span class="title3"><?php echo $LANG->_('Output format/destination')?></span><br>
       <input type="radio" name="output" value="browser" CHECKED>Output to browser (in this frame)<br>
       <input type="radio" name="output" value="file">Save file locally<br>
 
       <br>
 
-      <input type="submit" name="submit"   value="<?=$LANG->_('Go')?>">
+      <input type="submit" name="submit"   value="<?php echo $LANG->_('Go')?>">
     </form>
   </body>
 </html>
@@ -100,10 +100,10 @@ if(empty($_REQUEST["submit"])) {
 		print $LDIF;
 	} else { 
 ?>
-<?=pql_complete_constant($LANG->_('Dumping DN %dn% with search scope \b%scope%\B'), array('dn' => urldecode($_REQUEST["dn"]), 'scope' => $_REQUEST["scope"]))?>
+<?php echo pql_complete_constant($LANG->_('Dumping DN %dn% with search scope \b%scope%\B'), array('dn' => urldecode($_REQUEST["dn"]), 'scope' => $_REQUEST["scope"]))?>
 <pre>
 ----- s n i p -----
-<?=$LDIF?>
+<?php echo $LDIF?>
 ----- s n i p -----
 </pre>
 <?php

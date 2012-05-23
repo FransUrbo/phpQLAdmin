@@ -22,7 +22,7 @@ if(!$_REQUEST["dns"]) {
 	  $location =  $_pql->get_dn($virt_host, pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")."=".$_REQUEST["hostdir"]);
 	  if(is_array($location)) {
 ?>
-  <span class="title1"><?=pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'host location'))?>: <?=$_REQUEST["virthost"]?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'host location'))?>: <?=$_REQUEST["virthost"]?></span>
 <?php
 		$dns = array($location[0]);
 	  } else
@@ -38,7 +38,7 @@ if(!$_REQUEST["dns"]) {
 	if(is_array($virt_host)) {
 	  $virt_host = $virt_host[0];
 ?>
-  <span class="title1"><?=pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'virtual host'))?>: <?=$_REQUEST["virthost"]?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'virtual host'))?>: <?=$_REQUEST["virthost"]?></span>
 <?php
 	  
 	  // Find all objects below this virtual host
@@ -52,7 +52,7 @@ if(!$_REQUEST["dns"]) {
 	// Get the server reference for this web server
 	$server_reference = $_pql->get_attribute($_REQUEST["server"], pql_get_define("PQL_ATTR_CN"));
 ?>
-  <span class="title1"><?=pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'web server'))?>: <?=$server_reference?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'web server'))?>: <?=$server_reference?></span>
 <?php
 	// Find all objects below this web server
 	$dns = $_pql->get_dn($_REQUEST["server"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
@@ -63,7 +63,7 @@ if(!$_REQUEST["dns"]) {
 	// Get the server reference for this physical server
 	$server_reference = $_pql->get_attribute($_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 ?>
-  <span class="title1"><?=pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'physical host'))?>: <?=$server_reference?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => 'physical host'))?>: <?=$server_reference?></span>
 <?php
 	// Find all objects below this physical host
 	$dns = $_pql->get_dn($_REQUEST["host"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
@@ -176,20 +176,20 @@ if(isset($_REQUEST["ok"])) {
 <?php } ?>
     <p>
     <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="GET">
-      <?=$LANG->_('Delete any DNS host entries?')?>&nbsp;
-      <input type="radio" name="del_dns_host" value="1"<?php if(!@$_REQUEST["replicas"]) { echo " CHECKED"; }?>>&nbsp;<?=$LANG->_('Yes')?>
-      <input type="radio" name="del_dns_host" value="0"<?php if( @$_REQUEST["replicas"]) { echo " CHECKED"; }?>>&nbsp;<?=$LANG->_('No')?>
+      <?php echo $LANG->_('Delete any DNS host entries?')?>&nbsp;
+      <input type="radio" name="del_dns_host" value="1"<?php if(!@$_REQUEST["replicas"]) { echo " CHECKED"; }?>>&nbsp;<?php echo $LANG->_('Yes')?>
+      <input type="radio" name="del_dns_host" value="0"<?php if( @$_REQUEST["replicas"]) { echo " CHECKED"; }?>>&nbsp;<?php echo $LANG->_('No')?>
       <br>
 <?php	for($i=0; $dns[$i]; $i++) { ?>
-      <input type="hidden" name="dn_<?=$i?>" value="<?=urlencode($dns[$i])?>">
+      <input type="hidden" name="dn_<?php echo $i?>" value="<?=urlencode($dns[$i])?>">
 <?php	} ?>
-      <input type="hidden" name="dns" value="<?=$i-1?>">
+      <input type="hidden" name="dns" value="<?php echo $i-1?>">
 
-      <input type="hidden" name="host"     value="<?=$_REQUEST["host"]?>">
-      <input type="hidden" name="server"   value="<?=$_REQUEST["server"]?>">
-      <input type="hidden" name="virthost" value="<?=$_REQUEST["virthost"]?>">
-      <input type="hidden" name="hostdir"  value="<?=$_REQUEST["hostdir"]?>">
-      <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+      <input type="hidden" name="host"     value="<?php echo $_REQUEST["host"]?>">
+      <input type="hidden" name="server"   value="<?php echo $_REQUEST["server"]?>">
+      <input type="hidden" name="virthost" value="<?php echo $_REQUEST["virthost"]?>">
+      <input type="hidden" name="hostdir"  value="<?php echo $_REQUEST["hostdir"]?>">
+      <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
 
       <?php echo $LANG->_('Are you really sure'); ?>?&nbsp;
       <input type="submit" name="ok" value="<?php echo $LANG->_('Yes'); ?>">

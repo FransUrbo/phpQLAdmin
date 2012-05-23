@@ -54,20 +54,20 @@ function attribute_print_form() {
 	$default_dot_mode = $_pql_control->get_attribute($qlcs[0], pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
 	// }}}
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Change dotmode')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Change dotmode')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Change dotmode')?></td>
+          <td class="title"><?php echo $LANG->_('Change dotmode')?></td>
           <td>
             <?php echo pql_format_error_span($error["qmaildotmode"]); ?>
             <select name="qmaildotmode">
-			  <option value="default" <?=@$qmaildotmode_select["default"]?>><?=$LANG->_('Default (taken from ldapDefaultDotMode)')?></option>
-			  <option value="both" <?=@$qmaildotmode_select["both"]?>><?=$LANG->_('Both (deliveryProgramPath + .qmail)')?></option>
-			  <option value="dotonly" <?=@$qmaildotmode_select["dotonly"]?>><?=$LANG->_('Dotonly (only .qmail)')?></option>
-			  <option value="ldaponly" <?=@$qmaildotmode_select["ldaponly"]?>><?=$LANG->_('LDAPOnly (deliveryProgramPath + .qmail ignored for ldap deliveries)')?></option>
-			  <option value="ldapwithprog" <?=@$qmaildotmode_select["ldapwithprog"]?>><?=$LANG->_('LDAPWithProg (deliveryProgramPath used, .qmail ignored)')?></option>
-			  <option value="none" <?=@$qmaildotmode_select["none"]?>><?=$LANG->_('None (deliveryProgramPath + .qmail ignored)')?></option>
+			  <option value="default" <?php echo @$qmaildotmode_select["default"]?>><?=$LANG->_('Default (taken from ldapDefaultDotMode)')?></option>
+			  <option value="both" <?php echo @$qmaildotmode_select["both"]?>><?=$LANG->_('Both (deliveryProgramPath + .qmail)')?></option>
+			  <option value="dotonly" <?php echo @$qmaildotmode_select["dotonly"]?>><?=$LANG->_('Dotonly (only .qmail)')?></option>
+			  <option value="ldaponly" <?php echo @$qmaildotmode_select["ldaponly"]?>><?=$LANG->_('LDAPOnly (deliveryProgramPath + .qmail ignored for ldap deliveries)')?></option>
+			  <option value="ldapwithprog" <?php echo @$qmaildotmode_select["ldapwithprog"]?>><?=$LANG->_('LDAPWithProg (deliveryProgramPath used, .qmail ignored)')?></option>
+			  <option value="none" <?php echo @$qmaildotmode_select["none"]?>><?=$LANG->_('None (deliveryProgramPath + .qmail ignored)')?></option>
             </select>
           </td>
         </tr>
@@ -75,27 +75,27 @@ function attribute_print_form() {
         <tr class="subtitle">
           <td colspan="2">
             <?php echo pql_format_error_span($error["general"]); ?>
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('If you set dotmode to both or ldapwithprog you should add a deliveryprogram too')?>.
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo $LANG->_('If you set dotmode to both or ldapwithprog you should add a deliveryprogram too')?>.
           </td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="2">
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('Default dot mode is:')?>&nbsp;<b><?=$default_dot_mode?></b>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo $LANG->_('Default dot mode is:')?>&nbsp;<b><?=$default_dot_mode?></b>
           </td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

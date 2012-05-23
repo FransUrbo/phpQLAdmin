@@ -29,16 +29,16 @@ function attribute_print_form($type = "modify") {
 ?>
   <form action="<?$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Password scheme to use if not specifically specified')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Password scheme to use if not specifically specified')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default password scheme')?></td>
+          <td class="title"><?php echo $LANG->_('Default password scheme')?></td>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
-            <select name="<?=$attrib?>">
+            <select name="<?php echo $attrib?>">
 <?php // Convert the array to a index
 	  foreach($schemes as $scheme) {
 ?>
-              <option value="<?=$scheme?>"><?=$scheme?></option>
+              <option value="<?php echo $scheme?>"><?=$scheme?></option>
 <?php } ?>
             </select>
           </td>
@@ -47,12 +47,12 @@ function attribute_print_form($type = "modify") {
     </table>
 
     <input type="hidden" name="submit" value="2">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $attrib?>">
+    <input type="hidden" name="domain" value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

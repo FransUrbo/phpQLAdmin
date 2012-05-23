@@ -51,7 +51,7 @@ function attribute_forward($msg) {
 }
 // }}}
 ?>
-  <span class="title1"><?=$LANG->_("Change control values")?></span>
+  <span class="title1"><?php echo $LANG->_("Change control values")?></span>
   <br><br>
 <?php
 // {{{ Select what to do

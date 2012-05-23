@@ -43,7 +43,7 @@ function pbsenv_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left">pbsenv
       <tr>
-        <td class="title" colspan="3"><?=$LANG->_('Additional environment variables.')?></td>
+        <td class="title" colspan="3"><?php echo $LANG->_('Additional environment variables.')?></td>
       </tr>
 
 <?php
@@ -66,17 +66,17 @@ function pbsenv_print_view($host) {
 function pbsenv_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["pbsenv"]); $i++) { ?>
-    <input type="hidden" name="pbsenv[<?=$i?>]" value="<?=$_REQUEST["pbsenv"][$i]?>"></td>
+    <input type="hidden" name="pbsenv[<?php echo $i?>]" value="<?=$_REQUEST["pbsenv"][$i]?>"></td>
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">pbsenv (<?=$LANG->_('Additional environment variables')?>)</th>
+      <th colspan="3" align="left">pbsenv (<?php echo $LANG->_('Additional environment variables')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('Variable name')?></td>
+          <td><?php echo $LANG->_('Variable name')?></td>
           <td>&nbsp;</td>
-          <td><?=$LANG->_('Variable value')?></td>
+          <td><?php echo $LANG->_('Variable value')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -95,11 +95,11 @@ function pbsenv_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

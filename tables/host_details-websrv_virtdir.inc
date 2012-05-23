@@ -1,28 +1,28 @@
-    <th colspan="3" align="left"><?=pql_complete_constant($LANG->_('Webserver administration: \b%server%\B'), array('server' => $server_reference))?>
+    <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Webserver administration: \b%server%\B'), array('server' => $server_reference))?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Directory DN')?></td>
-        <td><?=@$virt_host_dirs[$virt_host_dir]["dn"]?></td>
+        <td class="title"><?php echo $LANG->_('Directory DN')?></td>
+        <td><?php echo @$virt_host_dirs[$virt_host_dir]["dn"]?></td>
         <td></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Set handler')?></td>
-        <td><?=@$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")]?></td>
+        <td class="title"><?php echo $LANG->_('Set handler')?></td>
+        <td><?php echo @$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")]?></td>
         <td>
-          <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")]?>"><?=$img["mod"]?></a>
 <?php if(@$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")]) { ?>
-          <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Access Order')?></td>
-        <td><?=@$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")]?></td>
+        <td class="title"><?php echo $LANG->_('Access Order')?></td>
+        <td><?php echo @$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")]?></td>
         <td>
-          <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")]?>"><?=$img["mod"]?></a>
 <?php if(@$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")]) { ?>
-          <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
@@ -70,12 +70,12 @@
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Options')?></td>
-        <td><?=@$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")]?></td>
+        <td class="title"><?php echo $LANG->_('Options')?></td>
+        <td><?php echo @$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")]?></td>
         <td>
-          <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")]?>"><?=$img["mod"]?></a>
 <?php if(@$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")]) { ?>
-          <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")?>&oldvalue=<?=$virt_host_dirs[$virt_host_dir][pql_get_define("PQL_ATTR_WEBSRV_SRV_OPTIONS")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
       </tr>

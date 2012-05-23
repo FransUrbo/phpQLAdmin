@@ -27,7 +27,7 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 }
 // }}}
 ?>
-  <span class="title1"><?=$LANG->_('Search Results')?></span>
+  <span class="title1"><?php echo $LANG->_('Search Results')?></span>
   <br><br>
 
 <?php
@@ -112,15 +112,15 @@ if(!$_SESSION["SINGLE_USER"]) {
 		if($_REQUEST["debug"]) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="4" align="left"><h5><u><?=$LANG->_('Search filter debugging')?></u></h5>
+	<th colspan="4" align="left"><h5><u><?php echo $LANG->_('Search filter debugging')?></u></h5>
       <tr>
         <td>DN:</td>
-        <td><b><?=$dn?></b></td>
+        <td><b><?php echo $dn?></b></td>
       <tr>
 
       <tr>
         <td>Filter:</td>
-        <td><b><?=$filter?></b></td>
+        <td><b><?php echo $filter?></b></td>
       <tr>
     </th>
   </table>
@@ -182,7 +182,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 }
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="4" align="left"><?=$LANG->_('Objects found')?>: <?php echo count($entries); ?></th>
+    <th colspan="4" align="left"><?php echo $LANG->_('Objects found')?>: <?php echo count($entries); ?></th>
 <?php if(is_array($entries)) {
 		if(($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) and
 		   ($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_ARECORD")))
@@ -190,11 +190,11 @@ if(!$_SESSION["SINGLE_USER"]) {
 		  // {{{ NOT DNS hostname
 ?>
       <tr>
-        <td class="title"><?=$LANG->_('User')?></td>
-        <td class="title"><?=$LANG->_('Username')?></td>
-        <td class="title"><?=$LANG->_('Email')?></td>
-        <td class="title"><?=$LANG->_('Status')?></td>
-        <td class="title"><?=$LANG->_('Options')?></td>
+        <td class="title"><?php echo $LANG->_('User')?></td>
+        <td class="title"><?php echo $LANG->_('Username')?></td>
+        <td class="title"><?php echo $LANG->_('Email')?></td>
+        <td class="title"><?php echo $LANG->_('Status')?></td>
+        <td class="title"><?php echo $LANG->_('Options')?></td>
       </tr>
 <?php
 // }}}
@@ -202,10 +202,10 @@ if(!$_SESSION["SINGLE_USER"]) {
 		  // {{{ DNS Hostname, A/Cname records
 ?>
       <tr>
-        <td class="title"><?=$LANG->_('FQDN')?></td>
-        <td class="title"><?=$LANG->_('Target')?></td>
-        <td class="title"><?=$LANG->_('Domain branch')?></td>
-        <td class="title"><?=$LANG->_('Options')?></td>
+        <td class="title"><?php echo $LANG->_('FQDN')?></td>
+        <td class="title"><?php echo $LANG->_('Target')?></td>
+        <td class="title"><?php echo $LANG->_('Domain branch')?></td>
+        <td class="title"><?php echo $LANG->_('Options')?></td>
       </tr>
 <?php
 // }}}
@@ -300,14 +300,14 @@ if(!$_SESSION["SINGLE_USER"]) {
 			// {{{ NOT DNS hostname
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="<?=$HREF?>" target="_new"><?=$cn?></a></td>
-        <td><?=$uid?></td>
-        <td><?=$mail?></td>
-        <td><?=$status?></td>
+        <td><a href="<?php echo $HREF?>" target="_new"><?=$cn?></a></td>
+        <td><?php echo $uid?></td>
+        <td><?php echo $mail?></td>
+        <td><?php echo $status?></td>
         <td>
-          <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($entry)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
+          <a href="user_detail.php?rootdn=<?php echo $rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($entry)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
           &nbsp;
-          <a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($entry); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
+          <a href="user_del.php?rootdn=<?php echo $rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($entry); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
         </td>
       </tr>
 <?php
@@ -317,17 +317,17 @@ if(!$_SESSION["SINGLE_USER"]) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
 <?php		if($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) { ?>
-        <td><?=$host?></td>
-        <td><?=$ip?></td>
+        <td><?php echo $host?></td>
+        <td><?php echo $ip?></td>
 <?php		} elseif($_REQUEST["attribute"] == sprintf("%s", pql_get_define("PQL_ATTR_ARECORD"))) { ?>
-        <td><?=$ip?></td>
-        <td><?=$host?></td>
+        <td><?php echo $ip?></td>
+        <td><?php echo $host?></td>
 <?php		} ?>
-        <td><a href="domain_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><?=urldecode($domain)?></td>
+        <td><a href="domain_detail.php?rootdn=<?php echo $rootdn?>&domain=<?=$domain?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><?=urldecode($domain)?></td>
         <td align="right">
-          <a href="bind9_edit_attributes.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&action=modify&rdn=<?=$entry?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change host data')?>" border="0"></a>
+          <a href="bind9_edit_attributes.php?rootdn=<?php echo $rootdn?>&domain=<?=$domain?>&action=modify&rdn=<?=$entry?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change host data')?>" border="0"></a>
           &nbsp;
-          <a href="bind9_edit_attributes.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&action=del&rdn=<?=$entry?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete host')?>" border="0"></a>
+          <a href="bind9_edit_attributes.php?rootdn=<?php echo $rootdn?>&domain=<?=$domain?>&action=del&rdn=<?=$entry?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete host')?>" border="0"></a>
         </td>
       </tr>
 <?php
@@ -340,7 +340,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 		// {{{ No users registred
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td colspan="5"><?=$LANG->_('No users found')?></td>
+        <td colspan="5"><?php echo $LANG->_('No users found')?></td>
       </tr>
 <?php
 // }}}

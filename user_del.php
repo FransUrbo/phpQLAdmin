@@ -158,26 +158,26 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	// {{{ Get confirmation and ask HOW to delete a user
 ?>
 <br>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
-    <input type="hidden" name="user"   value="<?=$url["user"]?>">
-    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
-    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="GET">
+    <input type="hidden" name="user"   value="<?php echo $url["user"]?>">
+    <input type="hidden" name="rootdn" value="<?php echo $url["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?php echo $url["domain"]?>">
 
-    <span class="title3"><?=$LANG->_('What should we do with forwards to this user')?>?</span><br>
-    <input type="checkbox" name="delete_forwards" checked> <?=$LANG->_('Delete all forwards')?><br>
-    <input type="checkbox" name="delete_admins" checked> <?=$LANG->_('Remove user from administrator/seeAlso')?><br>
-    <input type="checkbox" name="unsubscribe" checked> <?=$LANG->_('Unsubscribe user from all mailing lists')?><br><br>
+    <span class="title3"><?php echo $LANG->_('What should we do with forwards to this user')?>?</span><br>
+    <input type="checkbox" name="delete_forwards" checked> <?php echo $LANG->_('Delete all forwards')?><br>
+    <input type="checkbox" name="delete_admins" checked> <?php echo $LANG->_('Remove user from administrator/seeAlso')?><br>
+    <input type="checkbox" name="unsubscribe" checked> <?php echo $LANG->_('Unsubscribe user from all mailing lists')?><br><br>
 <?php if(pql_get_define("PQL_CONF_SCRIPT_DELETE_USER", $_REQUEST["rootdn"])) { ?>
 
-    <span class="title3"><?=$LANG->_('What should we do with the users mailbox')?>?</span><br>
-    <input type="radio" name="mail_action" value="delete_mail"> <?=$LANG->_('Delete it')?><br>
-    <input type="radio" name="mail_action" value="archive_mail" checked> <?=$LANG->_('Archive it')?><br>
-    <input type="radio" name="mail_action" value="donate_mail"> <?=$LANG->_('Donate it to another user')?><br><br>
+    <span class="title3"><?php echo $LANG->_('What should we do with the users mailbox')?>?</span><br>
+    <input type="radio" name="mail_action" value="delete_mail"> <?php echo $LANG->_('Delete it')?><br>
+    <input type="radio" name="mail_action" value="archive_mail" checked> <?php echo $LANG->_('Archive it')?><br>
+    <input type="radio" name="mail_action" value="donate_mail"> <?php echo $LANG->_('Donate it to another user')?><br><br>
 <?php } ?>
 
-    <span class="title2"><?=$LANG->_('Are you really sure')?>?</span>
-    <input type="submit" name="ok"   value="<?=$LANG->_('Yes')?>">
-    <input type="button" name="back" value="<?=$LANG->_('No')?>" onClick="history.back();">
+    <span class="title2"><?php echo $LANG->_('Are you really sure')?>?</span>
+    <input type="submit" name="ok"   value="<?php echo $LANG->_('Yes')?>">
+    <input type="button" name="back" value="<?php echo $LANG->_('No')?>" onClick="history.back();">
   </form>
 <br>
 <?php

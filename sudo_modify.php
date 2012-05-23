@@ -21,7 +21,7 @@ function attribute_forward($msg) {
 // Get the role name for the header
 $role_name = $_pql->get_attribute($_REQUEST["sudorole"], pql_get_define("PQL_ATTR_CN"));
 ?>
-    <span class="title1"><?=pql_complete_constant($LANG->_('Modify sudo role %role%'), array('role' => $role_name))?></span>
+    <span class="title1"><?php echo pql_complete_constant($LANG->_('Modify sudo role %role%'), array('role' => $role_name))?></span>
     <br><br>
 <?php
 // {{{ Select what to do

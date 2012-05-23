@@ -41,7 +41,7 @@ function ldapclusterhosts_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left">ldapclusterhosts
       <tr>
-        <td class="title" colspan="3"><?=$LANG->_('Hosts in the mail cluster')?></td>
+        <td class="title" colspan="3"><?php echo $LANG->_('Hosts in the mail cluster')?></td>
       </tr>
 
 <?php
@@ -68,19 +68,19 @@ function ldapclusterhosts_print_view($host) {
 function ldapclusterhosts_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["ldapclusterhosts"]); $i++) { ?>
-    <input type="hidden" name="ldapclusterhosts[<?=$i?>]" value="<?=$_REQUEST["ldapclusterhosts"][$i]?>">
+    <input type="hidden" name="ldapclusterhosts[<?php echo $i?>]" value="<?=$_REQUEST["ldapclusterhosts"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">ldapclusterhosts (<?=$LANG->_('Host to regognize as part of the mail cluster')?>)
+      <th colspan="3" align="left">ldapclusterhosts (<?php echo $LANG->_('Host to regognize as part of the mail cluster')?>)
 <?php $class = pql_format_table(0); ?>
         <tr>
           <td class="title">FQDN</td>
-          <td class="<?=$class?>">
+          <td class="<?php echo $class?>">
             <?php echo pql_format_error_span($error["ldapclusterhosts"][$i]); ?>
-            <input type="text" name="ldapclusterhosts[<?=$i?>]" size="40">
+            <input type="text" name="ldapclusterhosts[<?php echo $i?>]" size="40">
           </td>
         </tr>
       </th>
@@ -88,11 +88,11 @@ function ldapclusterhosts_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

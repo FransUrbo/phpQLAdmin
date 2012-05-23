@@ -79,24 +79,24 @@ if(is_array($spamassassin)) {
 }
 ?>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
-    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
-    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
-    <input type="hidden" name="user"   value="<?=$url["user"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
+    <input type="hidden" name="rootdn" value="<?php echo $url["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?php echo $url["domain"]?>">
+    <input type="hidden" name="user"   value="<?php echo $url["user"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <input type="hidden" name="attrib" value="spamassassin">
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="2" align="left"><?=$LANG->_('Antispam configuration')?>
+      <th colspan="2" align="left"><?php echo $LANG->_('Antispam configuration')?>
 <?php if(!is_array($spamassassin)) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"></td>
-          <td colspan="2" class="helptextc"><?=$LANG->_('No values in user object found, using defaults.')?></td>
+          <td colspan="2" class="helptextc"><?php echo $LANG->_('No values in user object found, using defaults.')?></td>
         </tr>
 
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title" valign="top"><?=$LANG->_('Filter Sensitivity')?></td>
+          <td class="title" valign="top"><?php echo $LANG->_('Filter Sensitivity')?></td>
           <td>
             <center>
               <table>
@@ -136,7 +136,7 @@ if(is_array($spamassassin)) {
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title" valign="top"><?=$LANG->_('Spam report')?></td>
+          <td class="title" valign="top"><?php echo $LANG->_('Spam report')?></td>
           <td>
             <input type="radio" name="report_safe" value="0" <?php if($_REQUEST["report_safe"] == "0") { echo "CHECKED"; } ?>>Include report in headers of original message<br>
             <input type="radio" name="report_safe" value="1" <?php if($_REQUEST["report_safe"] == "1") { echo "CHECKED"; } ?>>Include original as MIME attachment to report (Default)<br>
@@ -157,7 +157,7 @@ if(is_array($spamassassin)) {
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title" valign="top"><?=$LANG->_('Header control')?></td>
+          <td class="title" valign="top"><?php echo $LANG->_('Header control')?></td>
           <td>
             <input type="checkbox" name="always_add_headers" value="1" <?php if(!@empty($_REQUEST["always_add_headers"])) { echo "CHECKED"; } ?>>Add headers to non-spam messages<br>
             <input type="checkbox" name="fold_headers"       value="1" <?php if(!@empty($_REQUEST["fold_headers"])) { echo "CHECKED"; } ?>>Allow multiple lines in headers<br>
@@ -177,7 +177,7 @@ if(is_array($spamassassin)) {
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title" valign="top"><?=$LANG->_('Subject rewrite')?></td>
+          <td class="title" valign="top"><?php echo $LANG->_('Subject rewrite')?></td>
           <td>
             <input type="checkbox" name="rewrite_subject" <?php if($_REQUEST["rewrite_subject"]) { echo "CHECKED"; }?>>Tag Subject lines, using this text: <input type="text" name="subject_tag" value="<?php if($_REQUEST["subject_tag"]) { echo $_REQUEST["subject_tag"]; } else { echo "*****SPAM*****"; }?>" size="14">
           </td>
@@ -195,7 +195,7 @@ if(is_array($spamassassin)) {
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title" valign="top"><?=$LANG->_('Allowed languages')?></td>
+          <td class="title" valign="top"><?php echo $LANG->_('Allowed languages')?></td>
           <td>
             <select multiple name="ok_languages[]" size="8">
               <option value="">[none]</option>
@@ -285,7 +285,7 @@ if(is_array($spamassassin)) {
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title" valign="top"><?=$LANG->_('Network tests')?></td>
+          <td class="title" valign="top"><?php echo $LANG->_('Network tests')?></td>
           <td>
             <input type="checkbox" name="use_razor1" value="1" <?php if(!@empty($_REQUEST["use_razor1"])) { echo "CHECKED"; } ?>>Use <a href="http://razor.sourceforge.net" target="_new">Razor v1</a><br>
             <input type="checkbox" name="use_razor2" value="1" <?php if(!@empty($_REQUEST["use_razor2"])) { echo "CHECKED"; } ?>>Use <a href="http://razor.sourceforge.net" target="_new">Razor v2</a><br>
@@ -307,12 +307,12 @@ if(is_array($spamassassin)) {
         </tr>
       </th>
 
-      <th colspan="2" align="left"><?=$LANG->_('Custom filter rules')."\n"?>
+      <th colspan="2" align="left"><?php echo $LANG->_('Custom filter rules')."\n"?>
 <?php $i=0;
 	  if(@is_array($_REQUEST["addresses"])) {
 		for(; $i < count($_REQUEST["addresses"]);) {
 ?>
-        <!-- <?=$_REQUEST["addresses"][$i]?>:<?=$_REQUEST["addresses"][$i+1]?> -->
+        <!-- <?php echo $_REQUEST["addresses"][$i]?>:<?=$_REQUEST["addresses"][$i+1]?> -->
         <tr class="<?php pql_format_table(); ?>">
 <?php		switch($_REQUEST["addresses"][$i]) {
 				case "whitelist_from":
@@ -326,11 +326,11 @@ if(is_array($spamassassin)) {
 					break;
 			}
 ?>
-          <td><?=$_REQUEST["addresses"][$i+1]?></td>
+          <td><?php echo $_REQUEST["addresses"][$i+1]?></td>
           <td></td>
         </tr>
-        <input type="hidden" name="addresses[<?=$i?>]" value="<?=$_REQUEST["addresses"][$i]?>">
-        <input type="hidden" name="addresses[<?=$i+1?>]" value="<?=$_REQUEST["addresses"][$i+1]?>">
+        <input type="hidden" name="addresses[<?php echo $i?>]" value="<?=$_REQUEST["addresses"][$i]?>">
+        <input type="hidden" name="addresses[<?php echo $i+1?>]" value="<?=$_REQUEST["addresses"][$i+1]?>">
 
 <?php		$i = $i+2;
 		}
@@ -338,7 +338,7 @@ if(is_array($spamassassin)) {
 
 	  if(@$_REQUEST["key"] and @$_REQUEST["email"]) {
 ?>
-        <!-- <?=$_REQUEST["key"]?>:<?=$_REQUEST["email"]?> -->
+        <!-- <?php echo $_REQUEST["key"]?>:<?=$_REQUEST["email"]?> -->
         <tr class="<?php pql_format_table(); ?>">
 <?php	switch($_REQUEST["key"]) {
 			case "whitelist_from":
@@ -352,11 +352,11 @@ if(is_array($spamassassin)) {
 				break;
 		}
 ?>
-          <td><?=$_REQUEST["email"]?></td>
+          <td><?php echo $_REQUEST["email"]?></td>
           <td></td>
         </tr>
-        <input type="hidden" name="addresses[<?=$i++?>]" value="<?=$_REQUEST["key"]?>">
-        <input type="hidden" name="addresses[<?=$i++?>]" value="<?=$_REQUEST["email"]?>">
+        <input type="hidden" name="addresses[<?php echo $i++?>]" value="<?=$_REQUEST["key"]?>">
+        <input type="hidden" name="addresses[<?php echo $i++?>]" value="<?=$_REQUEST["email"]?>">
 
 <?php } ?>
         <!-- Add a new rejected/allowed email address!? -->
@@ -369,22 +369,22 @@ if(is_array($spamassassin)) {
             </select>
           </td>
           <td><input type="text" name="email" size="50"></td>
-          <td align="right"><input type="submit" name="addrule" value="<?=$LANG->_('Add Rule')?>"></td>
+          <td align="right"><input type="submit" name="addrule" value="<?php echo $LANG->_('Add Rule')?>"></td>
         </tr>
 
         <tr colspan="1">
-          <td><input type="submit" name="commit" value="<?=$LANG->_('Commit changes to LDAP')?>"></td>
+          <td><input type="submit" name="commit" value="<?php echo $LANG->_('Commit changes to LDAP')?>"></td>
         </tr>
       </th>
     </table>
 
     <!-- Add header to mail(s) -->
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="2" align="left"><?=$LANG->_('Add header line to mail')."\n"?>
+      <th colspan="2" align="left"><?php echo $LANG->_('Add header line to mail')."\n"?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Where')?></td>
-          <td class="title"><?=$LANG->_('X-Spam-???')?></td>
-          <td class="title"><?=$LANG->_('What')?></td>
+          <td class="title"><?php echo $LANG->_('Where')?></td>
+          <td class="title"><?php echo $LANG->_('X-Spam-???')?></td>
+          <td class="title"><?php echo $LANG->_('What')?></td>
           <td class="title"></td>
         </tr>
 
@@ -392,16 +392,16 @@ if(is_array($spamassassin)) {
 		$spamassassin = "add_header"." ".$_REQUEST["add_header"][$i][0]." ".$_REQUEST["add_header"][$i][1]." ".$_REQUEST["add_header"][$i][2];
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?=$_REQUEST["add_header"][$i][0]?></td>
-          <td><?=$_REQUEST["add_header"][$i][1]?></td>
-          <td><?=$_REQUEST["add_header"][$i][2]?></td>
-          <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=add_header&user=<?=$url["user"]?>&oldvalue=<?=$spamassassin?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=add_header&user=<?=$url["user"]?>&oldvalue=<?=$spamassassin?>&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete line')?>" border="0"></a></td>
+          <td><?php echo $_REQUEST["add_header"][$i][0]?></td>
+          <td><?php echo $_REQUEST["add_header"][$i][1]?></td>
+          <td><?php echo $_REQUEST["add_header"][$i][2]?></td>
+          <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=add_header&user=<?=$url["user"]?>&oldvalue=<?=$spamassassin?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=add_header&user=<?=$url["user"]?>&oldvalue=<?=$spamassassin?>&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete line')?>" border="0"></a></td>
         </tr>
 <?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
           <td></td>
-          <td><a href="user_add_attribute.php?rootdn=<?=$url["rootdn"]?>&attrib=add_header&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width\="12" height="12" alt="" border="0"><?=$LANG->_('Add line')?></a></td>
+          <td><a href="user_add_attribute.php?rootdn=<?php echo $url["rootdn"]?>&attrib=add_header&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width\="12" height="12" alt="" border="0"><?=$LANG->_('Add line')?></a></td>
           <td></td>
           <td></td>
         </tr>

@@ -127,7 +127,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 <?php echo $LANG->_('Are you really sure'); ?>
 <br>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="GET">
-	<input type="hidden" name="domain" value="<?=urlencode($domain)?>">
+	<input type="hidden" name="domain" value="<?php echo urlencode($domain)?>">
 	
 	<input type="checkbox" name="delete_forwards" checked> <?php echo $LANG->_('Also delete forwards to users in this domain'); ?><br><br>
 	<input type="submit" name="ok" value="<?php echo $LANG->_('Yes'); ?>">

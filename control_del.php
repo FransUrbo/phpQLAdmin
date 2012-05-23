@@ -54,14 +54,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				for($i=0; $i < count($result); $i++)
 				  $hosts[] = $_pql_control->get_attribute($result[$i], pql_get_define("PQL_ATTR_CN"));
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
-    <input type="hidden" name="oldmx"  value="<?=$_REQUEST["mxhost"]?>">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="GET">
+    <input type="hidden" name="oldmx"  value="<?php echo $_REQUEST["mxhost"]?>">
 
-    <span class="title2"><?=$LANG->_("There's users on this mail server!<br>What would you like to do with them?")?></span><br>
-    <input type="radio"  name="action" value="ignore" CHECKED><?=$LANG->_('Ignore')?><br>
-    <input type="radio"  name="action" value="delete"><?=$LANG->_('Delete all users')?><br>
+    <span class="title2"><?php echo $LANG->_("There's users on this mail server!<br>What would you like to do with them?")?></span><br>
+    <input type="radio"  name="action" value="ignore" CHECKED><?php echo $LANG->_('Ignore')?><br>
+    <input type="radio"  name="action" value="delete"><?php echo $LANG->_('Delete all users')?><br>
     <input type="radio"  name="action" value="move" <?php if($_REQUEST["error"]) { ?>CHECKED<?php } ?>>
-      <?=$LANG->_('Move users to server:')?><br>
+      <?php echo $LANG->_('Move users to server:')?><br>
 <?php		if($_REQUEST["error"]) {
 				echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 				echo pql_format_error_span($LANG->_("Hostname missing!"));
@@ -72,20 +72,20 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				if($hosts[$i] != $_REQUEST["mxhost"]) {
 					$host = pql_maybe_idna_decode($hosts[$i]);
 ?>
-    &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"  name="newmx"  value="<?=$host?>"><b><?=$host?></b><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"  name="newmx"  value="<?php echo $host?>"><b><?=$host?></b><br>
 <?php			}
 			}
 ?>
-    &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"  name="newmx"  value="user"><?=$LANG->_('User specified')?>
-                            <input type="text"   name="mxhost" value="<?=$_REQUEST["newmx"]?>" size="30"><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"  name="newmx"  value="user"><?php echo $LANG->_('User specified')?>
+                            <input type="text"   name="mxhost" value="<?php echo $_REQUEST["newmx"]?>" size="30"><br>
     <br>
-    <input type="submit" name="submit" value="<?="--&gt;&gt;"?>">
+    <input type="submit" name="submit" value="<?php echo "--&gt;&gt;"?>">
   </form>
   <table cellspacing="0" cellpadding="3" border="0">
     <th>
       <tr class="<?php pql_format_table(); ?>">
         <td><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-        <td><?=$LANG->_('NOTE: Deleting or moving a user will not touch their mail- or homedirectory! You will have to delete/move them to the new server manually.')?></td>
+        <td><?php echo $LANG->_('NOTE: Deleting or moving a user will not touch their mail- or homedirectory! You will have to delete/move them to the new server manually.')?></td>
       </tr>
     </th>
   </table>

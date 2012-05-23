@@ -1,35 +1,35 @@
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left"><?=$LANG->_('Change values of all users in this domain')?></th>
+    <th colspan="2" align="left"><?php echo $LANG->_('Change values of all users in this domain')?></th>
       <tr>
-        <td class="title"><?=$LANG->_('Attribute')?></td>
-        <td class="title"><?=$LANG->_('Options')?></td>
+        <td class="title"><?php echo $LANG->_('Attribute')?></td>
+        <td class="title"><?php echo $LANG->_('Options')?></td>
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Status')?></td>
-        <td><a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&set=active&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Activate accounts')?></a>
+        <td><?php echo $LANG->_('Status')?></td>
+        <td><a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&set=active&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Activate accounts')?></a>
 <?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
-  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&set=nopop&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Lock POP accounts')?></a>
+  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&set=nopop&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Lock POP accounts')?></a>
 <?php } else { ?>
-  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&set=noaccess&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Lock accounts')?></a>
+  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&set=noaccess&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Lock accounts')?></a>
 <?php } ?>
-  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&set=disabled&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Disable accounts')?></a>
+  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&set=disabled&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Disable accounts')?></a>
         </td>
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Default quota')?></td>
-        <td><a href="domain_edit_attributes.php?attrib=mailquota&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><?php echo $LANG->_('Default quota')?></td>
+        <td><a href="domain_edit_attributes.php?attrib=mailquota&rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Mailserver')?></td>
-        <td><a href="domain_edit_attributes.php?attrib=mailhost&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><?php echo $LANG->_('Mailserver')?></td>
+        <td><a href="domain_edit_attributes.php?attrib=mailhost&rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Deliverymode')?></td>
-        <td><a href="domain_edit_attributes.php?attrib=deliverymode&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><?php echo $LANG->_('Deliverymode')?></td>
+        <td><a href="domain_edit_attributes.php?attrib=deliverymode&rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
     </th>
   </table>

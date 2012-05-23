@@ -217,18 +217,18 @@ function attribute_print_form($action) {
 		  // or:
 		  // moderator or contact person to a domain/branch.
 ?>
-          <td class="title"><?=$LANG->_('User DN')?></td>
+          <td class="title"><?php echo $LANG->_('User DN')?></td>
 <?php } elseif($_REQUEST["user"]) {
 		// We're giving a user access to ('random') branch
 ?>
-          <td class="title"><?=$LANG->_('Branch DN')?></td>
+          <td class="title"><?php echo $LANG->_('Branch DN')?></td>
 <?php } else { // We're should give a user access to THIS branch ?>
-          <td class="title"><?=$LANG->_('Administrator DN')?></td>
+          <td class="title"><?php echo $LANG->_('Administrator DN')?></td>
 <?php } ?>
           <td>
             <?php echo pql_format_error_span($error[$_REQUEST[$attrib]]) . "\n"; ?>
 <?php if($action != 'add') { ?>
-            <input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50"></td>
+            <input type="text" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50"></td>
 <?php } else {
 		// TODO: This is a REALLY bad idea. If we have a 'huge' database
 		// (hundred, thousands or more users), this will take AGES!
@@ -313,8 +313,8 @@ function attribute_print_form($action) {
 			}
 ?>
 
-            <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
-            <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
+            <input type="hidden" name="<?php echo $attrib?>_<?=$i?>" value="on">
+            <input type="hidden" name="<?php echo $attrib?>" value="<?=$i?>">
 <?php
 			// }}}
 		} else {
@@ -347,9 +347,9 @@ function attribute_print_form($action) {
 					if($domain == $_SESSION["BASE_DN"][0]) {
 						$shown_first_rootdn = 1;
 ?>
-              <option value="<?=$domain?>">*&nbsp;<?=$domain?></option>
+              <option value="<?php echo $domain?>">*&nbsp;<?=$domain?></option>
 <?php				} else { ?>
-              <option value="<?=$domain?>">&nbsp;&nbsp;&nbsp;<?=$domain?></option>
+              <option value="<?php echo $domain?>">&nbsp;&nbsp;&nbsp;<?=$domain?></option>
 <?php				}
 				}
 			}
@@ -364,29 +364,29 @@ function attribute_print_form($action) {
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td>
-            <?=$LANG->_('The DN with the asterisk (*) is the DN where phpQLAdmin configurations are stored. If you add a user to that DN, the user will get \'Super Administration Rights\'')?>!
+            <?php echo $LANG->_('The DN with the asterisk (*) is the DN where phpQLAdmin configurations are stored. If you add a user to that DN, the user will get \'Super Administration Rights\'')?>!
           </td>
         </tr>
 <?php } ?>
       </th>
     </table>
 
-    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domain"        value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="rootdn"        value="<?php echo $_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"        value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="attrib"        value="<?php echo $_REQUEST["attrib"]?>">
 <?php if($_REQUEST["user"] and ($attrib != pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) and
 		 ($attrib != pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) and
 		 ($attrib != pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
       {
 ?>
-    <input type="hidden" name="<?=$attrib?>"  value="<?=$_REQUEST[$attrib]?>">
+    <input type="hidden" name="<?php echo $attrib?>"  value="<?=$_REQUEST[$attrib]?>">
 <?php } ?>
-    <input type="hidden" name="user"          value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="action"        value="<?=$action?>">
-    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="user"          value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="action"        value="<?php echo $action?>">
+    <input type="hidden" name="view"          value="<?php echo $_REQUEST["view"]?>">
     <input type="hidden" name="submit"        value="4">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

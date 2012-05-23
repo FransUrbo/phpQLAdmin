@@ -114,7 +114,7 @@ function attribute_print_form() {
 	  $_REQUEST["rdn"]    = urlencode($_REQUEST["rdn"]);
 	}
 ?>
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?php
 	   if(lc($attrib) == sprintf("%s", pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) {
@@ -130,8 +130,8 @@ function attribute_print_form() {
         </th>
 <?php	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) { ?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('Priority')?>:</td>
-            <td><?php echo pql_format_error_span($error["priority"]); ?><input type="text" name="priority" value="<?=$prio?>" size="20"></td>
+            <td class="title"><?php echo $LANG->_('Priority')?>:</td>
+            <td><?php echo pql_format_error_span($error["priority"]); ?><input type="text" name="priority" value="<?php echo $prio?>" size="20"></td>
             <td></td>
           </tr>
 
@@ -140,35 +140,35 @@ function attribute_print_form() {
 		if($_REQUEST["host"] == 'Global') {
 ?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('Replace old value')?></td>
-            <td><?php echo pql_format_error_span($error["oldvalue"]); ?><input type="text" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>" size="20"></td>
+            <td class="title"><?php echo $LANG->_('Replace old value')?></td>
+            <td><?php echo pql_format_error_span($error["oldvalue"]); ?><input type="text" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>" size="20"></td>
           </tr>
 
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('With new value')?></td>
-            <td><?php echo pql_format_error_span($error["newvalue"]); ?><input type="text" name="newvalue" value="<?=$_REQUEST["newvalue"]?>" size="20"></td>
+            <td class="title"><?php echo $LANG->_('With new value')?></td>
+            <td><?php echo pql_format_error_span($error["newvalue"]); ?><input type="text" name="newvalue" value="<?php echo $_REQUEST["newvalue"]?>" size="20"></td>
           </tr>
 
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
             <td>
-              <?=$LANG->_('Note that this will change \bany\B\nand \ball\B occurences of the IP\nyou specify in \uold value\U with\nthe IP of the value you specify\nin \unew value\U!!')?>
+              <?php echo $LANG->_('Note that this will change \bany\B\nand \ball\B occurences of the IP\nyou specify in \uold value\U with\nthe IP of the value you specify\nin \unew value\U!!')?>
             </td>
           </tr>
 <?php	} else { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $attrib)); ?></td>
-            <td><?php echo pql_format_error_span($error["newvalue"]); ?><input type="text" name="newvalue" value="<?=$_REQUEST["oldvalue"]?>" size="20"></td>
+            <td><?php echo pql_format_error_span($error["newvalue"]); ?><input type="text" name="newvalue" value="<?php echo $_REQUEST["oldvalue"]?>" size="20"></td>
 <?php	  if(lc($attrib) == 'dnsttl') { ?>
             <td>
 			  <?php echo pql_format_error_span($error[""]); ?>
               <select name="time">
-                <option value="seconds" SELECTED><?=$LANG->_('Seconds')?></option>
-                <option value="minutes"><?=$LANG->_('Minutes')?></option>
-                <option value="hours"><?=$LANG->_('Hours')?></option>
-                <option value="days"><?=$LANG->_('Days')?></option>
-                <option value="weeks"><?=$LANG->_('Weeks')?></option>
-                <option value="months"><?=$LANG->_('Months')?></option>
+                <option value="seconds" SELECTED><?php echo $LANG->_('Seconds')?></option>
+                <option value="minutes"><?php echo $LANG->_('Minutes')?></option>
+                <option value="hours"><?php echo $LANG->_('Hours')?></option>
+                <option value="days"><?php echo $LANG->_('Days')?></option>
+                <option value="weeks"><?php echo $LANG->_('Weeks')?></option>
+                <option value="months"><?php echo $LANG->_('Months')?></option>
               </select>
             </td>
 <?php	  } else { ?>
@@ -177,13 +177,13 @@ function attribute_print_form() {
           </tr>
 <?php	} ?>
 
-          <input type="hidden" name="old_type" value="<?=preg_replace('/record/', '', $attrib)?>">
+          <input type="hidden" name="old_type" value="<?php echo preg_replace('/record/', '', $attrib)?>">
 <?php	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="right">
               <img src="images/info.png" width="16" height="16" alt="" border="0" align="right">
             </td>
-            <td><?=$LANG->_("If this is an FQDN not in this zone,<br>don't forget the trailing dot!")?></td>
+            <td><?php echo $LANG->_("If this is an FQDN not in this zone,<br>don't forget the trailing dot!")?></td>
             <td></td>
           </tr>
 <?php	} elseif((lc($attrib) != 'nsrecord') and (lc($attrib) != 'dnsttl') and (lc($attrib) != pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))
@@ -210,28 +210,28 @@ function attribute_print_form() {
 <?php	if($action != 'add') {
 			if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'mxrecord')) {
 ?>
-      <input type="hidden" name="oldvalue"        value="<?=$prio." ".$_REQUEST["oldvalue"]?>">
+      <input type="hidden" name="oldvalue"        value="<?php echo $prio." ".$_REQUEST["oldvalue"]?>">
 <?php		} elseif($_REQUEST["host"] != 'Global') { ?>
-      <input type="hidden" name="oldvalue"        value="<?=$_REQUEST["oldvalue"]?>">
+      <input type="hidden" name="oldvalue"        value="<?php echo $_REQUEST["oldvalue"]?>">
 <?php		} ?>
 <?php	} ?>
-      <input type="hidden" name="type"            value="<?=$type?>">
-      <input type="hidden" name="domain"          value="<?=$_REQUEST["domain"]?>">
-      <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
-      <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
+      <input type="hidden" name="type"            value="<?php echo $type?>">
+      <input type="hidden" name="domain"          value="<?php echo $_REQUEST["domain"]?>">
+      <input type="hidden" name="rootdn"          value="<?php echo $_REQUEST["rootdn"]?>">
+      <input type="hidden" name="view"            value="<?php echo $_REQUEST["view"]?>">
 <?php	if(lc($attrib) == sprintf("%s", pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) { ?>
       <input type="hidden" name="action"          value="rename">
 <?php	} else { ?>
-      <input type="hidden" name="action"          value="<?=$_REQUEST["action"]?>">
+      <input type="hidden" name="action"          value="<?php echo $_REQUEST["action"]?>">
 <?php	} ?>
-      <input type="hidden" name="rdn"             value="<?=$_REQUEST["rdn"]?>">
-      <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
+      <input type="hidden" name="rdn"             value="<?php echo $_REQUEST["rdn"]?>">
+      <input type="hidden" name="dns_domain_name" value="<?php echo $_REQUEST["dns_domain_name"]?>">
 <?php	if($_REQUEST["host"] or $_REQUEST["ref"]) { // Called from host_details-dns.inc ?>
-      <input type="hidden" name="host"            value="<?=$_REQUEST["host"]?>">
-      <input type="hidden" name="ref"             value="<?=$_REQUEST["ref"]?>">
+      <input type="hidden" name="host"            value="<?php echo $_REQUEST["host"]?>">
+      <input type="hidden" name="ref"             value="<?php echo $_REQUEST["ref"]?>">
 <?php } ?>
       <br>
-      <input type="submit" value="<?=$LANG->_('Save')?>">
+      <input type="submit" value="<?php echo $LANG->_('Save')?>">
     </form>
 <?php
 }

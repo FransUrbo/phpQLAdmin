@@ -1,6 +1,6 @@
   <!-- Deliverymode -->
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left"><?=$LANG->_('Delivery mode')?></th></th>
+    <th colspan="2" align="left"><?php echo $LANG->_('Delivery mode')?></th></th>
 <?php	$deliverymode = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_MODE"));
 		if(!is_array($deliverymode))
 			$deliverymode = array($deliverymode);
@@ -9,8 +9,8 @@
 		if(empty($deliverymode)) {
 ?>
       <tr>
-        <td class="title"><?=$LANG->_('Delivery mode')?></td>
-        <td class="<?=$class?>"><?=$LANG->_('Default properties')?></td>
+        <td class="title"><?php echo $LANG->_('Delivery mode')?></td>
+        <td class="<?php echo $class?>"><?=$LANG->_('Default properties')?></td>
       </tr>
 <?php	} else {
 			$new_tr = 0;
@@ -21,12 +21,12 @@
 ?>
       <tr>
         <td class="title"></td>
-        <td class="<?=$class?>"><?=$mode_text?></td>
+        <td class="<?php echo $class?>"><?=$mode_text?></td>
       </tr>
 <?php			} else { ?>
       <tr>
-        <td class="title"><?=$LANG->_('Delivery mode')?></td>
-        <td class="<?=$class?>"><?=$mode_text?></td>
+        <td class="title"><?php echo $LANG->_('Delivery mode')?></td>
+        <td class="<?php echo $class?>"><?=$mode_text?></td>
       </tr>
 <?php			}  // end of new_tr
 
@@ -37,8 +37,8 @@
 			if($deliveryprog and in_array('nolocal', $deliverymode)) {
 ?>
       <tr>
-        <td class="title"><?=$LANG->_('Mail delivery program')?></td>
-        <td class="<?=pql_format_table()?>"><?=$deliveryprog?></td>
+        <td class="title"><?php echo $LANG->_('Mail delivery program')?></td>
+        <td class="<?php echo pql_format_table()?>"><?=$deliveryprog?></td>
       </tr>
 <?php		}
 		} // end of if-else
@@ -47,8 +47,8 @@
       <tr class="subtitle">
         <td align="right"><img src="images/edit.png" width="12" height="12" alt="" border="0"></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=deliverymode&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>">
-            <?=$LANG->_('Change properties')?>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=deliverymode&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>">
+            <?php echo $LANG->_('Change properties')?>
           </a>
         </td>
       </tr>

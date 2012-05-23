@@ -69,7 +69,7 @@ function attribute_print_form() {
 	// Used for the checkbox counter below
 	$j = 0;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'),
 																	array('what'   => $LANG->_('additional group'),
@@ -100,17 +100,17 @@ function attribute_print_form() {
       </th>
     </table>
 
-    <input type="hidden" name="<?=$_REQUEST["attrib"]?>" value="<?=$j?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="uid"      value="<?=urlencode($_REQUEST["uid"])?>">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
+    <input type="hidden" name="<?php echo $_REQUEST["attrib"]?>" value="<?=$j?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="uid"      value="<?php echo urlencode($_REQUEST["uid"])?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="action"   value="<?php echo $_REQUEST["action"]?>">
     <input type="hidden" name="submit"   value="2">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

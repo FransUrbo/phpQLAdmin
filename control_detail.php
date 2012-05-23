@@ -115,7 +115,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 ?>
 
-  <span class="title1">Mailserver: <?=pql_maybe_idna_decode($cn)?></span>
+  <span class="title1">Mailserver: <?php echo pql_maybe_idna_decode($cn)?></span>
 
   <br><br>
 

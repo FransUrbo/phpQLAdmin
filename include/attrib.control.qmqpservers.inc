@@ -80,7 +80,7 @@ function qmqpservers_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left">qmqpservers
       <tr>
-        <td class="title" colspan="3"><?=$LANG->_('QMQP servers')?></td>
+        <td class="title" colspan="3"><?php echo $LANG->_('QMQP servers')?></td>
       </tr>
 
 <?php
@@ -103,19 +103,19 @@ function qmqpservers_print_view($host) {
 function qmqpservers_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["qmqpservers"]); $i++) { ?>
-    <input type="hidden" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>">
+    <input type="hidden" name="qmqpservers[<?php echo $i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">qmqpservers (<?=$LANG->_('QMQP servers')?>)</th>
+      <th colspan="3" align="left">qmqpservers (<?php echo $LANG->_('QMQP servers')?>)</th>
 <?php $class = pql_format_table(0); ?>
         <tr>
-          <td class="title"><?=$LANG->_('IP Address')?></td>
-          <td class="<?=$class?>">
+          <td class="title"><?php echo $LANG->_('IP Address')?></td>
+          <td class="<?php echo $class?>">
             <?php echo pql_format_error_span($error["qmqpservers"][$i]); ?>
-            <input type="text" name="qmqpservers[<?=$i?>]" size="40">
+            <input type="text" name="qmqpservers[<?php echo $i?>]" size="40">
           </td>
         </tr>
       </th>
@@ -123,11 +123,11 @@ function qmqpservers_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

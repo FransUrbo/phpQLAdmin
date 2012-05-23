@@ -26,18 +26,18 @@ function attribute_print_form() {
 	// Slightly ugly, but what the heck! :)
 	$attr_val	   = $_REQUEST[$_REQUEST["attrib"]];
 ?>
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
-        <th colspan="3" align="left"><?=$LANG->_('Change webserver configuration')?></th>
+        <th colspan="3" align="left"><?php echo $LANG->_('Change webserver configuration')?></th>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('Server configuration DN')?>:</td>
-            <td><?=$_REQUEST["server"]?></td>
+            <td class="title"><?php echo $LANG->_('Server configuration DN')?>:</td>
+            <td><?php echo $_REQUEST["server"]?></td>
           </tr>
 
 <?php if($_REQUEST["oldvalue"]) { ?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('Old value')?>:</td>
-            <td><?=$_REQUEST["oldvalue"]?></td>
+            <td class="title"><?php echo $LANG->_('Old value')?>:</td>
+            <td><?php echo $_REQUEST["oldvalue"]?></td>
           </tr>
 
 <?php } ?>
@@ -47,28 +47,28 @@ function attribute_print_form() {
 <?php } else { ?>
             <td class="title"><?php echo pql_complete_constant($LANG->_('Set attribute %attribute%'), array('attribute' => $_REQUEST["attrib"])); ?></td>
 <?php } ?>
-            <td><input type="text" name="<?=$_REQUEST["attrib"]?>" value="<?=$attr_val?>" size="50"></td>
+            <td><input type="text" name="<?php echo $_REQUEST["attrib"]?>" value="<?=$attr_val?>" size="50"></td>
           </tr>
         </th>
       </table>
 
       <input type="hidden" name="submit"   value="1">
-      <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
-      <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
-      <input type="hidden" name="host"     value="<?=$url["host"]?>">
-      <input type="hidden" name="server"   value="<?=$url["server"]?>">
+      <input type="hidden" name="rootdn"   value="<?php echo $url["rootdn"]?>">
+      <input type="hidden" name="domain"   value="<?php echo $url["domain"]?>">
+      <input type="hidden" name="host"     value="<?php echo $url["host"]?>">
+      <input type="hidden" name="server"   value="<?php echo $url["server"]?>">
 <?php if($_REQUEST["virthost"]) { ?>
-      <input type="hidden" name="virthost" value="<?=$_REQUEST["virthost"]?>">
+      <input type="hidden" name="virthost" value="<?php echo $_REQUEST["virthost"]?>">
 <?php } ?>
 <?php if($_REQUEST["hostdir"]) { ?>
-      <input type="hidden" name="hostdir"  value="<?=$_REQUEST["hostdir"]?>">
+      <input type="hidden" name="hostdir"  value="<?php echo $_REQUEST["hostdir"]?>">
 <?php } ?>
-      <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-      <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
-      <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
-      <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+      <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+      <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
+      <input type="hidden" name="action"   value="<?php echo $_REQUEST["action"]?>">
+      <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
       <br>
-      <input type="submit" value="<?=$LANG->_('Save')?>">
+      <input type="submit" value="<?php echo $LANG->_('Save')?>">
     </form>
 <?php
 }

@@ -55,7 +55,7 @@ if(isset($submit)) {
 }
 ?>
 
-  <br><span class="title1"><?php echo pql_get_define("PQL_CONF_WHOAREWE"); ?><?php if($_SESSION["ADVANCED_MODE"]) { ?><br>Version: <?=$_SESSION["VERSION"]?><?php } ?></span><p>
+  <br><span class="title1"><?php echo pql_get_define("PQL_CONF_WHOAREWE"); ?><?php if($_SESSION["ADVANCED_MODE"]) { ?><br>Version: <?php echo $_SESSION["VERSION"]?><?php } ?></span><p>
 <?php
 if($_SESSION["ADVANCED_MODE"] == 1) {
   // Should we show the 'change server' choices
@@ -65,16 +65,16 @@ if($_SESSION["ADVANCED_MODE"] == 1) {
 
   <ul>
     <li>
-      <form action="<?=$_SERVER["PHP_SELF"]?>" target="_top">
+      <form action="<?php echo $_SERVER["PHP_SELF"]?>" target="_top">
 	Change LDAP server<br>
         <select name="ldapserver">
 <?php	foreach($servers as $server) {
 			$host = split(';', $server);
 ?>
-          <option value="<?=$server?>"><?=pql_maybe_idna_decode(urldecode($host[0]))?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></option>
+          <option value="<?php echo $server?>"><?=pql_maybe_idna_decode(urldecode($host[0]))?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></option>
 <?php	} ?>
         </select>
-        <input type="submit" value="<?="--&gt;&gt;"?>" name="submit">
+        <input type="submit" value="<?php echo "--&gt;&gt;"?>" name="submit">
       </form>
     </li>
 

@@ -72,20 +72,20 @@ function attribute_print_form() {
 	}
   }
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
 <?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_IPHOSTNUMBER"))) { ?>
-      <th colspan="3" align="left"><?=$LANG->_('Change IP address')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Change IP address')?></th>
 <?php } elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_DHCP3_SERVICEDN"))) { ?>
-      <th colspan="3" align="left"><?=$LANG->_('Change DN')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Change DN')?></th>
 <?php } else { ?>
       <th colspan="3" align="left"></th>
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
 <?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_IPHOSTNUMBER"))) { ?>
-          <td class="title"><?=$LANG->_('IP address')?></td>
+          <td class="title"><?php echo $LANG->_('IP address')?></td>
 <?php } elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_DHCP3_SERVICEDN"))) { ?>
-          <td class="title"><?=$LANG->_('DHCP Service')?></td>
+          <td class="title"><?php echo $LANG->_('DHCP Service')?></td>
 <?php } else { ?>
           <td class="title"></td>
 <?php } ?>
@@ -145,7 +145,7 @@ function attribute_print_form() {
 		pql_format_tree_end();
 		// }}}
 ?>
-            <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
+            <input type="hidden" name="<?php echo $attrib?>" value="<?=$i?>">
 <?php } else {
 		// No DHCP configuration!
 		echo $LANG->_('There is no configuration to choose from. You will have to go to a\nbranch/domain and create them before you can choose them here');
@@ -157,14 +157,14 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="action"   value="<?php echo $_REQUEST["action"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $attrib?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
 
-    <input type="hidden" name="host"     value="<?=urlencode($_REQUEST["host"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="host"     value="<?php echo urlencode($_REQUEST["host"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

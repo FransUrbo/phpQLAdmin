@@ -97,29 +97,29 @@ function simscan_print_view($host) {
 	simscan_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('SimScan configuration')?></th>
+    <th colspan="3" align="left"><?php echo $LANG->_('SimScan configuration')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Run SpamAssassin')?></td>
+        <td class="title"><?php echo $LANG->_('Run SpamAssassin')?></td>
         <td><?php if(@$_REQUEST["simscanspamassassin"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td align="right"><?=$_REQUEST["links"]["simscanspamassassin"]?></td>
+        <td align="right"><?php echo $_REQUEST["links"]["simscanspamassassin"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Run Clam Anti Virus')?></td>
+        <td class="title"><?php echo $LANG->_('Run Clam Anti Virus')?></td>
         <td><?php if(@$_REQUEST["simscanclamantivirus"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td align="right"><?=$_REQUEST["links"]["simscanclamantivirus"]?></td>
+        <td align="right"><?php echo $_REQUEST["links"]["simscanclamantivirus"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Run Trophie')?></td>
+        <td class="title"><?php echo $LANG->_('Run Trophie')?></td>
         <td><?php if(@$_REQUEST["simscantrophie"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td align="right"><?=$_REQUEST["links"]["simscantrophie"]?></td>
+        <td align="right"><?php echo $_REQUEST["links"]["simscantrophie"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Max spam hits')?></td>
+        <td class="title"><?php echo $LANG->_('Max spam hits')?></td>
         <td><?php if($_REQUEST["simscanspamassassinhits"]) { echo $_REQUEST["simscanspamassassinhits"]; } else { echo "<i>Not set</i>"; }?>&nbsp;</td>
-        <td align="right"><?=$_REQUEST["links"]["simscanspamassassinhits"]?></td>
+        <td align="right"><?php echo $_REQUEST["links"]["simscanspamassassinhits"]?></td>
       </tr>
 
 <?php	// Attachments to check
@@ -150,7 +150,7 @@ function simscan_print_view($host) {
       <tr class="<?php pql_format_table(); ?>">
         <td colspan="4">
           <img src="images/info.png" width="16" height="16" alt="" border="0">
-          <?=$LANG->_('QmailLDAP/Controls will NOT read/use these. You will have to have a script that extracts this information to use it.')?>
+          <?php echo $LANG->_('QmailLDAP/Controls will NOT read/use these. You will have to have a script that extracts this information to use it.')?>
         </td>
       </tr>
     </th>
@@ -167,7 +167,7 @@ function simscan_print_form($host) {
 	$attrib = $_REQUEST["attrib"];
 	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
 <?php if($attrib == "simscanspamassassinhits") { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('How many SA hits before mail is considered spam on server %mxhost%'), array('mxhost' => $cn)); ?></th>
@@ -176,9 +176,9 @@ function simscan_print_form($host) {
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
 <?php if($attrib == "simscanspamassassinhits") { ?>
-          <td class="title"><?=$LANG->_('Number of hits')?></td>
+          <td class="title"><?php echo $LANG->_('Number of hits')?></td>
 <?php } else { ?>
-          <td class="title"><?=$LANG->_('Attachment suffix')?></td>
+          <td class="title"><?php echo $LANG->_('Attachment suffix')?></td>
 <?php } ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
@@ -189,10 +189,10 @@ function simscan_print_form($host) {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$host?>">
+    <input type="hidden" name="attrib" value="<?php echo $attrib?>">
+    <input type="hidden" name="mxhost" value="<?php echo $host?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

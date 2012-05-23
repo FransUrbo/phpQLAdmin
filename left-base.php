@@ -23,10 +23,10 @@ if($_REQUEST["advanced"] == 1) {
 ?>
   <!-- Link to the logged in user information page -->
   <div id="el1Parent" class="parent" style="margin-bottom: 5px">
-    <?=$LANG->_('User')?>:
+    <?php echo $LANG->_('User')?>:
     <nobr>
-      <a class="item" href="user_detail.php?rootdn=<?php echo pql_get_rootdn($_SESSION["USER_DN"], 'left.php')?>&user=<?=urlencode($_SESSION["USER_DN"])?>">
-        <span class="heada"><b><?=$_SESSION["USER_ID"]?></b></span>
+      <a class="item" href="user_detail.php?rootdn=<?php echo pql_get_rootdn($_SESSION["USER_DN"], 'left.php')?>&user=<?php echo urlencode($_SESSION["USER_DN"])?>">
+        <span class="heada"><b><?php echo $_SESSION["USER_ID"]?></b></span>
       </a>
     </nobr>
   </div>
@@ -39,9 +39,9 @@ if($_REQUEST["advanced"] == 1) {
 ?>
   <!-- LDAP Server information -->
   <div id="el2Parent" class="parent" style="margin-bottom: 5px">
-    <?=$LANG->_('LDAP Server')?>:
+    <?php echo $LANG->_('LDAP Server')?>:
     <nobr>
-      <span class="heada"><?=pql_maybe_idna_decode($host[0])?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></span>
+      <span class="heada"><?php echo pql_maybe_idna_decode($host[0])?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></span>
     </nobr>
   </div>
 
@@ -51,7 +51,7 @@ if($_REQUEST["advanced"] == 1) {
   <div id="el3Parent" class="parent" style="margin-bottom: 5px">
     <nobr>
       <a class="item" href="index.php?logout=1" target="_parent">
-        <span class="heada"><?=$LANG->_('Log out')?></span>
+        <span class="heada"><?php echo $LANG->_('Log out')?></span>
       </a>
     </nobr>
   </div>
@@ -61,17 +61,17 @@ if($_REQUEST["advanced"] == 1) {
   <div id="el4Parent" class="parent">
     <form method=post action="index2.php" target="_top">
 <?php	if($_SESSION["konqueror"]) { ?>
-      <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+      <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?php echo $checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
 <?php	} elseif($_SESSION["lynx"]) { ?>
 <?php	  if($_REQUEST["advanced"] == 1) { ?>
       <input type="hidden" name="advanced" value="0">
-      <input type="submit" value="<?=$LANG->_('Simple mode')."\n"?>">
+      <input type="submit" value="<?php echo $LANG->_('Simple mode')."\n"?>">
 <?php	  } else { ?>
       <input type="hidden" name="advanced" value="1">
-      <input type="submit" value="<?=$LANG->_('Advanced mode')."\n"?>">
+      <input type="submit" value="<?php echo $LANG->_('Advanced mode')."\n"?>">
 <?php	  } ?>
 <?php	} else { ?>
-      <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+      <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?php echo $checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
 <?php	}
 	  }
 ?>

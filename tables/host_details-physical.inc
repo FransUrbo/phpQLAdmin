@@ -34,24 +34,24 @@ foreach($attribs as $key => $attrib) {
 // }}}
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_("Basic host details")."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_("Basic host details")."\n"?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">RDN</td>
-          <td><?=$_REQUEST["host"]?></td>
+          <td><?php echo $_REQUEST["host"]?></td>
           <td></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('IP Address')?></td>
-          <td><?=$ip?></td>
-          <td><?=$ip_link?></td>
+          <td class="title"><?php echo $LANG->_('IP Address')?></td>
+          <td><?php echo $ip?></td>
+          <td><?php echo $ip_link?></td>
         </tr>
 <?php if(pql_get_define("PQL_CONF_DHCP3_USE")) { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_("Service DN")?></td>
+          <td class="title"><?php echo $LANG->_("Service DN")?></td>
           <td><?php if(@$servicedn) { echo "$servicedn"; } else { echo "<i>".$LANG->_('Not set')."</i>"; } ?></td>
-          <td align="right"><?=$servicedn_link?></td>
+          <td align="right"><?php echo $servicedn_link?></td>
         </tr>
 <?php } ?>
       </th>

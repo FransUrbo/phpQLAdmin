@@ -115,7 +115,7 @@ function attribute_print_form() {
 	attribute_output_java_window();
 ?>
 
-  <span class="title1"><?=$LANG->_('Change options')?></span>
+  <span class="title1"><?php echo $LANG->_('Change options')?></span>
 
   <br><br>
 
@@ -130,7 +130,7 @@ function attribute_print_form() {
           <table>
             <td colspan="2"><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
             <td>
-              <?=$LANG->_('These are the objectclasses that exists in the LDAP server, exept those that\'s already included for use')?>.
+              <?php echo $LANG->_('These are the objectclasses that exists in the LDAP server, exept those that\'s already included for use')?>.
             </td>
           </table>
         </tr>
@@ -152,8 +152,8 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Use existing DN as RADIUS identity')?>:</td>
-          <td class="<?=pql_format_table(1)?>">
+          <td class="title"><?php echo $LANG->_('Use existing DN as RADIUS identity')?>:</td>
+          <td class="<?php echo pql_format_table(1)?>">
 <?php		for($i=0; $dns[$i]; $i++) {
 			  echo '            <input type="radio" name="radius_identity_dn" value="'.$dns[$i].'"';
 			  if(!$checked and (($dns[$i] == $oldvalue) or preg_match('/radius/i', $dns[$i]))) {
@@ -172,26 +172,26 @@ function attribute_print_form() {
         </tr>
       </th>
 
-      <th colspan="3" align="left"><?=$LANG->_('or')?>:
+      <th colspan="3" align="left"><?php echo $LANG->_('or')?>:
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Create new RADIUS identity')?>:</td>
-          <td class="<?=pql_format_table(1)?>">
-            uid=<input type="text" name="radius_identity_name" value="<?=$_REQUEST["radius_identity_name"]?>" size="10">,
+          <td class="title"><?php echo $LANG->_('Create new RADIUS identity')?>:</td>
+          <td class="<?php echo pql_format_table(1)?>">
+            uid=<input type="text" name="radius_identity_name" value="<?php echo $_REQUEST["radius_identity_name"]?>" size="10">,
             <select name="ou_dn">
 <?php		for($i=0; $ous[$i]; $i++) { ?>
-              <option value="<?=$ous[$i]?>"><?=$ous[$i]?></option>
+              <option value="<?php echo $ous[$i]?>"><?=$ous[$i]?></option>
 <?php		} ?>
             </select>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password')?>:</td>
-          <td class="<?=pql_format_table(1)?>">
-            <input type="text" name="radius_identity_pass" value="<?=$_REQUEST["radius_identity_pass"]?>" size="20">
+          <td class="title"><?php echo $LANG->_('Password')?>:</td>
+          <td class="<?php echo pql_format_table(1)?>">
+            <input type="text" name="radius_identity_pass" value="<?php echo $_REQUEST["radius_identity_pass"]?>" size="20">
             &nbsp;&nbsp;&nbsp;
             <img src="images/info.png" width="16" height="16" alt="" border="0">
-            <?=$LANG->_('Password will be added using a MD5 encryption.')?>
+            <?php echo $LANG->_('Password will be added using a MD5 encryption.')?>
           </td>
         </tr>
         </tr>
@@ -206,10 +206,10 @@ function attribute_print_form() {
       <th colspan="3" align="left">
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">
-            <?=pql_complete_constant($LANG->_('Add to attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
+            <?php echo pql_complete_constant($LANG->_('Add to attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
           </td>
 <?php		$class=pql_format_table(0); ?>
-          <td class="<?=$class?>">
+          <td class="<?php echo $class?>">
 <?php   	if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_USER"))) or
 			   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))))
 			{
@@ -247,7 +247,7 @@ function attribute_print_form() {
 
         <tr>
           <td class="title"></td>
-          <td class="<?=$class?>">
+          <td class="<?php echo $class?>">
 <?php			  }
 				  $new_tr = 1;
 
@@ -287,21 +287,21 @@ function attribute_print_form() {
 				} // if(print) 
 			  } // foreach(objectclasses)
 ?>
-      <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
-      <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
+      <input type="hidden" name="<?php echo $attrib?>_<?=$i?>" value="on">
+      <input type="hidden" name="<?php echo $attrib?>" value="<?=$i?>">
 <?php		} else {
 			  // No objectclasses in LDAP!
 ?>
-          <td class="<?=$class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
+          <td class="<?php echo $class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
 <?php
 			}
 		  } elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_LANG"))) {
 			// We're to change the language -> show a select box with existing languages
 			$languages = $LANG->get_supported();
 ?>
-            <select name="<?=$attrib?>">
+            <select name="<?php echo $attrib?>">
 <?php		foreach($languages as $l => $lang) { ?>
-              <option value="<?=$l?>"><?=$lang?></option>
+              <option value="<?php echo $l?>"><?=$lang?></option>
 <?php		} ?>
             </select>
 <?php
@@ -317,18 +317,18 @@ function attribute_print_form() {
 					// We don't want to include schemes we've already
 					// configured branch to use...
 ?>
-            <input type="checkbox" name="<?=$attrib?>_<?=$j?>" value="<?=$values[$i]?>"><?=$values[$i]?><br>
+            <input type="checkbox" name="<?php echo $attrib?>_<?=$j?>" value="<?=$values[$i]?>"><?=$values[$i]?><br>
 <?php				$j++;
 				  }
 				}
 ?>
-            <input type="hidden"   name="<?=$attrib?>"   value="<?=$j?>">
+            <input type="hidden"   name="<?php echo $attrib?>"   value="<?=$j?>">
           </td>
 <?php		  }
 			} else {
 ?>
           <td>
-            <?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($attrib != 'whoarewe') { echo $oldvalue; } ?>" size="40">
+            <?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?php echo $attrib?>" value="<?php if($attrib != 'whoarewe') { echo $oldvalue; } ?>" size="40">
           </td>
 <?php		}
 		  }
@@ -340,7 +340,7 @@ function attribute_print_form() {
 // }}}
 		if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_SAMBASID"))) {
 ?>
-    <img src="images/info.png" width="16" height="16" alt="" border="0"><?=pql_complete_constant($LANG->_("This can be retreived by executing the command \b%what%\B (as root)"),
+    <img src="images/info.png" width="16" height="16" alt="" border="0"><?php echo pql_complete_constant($LANG->_("This can be retreived by executing the command \b%what%\B (as root)"),
 																								 array('what' => 'net getlocalsid'))?>
 <?php
 		}
@@ -348,19 +348,19 @@ function attribute_print_form() {
 ?>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+    <input type="hidden" name="attrib"   value="<?php echo $attrib?>">
+    <input type="hidden" name="rootdn"   value="<?php echo $rootdn?>">
 <?php if($toggle) { ?>
-    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue?>">
 <?php } ?>
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 
   <script language="JavaScript">
   <!--
-    document.phpqladmin_modify.<?=$attrib?>.focus();
+    document.phpqladmin_modify.<?php echo $attrib?>.focus();
 	// -->
   </script>
 <?php

@@ -36,37 +36,37 @@ if(isset($_REQUEST['action'])) {
       // {{{ Output a form to add subnet
       require($_SESSION["path"]."/header.html");
 ?>
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="1" cellpadding="3" border="0">
-        <th colspan="3" align="left"><?=$LANG->_("Add New Computer")?>
+        <th colspan="3" align="left"><?php echo $LANG->_("Add New Computer")?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_("Network")?></td>
+            <td class="title"><?php echo $LANG->_("Network")?></td>
             <td>
-              <input type="text" name="network" size="15" value="<?=$_REQUEST['network']?>">
+              <input type="text" name="network" size="15" value="<?php echo $_REQUEST['network']?>">
             </td>
           </tr>
 
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_("Network mask")?></td>
+            <td class="title"><?php echo $LANG->_("Network mask")?></td>
             <td>
-              <input type="text" name="netmask" size="5" value="<?=$_REQUEST['netmask']?>" size="2">
+              <input type="text" name="netmask" size="5" value="<?php echo $_REQUEST['netmask']?>" size="2">
             </td>
           </tr>
 
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('Network range')?></td>
-            <td><input type="text" name="range" value="<?=$_REQUEST["range"]?>" size="31">
+            <td class="title"><?php echo $LANG->_('Network range')?></td>
+            <td><input type="text" name="range" value="<?php echo $_REQUEST["range"]?>" size="31">
           </tr>
         </th>
       </table>
 
       <input type="hidden" name="view"      value="dhcp">
-      <input type="hidden" name="rootdn"    value="<?=$_REQUEST["rootdn"]?>">
-      <input type="hidden" name="domain"    value="<?=$_REQUEST["domain"]?>">
-      <input type="hidden" name="host"      value="<?=$_REQUEST["host"]?>">
-      <input type="hidden" name="config"    value="<?=$_REQUEST["config"]?>">
-      <input type="hidden" name="action"    value="<?=$_REQUEST["action"]?>">
-      <input type="submit" name="Submit"    value="<?=$LANG->_('Add New Host')?>">
+      <input type="hidden" name="rootdn"    value="<?php echo $_REQUEST["rootdn"]?>">
+      <input type="hidden" name="domain"    value="<?php echo $_REQUEST["domain"]?>">
+      <input type="hidden" name="host"      value="<?php echo $_REQUEST["host"]?>">
+      <input type="hidden" name="config"    value="<?php echo $_REQUEST["config"]?>">
+      <input type="hidden" name="action"    value="<?php echo $_REQUEST["action"]?>">
+      <input type="submit" name="Submit"    value="<?php echo $LANG->_('Add New Host')?>">
     </form>
   </body>
 </html>
@@ -99,25 +99,25 @@ if(isset($_REQUEST['action'])) {
       // {{{ Output a form to add subnet
       require($_SESSION["path"]."/header.html");
 ?>
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="1" cellpadding="3" border="0">
-        <th colspan="3" align="left"><?=$LANG->_("Add New DHCP host")?>
+        <th colspan="3" align="left"><?php echo $LANG->_("Add New DHCP host")?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_("Hostname")?></td>
+            <td class="title"><?php echo $LANG->_("Hostname")?></td>
             <td>
-              <input type="text" name="hostname" size="15" value="<?=$_REQUEST['hostname']?>">
+              <input type="text" name="hostname" size="15" value="<?php echo $_REQUEST['hostname']?>">
             </td>
           </tr>
         </th>
       </table>
 
       <input type="hidden" name="view"      value="dhcp">
-      <input type="hidden" name="rootdn"    value="<?=$_REQUEST["rootdn"]?>">
-      <input type="hidden" name="domain"    value="<?=$_REQUEST["domain"]?>">
-      <input type="hidden" name="host"      value="<?=$_REQUEST["host"]?>">
-      <input type="hidden" name="config"    value="<?=$_REQUEST["config"]?>">
-      <input type="hidden" name="action"    value="<?=$_REQUEST["action"]?>">
-      <input type="submit" name="Submit"    value="<?=$LANG->_('Add New Host')?>">
+      <input type="hidden" name="rootdn"    value="<?php echo $_REQUEST["rootdn"]?>">
+      <input type="hidden" name="domain"    value="<?php echo $_REQUEST["domain"]?>">
+      <input type="hidden" name="host"      value="<?php echo $_REQUEST["host"]?>">
+      <input type="hidden" name="config"    value="<?php echo $_REQUEST["config"]?>">
+      <input type="hidden" name="action"    value="<?php echo $_REQUEST["action"]?>">
+      <input type="submit" name="Submit"    value="<?php echo $LANG->_('Add New Host')?>">
     </form>
   </body>
 </html>

@@ -62,9 +62,9 @@ function locals_print_view($host) {
 	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left" colspan="3"><?=pql_complete_constant($LANG->_('Allowed %attrib% for host %host%'), array('host' => $cn, 'attrib' => pql_get_define("PQL_ATTR_LOCALS")))?>
+    <th align="left" colspan="3"><?php echo pql_complete_constant($LANG->_('Allowed %attrib% for host %host%'), array('host' => $cn, 'attrib' => pql_get_define("PQL_ATTR_LOCALS")))?>
       <tr>
-        <td class="title" colspan="3"><?=$LANG->_('Mails accepted as local by mail server')?></td>
+        <td class="title" colspan="3"><?php echo $LANG->_('Mails accepted as local by mail server')?></td>
       </tr>
 
 <?php
@@ -88,10 +88,10 @@ function locals_print_view($host) {
             <tr>
 <?php if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) { ?>
               <td><img src="images/edit.png" width="12" height="12" border="0" alt="replicate"></td>
-              <td><a href="control_edit_attribute.php?rootdn=<?=$_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALS")?>&type=replicate&mxhost=<?=$host?>&submit=1"><?=$LANG->_('Click here to start replication manually')?></a></td>
+              <td><a href="control_edit_attribute.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALS")?>&type=replicate&mxhost=<?=$host?>&submit=1"><?=$LANG->_('Click here to start replication manually')?></a></td>
 <?php } else { ?>
               <td><img src="images/info.png" width="16" height="16" border="0"></td>
-              <td><?=$LANG->_('The automatic replication with domain is \bdisabled\B')?></td>
+              <td><?php echo $LANG->_('The automatic replication with domain is \bdisabled\B')?></td>
 <?php }	?>
             </tr>
           </table>
@@ -113,7 +113,7 @@ function locals_print_form() {
 //		return false;
 //    }
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain'))); ?>
         <tr class="<?php pql_format_table(); ?>">
@@ -123,13 +123,13 @@ function locals_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="type"   value="<?=$_REQUEST["type"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="rootdn" value="<?php echo $_REQUEST["rootdn"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="type"   value="<?php echo $_REQUEST["type"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

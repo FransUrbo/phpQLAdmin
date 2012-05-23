@@ -461,7 +461,7 @@ function attribute_print_form() {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
           <td><font color="red">*</font></td>
-          <td>=> <?=$LANG->_('Required options')?></td>
+          <td>=> <?php echo $LANG->_('Required options')?></td>
         </tr>
 
 <?php
@@ -470,7 +470,7 @@ function attribute_print_form() {
 	// {{{ Hosts to add automount to
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Host')?></td>
+          <td class="title"><?php echo $LANG->_('Host')?></td>
           <td><font color="red">*</font></td>
           <td>
             <select name="host" onChange="submit()">
@@ -493,7 +493,7 @@ function attribute_print_form() {
 	// {{{ Base mountpoint
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Base Mountpoint')?></td>
+          <td class="title"><?php echo $LANG->_('Base Mountpoint')?></td>
           <td><font color="red">*</font></td>
           <td>
             <select name="basemount" onChange="submit()">
@@ -523,15 +523,15 @@ function attribute_print_form() {
 ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Mountpoint')?></td>
+          <td class="title"><?php echo $LANG->_('Mountpoint')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="mountpoint" value="<?=$_REQUEST["mountpoint"]?>"></td>
+          <td><input type="text" name="mountpoint" value="<?php echo $_REQUEST["mountpoint"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Description')?></td>
+          <td class="title"><?php echo $LANG->_('Description')?></td>
           <td></td>
-          <td><input type="text" name="description" value="<?=$_REQUEST["description"]?>" size="60"></td>
+          <td><input type="text" name="description" value="<?php echo $_REQUEST["description"]?>" size="60"></td>
         </tr>
 
 <?php
@@ -541,7 +541,7 @@ function attribute_print_form() {
 	  // {{{ New base mount
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Link type')?></td>								
+          <td class="title"><?php echo $LANG->_('Link type')?></td>								
           <td><font color="red">*</font></td>
           <td>
             <select name="linktype" onChange="submit()">>
@@ -553,15 +553,15 @@ function attribute_print_form() {
 
 <?php if(!@$_REQUEST["linktype"] or ($_REQUEST["linktype"] == "ldap")) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('LDAP Host')?></td>
+          <td class="title"><?php echo $LANG->_('LDAP Host')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="ldaphost" value="<?=$_REQUEST["ldaphost"]?>"></td>
+          <td><input type="text" name="ldaphost" value="<?php echo $_REQUEST["ldaphost"]?>"></td>
         </tr>
 <?php	} else { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('File path')?></td>
+          <td class="title"><?php echo $LANG->_('File path')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="filepath" value="<?=$_REQUEST["filepath"]?>"></td>
+          <td><input type="text" name="filepath" value="<?php echo $_REQUEST["filepath"]?>"></td>
         </tr>
 <?php	}
 // }}}
@@ -576,21 +576,21 @@ function attribute_print_form() {
 		// {{{ Choose filesystem
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Filesystem')?></td>
+          <td class="title"><?php echo $LANG->_('Filesystem')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="filesystem" value="<?=$_REQUEST["filesystem"]?>"></td>
+          <td><input type="text" name="filesystem" value="<?php echo $_REQUEST["filesystem"]?>"></td>
         </tr>
 <?php } else { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Filesystem')?></td>
+          <td class="title"><?php echo $LANG->_('Filesystem')?></td>
           <td><font color="red">*</font></td>
           <td>
             <select name="filesystem" onChange="submit()">
 <?php	foreach($_REQUEST["FILESYSTEMS"] as $fs) { ?>
-              <option value="<?=$fs?>" <?php if($_REQUEST["filesystem"] == $fs) { echo "SELECTED"; }?>><?=$fs?></option>
+              <option value="<?php echo $fs?>" <?php if($_REQUEST["filesystem"] == $fs) { echo "SELECTED"; }?>><?=$fs?></option>
 <?php	} ?>
-              <option value="autofs"   <?php if($_REQUEST["filesystem"] == 'autofs')   { echo "SELECTED"; }?>><?=$LANG->_('Submount')?></option>
-              <option value="new"      <?php if($_REQUEST["filesystem"] == 'new')      { echo "SELECTED"; }?>><?=$LANG->_('Other')?></option>
+              <option value="autofs"   <?php if($_REQUEST["filesystem"] == 'autofs')   { echo "SELECTED"; }?>><?php echo $LANG->_('Submount')?></option>
+              <option value="new"      <?php if($_REQUEST["filesystem"] == 'new')      { echo "SELECTED"; }?>><?php echo $LANG->_('Other')?></option>
             </select>
           </td>
         </tr>
@@ -607,15 +607,15 @@ function attribute_print_form() {
 	  {
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Mount owner (uid)')?></td>
+          <td class="title"><?php echo $LANG->_('Mount owner (uid)')?></td>
           <td></td>
-          <td><input type="text" name="creduid" value="<?=$_REQUEST["creduid"]?>"></td>
+          <td><input type="text" name="creduid" value="<?php echo $_REQUEST["creduid"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Mount owner (gid)')?></td>
+          <td class="title"><?php echo $LANG->_('Mount owner (gid)')?></td>
           <td></td>
-          <td><input type="text" name="credgid" value="<?=$_REQUEST["credgid"]?>"></td>
+          <td><input type="text" name="credgid" value="<?php echo $_REQUEST["credgid"]?>"></td>
         </tr>
 
 <?php
@@ -630,7 +630,7 @@ function attribute_print_form() {
 ?>	  
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Blocksize')?></td>
+                   <td class="title"><?php echo $LANG->_('Blocksize')?></td>
                    <td></td>
                    <td>
                      <input type="radio" name="blocksize" value="512">512&nbsp;&nbsp;&nbsp;
@@ -650,12 +650,12 @@ function attribute_print_form() {
 	  {
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Character set to use when returning file names')?></td>
+          <td class="title"><?php echo $LANG->_('Character set to use when returning file names')?></td>
           <td></td>
           <td>
             <select name="iocharset">
 <?php	foreach($_REQUEST["CODEPAGES"] as $iocharset) { ?>
-              <option name="<?=$iocharset?>"<?php if($_REQUEST["iocharset"] == $iocharset) { echo " SELECTED"; } ?>><?=$iocharset?></option>
+              <option name="<?php echo $iocharset?>"<?php if($_REQUEST["iocharset"] == $iocharset) { echo " SELECTED"; } ?>><?=$iocharset?></option>
 <?php	} ?>
             </select>
           </td>
@@ -668,9 +668,9 @@ function attribute_print_form() {
 	  if(($_REQUEST["filesystem"] == 'iso9660') or ($_REQUEST["filesystem"] == 'udf')) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Mount session number')?></td>
+          <td class="title"><?php echo $LANG->_('Mount session number')?></td>
           <td></td>
-          <td><input type="text" name="session" value="<?=$_REQUEST["session"]?>" onChange="submit()"></td>
+          <td><input type="text" name="session" value="<?php echo $_REQUEST["session"]?>" onChange="submit()"></td>
         </tr>
 <?php
 	  }
@@ -683,19 +683,19 @@ function attribute_print_form() {
 ?>
         <!-- SMBFS -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('SMB server')?></td>
+          <td class="title"><?php echo $LANG->_('SMB server')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="smbserver" value="<?=$_REQUEST["smbserver"]?>"></td>
+          <td><input type="text" name="smbserver" value="<?php echo $_REQUEST["smbserver"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('SMB share')?></td>
+          <td class="title"><?php echo $LANG->_('SMB share')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="smbshare" value="<?=$_REQUEST["smbshare"]?>"></td>
+          <td><input type="text" name="smbshare" value="<?php echo $_REQUEST["smbshare"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('SMB Credential type')?></td>
+          <td class="title"><?php echo $LANG->_('SMB Credential type')?></td>
           <td></td>
           <td>
             <select name="smbcredtype" onChange="submit()">
@@ -708,22 +708,22 @@ function attribute_print_form() {
 <?php	if($_REQUEST["smbcredtype"] == 'file') { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('SMB Credentials file')?></td>
+          <td class="title"><?php echo $LANG->_('SMB Credentials file')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="smbcredfile" value="<?=$_REQUEST["smbcredfile"]?>"></td>
+          <td><input type="text" name="smbcredfile" value="<?php echo $_REQUEST["smbcredfile"]?>"></td>
         </tr>
 <?php	} elseif($_REQUEST["smbcredtype"] == 'manual') { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('SMB Username')?></td>
+          <td class="title"><?php echo $LANG->_('SMB Username')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="smbcreduser" value="<?=$_REQUEST["smbcreduser"]?>"></td>
+          <td><input type="text" name="smbcreduser" value="<?php echo $_REQUEST["smbcreduser"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('SMB Password')?></td>
+          <td class="title"><?php echo $LANG->_('SMB Password')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="smbcredpasswd" value="<?=$_REQUEST["smbcredpasswd"]?>"></td>
+          <td><input type="text" name="smbcredpasswd" value="<?php echo $_REQUEST["smbcredpasswd"]?>"></td>
         </tr>
 <?php	}
 // }}}
@@ -733,15 +733,15 @@ function attribute_print_form() {
 ?>
         <!-- NFS/NFS4 -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('NFS server')?></td>
+          <td class="title"><?php echo $LANG->_('NFS server')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="nfsserver" value="<?=$_REQUEST["nfsserver"]?>"></td>
+          <td><input type="text" name="nfsserver" value="<?php echo $_REQUEST["nfsserver"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Remote mount point')?></td>
+          <td class="title"><?php echo $LANG->_('Remote mount point')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="nfsshare" value="<?=$_REQUEST["nfsshare"]?>"></td>
+          <td><input type="text" name="nfsshare" value="<?php echo $_REQUEST["nfsshare"]?>"></td>
         </tr>
 <?php
 // }}}
@@ -751,15 +751,15 @@ function attribute_print_form() {
 ?>
         <!-- NCPFS -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Netware server')?></td>
+          <td class="title"><?php echo $LANG->_('Netware server')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="ncpserver" value="<?=$_REQUEST["ncpserver"]?>"></td>
+          <td><input type="text" name="ncpserver" value="<?php echo $_REQUEST["ncpserver"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Remote mount point')?></td>
+          <td class="title"><?php echo $LANG->_('Remote mount point')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="ncpshare" value="<?=$_REQUEST["ncpshare"]?>"></td>
+          <td><input type="text" name="ncpshare" value="<?php echo $_REQUEST["ncpshare"]?>"></td>
         </tr>
 <?php
 // }}}
@@ -775,33 +775,33 @@ function attribute_print_form() {
 ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Bitmask of the permissions that are not present')?></td>
+          <td class="title"><?php echo $LANG->_('Bitmask of the permissions that are not present')?></td>
           <td></td>
-          <td><input type="text" name="umask" value="<?=$_REQUEST["umask"]?>"></td>
+          <td><input type="text" name="umask" value="<?php echo $_REQUEST["umask"]?>"></td>
         </tr>
 <?php	if(@$_REQUEST["filesystem"] != 'ntfs') { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('The bitmask applied to directories only')?></td>
+          <td class="title"><?php echo $LANG->_('The bitmask applied to directories only')?></td>
           <td></td>
-          <td><input type="text" name="fatdmask" value="<?=$_REQUEST["fatdmask"]?>"></td>
+          <td><input type="text" name="fatdmask" value="<?php echo $_REQUEST["fatdmask"]?>"></td>
         </tr>
 <?php	} ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('The bitmask applied to regular files only')?></td>
+          <td class="title"><?php echo $LANG->_('The bitmask applied to regular files only')?></td>
           <td></td>
-          <td><input type="text" name="fatfmask" value="<?=$_REQUEST["fatfmask"]?>"></td>
+          <td><input type="text" name="fatfmask" value="<?php echo $_REQUEST["fatfmask"]?>"></td>
         </tr>
 <?php	if(@$_REQUEST["filesystem"] != 'ntfs') { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Codepage for converting to shortname characters')?></td>
+          <td class="title"><?php echo $LANG->_('Codepage for converting to shortname characters')?></td>
           <td></td>
           <td>
             <select name="codepage">
 <?php		foreach($_REQUEST["CODEPAGES"] as $codepage) { ?>
-              <option name="<?=$codepage?>"<?php if($_REQUEST["codepage"] == $codepage) { echo " SELECTED"; } ?>><?=$codepage?></option>
+              <option name="<?php echo $codepage?>"<?php if($_REQUEST["codepage"] == $codepage) { echo " SELECTED"; } ?>><?=$codepage?></option>
 <?php		} ?>
             </select>
           </td>
@@ -813,28 +813,28 @@ function attribute_print_form() {
 		// {{{ EXT2 or EXT3
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Reserved blocks user (UID)')?></td>
+                   <td class="title"><?php echo $LANG->_('Reserved blocks user (UID)')?></td>
                    <td></td>
-                   <td><input type="text" name="reserveduid" value="<?=$_REQUEST["reserveduid"]?>"></td>
+                   <td><input type="text" name="reserveduid" value="<?php echo $_REQUEST["reserveduid"]?>"></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Reserved blocks user (GID)')?></td>
+                   <td class="title"><?php echo $LANG->_('Reserved blocks user (GID)')?></td>
                    <td></td>
-                   <td><input type="text" name="reservedgid" value="<?=$_REQUEST["reservedgid"]?>"></td>
+                   <td><input type="text" name="reservedgid" value="<?php echo $_REQUEST["reservedgid"]?>"></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Use this block instead of block 1 for superblock')?></td>
+                   <td class="title"><?php echo $LANG->_('Use this block instead of block 1 for superblock')?></td>
                    <td></td>
-                   <td><input type="text" name="superblock" value="<?=$_REQUEST["superblock"]?>"></td>
+                   <td><input type="text" name="superblock" value="<?php echo $_REQUEST["superblock"]?>"></td>
                  </tr>
 <?php	if($_REQUEST["filesystem"] == 'ext3') { ?>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Sync all data and metadata this often')?></td>
+                   <td class="title"><?php echo $LANG->_('Sync all data and metadata this often')?></td>
                    <td></td>
-                   <td><input type="text" name="ext3_journal_commit" value="<?=$_REQUEST["ext3_journal_commit"]?>">&nbsp;<?=$LANG->_('seconds');?><td>
+                   <td><input type="text" name="ext3_journal_commit" value="<?php echo $_REQUEST["ext3_journal_commit"]?>">&nbsp;<?=$LANG->_('seconds');?><td>
                  </tr>
 												
 <?php	} ?>
@@ -845,9 +845,9 @@ function attribute_print_form() {
 		// {{{ Mount options for ReiserFS
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Remount option which\npermits online expansion\nof reiserfs partitions')?></td>
+                   <td class="title"><?php echo $LANG->_('Remount option which\npermits online expansion\nof reiserfs partitions')?></td>
                    <td></td>
-                   <td><input type="text" name="resize" value="<?=$_REQUEST["resize"]?>"></td>
+                   <td><input type="text" name="resize" value="<?php echo $_REQUEST["resize"]?>"></td>
                  </tr>
 
 <?php
@@ -857,47 +857,47 @@ function attribute_print_form() {
 		// {{{ Mount options for XFS
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Preferred buffered I/O size')?></td>
+                   <td class="title"><?php echo $LANG->_('Preferred buffered I/O size')?></td>
                    <td></td>
-                   <td><input type="text" name="biosize" value="<?=$_REQUEST["biosize"]?>"></td>
+                   <td><input type="text" name="biosize" value="<?php echo $_REQUEST["biosize"]?>"></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Number of in-memory log buffers')?></td>
+                   <td class="title"><?php echo $LANG->_('Number of in-memory log buffers')?></td>
                    <td></td>
-                   <td><input type="text" name="logbufs" onChange="submit()" value="<?=$_REQUEST["logbufs"]?>"></td>
+                   <td><input type="text" name="logbufs" onChange="submit()" value="<?php echo $_REQUEST["logbufs"]?>"></td>
                  </tr>
 <?php	if(@$_REQUEST["logbufs"]) { ?>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Size of each in-memory log buffer')?></td>
+                   <td class="title"><?php echo $LANG->_('Size of each in-memory log buffer')?></td>
                    <td></td>
-                   <td><input type="text" name="logbsize" value="<?=$_REQUEST["logbsize"]?>"></td>
+                   <td><input type="text" name="logbsize" value="<?php echo $_REQUEST["logbsize"]?>"></td>
                  </tr>
 <?php	} ?>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Use external metadata journal')?></td>
+                   <td class="title"><?php echo $LANG->_('Use external metadata journal')?></td>
                    <td></td>
-                   <td><input type="text" name="logdev" value="<?=$_REQUEST["logdev"]?>"></td>
+                   <td><input type="text" name="logdev" value="<?php echo $_REQUEST["logdev"]?>"></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Use external real-time device')?></td>
+                   <td class="title"><?php echo $LANG->_('Use external real-time device')?></td>
                    <td></td>
-                   <td><input type="text" name="rtdev" value="<?=$_REQUEST["rtdev"]?>"></td>
+                   <td><input type="text" name="rtdev" value="<?php echo $_REQUEST["rtdev"]?>"></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Stripe unit')?></td>
+                   <td class="title"><?php echo $LANG->_('Stripe unit')?></td>
                    <td></td>
-                   <td><input type="text" name="sunit" value="<?=$_REQUEST["sunit"]?>"></td>
+                   <td><input type="text" name="sunit" value="<?php echo $_REQUEST["sunit"]?>"></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td class="title"><?=$LANG->_('Stripe width')?></td>
+                   <td class="title"><?php echo $LANG->_('Stripe width')?></td>
                    <td></td>
-                   <td><input type="text" name="swidth" value="<?=$_REQUEST["swidth"]?>"></td>
+                   <td><input type="text" name="swidth" value="<?php echo $_REQUEST["swidth"]?>"></td>
                  </tr>
 <?php
 // }}}
@@ -908,9 +908,9 @@ function attribute_print_form() {
 ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Give all files this mode (octal)')?></td>
+          <td class="title"><?php echo $LANG->_('Give all files this mode (octal)')?></td>
           <td></td>
-          <td><input type="text" name="mode" value="<?=$_REQUEST["mode"]?>"></td>
+          <td><input type="text" name="mode" value="<?php echo $_REQUEST["mode"]?>"></td>
         </tr>
 <?php	}
 
@@ -918,9 +918,9 @@ function attribute_print_form() {
 ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Session begins at sector')?></td>
+          <td class="title"><?php echo $LANG->_('Session begins at sector')?></td>
           <td></td>
-          <td><input type="text" name="session_start" value="<?=$_REQUEST["session_start"]?>"></td>
+          <td><input type="text" name="session_start" value="<?php echo $_REQUEST["session_start"]?>"></td>
         </tr>
 <?php	}
 // }}}
@@ -929,9 +929,9 @@ function attribute_print_form() {
 		// {{{ Mount options for udf
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default bitmask (oct)')?></td>
+          <td class="title"><?php echo $LANG->_('Default bitmask (oct)')?></td>
           <td></td>
-          <td><input type="text" name="umask" value="<?=$_REQUEST["umask"]?>"></td>
+          <td><input type="text" name="umask" value="<?php echo $_REQUEST["umask"]?>"></td>
         </tr>
 <?php
 // }}}
@@ -948,9 +948,9 @@ function attribute_print_form() {
 ?>
         <!-- OTHER FS TYPE -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Device')?></td>
+          <td class="title"><?php echo $LANG->_('Device')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="device" value="<?=$_REQUEST["device"]?>"></td>
+          <td><input type="text" name="device" value="<?php echo $_REQUEST["device"]?>"></td>
         </tr>
 <?php
 	  }
@@ -961,7 +961,7 @@ function attribute_print_form() {
 		// {{{ Submount
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Link type')?></td>                                                             
+          <td class="title"><?php echo $LANG->_('Link type')?></td>                                                             
           <td><font color="red">*</font></td>
           <td>
             <select name="linktype" onChange="submit()">>
@@ -973,15 +973,15 @@ function attribute_print_form() {
 
 <?php if(!@$_REQUEST["linktype"] or ($_REQUEST["linktype"] == "ldap")) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('LDAP Host')?></td>
+          <td class="title"><?php echo $LANG->_('LDAP Host')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="ldaphost" value="<?=$_REQUEST["ldaphost"]?>"></td>
+          <td><input type="text" name="ldaphost" value="<?php echo $_REQUEST["ldaphost"]?>"></td>
         </tr>
 <?php   } else { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('File path')?></td>
+          <td class="title"><?php echo $LANG->_('File path')?></td>
           <td><font color="red">*</font></td>
-          <td><input type="text" name="filepath" value="<?=$_REQUEST["filepath"]?>"></td>
+          <td><input type="text" name="filepath" value="<?php echo $_REQUEST["filepath"]?>"></td>
         </tr>
 <?php   }
 // }}}
@@ -990,7 +990,7 @@ function attribute_print_form() {
 		// {{{ Additional FS Options (toggles or multiple choices)
 ?>
         <tr class="<?php pql_format_table(); ?>" valign="top">
-          <td class="title"><?=$LANG->_('Mount Options')?></td>
+          <td class="title"><?php echo $LANG->_('Mount Options')?></td>
           <td></td>
           <td>
             <table cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -1000,70 +1000,70 @@ function attribute_print_form() {
 		  // {{{ Mount options for ext2 or ext3
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="ext2_acl"<?php if($_REQUEST["ext2_acl"]) { echo " CHECKED"; } ?>><?=$LANG->_('Support POSIX Access Control Lists')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="ext2_check"<?php if($_REQUEST["ext2_check"]) { echo " CHECKED"; } ?>><?=$LANG->_('Check filesystem at every mount time')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="ext2_acl"<?php if($_REQUEST["ext2_acl"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Support POSIX Access Control Lists')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="ext2_check"<?php if($_REQUEST["ext2_check"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Check filesystem at every mount time')?>&nbsp;&nbsp;</td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="ext2_nobh"<?php if($_REQUEST["ext2_nobh"]) { echo " CHECKED"; } ?>><?=$LANG->_('Do not attach buffer_heads to file pagecache')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="ext2_nouid32"<?php if($_REQUEST["ext2_nouid32"]) { echo " CHECKED"; } ?>><?=$LANG->_('Disables 32-bit UIDs and GIDs')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="ext2_nobh"<?php if($_REQUEST["ext2_nobh"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Do not attach buffer_heads to file pagecache')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="ext2_nouid32"<?php if($_REQUEST["ext2_nouid32"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Disables 32-bit UIDs and GIDs')?>&nbsp;&nbsp;</td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="ext2_debug"<?php if($_REQUEST["ext2_debug"]) { echo " CHECKED"; } ?>><?=$LANG->_('Print debugging info upon each (re)mount')?></td>
-                   <td><input type="checkbox" name="ext2_xattr"<?php if($_REQUEST["ext2_xattr"]) { echo " CHECKED"; } ?>><?=$LANG->_('Support "user." extended attributes')?></td>
+                   <td><input type="checkbox" name="ext2_debug"<?php if($_REQUEST["ext2_debug"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Print debugging info upon each (re)mount')?></td>
+                   <td><input type="checkbox" name="ext2_xattr"<?php if($_REQUEST["ext2_xattr"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Support "user." extended attributes')?></td>
                  </tr>
 
 <?php	if($_REQUEST["filesystem"] == 'ext3') { ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="ext3_noload"<?php if($_REQUEST["ext3_noload"]) { echo " CHECKED"; } ?>><?=$LANG->_("Do not load the ext3 file system's journal on mounting")?></td>
-                   <td><input type="checkbox" name="ext3_journal_update"<?php if($_REQUEST["ext3_journal_update"]) { echo " CHECKED"; } ?>><?=$LANG->_("Update the ext3 file system's journal to the current format")?></td>
+                   <td><input type="checkbox" name="ext3_noload"<?php if($_REQUEST["ext3_noload"]) { echo " CHECKED"; } ?>><?php echo $LANG->_("Do not load the ext3 file system's journal on mounting")?></td>
+                   <td><input type="checkbox" name="ext3_journal_update"<?php if($_REQUEST["ext3_journal_update"]) { echo " CHECKED"; } ?>><?php echo $LANG->_("Update the ext3 file system's journal to the current format")?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('Journalling mode for file data')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="jmode" value="journal"<?php if($_REQUEST["error"] == 'journal') { echo " CHECKED"; } ?>><?=$LANG->_('All data is committed into the journal prior to being written into the main file system.')?>
+                     <b><?php echo $LANG->_('Journalling mode for file data')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="jmode" value="journal"<?php if($_REQUEST["error"] == 'journal') { echo " CHECKED"; } ?>><?php echo $LANG->_('All data is committed into the journal prior to being written into the main file system.')?>
                    </td>
 
                    <td>
-                     <input type="radio" name="jmode" value="ordered"<?php if($_REQUEST["error"] == 'ordered') { echo " CHECKED"; } ?>><?=$LANG->_('All data is forced directly out to the main file system prior to its metadata being committed to the journal.')?><br>
-                     <input type="radio" name="jmode" value="writeback"<?php if($_REQUEST["error"] == 'writeback') { echo " CHECKED"; } ?>><?=$LANG->_('Data ordering is not preserved - data may be written into the main file system after its metadata has been committed to the journal.')?>
+                     <input type="radio" name="jmode" value="ordered"<?php if($_REQUEST["error"] == 'ordered') { echo " CHECKED"; } ?>><?php echo $LANG->_('All data is forced directly out to the main file system prior to its metadata being committed to the journal.')?><br>
+                     <input type="radio" name="jmode" value="writeback"<?php if($_REQUEST["error"] == 'writeback') { echo " CHECKED"; } ?>><?php echo $LANG->_('Data ordering is not preserved - data may be written into the main file system after its metadata has been committed to the journal.')?>
                    </td>
                  </tr>
 
 <?php	} ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('Set the behaviour for the statfs system call')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="statfs" value="bsddf"<?php if($_REQUEST["statfs"] == 'bsddf') { echo " CHECKED"; } ?>><?=$LANG->_("Makes 'df' act like on BSD")?>
+                     <b><?php echo $LANG->_('Set the behaviour for the statfs system call')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="statfs" value="bsddf"<?php if($_REQUEST["statfs"] == 'bsddf') { echo " CHECKED"; } ?>><?php echo $LANG->_("Makes 'df' act like on BSD")?>
                    </td>
-                   <td><br><input type="radio" name="statfs" value="minixdf"<?php if($_REQUEST["statfs"] == 'minixdf') { echo " CHECKED"; } ?>><?=$LANG->_("Makes 'df' act like on Minix")?></td>
+                   <td><br><input type="radio" name="statfs" value="minixdf"<?php if($_REQUEST["statfs"] == 'minixdf') { echo " CHECKED"; } ?>><?php echo $LANG->_("Makes 'df' act like on Minix")?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('What group id will a newly created file gets')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="groupid" value="bsdgroups"<?php if($_REQUEST["groupid"] == 'bsdgroups') { echo " CHECKED"; } ?>><?=$LANG->_("Give objects the same group ID as their parent")?>
+                     <b><?php echo $LANG->_('What group id will a newly created file gets')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="groupid" value="bsdgroups"<?php if($_REQUEST["groupid"] == 'bsdgroups') { echo " CHECKED"; } ?>><?php echo $LANG->_("Give objects the same group ID as their parent")?>
                    </td>
-                   <td><br><input type="radio" name="groupid" value="sysvgroups"<?php if($_REQUEST["groupid"] == 'sysvgroups') { echo " CHECKED"; } ?>><?=$LANG->_("New objects have the group ID of their creator")?></td>
+                   <td><br><input type="radio" name="groupid" value="sysvgroups"<?php if($_REQUEST["groupid"] == 'sysvgroups') { echo " CHECKED"; } ?>><?php echo $LANG->_("New objects have the group ID of their creator")?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('Allocator to use for new inode')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="allocator" value="oldalloc"<?php if($_REQUEST["allocator"] == 'oldalloc') { echo " CHECKED"; } ?>><?=$LANG->_("Old allocator")?>
+                     <b><?php echo $LANG->_('Allocator to use for new inode')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="allocator" value="oldalloc"<?php if($_REQUEST["allocator"] == 'oldalloc') { echo " CHECKED"; } ?>><?php echo $LANG->_("Old allocator")?>
                    </td>
-                   <td><br><input type="radio" name="allocator" value="orlov"<?php if($_REQUEST["allocator"] == 'orlov') { echo " CHECKED"; } ?>><?=$LANG->_("Orlov allocator")?></td>
+                   <td><br><input type="radio" name="allocator" value="orlov"<?php if($_REQUEST["allocator"] == 'orlov') { echo " CHECKED"; } ?>><?php echo $LANG->_("Orlov allocator")?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('Define the behaviour when an error is encountered')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="error" value="continue"<?php if($_REQUEST["error"] == 'continue') { echo " CHECKED"; } ?>><?=$LANG->_('Keep going on a filesystem error')?>
+                     <b><?php echo $LANG->_('Define the behaviour when an error is encountered')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="error" value="continue"<?php if($_REQUEST["error"] == 'continue') { echo " CHECKED"; } ?>><?php echo $LANG->_('Keep going on a filesystem error')?>
                    </td>
-                   <td><input type="radio" name="error" value="remount"<?php if($_REQUEST["error"] == 'remount') { echo " CHECKED"; } ?>><?=$LANG->_('Remount the filesystem read-only on an error')?><br>
-                       <input type="radio" name="error" value="panic"<?php if($_REQUEST["error"] == 'panic') { echo " CHECKED"; } ?>><?=$LANG->_('Panic and halt the machine if an error occurs')?>
+                   <td><input type="radio" name="error" value="remount"<?php if($_REQUEST["error"] == 'remount') { echo " CHECKED"; } ?>><?php echo $LANG->_('Remount the filesystem read-only on an error')?><br>
+                       <input type="radio" name="error" value="panic"<?php if($_REQUEST["error"] == 'panic') { echo " CHECKED"; } ?>><?php echo $LANG->_('Panic and halt the machine if an error occurs')?>
                    </td>
                  </tr>
 <?php
@@ -1073,34 +1073,34 @@ function attribute_print_form() {
 		  // {{{ Mount options for msdos, umsdos and/or vfat
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="fat_debug"<?php if($_REQUEST["fat_debug"]) { echo " CHECKED"; } ?>><?=$LANG->_('Print debugging info upon each (re)mount')?></td>
-                   <td><input type="checkbox" name="fat_quiet"<?php if($_REQUEST["fat_quiet"]) { echo " CHECKED"; } ?>><?=$LANG->_('Attempts to chown or chmod files do not return errors, although they fail')?></td>
+                   <td><input type="checkbox" name="fat_debug"<?php if($_REQUEST["fat_debug"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Print debugging info upon each (re)mount')?></td>
+                   <td><input type="checkbox" name="fat_quiet"<?php if($_REQUEST["fat_quiet"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Attempts to chown or chmod files do not return errors, although they fail')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('Text format conversion')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="textconv" value="binary"<?php if($_REQUEST["textconv"] == 'binary') { echo " CHECKED"; } ?>><?=$LANG->_('No translation')?>
+                     <b><?php echo $LANG->_('Text format conversion')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="textconv" value="binary"<?php if($_REQUEST["textconv"] == 'binary') { echo " CHECKED"; } ?>><?php echo $LANG->_('No translation')?>
                    </td>
                    <td>
-                     <input type="radio" name="textconv" value="text"<?php if($_REQUEST["textconv"] == 'text') { echo " CHECKED"; } ?>><?=$LANG->_('CRLF<-->NL translation')?><br>
-                     <input type="radio" name="textconv" value="auto"<?php if($_REQUEST["textconv"] == 'auto') { echo " CHECKED"; } ?>><?=$LANG->_('CRLF<-->NL translation on all files not having "well-known binary" extension')?>
-                   </td>
-                 </tr>
-
-                 <tr class="<?php pql_format_table(); ?>">
-                   <td>
-                     <b><?=$LANG->_('Check pickyness')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="check" value="relaxed"<?php if($_REQUEST["check"] == 'relaxed') { echo " CHECKED"; } ?>><?=$LANG->_('Relaxed')?>
-                   </td>
-                   <td><input type="radio" name="check" value="normal"<?php if($_REQUEST["check"] == 'normal') { echo " CHECKED"; } ?>><?=$LANG->_('Normal')?><br>
-                       <input type="radio" name="check" value="strict"<?php if($_REQUEST["check"] == 'strict') { echo " CHECKED"; } ?>><?=$LANG->_('Strict')?>
+                     <input type="radio" name="textconv" value="text"<?php if($_REQUEST["textconv"] == 'text') { echo " CHECKED"; } ?>><?php echo $LANG->_('CRLF<-->NL translation')?><br>
+                     <input type="radio" name="textconv" value="auto"<?php if($_REQUEST["textconv"] == 'auto') { echo " CHECKED"; } ?>><?php echo $LANG->_('CRLF<-->NL translation on all files not having "well-known binary" extension')?>
                    </td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('FAT Type')?>:</b>&nbsp;&nbsp;<br>
+                     <b><?php echo $LANG->_('Check pickyness')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="check" value="relaxed"<?php if($_REQUEST["check"] == 'relaxed') { echo " CHECKED"; } ?>><?php echo $LANG->_('Relaxed')?>
+                   </td>
+                   <td><input type="radio" name="check" value="normal"<?php if($_REQUEST["check"] == 'normal') { echo " CHECKED"; } ?>><?php echo $LANG->_('Normal')?><br>
+                       <input type="radio" name="check" value="strict"<?php if($_REQUEST["check"] == 'strict') { echo " CHECKED"; } ?>><?php echo $LANG->_('Strict')?>
+                   </td>
+                 </tr>
+
+                 <tr class="<?php pql_format_table(); ?>">
+                   <td>
+                     <b><?php echo $LANG->_('FAT Type')?>:</b>&nbsp;&nbsp;<br>
                      <input type="radio" name="fattype" value="12"<?php if($_REQUEST["fattype"] == '12') { echo " CHECKED"; } ?>>12
                    </td>
                    <td><input type="radio" name="fattype" value="16"<?php if($_REQUEST["fattype"] == '16') { echo " CHECKED"; } ?>>16
@@ -1114,18 +1114,18 @@ function attribute_print_form() {
 		  // {{{ Mount options for NTFS
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="utf8"<?php if($_REQUEST["utf8"]) { echo " CHECKED"; } ?>><?=$LANG->_('Use UTF-8 for converting file names')?></td>
-                   <td><input type="checkbox" name="posix"<?php if($_REQUEST["posix"]) { echo " CHECKED"; } ?>><?=$LANG->_('Distinguishes between upper and lower case')?></td>
+                   <td><input type="checkbox" name="utf8"<?php if($_REQUEST["utf8"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Use UTF-8 for converting file names')?></td>
+                   <td><input type="checkbox" name="posix"<?php if($_REQUEST["posix"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Distinguishes between upper and lower case')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('Use escape sequences for unknown Unicode characters')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="uni_xlate" value="1"<?php if($_REQUEST["uni_xlate"] == '1') { echo " CHECKED"; } ?>><?=$LANG->_('True')?>
+                     <b><?php echo $LANG->_('Use escape sequences for unknown Unicode characters')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="uni_xlate" value="1"<?php if($_REQUEST["uni_xlate"] == '1') { echo " CHECKED"; } ?>><?php echo $LANG->_('True')?>
                    </td>
                    <td>
-                     <input type="radio" name="uni_xlate" value="2"<?php if($_REQUEST["uni_xlate"] == '2') { echo " CHECKED"; } ?>><?=$LANG->_('Use VFAT style 4byte escape sequences')?><br>
-                     <input type="radio" name="uni_xlate" value="0"<?php if($_REQUEST["uni_xlate"] == '0') { echo " CHECKED"; } ?>><?=$LANG->_('False')?>
+                     <input type="radio" name="uni_xlate" value="2"<?php if($_REQUEST["uni_xlate"] == '2') { echo " CHECKED"; } ?>><?php echo $LANG->_('Use VFAT style 4byte escape sequences')?><br>
+                     <input type="radio" name="uni_xlate" value="0"<?php if($_REQUEST["uni_xlate"] == '0') { echo " CHECKED"; } ?>><?php echo $LANG->_('False')?>
                    </td>
                  </tr>
 <?php
@@ -1135,28 +1135,28 @@ function attribute_print_form() {
 		  // {{{ Mount options for reiserfs
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="reiser_conv"<?php if($_REQUEST["reiser_conv"]) { echo " CHECKED"; } ?>><?=$LANG->_('Instructs version 3.6 reiserfs software to mount a version 3.5 FS')?></td>
-                   <td><input type="checkbox" name="reiser_hashreloc"<?php if($_REQUEST["reiser_hashreloc"]) { echo " CHECKED"; } ?>><?=$LANG->_('Tunes the block allocator')?></td>
+                   <td><input type="checkbox" name="reiser_conv"<?php if($_REQUEST["reiser_conv"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Instructs version 3.6 reiserfs software to mount a version 3.5 FS')?></td>
+                   <td><input type="checkbox" name="reiser_hashreloc"<?php if($_REQUEST["reiser_hashreloc"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Tunes the block allocator')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="reiser_nounhashreloc"<?php if($_REQUEST["reiser_nounhashreloc"]) { echo " CHECKED"; } ?>><?=$LANG->_('Tunes the block allocator')?></td>
-                   <td><input type="checkbox" name="reiser_noborder"<?php if($_REQUEST["reiser_noborder"]) { echo " CHECKED"; } ?>><?=$LANG->_('Disable the border allocator algorithm')?></td>
+                   <td><input type="checkbox" name="reiser_nounhashreloc"<?php if($_REQUEST["reiser_nounhashreloc"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Tunes the block allocator')?></td>
+                   <td><input type="checkbox" name="reiser_noborder"<?php if($_REQUEST["reiser_noborder"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Disable the border allocator algorithm')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="reiser_nolog"<?php if($_REQUEST["reiser_nolog"]) { echo " CHECKED"; } ?>><?=$LANG->_('Disable journalling')?></td>
-                   <td><input type="checkbox" name="reiser_notail"<?php if($_REQUEST["reiser_notail"]) { echo " CHECKED"; } ?>><?=$LANG->_("Disable packing small files and 'file tails' in the tree")?></td>
+                   <td><input type="checkbox" name="reiser_nolog"<?php if($_REQUEST["reiser_nolog"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Disable journalling')?></td>
+                   <td><input type="checkbox" name="reiser_notail"<?php if($_REQUEST["reiser_notail"]) { echo " CHECKED"; } ?>><?php echo $LANG->_("Disable packing small files and 'file tails' in the tree")?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="reiser_replayonly"<?php if($_REQUEST["reiser_replayonly"]) { echo " CHECKED"; } ?>><?=$LANG->_('Replay the transactions which are in the journal, but do actually mount the file system')?></td>
+                   <td><input type="checkbox" name="reiser_replayonly"<?php if($_REQUEST["reiser_replayonly"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Replay the transactions which are in the journal, but do actually mount the file system')?></td>
                    <td></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('Hash function to use for finding files in directories')?>:</b>&nbsp;&nbsp;<br>
+                     <b><?php echo $LANG->_('Hash function to use for finding files in directories')?>:</b>&nbsp;&nbsp;<br>
                      <input type="radio" name="hash" value="rupasov"<?php if($_REQUEST["hash"] == 'rupasov') { echo " CHECKED"; } ?>>rupasov&nbsp;&nbsp;&nbsp;
                      <input type="radio" name="hash" value="tea"<?php if($_REQUEST["hash"] == 'tea') { echo " CHECKED"; } ?>>tea
                    </td>
@@ -1172,31 +1172,31 @@ function attribute_print_form() {
 		  // {{{ Mount options for XFS
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="dmapi"<?php if($_REQUEST["dmapi"]) { echo " CHECKED"; } ?>><?=$LANG->_('Enable the DMAPI event callouts')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="noalign"<?php if($_REQUEST["noalign"]) { echo " CHECKED"; } ?>><?=$LANG->_('Do not aligned data allocations at stripe unit boundaries')?></td>
+                   <td><input type="checkbox" name="dmapi"<?php if($_REQUEST["dmapi"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Enable the DMAPI event callouts')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="noalign"<?php if($_REQUEST["noalign"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Do not aligned data allocations at stripe unit boundaries')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="noatime"<?php if($_REQUEST["noatime"]) { echo " CHECKED"; } ?>><?=$LANG->_('Do not update access timestamps')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="norecovery"<?php if($_REQUEST["norecovery"]) { echo " CHECKED"; } ?>><?=$LANG->_('Mount filesystem without running log recovery')?></td>
+                   <td><input type="checkbox" name="noatime"<?php if($_REQUEST["noatime"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Do not update access timestamps')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="norecovery"<?php if($_REQUEST["norecovery"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Mount filesystem without running log recovery')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="nouuid"<?php if($_REQUEST["nouuid"]) { echo " CHECKED"; } ?>><?=$LANG->_('Ignore the filesystem uuid')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="osyncisdsync"<?php if($_REQUEST["osyncisdsync"]) { echo " CHECKED"; } ?>><?=$LANG->_('Make writes to files opened with the O_SYNC flag set behave\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;as if the O_DSYNC flag had been used instead.')?></td>
+                   <td><input type="checkbox" name="nouuid"<?php if($_REQUEST["nouuid"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Ignore the filesystem uuid')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="osyncisdsync"<?php if($_REQUEST["osyncisdsync"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Make writes to files opened with the O_SYNC flag set behave\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;as if the O_DSYNC flag had been used instead.')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="usrquota" onChange="submit()"<?php if($_REQUEST["usrquota"]) { echo " CHECKED"; } ?>><?=$LANG->_('Enable user quota')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="usrquota" onChange="submit()"<?php if($_REQUEST["usrquota"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Enable user quota')?>&nbsp;&nbsp;</td>
 <?php	if(@$_REQUEST["usrquota"]) { ?>
-                   <td><input type="checkbox" name="uqnoenforce" onChange="submit()"<?php if($_REQUEST["uqnoenforce"]) { echo " CHECKED"; } ?>><?=$LANG->_('Enforce user quota limits')?></td>
+                   <td><input type="checkbox" name="uqnoenforce" onChange="submit()"<?php if($_REQUEST["uqnoenforce"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Enforce user quota limits')?></td>
 <?php	} ?>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="grpquota" onChange="submit()"<?php if($_REQUEST["grpquota"]) { echo " CHECKED"; } ?>><?=$LANG->_('Enable group quota')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="grpquota" onChange="submit()"<?php if($_REQUEST["grpquota"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Enable group quota')?>&nbsp;&nbsp;</td>
 <?php	if(@$_REQUEST["grpquota"]) { ?>
-                   <td><input type="checkbox" name="gqnoenforce" onChange="submit()"<?php if($_REQUEST["gqnoenforce"]) { echo " CHECKED"; } ?>><?=$LANG->_('Enforce group quota limits')?></td>
+                   <td><input type="checkbox" name="gqnoenforce" onChange="submit()"<?php if($_REQUEST["gqnoenforce"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Enforce group quota limits')?></td>
 <?php	} ?>
                  </tr>
 <?php
@@ -1206,28 +1206,28 @@ function attribute_print_form() {
 		  // {{{ Mount options for ISO9660
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="norock" onChange="submit()"<?php if($_REQUEST["norock"]) { echo " CHECKED"; } ?>><?=$LANG->_('Disable the use of Rock Ridge extensions')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="nojoliet" onChange="submit()"<?php if($_REQUEST["nojoliet"]) { echo " CHECKED"; } ?>><?=$LANG->_('Disable the use of Microsoft Joliet extensions')?></td>
+                   <td><input type="checkbox" name="norock" onChange="submit()"<?php if($_REQUEST["norock"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Disable the use of Rock Ridge extensions')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="nojoliet" onChange="submit()"<?php if($_REQUEST["nojoliet"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Disable the use of Microsoft Joliet extensions')?></td>
                  </tr>
 
 <?php	if(@$_REQUEST["norock"]) { ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td>
-                     <b><?=$LANG->_('Type of filename lookup')?>:</b>&nbsp;&nbsp;<br>
-                     <input type="radio" name="check" value="relaxed"<?php if($_REQUEST["check"] == 'relaxed') { echo " CHECKED"; } ?>><?=$LANG->_('Relaxed')?>&nbsp;&nbsp;&nbsp;
-                     <input type="radio" name="check" value="strict"<?php if($_REQUEST["check"] == 'strict') { echo " CHECKED"; } ?>><?=$LANG->_('Strict')?>
+                     <b><?php echo $LANG->_('Type of filename lookup')?>:</b>&nbsp;&nbsp;<br>
+                     <input type="radio" name="check" value="relaxed"<?php if($_REQUEST["check"] == 'relaxed') { echo " CHECKED"; } ?>><?php echo $LANG->_('Relaxed')?>&nbsp;&nbsp;&nbsp;
+                     <input type="radio" name="check" value="strict"<?php if($_REQUEST["check"] == 'strict') { echo " CHECKED"; } ?>><?php echo $LANG->_('Strict')?>
                    </td>
                    <td></td>
                  </tr>
 <?php	} ?>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="unhide"<?php if($_REQUEST["unhide"]) { echo " CHECKED"; } ?>><?=$LANG->_('Show hidden and associated files')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="cruft"<?php if($_REQUEST["cruft"]) { echo " CHECKED"; } ?>><?=$LANG->_('Ignore the high order bits of the file length')?></td>
+                   <td><input type="checkbox" name="unhide"<?php if($_REQUEST["unhide"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Show hidden and associated files')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="cruft"<?php if($_REQUEST["cruft"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Ignore the high order bits of the file length')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="utf8"<?php if($_REQUEST["utf8"]) { echo " CHECKED"; } ?>><?=$LANG->_('Use UTF-8 for converting file names')?></td>
+                   <td><input type="checkbox" name="utf8"<?php if($_REQUEST["utf8"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Use UTF-8 for converting file names')?></td>
                    <td></td>
                  </tr>
 
@@ -1238,13 +1238,13 @@ function attribute_print_form() {
 		  // {{{ Mount options for udf
 ?>
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="unhide"<?php if($_REQUEST["unhide"]) { echo " CHECKED"; } ?>><?=$LANG->_('Show otherwise hidden files')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="undelete"<?php if($_REQUEST["undelete"]) { echo " CHECKED"; } ?>><?=$LANG->_('Show deleted files in lists')?></td>
+                   <td><input type="checkbox" name="unhide"<?php if($_REQUEST["unhide"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Show otherwise hidden files')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="undelete"<?php if($_REQUEST["undelete"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Show deleted files in lists')?></td>
                  </tr>
 
                  <tr class="<?php pql_format_table(); ?>">
-                   <td><input type="checkbox" name="nostrict"<?php if($_REQUEST["nostrict"]) { echo " CHECKED"; } ?>><?=$LANG->_('Unset strict conformance')?>&nbsp;&nbsp;</td>
-                   <td><input type="checkbox" name="novrs"<?php if($_REQUEST["novrs"]) { echo " CHECKED"; } ?>><?=$LANG->_('Skip volume sequence recognition')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="nostrict"<?php if($_REQUEST["nostrict"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Unset strict conformance')?>&nbsp;&nbsp;</td>
+                   <td><input type="checkbox" name="novrs"<?php if($_REQUEST["novrs"]) { echo " CHECKED"; } ?>><?php echo $LANG->_('Skip volume sequence recognition')?>&nbsp;&nbsp;</td>
                  </tr>
 <?php
 // }}}
@@ -1254,7 +1254,7 @@ function attribute_print_form() {
 ?>
                  <tr class="<?php pql_format_table(); ?>">
                    <td>&nbsp;
-                     <input type="text" name="options" value="<?=$_REQUEST["options"]?>"><br>
+                     <input type="text" name="options" value="<?php echo $_REQUEST["options"]?>"><br>
                      &nbsp;&nbsp;NOTE: Currently you will have to enter this<br>
                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;manually (using the manpage(s)<br>
                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for your filesystem).<br>
@@ -1286,17 +1286,17 @@ function attribute_print_form() {
 	// {{{ Hidden inputs
 ?>
     <input type="hidden" name="dosave"   id="dosave">
-    <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=urlencode($_REQUEST[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")])?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="action"   value="<?php echo $_REQUEST["action"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo urlencode($_REQUEST[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")])?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
 <?php if(@$_REQUEST["mount"]) { ?>
-    <input type="hidden" name="mount"    value="<?=urlencode($_REQUEST["mount"])?>">
+    <input type="hidden" name="mount"    value="<?php echo urlencode($_REQUEST["mount"])?>">
 <?php } ?>
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="button" value="<?=$LANG->_('Save')?>" onClick="document.automount.dosave.value='yes'; submit();">
+    <input type="button" value="<?php echo $LANG->_('Save')?>" onClick="document.automount.dosave.value='yes'; submit();">
   </form>
 <?php
 // }}}
@@ -1347,7 +1347,7 @@ Sorry, this base mount is a <b>file</b> link and I don''t know how to follow tha
 <font color="red">Sorry, this base mount is not an LDAP link nor is it a file link. Don't know what to do now...</font><p>
 Please report this to either to the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>
 or to the <a href="mailto:phpqladmin@lists.bayour.com">mailinglist</a><br>
-Make sure you include this object information (I'm mostly interested in the <b><?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?></b> attribute):
+Make sure you include this object information (I'm mostly interested in the <b><?php echo pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?></b> attribute):
 <?php
 		  printr($object);
 		  die();

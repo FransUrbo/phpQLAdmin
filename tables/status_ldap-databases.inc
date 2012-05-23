@@ -3,15 +3,15 @@
 $attribs = array('namingContexts', 'monitorContext', 'subschemaSubentry');
 $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->ldap_monitor, $attribs);
 ?>
-  <span class="title1"><?=$LANG->_('LDAP Server Database Status')?></span>
+  <span class="title1"><?php echo $LANG->_('LDAP Server Database Status')?></span>
 
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Entry Cache Usage')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Entry Cache Usage')?>
       <tr>
-        <td class="title3"><?=$LANG->_('Suffix')?></td>
-        <td class="title3"><?=$LANG->_('Type')?></td>
+        <td class="title3"><?php echo $LANG->_('Suffix')?></td>
+        <td class="title3"><?php echo $LANG->_('Type')?></td>
       </tr>
 
 <?php if(is_array($database_contexts)) {
@@ -26,8 +26,8 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->l
 ?>
       <tr>
         <?php $class=pql_format_table(0); ?>
-        <td class="title"><?=$context?></td>
-        <td class="<?=$class?>"><?=$database_status['monitoredinfo']?></td>
+        <td class="title"><?php echo $context?></td>
+        <td class="<?php echo $class?>"><?=$database_status['monitoredinfo']?></td>
       </tr>
 <?php
 				}
@@ -38,8 +38,8 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->l
 ?>
       <tr>
         <?php $class=pql_format_table(0); ?>
-        <td class="title"><?=$database_status[$attrib]?></td>
-        <td class="<?=$class?>"><?=$database_status['monitoredinfo']?></td>
+        <td class="title"><?php echo $database_status[$attrib]?></td>
+        <td class="<?php echo $class?>"><?=$database_status['monitoredinfo']?></td>
       </tr>
 <?php
 			  }
@@ -54,8 +54,8 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->l
 ?>
       <tr>
         <?php $class=pql_format_table(0); ?>
-        <td class="title"><?=$status['namingcontexts']?></td>
-        <td class="<?=$class?>"><?=$status['description']?></td>
+        <td class="title"><?php echo $status['namingcontexts']?></td>
+        <td class="<?php echo $class?>"><?=$status['description']?></td>
       </tr>
 <?php	  }
 	  }

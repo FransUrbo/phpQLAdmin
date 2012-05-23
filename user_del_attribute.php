@@ -125,23 +125,23 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $_REQUEST["attrib"], 'user' => $_REQUEST["user"])); ?></span>
   <br><br>
-  <?=$LANG->_('Are you really sure')?>
+  <?php echo $LANG->_('Are you really sure')?>
   <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="GET">
-    <input type="hidden" name="user" value="<?=$_REQUEST["user"]?>">
-    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="user" value="<?php echo $_REQUEST["user"]?>">
+    <input type="hidden" name="domain" value="<?php echo $_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?php echo $_REQUEST["rootdn"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
 <?php
   if ($_REQUEST["attrib"] == 'mailalternateaddress') {
 ?>	
-    <input type="checkbox" name="delete_forwards" checked><?=$LANG->_('Also delete forwards to this alias')?><br><br>
+    <input type="checkbox" name="delete_forwards" checked><?php echo $LANG->_('Also delete forwards to this alias')?><br><br>
 <?php
   }
 ?>
-    <input type="submit" name="ok" value="<?=$LANG->_('Yes')?>">
-    <input type="button" name="back" value="<?=$LANG->_('No')?>" onClick="history.back();">
+    <input type="submit" name="ok" value="<?php echo $LANG->_('Yes')?>">
+    <input type="button" name="back" value="<?php echo $LANG->_('No')?>" onClick="history.back();">
   </form>
   <br>
 <?php

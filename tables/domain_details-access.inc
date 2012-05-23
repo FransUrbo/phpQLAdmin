@@ -1,6 +1,6 @@
   <!-- Access list -->
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left"><?=$LANG->_('Branch access')?>
+    <th colspan="2" align="left"><?php echo $LANG->_('Branch access')?>
 <?php
 // {{{ Domain administrators
 // Get domain administrators

@@ -166,7 +166,7 @@ if($_REQUEST["host"]) {
 ?>
     </pre>
 
-    <form action="<?=$link?>" method="post">
+    <form action="<?php echo $link?>" method="post">
       <input type="submit" value="Continue">
     </form>
   </body>

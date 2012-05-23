@@ -30,52 +30,52 @@ function attribute_check_templates() {
 function attribute_print_form_templates($error_text) {
   global $LANG;
 ?>
-  <span class="title1"><?=$LANG->_('Create a user template')?></span>
+  <span class="title1"><?php echo $LANG->_('Create a user template')?></span>
 
   <br><br>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Add user template'); ?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Add user template'); ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Template name')?></td>
-          <td><?=pql_format_error_span($error_text["template_name"]); ?><input type="text" name="template_name" size="15" value="<?=$_REQUEST["template_name"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Template name')?></td>
+          <td><?php echo pql_format_error_span($error_text["template_name"]); ?><input type="text" name="template_name" size="15" value="<?=$_REQUEST["template_name"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-          <td><?=$LANG->_('This is for internal references only. Please keep it as short as possible!')?></td>
+          <td><?php echo $LANG->_('This is for internal references only. Please keep it as short as possible!')?></td>
         </tr>
 
         <!-- ------------------------------------- -->
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Short description')?></td>
-          <td><?=pql_format_error_span($error_text["template_desc_short"]); ?><input type="text" name="template_desc_short" size="40" value="<?=$_REQUEST["template_desc_short"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Short description')?></td>
+          <td><?php echo pql_format_error_span($error_text["template_desc_short"]); ?><input type="text" name="template_desc_short" size="40" value="<?=$_REQUEST["template_desc_short"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-          <td><?=$LANG->_('This is what will end up in the account type selector when creating a user. Please keep it resonable short.')?></td>
+          <td><?php echo $LANG->_('This is what will end up in the account type selector when creating a user. Please keep it resonable short.')?></td>
         </tr>
 
         <!-- ------------------------------------- -->
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Long description')?></td>
-          <td><?=pql_format_error_span($error_text["template_desc_long"]); ?><textarea name="template_desc_long" cols="40" rows="5" value="<?=$_REQUEST["template_desc_long"]?>"></textarea>
+          <td class="title"><?php echo $LANG->_('Long description')?></td>
+          <td><?php echo pql_format_error_span($error_text["template_desc_long"]); ?><textarea name="template_desc_long" cols="40" rows="5" value="<?=$_REQUEST["template_desc_long"]?>"></textarea>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-          <td><?=$LANG->_("This is what will end up as a description on the same page as the short descriptor at the bottom of the page. Don't write a TO long description, or you'll end up with a novell :)")?></td>
+          <td><?php echo $LANG->_("This is what will end up as a description on the same page as the short descriptor at the bottom of the page. Don't write a TO long description, or you'll end up with a novell :)")?></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="submit">
     <input type="hidden" name="action" value="add">
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
     <br>
     <input type="submit" value="Create">
   </form>

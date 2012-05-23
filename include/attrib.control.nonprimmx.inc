@@ -42,7 +42,7 @@ function nonprimaryrcpthosts_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('non-primary MX host')))?>
       <tr>
-        <td class="title" colspan="3"><?=$LANG->_('Domain names')?></td>
+        <td class="title" colspan="3"><?php echo $LANG->_('Domain names')?></td>
       </tr>
 
 <?php
@@ -65,24 +65,24 @@ function nonprimaryrcpthosts_print_view($host) {
 function nonprimaryrcpthosts_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('non-primary MX host')))?>
         <tr class="title">
-          <td><?=$LANG->_('Domain name')?></td>
+          <td><?php echo $LANG->_('Domain name')?></td>
           <td><input type="text" name="nonprimaryrcpthosts" size="40"></td>
         </tr>
         </th>
      </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="type"   value="<?=$_REQUEST["type"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="rootdn" value="<?php echo $_REQUEST["rootdn"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="type"   value="<?php echo $_REQUEST["type"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

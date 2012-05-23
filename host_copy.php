@@ -142,18 +142,18 @@ if(@$_REQUEST["save"] and $_REQUEST["server"] and $_REQUEST["virthost"]) {
           <tr class="<?php pql_format_table(); ?>">
             <td class="title">
 <?php if($_REQUEST["action"] == 'clone') { ?>
-              <?=$LANG->_('Clone virtual host to one or more\nof the following webserver containers')?>
+              <?php echo $LANG->_('Clone virtual host to one or more\nof the following webserver containers')?>
 <?php } elseif($_REQUEST["action"] == 'move') { ?>
-              <?=$LANG->_('Move virtual host to one of the\nfollowing webserver containers')?>
+              <?php echo $LANG->_('Move virtual host to one of the\nfollowing webserver containers')?>
 <?php } ?>
             </td>
 
             <td>
 <?php $i=0; foreach($CONTAINERS as $container => $container_dn) { ?>
 <?php	if($_REQUEST["action"] == 'clone') { ?>
-              <input type="checkbox" name="container_<?=$i?>" value="<?=$container_dn?>"><?=$container?><br>
+              <input type="checkbox" name="container_<?php echo $i?>" value="<?=$container_dn?>"><?=$container?><br>
 <?php	} elseif($_REQUEST["action"] == 'move') { ?>
-              <input type="radio" name="container" value="<?=$container_dn?>"><?=$container?><br>
+              <input type="radio" name="container" value="<?php echo $container_dn?>"><?=$container?><br>
 <?php	} ?>
 <?php $i++; } ?>
             </td>
@@ -162,14 +162,14 @@ if(@$_REQUEST["save"] and $_REQUEST["server"] and $_REQUEST["virthost"]) {
       </table>
 
 <?php if($_REQUEST["action"] == 'clone') { ?>
-      <input type="hidden" name="containers" value="<?=$i?>">
+      <input type="hidden" name="containers" value="<?php echo $i?>">
 <?php } ?>
-      <input type="hidden" name="host"       value="<?=$_REQUEST["host"]?>">
-      <input type="hidden" name="server"     value="<?=$_REQUEST["server"]?>">
-      <input type="hidden" name="virthost"   value="<?=$_REQUEST["virthost"]?>">
-      <input type="hidden" name="action"     value="<?=$_REQUEST["action"]?>">
+      <input type="hidden" name="host"       value="<?php echo $_REQUEST["host"]?>">
+      <input type="hidden" name="server"     value="<?php echo $_REQUEST["server"]?>">
+      <input type="hidden" name="virthost"   value="<?php echo $_REQUEST["virthost"]?>">
+      <input type="hidden" name="action"     value="<?php echo $_REQUEST["action"]?>">
       <br>
-      <input type="submit" name="save"       value="<?=$LANG->_('Yes')?>">
+      <input type="submit" name="save"       value="<?php echo $LANG->_('Yes')?>">
     </form>
 <?php
   }

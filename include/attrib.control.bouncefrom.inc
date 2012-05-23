@@ -64,19 +64,19 @@ function bouncefrom_print_view($host) {
 	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">bouncefrom, bouncehost (<?=$LANG->_('Bouncing source')?>)</th>
+    <th colspan="3" align="left">bouncefrom, bouncehost (<?php echo $LANG->_('Bouncing source')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('User for bouncing')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["bouncefrom"]) { echo $_REQUEST["bouncefrom"]; } else { echo $LANG->_('Default').": MAILER-DAEMON"; }?></td>
-        <td class="<?=$class?>"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCEFROM")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEFROM")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('User for bouncing')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["bouncefrom"]) { echo $_REQUEST["bouncefrom"]; } else { echo $LANG->_('Default').": MAILER-DAEMON"; }?></td>
+        <td class="<?php echo $class?>"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCEFROM")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEFROM")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Host for bouncing')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["bouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["bouncehost"]); } else { echo $LANG->_('Default') . ': ' . pql_maybe_idna_decode($cn)." (" . $LANG->_('Taken from \'me\'') . ")";}?></td>
-        <td class="<?=$class?>"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCEHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEHOST")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Host for bouncing')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["bouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["bouncehost"]); } else { echo $LANG->_('Default') . ': ' . pql_maybe_idna_decode($cn)." (" . $LANG->_('Taken from \'me\'') . ")";}?></td>
+        <td class="<?php echo $class?>"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCEHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -88,24 +88,24 @@ function bouncefrom_print_view($host) {
 function bouncefrom_print_form() {
 	global $LANG, $error;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">bouncefrom, bouncehost (<?=$LANG->_('Bouncing source')?>)</th>
+      <th colspan="3" align="left">bouncefrom, bouncehost (<?php echo $LANG->_('Bouncing source')?>)</th>
 <?php if($_REQUEST["attrib"] == 'bouncefrom') { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('User for bouncing')?></td>
-          <td><?php echo pql_format_error_span($error["bouncefrom"]); ?><input type="text" name="bouncefrom" value="<?=$_REQUEST["bouncefrom"]?>"> <?=$LANG->_('Default')?>: MAILER-DAEMON</td>
+          <td class="title"><?php echo $LANG->_('User for bouncing')?></td>
+          <td><?php echo pql_format_error_span($error["bouncefrom"]); ?><input type="text" name="bouncefrom" value="<?php echo $_REQUEST["bouncefrom"]?>"> <?=$LANG->_('Default')?>: MAILER-DAEMON</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == 'bouncehost') { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Host for bouncing')?></td>
-          <td><?php echo pql_format_error_span($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?=$_REQUEST["bouncehost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td class="title"><?php echo $LANG->_('Host for bouncing')?></td>
+          <td><?php echo pql_format_error_span($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?php echo $_REQUEST["bouncehost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('The combination of user and host will return the email address used for bouning messages, e.g. MAILER-DAEMON@mail.host.ch')?>.<br><?=$LANG->_('Leave the fields empty to use default configuration')?>.
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('The combination of user and host will return the email address used for bouning messages, e.g. MAILER-DAEMON@mail.host.ch')?>.<br><?=$LANG->_('Leave the fields empty to use default configuration')?>.
           </td>
         </tr>
       </th>
@@ -113,11 +113,11 @@ function bouncefrom_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }
@@ -186,7 +186,7 @@ function bouncefrom_help() {
 <?php } if($_REQUEST["attrib"] == 'bouncehost') { ?>
  	<b>Host (bouncehost)</b>
 	<br>
-	Bounce host. Default: <b><?=$_REQUEST["mxhost"]?></b> (taken from 'me').
+	Bounce host. Default: <b><?php echo $_REQUEST["mxhost"]?></b> (taken from 'me').
     If that is supplied; otherwise the literal name bouncehost, which is
 	probably not what you want.  If a message is
 	permanently undeliverable, qmail-send sends a single-

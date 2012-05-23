@@ -55,29 +55,29 @@ $url_tmp    = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["
 ?>
   <!-- Qmail-Group stuff (kind'a like a mailinglist, only more annoying) ' -->
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Group data')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Group data')?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Confirm sender')?></td>
+        <td class="title"><?php echo $LANG->_('Confirm sender')?></td>
         <td><?php if($senderconfirm){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$senderconfirm_link?></td>
+        <td><?php echo $senderconfirm_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Member only posts')?></td>
+        <td class="title"><?php echo $LANG->_('Member only posts')?></td>
         <td><?php if($membersonly){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$membersonly_link?></td>
+        <td><?php echo $membersonly_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Sender confirmation text')?></td>
+        <td class="title"><?php echo $LANG->_('Sender confirmation text')?></td>
         <td><?php if(!$confirmtext) { echo "<i>not set</i>"; } else { echo $confirmtext; }?></td>
-        <td><?=$confirmtext_link?></td>
+        <td><?php echo $confirmtext_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Moderator confirmation text')?></td>
+        <td class="title"><?php echo $LANG->_('Moderator confirmation text')?></td>
         <td><?php if(!$moderatortext) { echo "<i>not set</i>"; } else { echo $moderatortext; }?></td>
-        <td><?=$moderatortext_link?></td>
+        <td><?php echo $moderatortext_link?></td>
       </tr>
     </th>
   </table>
@@ -85,7 +85,7 @@ $url_tmp    = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["
   <P>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Subscribed users/addresses')."\n"?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Subscribed users/addresses')."\n"?>
 <?php
 // DNMember
 $txt["tit"] = $LANG->_('Member DN(s)');
@@ -114,7 +114,7 @@ pql_format_table_single($txt, $url, $rfc822member, 'rfc822member');
     </th>
 
     <th><tr></tr></th>
-    <th colspan="3" align="left"><?=$LANG->_('Senders allowed to send to group')."\n"?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Senders allowed to send to group')."\n"?>
 <?php
 // DNSender
 $txt["tit"] = $LANG->_('Sender DN(s)');
@@ -143,7 +143,7 @@ pql_format_table_single($txt, $url, $rfc822sender, 'rfc822sender');
     </th>
 
     <th><tr></tr></th>
-    <th colspan="3" align="left"><?=$LANG->_('Group moderators')."\n"?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Group moderators')."\n"?>
 <?php
 // DNModerator
 $txt["tit"] = $LANG->_('Moderator DN(s)');

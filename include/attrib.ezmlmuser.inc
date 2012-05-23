@@ -18,20 +18,20 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('EZMLM Virtual User'), 'domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Username')?></td>
-          <td><?php echo pql_format_error_span($error["ezmlmvirtualuser"]); ?><input type="text" name="ezmlmvirtualuser" value="<?=$_REQUEST["ezmlmvirtualuser"]?>" size="50"></td>
+          <td class="title"><?php echo $LANG->_('Username')?></td>
+          <td><?php echo pql_format_error_span($error["ezmlmvirtualuser"]); ?><input type="text" name="ezmlmvirtualuser" value="<?php echo $_REQUEST["ezmlmvirtualuser"]?>" size="50"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="2">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["ezmlmvirtualuser"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["ezmlmvirtualuser"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

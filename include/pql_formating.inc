@@ -145,7 +145,7 @@ function pql_generate_button($buttons, $link = '', $url = '') {
 	else
 	  unset($mark);
 ?>
-      <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="// <?=$LANG->_($text)?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
+      <a href="<?php echo $url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="// <?=$LANG->_($text)?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
 <?php
 	// Increase button counter"
     $i++;
@@ -222,7 +222,7 @@ function pql_format_status_msg($msg, $dir = NULL) {
     <th colspan="3" align="left">
       <tr class="message">
         <td colspan="2" class="message">
-          <img src="<?=$dir?>images/info.png" width="16" height="16" border="0" align="left">
+          <img src="<?php echo $dir?>images/info.png" width="16" height="16" border="0" align="left">
         </td>
 
         <td colspan="2" class="message">
@@ -300,25 +300,25 @@ function pql_format_table_single($text, $url, $array, $attrib, $class = 0, $spac
 	  if($new_tr) {
   ?>
  
-  <tr class="<?=$class?>">
+  <tr class="<?php echo $class?>">
     <td class="title"></td>
 <?php } else { ?>
-  <tr class="<?=$class?>">
-    <td class="title"><?=$text["tit"]?>:</td>
+  <tr class="<?php echo $class?>">
+    <td class="title"><?php echo $text["tit"]?>:</td>
 <?php $title_shown = 1;
 	  }
 	  
 	  $new_tr = 1;
 ?>
-    <td class="<?=$class?>"><?=$space?><?=$username?></td>
-    <td class="<?=$class?>" align="right">
+    <td class="<?php echo $class?>"><?=$space?><?=$username?></td>
+    <td class="<?php echo $class?>" align="right">
 <?php if($url["mod"]) { ?>
-      <a href="<?=$url["mod"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a>
+      <a href="<?php echo $url["mod"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a>
 <?php }
 
 	  if($url["del"]) {
  ?>
-      <a href="<?=$url["del"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a>
+      <a href="<?php echo $url["del"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a>
 <?php } ?>
     </td>
    </tr>
@@ -328,16 +328,16 @@ function pql_format_table_single($text, $url, $array, $attrib, $class = 0, $spac
 
   if(!$class) {
 ?>
-  <tr class="<?=pql_format_table(0)?>">
+  <tr class="<?php echo pql_format_table(0)?>">
 <?php } else { ?>
-  <tr class="<?=$class?>">
+  <tr class="<?php echo $class?>">
 <?php } ?>
 <?php if(!$title_shown) { ?>
-    <td class="title"><?=$text["tit"]?>:</td>
+    <td class="title"><?php echo $text["tit"]?>:</td>
 <?php } else { ?>
    <td class="title"></td>
 <?php } ?>
-    <td colspan="2"><?=$space?><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
+    <td colspan="2"><?php echo $space?><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
   </tr>
 <?php
 }
@@ -419,19 +419,19 @@ function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
 	  $nbsp .= "&nbsp;";
   }
 ?>
-  <div id="el<?=$cnt?><?=$parent?>" class="parent"<?="\n\t\t".$mouse["over"]."\n\t\t".$mouse["out"]."\n\t\t".$mouse["click"]?>>
+  <div id="el<?php echo $cnt?><?=$parent?>" class="parent"<?="\n\t\t".$mouse["over"]."\n\t\t".$mouse["out"]."\n\t\t".$mouse["click"]?>>
 <?php if(is_array($child)) { ?>
-    <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt.$child[$child_nr+1]?>">
+    <?php echo $nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt.$child[$child_nr+1]?>">
 <?php } else { ?>
-    <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
+    <?php echo $nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
 <?php } ?>
-<?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
+<?php if($url) { ?><a href="<?php echo $url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
   </div>
 
 <?php if(is_array($child)) { ?>
-  <span id="el<?=$cnt.$child[$child_nr]?>" style="display:''">
+  <span id="el<?php echo $cnt.$child[$child_nr]?>" style="display:''">
 <?php } else { ?>
-  <span id="el<?=$child?>" style="display:''">
+  <span id="el<?php echo $child?>" style="display:''">
 <?php }
 }
 // }}}
@@ -458,22 +458,22 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 	  $url = "href=\"$url\"";
   }
 ?>
-  <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
+  <div id="el<?php echo $cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
     <nobr>
-      <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
-        <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
+      <a class="item" <?php echo $url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
+        <?php echo $nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
       </a>
 
-      <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
-        <span class="heada"><?=$text?></span>
+      <a class="item" <?php echo $url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
+        <span class="heada"><?php echo $text?></span>
       </a>
     </nobr>
   </div>
 
 <?php if(is_array($child)) { ?>
-  <div id="el<?=$child[$child_nr]?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+  <div id="el<?php echo $child[$child_nr]?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
 <?php } else { ?>
-  <div id="el<?=$child?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+  <div id="el<?php echo $child?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
 <?php }
 }
 // }}}
@@ -498,13 +498,13 @@ function pql_format_tree_span($text, $links, $level) {
 		// {{{ $link is set
 ?>
   <nobr>
-    <?=$nbsp?>
+    <?php echo $nbsp?>
 
 <?php	if(is_array($link)) { ?>
-    <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
+    <input type="checkbox" name="<?php echo $link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
 <?php	} else { ?>
-<?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
-    <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(preg_match('/^http:\/\//i', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
+<?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?php echo $text?>">&nbsp;<?php } ?>
+    <a class="tblItem" title="<?php echo $text?>" href="<?=$link?>" <?php if(preg_match('/^http:\/\//i', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
 <?php	} ?>
   </nobr>
   <br />
@@ -514,9 +514,9 @@ function pql_format_tree_span($text, $links, $level) {
 		  // {{{ $link unset
 ?>
   <nobr>
-    <?=$nbsp?>
-    <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
-    <?=$text?>
+    <?php echo $nbsp?>
+    <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?php echo $text?>">&nbsp;<?php } ?>
+    <?php echo $text?>
   </nobr>
   <br />
 <?php }
@@ -526,7 +526,7 @@ function pql_format_tree_span($text, $links, $level) {
 	  // {{{ $text UNSET
 ?>
   <nobr>
-    <?=$nbsp?>
+    <?php echo $nbsp?>
 	---------------
   </nobr>
   <br />

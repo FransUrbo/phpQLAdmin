@@ -59,11 +59,11 @@ if($_REQUEST["unit"]) {
 } else {
     // {{{ Show form
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Create unit')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Create unit')?></th>
         <tr>
-          <td class="title"><?=$LANG->_('Unit name')?></td>
+          <td class="title"><?php echo $LANG->_('Unit name')?></td>
           <td><input type="text" name="unit" size="30"></td>
         </tr>
 
@@ -71,8 +71,8 @@ if($_REQUEST["unit"]) {
       </th>
     </table>
 
-    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
-    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?php echo $url["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?php echo $url["domain"]?>">
   </form>
 <?php
 // }}}

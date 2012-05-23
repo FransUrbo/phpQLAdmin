@@ -63,42 +63,42 @@ function attribute_print_form() {
 	// Just to save some typeing.
 	$attrib = $_REQUEST["attrib"];
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" name="outlook">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="outlook">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
 <?php if(@$ALTERNATE_ATTRIBUTE_NAME) { ?>
-          <td class="title"><?=$ALTERNATE_ATTRIBUTE_NAME?></td>
+          <td class="title"><?php echo $ALTERNATE_ATTRIBUTE_NAME?></td>
 <?php } else { ?>
-          <td class="title"><?=$attrib?></td>
+          <td class="title"><?php echo $attrib?></td>
 <?php } ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
-            <?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_INFO"))) { ?><textarea name="<?=$attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30">
+            <?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_INFO"))) { ?><textarea name="<?php echo $attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30">
           </td><?php } ?>
 
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;</td>
-          <td><?=$LANG->_('Leave empty to remove value')?></td>
+          <td><?php echo $LANG->_('Leave empty to remove value')?></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="2">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 
   <script language="JavaScript">
     <!--
-    document.outlook.<?=$attrib?>.focus();
+    document.outlook.<?php echo $attrib?>.focus();
     // -->
   </script>
 <?php

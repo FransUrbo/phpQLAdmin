@@ -41,19 +41,19 @@ function rbllist_print_view($host) {
 	rbllist_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="4" align="left">rbllist (<?=$LANG->_('Realtime Blackhole List')?>)</th>
+    <th colspan="4" align="left">rbllist (<?php echo $LANG->_('Realtime Blackhole List')?>)</th>
       <tr class="title">
-        <td><?=$LANG->_('RBL Address')?></td>
-        <td><?=$LANG->_('Action')?></td>
-        <td><?=$LANG->_('Match on')?></td>
-        <td><?=$LANG->_('Message')?></td>
+        <td><?php echo $LANG->_('RBL Address')?></td>
+        <td><?php echo $LANG->_('Action')?></td>
+        <td><?php echo $LANG->_('Match on')?></td>
+        <td><?php echo $LANG->_('Message')?></td>
         <td></td>
       </tr>
 <?php
 	if(!@is_array($_REQUEST["rbllist"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td colspan="5"><?=$LANG->_('Not set')?></td>
+        <td colspan="5"><?php echo $LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
@@ -61,12 +61,12 @@ function rbllist_print_view($host) {
 			$line = explode(' ', $server);
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$line[0]?></td>
-        <td><?=$line[1]?></td>
-        <td><?=$line[2]?></td>
+        <td><?php echo $line[0]?></td>
+        <td><?php echo $line[1]?></td>
+        <td><?php echo $line[2]?></td>
         <td><?php for($i=3; $i < count($line); $i++) { echo $line[$i]." "; } ?></td>
         <td align="right">
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>&type=del&submit=1&<?=pql_get_define("PQL_ATTR_RBLLIST")?>=<?=urldecode($server)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Remove blocking list')?>"></a>
+          <a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>&type=del&submit=1&<?=pql_get_define("PQL_ATTR_RBLLIST")?>=<?=urldecode($server)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Remove blocking list')?>"></a>
         </td>
       </tr>
 <?php
@@ -74,7 +74,7 @@ function rbllist_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td colspan="5"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add blocking list')?></a></td>
+        <td colspan="5"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add blocking list')?></a></td>
       </tr>
     </th>
   </table>
@@ -87,18 +87,18 @@ function rbllist_print_view($host) {
 function rbllist_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["rbllist"]); $i++) { ?>
-    <input type="hidden" name="rbllist[<?=$i?>]" value="<?=$_REQUEST["rbllist"][$i]?>">
+    <input type="hidden" name="rbllist[<?php echo $i?>]" value="<?=$_REQUEST["rbllist"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="4" align="left">rbllist (<?=$LANG->_('Realtime Blackhole List')?>)</th>
+      <th colspan="4" align="left">rbllist (<?php echo $LANG->_('Realtime Blackhole List')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('RBL Address')?></td>
-          <td><?=$LANG->_('Action')?></td>
-          <td><?=$LANG->_('Match on')?></td>
-          <td><?=$LANG->_('Message')?></td>
+          <td><?php echo $LANG->_('RBL Address')?></td>
+          <td><?php echo $LANG->_('Action')?></td>
+          <td><?php echo $LANG->_('Match on')?></td>
+          <td><?php echo $LANG->_('Message')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -106,8 +106,8 @@ function rbllist_print_form() {
           <td>
             <?php echo pql_format_error_span($error["rbllist"]); ?>
             <select name="rblaction">
-              <option value="reject"><?=$LANG->_('Reject mail')?></option>
-              <option value="addheader"><?=$LANG->_('Add header')?></option>
+              <option value="reject"><?php echo $LANG->_('Reject mail')?></option>
+              <option value="addheader"><?php echo $LANG->_('Add header')?></option>
             </select>
           </td>
           <td><input type="text" name="rblmatch" size="10"></td>
@@ -118,11 +118,11 @@ function rbllist_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

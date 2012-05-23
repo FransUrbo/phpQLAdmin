@@ -48,34 +48,34 @@ function attribute_print_form() {
 
     <br><br>
 
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left">
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('RADIUS Version')?></td>
+            <td class="title"><?php echo $LANG->_('RADIUS Version')?></td>
             <td>
               <?php echo pql_format_error_span($error_text['radius_version']) . "\n"; ?>
-              <input type="text" name="radius_version" value="<?=$_REQUEST[radius_version]?>" size="25">
+              <input type="text" name="radius_version" value="<?php echo $_REQUEST[radius_version]?>" size="25">
             </td>
           </tr>
 
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('RADIUS Policy')?></td>
+            <td class="title"><?php echo $LANG->_('RADIUS Policy')?></td>
             <td>
               <?php echo pql_format_error_span($error_text['radius_policy']) . "\n"; ?>
-              <input type="text" name="radius_policy" value="<?=$_REQUEST[radius_policy]?>" size="25">
+              <input type="text" name="radius_policy" value="<?php echo $_REQUEST[radius_policy]?>" size="25">
             </td>
           </tr>
         </th>
       </table>
 
       <input type="hidden" name="submit"   value="1">
-      <input type="hidden" name="oldvalue" value="<?=$_REQUEST[$attrib]?>">
-      <input type="hidden" name="attrib"   value="<?=$attrib?>">
-      <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
-      <input type="hidden" name="host"     value="<?=$_REQUEST["host"]?>">
+      <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST[$attrib]?>">
+      <input type="hidden" name="attrib"   value="<?php echo $attrib?>">
+      <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
+      <input type="hidden" name="host"     value="<?php echo $_REQUEST["host"]?>">
       <br>
-      <input type="submit" value="<?=$LANG->_('Save')?>">
+      <input type="submit" value="<?php echo $LANG->_('Save')?>">
     </form>
   </body>
 </html>

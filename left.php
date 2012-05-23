@@ -13,7 +13,7 @@ require($_SESSION["path"]."/left-head.html");
 $div_counter = 0;
 ?>
     <!-- Server Control -->
-    <div id="el<?=$div_counter?>Parent" class="parent">
+    <div id="el<?php echo $div_counter?>Parent" class="parent">
       <a class="item" href="control.php">
         <font color="black" class="heada"><b>Users</b></font>
       </a>
@@ -27,7 +27,7 @@ if($_SESSION["ALLOW_BRANCH_CREATE"] and $_SESSION["ADVANCED_MODE"]) {
 
   <!-- Add domain branch link -->
   <div id="el5Parent" class="parent">
-    <a href="domain_add_form.php?rootdn=<?=$_SESSION["BASE_DN"][0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a><br>
+    <a href="domain_add_form.php?rootdn=<?php echo $_SESSION["BASE_DN"][0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a><br>
   </div>
 
 <?php

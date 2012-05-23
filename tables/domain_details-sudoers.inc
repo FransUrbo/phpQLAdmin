@@ -3,13 +3,13 @@ if(is_array($sudo_results)) {
   // {{{ Show 'Current Sudo Roles' output view
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_("Current Sudo Roles")."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_("Current Sudo Roles")."\n"?>
         <tr class="c2">
-          <td class="title"><?=$LANG->_("Role")?></td>
-          <td class="title"><?=$LANG->_("Users")?></td>
-          <td class="title"><?=$LANG->_("Commands")?></td>
-          <td class="title"><?=$LANG->_("Run As")?></td>
-          <td class="title"><?=$LANG->_("Host")?></td>
+          <td class="title"><?php echo $LANG->_("Role")?></td>
+          <td class="title"><?php echo $LANG->_("Users")?></td>
+          <td class="title"><?php echo $LANG->_("Commands")?></td>
+          <td class="title"><?php echo $LANG->_("Run As")?></td>
+          <td class="title"><?php echo $LANG->_("Host")?></td>
           <td class="title"></td>
         </tr>
 
@@ -23,8 +23,8 @@ if(is_array($sudo_results)) {
 		$runas    = $sudo_results[$i][pql_get_define("PQL_ATTR_SUDORUNAS")];   if(!is_array($runas))    $runas    = array($runas);
 		$host     = $sudo_results[$i][pql_get_define("PQL_ATTR_SUDOHOST")];    if(!is_array($host))     $host     = array($host);
 ?>
-        <tr class="<?=$row?>">
-          <td class="title"><?=$role?></td>
+        <tr class="<?php echo $row?>">
+          <td class="title"><?php echo $role?></td>
           <td>
 <?php	for($j=0; $users[$j]; $j++) {
 		  echo $users[$j];
@@ -70,7 +70,7 @@ if(is_array($sudo_results)) {
           </td>
 
           <td>
-            <a href="sudo_modify.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&sudodn=<?=$sudodn?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt=""></a>&nbsp;<a href="sudo_modify.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&sudodn=<?=$sudodn?>&action=del&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt=""></a>
+            <a href="sudo_modify.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&sudodn=<?=$sudodn?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt=""></a>&nbsp;<a href="sudo_modify.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&sudodn=<?=$sudodn?>&action=del&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt=""></a>
           </td>
         </tr>
 <?php	if($row == 'c1')
@@ -84,14 +84,14 @@ if(is_array($sudo_results)) {
         <tr class="c1">
           <td align="right" class="title"><img src="images/edit.png" width="12" height="12" alt="" border="0"></td>
           <td colspan="5">
-            <?=$LANG->_('Note that you will have to go into a branch to \uadd\U users and sudo roles.')?>
+            <?php echo $LANG->_('Note that you will have to go into a branch to \uadd\U users and sudo roles.')?>
           </td>
         </tr>
 <?php } else { ?>
         <tr class="subtitle">
           <td align="right" class="title"><img src="images/edit.png" width="12" height="12" alt="" border="0"></td>
           <td colspan="5">
-            <a href="sudo_add.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&action=add"><?=$LANG->_('Register new sudo role')?></a>
+            <a href="sudo_add.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&action=add"><?=$LANG->_('Register new sudo role')?></a>
           </td>
         </tr>
 <?php } ?>
@@ -103,7 +103,7 @@ if(is_array($sudo_results)) {
   // {{{ No sudo rules!
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_("Current Sudo Roles")."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_("Current Sudo Roles")."\n"?>
         <tr class="c1">
           <td align="right" class="title"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
 
@@ -112,9 +112,9 @@ if(is_array($sudo_results)) {
               <th align="left">
                 <tr>
 <?php if(@$_REQUEST["domain"]) { ?>
-                  <?=$LANG->_('No sudo rules in this branch.');?>
+                  <?php echo $LANG->_('No sudo rules in this branch.');?>
 <?php } else { ?>
-                  <?=$LANG->_('No sudo rules for this host.');?>
+                  <?php echo $LANG->_('No sudo rules for this host.');?>
 <?php } ?>
                 </tr>
               </th>
@@ -126,14 +126,14 @@ if(is_array($sudo_results)) {
         <tr class="c2">
           <td align="right" class="title"><img src="images/edit.png" width="12" height="12" alt="" border="0"></td>
           <td colspan="5">
-            <?=$LANG->_('Note that you will have to go into a branch to \uadd\U users and sudo roles.')?>
+            <?php echo $LANG->_('Note that you will have to go into a branch to \uadd\U users and sudo roles.')?>
           </td>
         </tr>
 <?php } else { ?>
         <tr class="c2">
           <td align="right" class="title"><img src="images/edit.png" width="12" height="12" alt="" border="0"></td>
           <td colspan="5">
-            <a href="sudo_add.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&action=add"><?=$LANG->_('Register new sudo role')?></a>
+            <a href="sudo_add.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&action=add"><?=$LANG->_('Register new sudo role')?></a>
           </td>
         </tr>
 <?php } ?>

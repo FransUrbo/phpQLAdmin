@@ -56,23 +56,23 @@ if($ezmlm = new ezmlm($user, $path)) {
 
 			// Haven't submitted yet, output the questionaire
 ?>
-  <span class="title1"><?=$title1?></span>
+  <span class="title1"><?php echo $title1?></span>
 
   <br><br>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$title2?></th>
+      <th colspan="3" align="left"><?php echo $title2?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Email')?></td>
+          <td class="title"><?php echo $LANG->_('Email')?></td>
 <?php
 			if($_REQUEST["type"] == 'subscriber') {
 ?>
-          <td><input type="text" name="subscriber" value="<?=$_REQUEST["subscriber"]?>" size="50"></td>
+          <td><input type="text" name="subscriber" value="<?php echo $_REQUEST["subscriber"]?>" size="50"></td>
 <?php
 			} elseif($_REQUEST["type"] == 'owner') {
 ?>
-          <td><input type="text" name="owner" value="<?=$_REQUEST["owner"]?>"></td>
+          <td><input type="text" name="owner" value="<?php echo $_REQUEST["owner"]?>"></td>
 <?php
 			}
 ?>
@@ -80,10 +80,10 @@ if($ezmlm = new ezmlm($user, $path)) {
       </th>
     </table>
 
-    <input type="hidden" name="listno"     value="<?=$_REQUEST["listno"]?>">
-    <input type="hidden" name="domain"     value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="domainname" value="<?=$_REQUEST["domainname"]?>">
-    <input type="hidden" name="type"       value="<?=$_REQUEST["type"]?>">
+    <input type="hidden" name="listno"     value="<?php echo $_REQUEST["listno"]?>">
+    <input type="hidden" name="domain"     value="<?php echo $_REQUEST["domain"]?>">
+    <input type="hidden" name="domainname" value="<?php echo $_REQUEST["domainname"]?>">
+    <input type="hidden" name="type"       value="<?php echo $_REQUEST["type"]?>">
 
     <p>
 

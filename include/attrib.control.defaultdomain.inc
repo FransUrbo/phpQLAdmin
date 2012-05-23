@@ -63,26 +63,26 @@ function defaultdomain_print_view($host) {
 	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)
+    <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?php echo $LANG->_('Default domain / host')?>)
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Default domain')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["defaultdomain"]) { echo $_REQUEST["defaultdomain"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";}?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Default domain')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["defaultdomain"]) { echo $_REQUEST["defaultdomain"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";}?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Default host')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["defaulthost"]) { echo $_REQUEST["defaulthost"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTHOST")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Default host')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["defaulthost"]) { echo $_REQUEST["defaulthost"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTHOST")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Plus domain')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["plusdomain"]) { echo $_REQUEST["plusdomain"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Plus domain')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["plusdomain"]) { echo $_REQUEST["plusdomain"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -94,41 +94,41 @@ function defaultdomain_print_view($host) {
 function defaultdomain_print_form() {
 	global $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
 <?php if($_REQUEST["attrib"] == "defaultdomain") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default domain')?></td>
-          <td><?php echo pql_format_error_span($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?=$_REQUEST["defaultdomain"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td class="title"><?php echo $LANG->_('Default domain')?></td>
+          <td><?php echo pql_format_error_span($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?php echo $_REQUEST["defaultdomain"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == "defaulthost") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default host')?></td>
-          <td><?php echo pql_format_error_span($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?=$_REQUEST["defaulthost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td class="title"><?php echo $LANG->_('Default host')?></td>
+          <td><?php echo pql_format_error_span($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?php echo $_REQUEST["defaulthost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == "plusdomain") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Plus domain')?></td>
-          <td><?php echo pql_format_error_span($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?=$_REQUEST["plusdomain"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td class="title"><?php echo $LANG->_('Plus domain')?></td>
+          <td><?php echo pql_format_error_span($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?php echo $_REQUEST["plusdomain"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to use default configuration')?>.</td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('Leave the fields empty to use default configuration')?>.</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

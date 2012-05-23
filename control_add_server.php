@@ -143,31 +143,31 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
   // {{{ Create the 'Clone mail server' form
 ?>
-  <span class="title1">Create mail server controls object for physical host <?=$server_reference?></span>
+  <span class="title1">Create mail server controls object for physical host <?php echo $server_reference?></span>
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th>
       <tr class="<?php pql_format_table(); ?>">
         <td><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-        <td><?=pql_complete_constant($LANG->_('You can either CLONE an existing server (\uwith\U or \uwithout\U the %attribs%\ninformation) or create a new server object.'), array('attribs' => pql_get_define("PQL_ATTR_LOCALS").'/'. pql_get_define("PQL_ATTR_RCPTHOSTS")))?></td>
+        <td><?php echo pql_complete_constant($LANG->_('You can either CLONE an existing server (\uwith\U or \uwithout\U the %attribs%\ninformation) or create a new server object.'), array('attribs' => pql_get_define("PQL_ATTR_LOCALS").'/'. pql_get_define("PQL_ATTR_RCPTHOSTS")))?></td>
       </tr>
     </th>
   </table>
 
   <br><br>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Clone mailserver object')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Clone mailserver object')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Fully qualified domain name')?></td>
+          <td class="title"><?php echo $LANG->_('Fully qualified domain name')?></td>
           <td><?php if(!empty($error_text["fqdn_clone"])) { echo pql_format_error_span($error_text["fqdn_clone"]); }?>
             <input type="text" name="fqdn" <?php if(!empty($_REQUEST["fqdn"])) { echo 'value="'.$_REQUEST["fqdn"].'"'; } else { echo "value=$server_reference"; } ?> size="30">
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Clone server')?></td>
+          <td class="title"><?php echo $LANG->_('Clone server')?></td>
           <td>
 <?php
   // Get all QmailLDAP/Control hosts.
@@ -179,7 +179,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
   if(!is_array($hosts)) {
 ?>
-            <?=$LANG->_('no LDAP control hosts defined')?>
+            <?php echo $LANG->_('no LDAP control hosts defined')?>
 <?php
   } else {
 ?>
@@ -188,7 +188,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// for each host, get LDAP/Control plugins
 	foreach($hosts as $host) {
 ?>
-              <option value="<?=$host?>"><?=$host?></option>
+              <option value="<?php echo $host?>"><?=$host?></option>
 <?php
 	}
 ?>
@@ -203,7 +203,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
           <td class="title"></td>
           <td>
             <input type="checkbox" name="include_locals" CHECKED>
-            <?=pql_complete_constant($LANG->_('Include all \u%attrib%\U information in clone'), array('attrib' => pql_get_define("PQL_ATTR_LOCALS")))?>
+            <?php echo pql_complete_constant($LANG->_('Include all \u%attrib%\U information in clone'), array('attrib' => pql_get_define("PQL_ATTR_LOCALS")))?>
           </td>
         </tr>
 
@@ -211,7 +211,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
           <td class="title"></td>
           <td>
             <input type="checkbox" name="include_rcpthosts" CHECKED>
-            <?=pql_complete_constant($LANG->_('Include all \u%attrib%\U information in clone'), array('attrib' => pql_get_define("PQL_ATTR_RCPTHOSTS")))?>
+            <?php echo pql_complete_constant($LANG->_('Include all \u%attrib%\U information in clone'), array('attrib' => pql_get_define("PQL_ATTR_RCPTHOSTS")))?>
           </td>
         </tr>
 
@@ -219,14 +219,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
           <td class="title"></td>
           <td>
             <input type="checkbox" name="include_password" CHECKED>
-            <?=pql_complete_constant($LANG->_('Include all \u%attrib%\U information in clone'), array('attrib' => pql_get_define("PQL_ATTR_LDAPPASSWORD")))?>
+            <?php echo pql_complete_constant($LANG->_('Include all \u%attrib%\U information in clone'), array('attrib' => pql_get_define("PQL_ATTR_LDAPPASSWORD")))?>
           </td>
         </tr>
       </th>
     </table>
 
-    <input type="hidden" name="host"   value="<?=$_REQUEST["host"]?>">
-    <input type="submit" name="submit" value="<?=$LANG->_('Clone')?>">
+    <input type="hidden" name="host"   value="<?php echo $_REQUEST["host"]?>">
+    <input type="submit" name="submit" value="<?php echo $LANG->_('Clone')?>">
   </form>
 <?php
 // }}}
@@ -237,18 +237,18 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 <?php
   // {{{ Create the 'Create mail server' form
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Create new mailserver object')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Create new mailserver object')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Fully qualified domain name')?></td>
+          <td class="title"><?php echo $LANG->_('Fully qualified domain name')?></td>
           <td><?php if(!empty($error_text["fqdn_create"])) { echo pql_format_error_span($error_text["fqdn_create"]); }?>
             <input type="text" name="fqdn" <?php if(!empty($_REQUEST["fqdn"])) { echo 'value="'.$_REQUEST["fqdn"].'"'; } else { echo "value=$server_reference"; } ?> size="30">
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default domainname')?></td>
+          <td class="title"><?php echo $LANG->_('Default domainname')?></td>
           <td><?php if(!empty($error_text["defaultdomain"])) { echo pql_format_error_span($error_text["defaultdomain"]); }?>
               <input type="text" name="defaultdomain" <?php if(!empty($_REQUEST["defaultdomain"])) { echo 'value="'.$_REQUEST["defaultdomain"].'"'; }?> size="30">
           </td>
@@ -258,19 +258,19 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
   if($_SESSION["ADVANCED_MODE"]) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Plusdomain')?></td>
+          <td class="title"><?php echo $LANG->_('Plusdomain')?></td>
           <td><input type="text" name="plusdomain" <?php if(!empty($_REQUEST["plusdomain"])) { echo 'value="'.$_REQUEST["plusdomain"].'"'; }?> size="30">
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('LDAP Server')?></td>
+          <td class="title"><?php echo $LANG->_('LDAP Server')?></td>
           <td><?php if(!empty($error_text["ldapserver"])) { echo pql_format_error_span($error_text["ldapserver"]); }?>
               <input type="text" name="ldapserver" <?php if(!empty($_REQUEST["ldapserver"])) { echo 'value="'.$_REQUEST["ldapserver"].'"'; }?> size="30">
           </td>
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('LDAP Search base')?></td>
+          <td class="title"><?php echo $LANG->_('LDAP Search base')?></td>
           <td><?php if(!empty($error_text["ldapbasedn"])) { echo pql_format_error_span($error_text["ldapbasedn"]); }?>
               <input type="text" name="ldapbasedn" <?php if(!empty($_REQUEST["ldapbasedn"])) { echo 'value="'.$_REQUEST["ldapbasedn"].'"'; }?> size="30">
           </td>
@@ -278,47 +278,47 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
   
 <?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default quota')?></td>
+          <td class="title"><?php echo $LANG->_('Default quota')?></td>
           <td><input type="text" name="ldapdefaultquota" <?php if(!empty($_REQUEST["ldapdefaultquota"])) { echo 'value="'.$_REQUEST["ldapdefaultquota"].'"'; }?> size="30">
         </tr>
   
 <?php } else { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default quota size')?></td>
+          <td class="title"><?php echo $LANG->_('Default quota size')?></td>
           <td><input type="text" name="ldapdefaultquotasize" <?php if(!empty($_REQUEST["ldapdefaultquotasize"])) { echo 'value="'.$_REQUEST["ldapdefaultquotasize"].'"'; }?> size="30">
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default quota count')?></td>
+          <td class="title"><?php echo $LANG->_('Default quota count')?></td>
           <td><input type="text" name="ldapdefaultquotacount" <?php if(!empty($_REQUEST["ldapdefaultquotacount"])) { echo 'value="'.$_REQUEST["ldapdefaultquotacount"].'"'; }?> size="30">
         </tr>
   
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default DOT mode')?></td>
+          <td class="title"><?php echo $LANG->_('Default DOT mode')?></td>
           <td>
             <select name="ldapdefaultdotmode">
-              <option value="both"><?=$LANG->_('both')?></option>
-              <option value="dotonly"><?=$LANG->_('dotonly')?></option>
-              <option value="ldaponly" SELECTED><?=$LANG->_('ldaponly')?></option>
-              <option value="ldapwithprog"><?=$LANG->_('ldapwithprog')?></option>
+              <option value="both"><?php echo $LANG->_('both')?></option>
+              <option value="dotonly"><?php echo $LANG->_('dotonly')?></option>
+              <option value="ldaponly" SELECTED><?php echo $LANG->_('ldaponly')?></option>
+              <option value="ldapwithprog"><?php echo $LANG->_('ldapwithprog')?></option>
             </select>
           </td>
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Directory maker')?></td>
+          <td class="title"><?php echo $LANG->_('Directory maker')?></td>
           <td><input type="text" name="dirmaker" <?php if(!empty($_REQUEST["dirmaker"])) { echo 'value="'.$_REQUEST["dirmaker"].'"'; }?> size="30">
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Default quota warning')?></td>
+          <td class="title"><?php echo $LANG->_('Default quota warning')?></td>
           <td><input type="text" name="quotawarning" <?php if(!empty($_REQUEST["quotawarning"])) { echo 'value="'.$_REQUEST["quotawarning"].'"'; }?> size="30">
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('LDAP Rebind')?></td>
-          <td><input type="checkbox" name="ldaprebind" CHECKED>&nbsp;<?=$LANG->_('Yes')?></td>
+          <td class="title"><?php echo $LANG->_('LDAP Rebind')?></td>
+          <td><input type="checkbox" name="ldaprebind" CHECKED>&nbsp;<?php echo $LANG->_('Yes')?></td>
         </tr>
 <?php
   } else {
@@ -341,7 +341,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
       </th>
     </table>
 
-    <input type="hidden" name="host"   value="<?=$_REQUEST["host"]?>">
+    <input type="hidden" name="host"   value="<?php echo $_REQUEST["host"]?>">
     <input type="submit" name="submit" value="Create">
   </form>
 <?php

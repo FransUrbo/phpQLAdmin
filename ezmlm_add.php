@@ -141,7 +141,7 @@ if(empty($_REQUEST["domainname"])) {
 	if($count > $max) {
 ?>
   <span class="title2">
-    <?=$LANG->_('Sorry, you have reached the maximum allowed mailinglists in this domain')?><br>
+    <?php echo $LANG->_('Sorry, you have reached the maximum allowed mailinglists in this domain')?><br>
     <?php echo pql_complete_constant($LANG->_('You have %count% mailinglists, but only %allowed% is allowed.'),
 									 array('count' => $count, 'allowed' => $max)); ?>
 
@@ -216,7 +216,7 @@ if(!empty($_REQUEST["submit"])) {
 require($_SESSION["path"]."/header.html");
 if(empty($_REQUEST["domainname"])) {
 ?>
-  <span class="title1"><?=$LANG->_('Create mailinglist to system')?></span>
+  <span class="title1"><?php echo $LANG->_('Create mailinglist to system')?></span>
 <?php
 } else {
 ?>
@@ -227,12 +227,12 @@ if(empty($_REQUEST["domainname"])) {
 ?>
   <br><br>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" name="addlist">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="addlist">
     <!-- Base configuration -->
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Base configuration')."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Base configuration')."\n"?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('List name')?></td>
+          <td class="title"><?php echo $LANG->_('List name')?></td>
           <td><?php if(!empty($error_text["listname"])) { echo pql_format_error_span($error_text["listname"]); }?>
 
 <?php
@@ -246,7 +246,7 @@ if(empty($_REQUEST["domainname"])) {
 <?php	foreach($domain_list as $branch => $data) {
 			for($i=0; $i < count($data); $i++) {
 ?>
-	          <option value="<?=$branch.";".$data[$i]?>"><?=$data[$i]?></option>
+	          <option value="<?php echo $branch.";".$data[$i]?>"><?=$data[$i]?></option>
 <?php
 			}
 		}
@@ -264,7 +264,7 @@ if(empty($_REQUEST["domainname"])) {
 	// {{{ Got domainname, show that (and remember it!)
 ?>
             <input type="hidden" name="domainname" <?php if(!empty($_REQUEST["domainname"])) { echo 'value="'.$_REQUEST["domainname"].'"'; }?>>
-            <input name="listname" <?php if(!empty($_REQUEST["listname"])) { echo 'value="'.$_REQUEST["listname"].'"'; }?>><b>@<?=$_REQUEST["domainname"]?></b>
+            <input name="listname" <?php if(!empty($_REQUEST["listname"])) { echo 'value="'.$_REQUEST["listname"].'"'; }?>><b>@<?php echo $_REQUEST["domainname"]?></b>
 <?php
 // }}}
 }
@@ -273,26 +273,26 @@ if(empty($_REQUEST["domainname"])) {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('List owner')?></td>
+          <td class="title"><?php echo $LANG->_('List owner')?></td>
           <td>
             <input name="listowner" <?php if(!empty($_REQUEST["listowner"])) { echo 'value="'.$_REQUEST["listowner"].'"'; }?>>
-            <i>(<b><?=$LANG->_('Optional')?></b>: <?=$LANG->_('If not set, mailbox in list directory')?>)</i>
+            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?=$LANG->_('If not set, mailbox in list directory')?>)</i>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('From address')?></td>
+          <td class="title"><?php echo $LANG->_('From address')?></td>
           <td>
             <input name="fromaddress" <?php if(!empty($_REQUEST["fromaddress"])) { echo 'value="'.$_REQUEST["fromaddress"].'"'; }?>>
-            <i>(<b><?=$LANG->_('Optional')?></b>: <?=$LANG->_('If not set, same as listname')?>)</i>
+            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?=$LANG->_('If not set, same as listname')?>)</i>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Parent list')?></td>
+          <td class="title"><?php echo $LANG->_('Parent list')?></td>
           <td>
             <input name="listparent" <?php if(!empty($_REQUEST["listparent"])) { echo 'value="'.$_REQUEST["listparent"].'"'; }?>>
-            <i>(<b><?=$LANG->_('Optional')?></b>: <?=$LANG->_('Make the list a sublist of list')?>)</i>
+            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?=$LANG->_('Make the list a sublist of list')?>)</i>
           </td>
         </tr>
       </th>
@@ -302,114 +302,114 @@ if(empty($_REQUEST["domainname"])) {
 
     <!-- List options -->
     <table cellspacing="0" cellpadding="3" border="0">
-      <th valign="top" align="left"><?=$LANG->_('Subscription options')."\n"?>
+      <th valign="top" align="left"><?php echo $LANG->_('Subscription options')."\n"?>
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="subhelp" accesskey="h"<?=$checked["subhelp"]?>></td>
-              <td class="title"><?=$LANG->_('Subscription verification')?></td>
+              <td><input type="checkbox" name="subhelp" accesskey="h"<?php echo $checked["subhelp"]?>></td>
+              <td class="title"><?php echo $LANG->_('Subscription verification')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="subjump" accesskey="j"<?=$checked["subjump"]?>></td>
-              <td class="title"><?=$LANG->_('Unsubscription verification')?></td>
+              <td><input type="checkbox" name="subjump" accesskey="j"<?php echo $checked["subjump"]?>></td>
+              <td class="title"><?php echo $LANG->_('Unsubscription verification')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="submoderated" accesskey="s"<?=$checked["submoderated"]?>></td>
-              <td class="title"><?=$LANG->_('<u>S</u>ubscription moderation')?></td>
+              <td><input type="checkbox" name="submoderated" accesskey="s"<?php echo $checked["submoderated"]?>></td>
+              <td class="title"><?php echo $LANG->_('<u>S</u>ubscription moderation')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="sublistable" accesskey="l"<?=$checked["sublistable"]?>></td>
-              <td class="title"><?=$LANG->_('Subscriber <u>l</u>istable')?></td>
+              <td><input type="checkbox" name="sublistable" accesskey="l"<?php echo $checked["sublistable"]?>></td>
+              <td class="title"><?php echo $LANG->_('Subscriber <u>l</u>istable')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="reqaddress" accesskey="q"<?=$checked["reqaddress"]?>></td>
-              <td class="title"><?=$LANG->_('Enable re<u>q</u>uest address')?></td>
+              <td><input type="checkbox" name="reqaddress" accesskey="q"<?php echo $checked["reqaddress"]?>></td>
+              <td class="title"><?php echo $LANG->_('Enable re<u>q</u>uest address')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="subonly" accesskey="u"<?=$checked["subonly"]?>></td>
-              <td class="title"><?=$LANG->_('Allow only s<u>u</u>bscribers posts')?></td>
+              <td><input type="checkbox" name="subonly" accesskey="u"<?php echo $checked["subonly"]?>></td>
+              <td class="title"><?php echo $LANG->_('Allow only s<u>u</u>bscribers posts')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="modonly" accesskey="o"<?=$checked["modonly"]?>></td>
-              <td class="title"><?=$LANG->_('Allow only m<u>o</u>derator posts')?></td>
+              <td><input type="checkbox" name="modonly" accesskey="o"<?php echo $checked["modonly"]?>></td>
+              <td class="title"><?php echo $LANG->_('Allow only m<u>o</u>derator posts')?></td>
             </tr>
           </th>
         </table>
       </th>
 
-      <th valign="top" align="left"><?=$LANG->_('Basic List options')."\n"?>
+      <th valign="top" align="left"><?php echo $LANG->_('Basic List options')."\n"?>
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="moderated" accesskey="m"<?=$checked["moderated"]?>></td>
-              <td class="title"><?=$LANG->_('Moderation - <u>M</u>essage')?></td>
+              <td><input type="checkbox" name="moderated" accesskey="m"<?php echo $checked["moderated"]?>></td>
+              <td class="title"><?php echo $LANG->_('Moderation - <u>M</u>essage')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="prefix" accesskey="f"<?=$checked["prefix"]?>></td>
-              <td class="title"><?=$LANG->_('Subject pre<u>f</u>ix')?></td>
+              <td><input type="checkbox" name="prefix" accesskey="f"<?php echo $checked["prefix"]?>></td>
+              <td class="title"><?php echo $LANG->_('Subject pre<u>f</u>ix')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="remotecfg" accesskey="c"<?=$checked["remotecfg"]?>></td>
-              <td class="title"><?=$LANG->_('Enable remote <u>c</u>onfiguration')?></td>
+              <td><input type="checkbox" name="remotecfg" accesskey="c"<?php echo $checked["remotecfg"]?>></td>
+              <td class="title"><?php echo $LANG->_('Enable remote <u>c</u>onfiguration')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="remoteadm" accesskey="r"<?=$checked["remoteadm"]?>></td>
-              <td class="title"><?=$LANG->_('Enable <u>r</u>emote administration')?></td>
+              <td><input type="checkbox" name="remoteadm" accesskey="r"<?php echo $checked["remoteadm"]?>></td>
+              <td class="title"><?php echo $LANG->_('Enable <u>r</u>emote administration')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="archived" accesskey="a"<?=$checked["archived"]?>></td>
-              <td class="title"><?=$LANG->_('<u>A</u>rchived')?></td>
+              <td><input type="checkbox" name="archived" accesskey="a"<?php echo $checked["archived"]?>></td>
+              <td class="title"><?php echo $LANG->_('<u>A</u>rchived')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="guardedarchive" accesskey="g"<?=$checked["guardedarchive"]?>></td>
-              <td class="title"><?=$LANG->_('<u>G</u>uarded archive')?></td>
+              <td><input type="checkbox" name="guardedarchive" accesskey="g"<?php echo $checked["guardedarchive"]?>></td>
+              <td class="title"><?php echo $LANG->_('<u>G</u>uarded archive')?></td>
             </tr>
           </th>
         </table>
       </th>
 
-      <th valign="top" align="left"><?=$LANG->_('Extra List options')."\n"?>
+      <th valign="top" align="left"><?php echo $LANG->_('Extra List options')."\n"?>
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="digest" accesskey="d"<?=$checked["digest"]?>></td>
-              <td class="title"><?=$LANG->_('Enable <u>d</u>igest')?></td>
+              <td><input type="checkbox" name="digest" accesskey="d"<?php echo $checked["digest"]?>></td>
+              <td class="title"><?php echo $LANG->_('Enable <u>d</u>igest')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="indexed" accesskey="i"<?=$checked["indexed"]?>></td>
-              <td class="title"><?=$LANG->_('<u>I</u>ndexed')?></td>
+              <td><input type="checkbox" name="indexed" accesskey="i"<?php echo $checked["indexed"]?>></td>
+              <td class="title"><?php echo $LANG->_('<u>I</u>ndexed')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="trailers" accesskey="t"<?=$checked["trailers"]?>></td>
-              <td class="title"><?=$LANG->_('Add <u>t</u>railers to messages')?></td>
+              <td><input type="checkbox" name="trailers" accesskey="t"<?php echo $checked["trailers"]?>></td>
+              <td class="title"><?php echo $LANG->_('Add <u>t</u>railers to messages')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="checkbox" name="extras" accesskey="x"<?=$checked["extras"]?>></td>
-              <td class="title"><?=$LANG->_('Enable list e<u>x</u>tras')?></td>
+              <td><input type="checkbox" name="extras" accesskey="x"<?php echo $checked["extras"]?>></td>
+              <td class="title"><?php echo $LANG->_('Enable list e<u>x</u>tras')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="radio" name="pubpriv" accesskey="p" value="public"<?=$checked["public"]?>></td>
-              <td class="title"><?=$LANG->_('<u>P</u>ublic')?></td>
+              <td><input type="radio" name="pubpriv" accesskey="p" value="public"<?php echo $checked["public"]?>></td>
+              <td class="title"><?php echo $LANG->_('<u>P</u>ublic')?></td>
             </tr>
 
             <tr class="<?php pql_format_table(); ?>">
-              <td><input type="radio" name="pubpriv" accesskey="p" value="private"<?=$checked["private"]?>></td>
-              <td class="title"><?=$LANG->_('<u>P</u>rivate')?></td>
+              <td><input type="radio" name="pubpriv" accesskey="p" value="private"<?php echo $checked["private"]?>></td>
+              <td class="title"><?php echo $LANG->_('<u>P</u>rivate')?></td>
             </tr>
           </th>
         </table>
@@ -420,21 +420,21 @@ if(empty($_REQUEST["domainname"])) {
 
     <!-- add subscribers at creation -->
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Subscriber address(es)')."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Subscriber address(es)')."\n"?>
 <?php
 	for($i=1; $i <= $_REQUEST["subscribercount"]; $i++) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Subscriber')?></td>
-          <td><?=$_REQUEST["subscriber"][$i]?></td>
+          <td class="title"><?php echo $LANG->_('Subscriber')?></td>
+          <td><?php echo $_REQUEST["subscriber"][$i]?></td>
         </tr>
-        <input type="hidden" name="subscriber[<?=$i?>]" <?php if(!empty($_REQUEST["subscriber"][$i])) { echo 'value="'.$_REQUEST["subscriber"][$i].'"'; }?> size="50">
+        <input type="hidden" name="subscriber[<?php echo $i?>]" <?php if(!empty($_REQUEST["subscriber"][$i])) { echo 'value="'.$_REQUEST["subscriber"][$i].'"'; }?> size="50">
 <?php
 	}
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Subscriber')?></td>
-          <td><input type="text" name="subscriber[<?=$i?>]" <?php if(!empty($_REQUEST["subscriber"][$i])) { echo 'value="'.$_REQUEST["subscriber"][$i].'"'; }?> size="50"></td>
+          <td class="title"><?php echo $LANG->_('Subscriber')?></td>
+          <td><input type="text" name="subscriber[<?php echo $i?>]" <?php if(!empty($_REQUEST["subscriber"][$i])) { echo 'value="'.$_REQUEST["subscriber"][$i].'"'; }?> size="50"></td>
         </tr>
       </th>
     </table>
@@ -443,7 +443,7 @@ if(empty($_REQUEST["domainname"])) {
       <th>
         <tr>
           <td>
-            <input type="submit" name="add_subs" value="<?=$LANG->_('Add additional subscriber address')?>">
+            <input type="submit" name="add_subs" value="<?php echo $LANG->_('Add additional subscriber address')?>">
           </td>
         </tr>
       </th>
@@ -454,22 +454,22 @@ if(empty($_REQUEST["domainname"])) {
 
     <!-- add kill at creation -->
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Rejected address(es)')."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Rejected address(es)')."\n"?>
 <?php
 	for($i=1; $i <= $_REQUEST["killcount"]; $i++) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Address')?></td>
-          <td><?=$_REQUEST["killlist"][$i]?></td>
+          <td class="title"><?php echo $LANG->_('Address')?></td>
+          <td><?php echo $_REQUEST["killlist"][$i]?></td>
         </tr>
-        <input type="hidden" name="killlist[<?=$i?>]" <?php if(!empty($_REQUEST["killlist"][$i])) { echo 'value="'.$_REQUEST["killlist"][$i].'"'; }?> size="50">
+        <input type="hidden" name="killlist[<?php echo $i?>]" <?php if(!empty($_REQUEST["killlist"][$i])) { echo 'value="'.$_REQUEST["killlist"][$i].'"'; }?> size="50">
 
 <?php
 	}
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Address')?></td>
-          <td><input type="text" name="killlist[<?=$i?>]" <?php if(!empty($_REQUEST["killlist"][$i])) { echo 'value="'.$_REQUEST["killlist"][$i].'"'; }?> size="50"></td>
+          <td class="title"><?php echo $LANG->_('Address')?></td>
+          <td><input type="text" name="killlist[<?php echo $i?>]" <?php if(!empty($_REQUEST["killlist"][$i])) { echo 'value="'.$_REQUEST["killlist"][$i].'"'; }?> size="50"></td>
         </tr>
       </th>
     </table>
@@ -478,7 +478,7 @@ if(empty($_REQUEST["domainname"])) {
       <th>
         <tr>
           <td>
-            <input type="submit" name="add_kill" value="<?=$LANG->_('Add additional reject address')?>">
+            <input type="submit" name="add_kill" value="<?php echo $LANG->_('Add additional reject address')?>">
           </td>
         </tr>
       </th>
@@ -494,7 +494,7 @@ if(empty($_REQUEST["domainname"])) {
 
     <p>
 
-    <input type="submit" name="submit" value="<?=$LANG->_('Create list')?>">
+    <input type="submit" name="submit" value="<?php echo $LANG->_('Create list')?>">
   </form>
   </body>
 </html>

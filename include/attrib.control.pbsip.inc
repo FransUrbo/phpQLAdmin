@@ -76,12 +76,12 @@ function pbsip_print_view($host) {
 	pbsip_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">pbsip (<?=$LANG->_('POP before SMTP server IP')?>)
+    <th colspan="3" align="left">pbsip (<?php echo $LANG->_('POP before SMTP server IP')?>)
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title">IP</td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["pbsip"]) { echo $_REQUEST["pbsip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PBS_IP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_IP")?>"></a></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["pbsip"]) { echo $_REQUEST["pbsip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PBS_IP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_IP")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -94,23 +94,23 @@ function pbsip_print_view($host) {
 function pbsip_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="2" align="left">pbsip (<?=$LANG->_('POP before SMTP server IP')?>)</th>
+      <th colspan="2" align="left">pbsip (<?php echo $LANG->_('POP before SMTP server IP')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('IP Address')?></td>
-          <td><?php echo pql_format_error_span($error["pbsip_0"]); ?><input type="text" name="pbsip" value="<?=$_REQUEST["pbsip"]?>"></td>
+          <td class="title"><?php echo $LANG->_('IP Address')?></td>
+          <td><?php echo pql_format_error_span($error["pbsip_0"]); ?><input type="text" name="pbsip" value="<?php echo $_REQUEST["pbsip"]?>"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

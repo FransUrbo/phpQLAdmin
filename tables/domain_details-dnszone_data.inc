@@ -1,10 +1,10 @@
   <table cellspacing="0" cellpadding="3" border="0" size="100%">
     <th colspan="3" align="left">
       <tr class="title">
-        <td><?=$LANG->_('Hostname')?></td>
-        <td><?=$LANG->_('Time To Live')?></td>
-        <td><?=$LANG->_('Type')?></td>
-        <td><?=$LANG->_('Record')?></td>
+        <td><?php echo $LANG->_('Hostname')?></td>
+        <td><?php echo $LANG->_('Time To Live')?></td>
+        <td><?php echo $LANG->_('Type')?></td>
+        <td><?php echo $LANG->_('Record')?></td>
         <td class="title"></td>
       </tr>
 
@@ -57,23 +57,23 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td>
-          <a href="<?=$HREF?>&type=host&host=<?=$data['HOST']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "host"))?>"></a>
-          <?=$data['HOST']?>
+          <a href="<?php echo $HREF?>&type=host&host=<?=$data['HOST']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "host"))?>"></a>
+          <?php echo $data['HOST']?>
         </td>
 
         <td>
-          <a href="<?=$HREF?>&type=ttl&ttl=<?=$data['TTL']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "TTL"))?>"></a>
-          <?=$data['TTL']?>
+          <a href="<?php echo $HREF?>&type=ttl&ttl=<?=$data['TTL']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "TTL"))?>"></a>
+          <?php echo $data['TTL']?>
         </td>
 
-        <td><?=$LANG->_($TYPE)?></td>
+        <td><?php echo $LANG->_($TYPE)?></td>
         <td>
-          <a href="<?=$HREF?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => $TYPE))?>"></a>
-          <?=$record?>
+          <a href="<?php echo $HREF?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => $TYPE))?>"></a>
+          <?php echo $record?>
         </td>
 
         <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?><?=$additional_uri?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
+          <a href="bind9_edit_attributes.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?><?=$additional_uri?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
         </td>
       </tr>
 <?php					  } // foreach record
@@ -85,7 +85,7 @@
 ?>
 
       <tr class="subtitle">
-        <td><a href="bind9_add.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&domainname=<?=$dns_domain_name?>&action=add&type=host&submit=1&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?><?=$additional_uri?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?></a></td>
+        <td><a href="bind9_add.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&domainname=<?=$dns_domain_name?>&action=add&type=host&submit=1&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?><?=$additional_uri?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?></a></td>
         <td></td>
         <td></td>
         <td></td>

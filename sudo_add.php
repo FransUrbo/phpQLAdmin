@@ -28,7 +28,7 @@ function attribute_forward($msg) {
 }
 // }}}
 ?>
-    <span class="title1"><?=pql_complete_constant($LANG->_('Add sudo role to branch %branch%'), array('branch' => $_REQUEST["domain"]))?></span>
+    <span class="title1"><?php echo pql_complete_constant($LANG->_('Add sudo role to branch %branch%'), array('branch' => $_REQUEST["domain"]))?></span>
     <br><br>
 
 <?php

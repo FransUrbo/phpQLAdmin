@@ -65,7 +65,7 @@ function badrcptto_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left">badrcptto
       <tr>
-        <td class="title" colspan="3"><?=$LANG->_('Rejected local addresses')?></td>
+        <td class="title" colspan="3"><?php echo $LANG->_('Rejected local addresses')?></td>
       </tr>
 
 <?php
@@ -87,19 +87,19 @@ function badrcptto_print_view($host) {
 function badrcptto_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["badrcptto"]); $i++) { ?>
-    <input type="hidden" name="badrcptto[<?=$i?>]" value="<?=$_REQUEST["badrcptto"][$i]?>">
+    <input type="hidden" name="badrcptto[<?php echo $i?>]" value="<?=$_REQUEST["badrcptto"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">badrcptto (<?=$LANG->_('Rejected local addresses')?>)</th>
+      <th colspan="3" align="left">badrcptto (<?php echo $LANG->_('Rejected local addresses')?>)</th>
 <?php $class = pql_format_table(0); ?>
         <tr>
-          <td class="title"><?=$LANG->_('Address')?></td>
-          <td class="<?=$class?>">
+          <td class="title"><?php echo $LANG->_('Address')?></td>
+          <td class="<?php echo $class?>">
             <?php echo pql_format_error_span($error["badrcptto"][$i]); ?>
-            <input type="text" name="badrcptto[<?=$i?>]" size="40">
+            <input type="text" name="badrcptto[<?php echo $i?>]" size="40">
           </td>
         </tr>
       </th>
@@ -107,11 +107,11 @@ function badrcptto_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

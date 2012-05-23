@@ -55,12 +55,12 @@ function queuelifetime_print_view($host) {
 	  $queuelifetime = pql_format_timestamp_human($_REQUEST["queuelifetime"]);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">queuelifetime (<?=$LANG->_('Max lifetime of a message in queue')?>)</th>
+    <th colspan="3" align="left">queuelifetime (<?php echo $LANG->_('Max lifetime of a message in queue')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Remain')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["queuelifetime"]) { echo $_REQUEST["queuelifetime"]; } else { echo $LANG->_('Default', 4).": $queuelifetime"; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Remain')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["queuelifetime"]) { echo $_REQUEST["queuelifetime"]; } else { echo $LANG->_('Default', 4).": $queuelifetime"; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -75,10 +75,10 @@ function queuelifetime_print_form() {
 ?>
   <form action="<?$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">queuelifetime (<?=$LANG->_('Max lifetime of a message in queue')?>)</th>
+      <th colspan="3" align="left">queuelifetime (<?php echo $LANG->_('Max lifetime of a message in queue')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Remain')?></td>
-          <td><?php echo pql_format_error_span($error["queuelifetime"]); ?><input type="text" name="queuelifetime" value="<?=$_REQUEST["queuelifetime"]?>"> <?=$LANG->_('Seconds', 4)?></td>
+          <td class="title"><?php echo $LANG->_('Remain')?></td>
+          <td><?php echo pql_format_error_span($error["queuelifetime"]); ?><input type="text" name="queuelifetime" value="<?php echo $_REQUEST["queuelifetime"]?>"> <?=$LANG->_('Seconds', 4)?></td>
         </tr>
 
         <tr class="subtitle">
@@ -89,11 +89,11 @@ function queuelifetime_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

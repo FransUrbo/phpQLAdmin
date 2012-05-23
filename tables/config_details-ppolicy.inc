@@ -30,18 +30,18 @@ $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('
   <br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Global Password Policies')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Global Password Policies')?>
 <?php for($i=0; $ppolicies[$i]; $i++) {
 		foreach($table_columns as $attrib => $text) {
 		  $link = 'config_edit_attribute.php?rootdn='.urlencode($ppolicies[$i]["dn"]).'&attrib='.$attrib;
 		  $class=pql_format_table(0);
 ?>
       <tr>
-        <td class="title"><?=$text?></td>
+        <td class="title"><?php echo $text?></td>
 <?php	  if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_NAME"))) { ?>
         <td class="title">
 <?php	  } else { ?>
-        <td class="<?=$class?>">
+        <td class="<?php echo $class?>">
 <?php	  }
 
 		  if($ppolicies[$i][$attrib]) {
@@ -62,8 +62,8 @@ $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('
 ?>
         </td>
 
-        <td class="<?=$class?>" align="right">
-          <a href="<?=$link?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change policy value')?>"></a>
+        <td class="<?php echo $class?>" align="right">
+          <a href="<?php echo $link?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change policy value')?>"></a>
         </td>
       </tr>
 <?php	} ?>
@@ -73,15 +73,15 @@ $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('
 <?php } ?>
       <tr>
 <?php if(!$ppolicies) { ?>
-        <td class="title"><?=$LANG->_('No policies defined')?></td>
+        <td class="title"><?php echo $LANG->_('No policies defined')?></td>
 <?php } else { ?>
         <td class="title"></td>
 <?php }
 
       $class=pql_format_table(0);
 ?>
-        <td class="<?=$class?>" colspan="2">
-          <a href="config_ppolicy_add.php?rootdn=<?=urlencode($_SESSION["BASE_DN"][0])?>"><?=$LANG->_('Add policy')?></a>
+        <td class="<?php echo $class?>" colspan="2">
+          <a href="config_ppolicy_add.php?rootdn=<?php echo urlencode($_SESSION["BASE_DN"][0])?>"><?=$LANG->_('Add policy')?></a>
         </td>
       </tr>
     </th>

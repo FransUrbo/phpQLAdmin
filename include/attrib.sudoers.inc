@@ -83,11 +83,11 @@ function attribute_print_view($role) {
 	// {{{ Sudo run as
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Run command as')?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$sudo_role[pql_get_define("PQL_ATTR_SUDORUNAS")]?></td>
+        <td class="title"><?php echo $LANG->_('Run command as')?></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $sudo_role[pql_get_define("PQL_ATTR_SUDORUNAS")]?></td>
         <td>
-          <a href="sudo_modify.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&type=<?=pql_get_define("PQL_ATTR_SUDORUNAS")?>&view=sudo&sudodn=<?=urlencode($_REQUEST["sudodn"])?>&action=mod&<?=pql_get_define("PQL_ATTR_SUDORUNAS")?>=<?=$sudo_role[pql_get_define("PQL_ATTR_SUDORUNAS")]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify/change run as"></a>
-          <a href="sudo_modify.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&type=<?=pql_get_define("PQL_ATTR_SUDORUNAS")?>&view=sudo&sudodn=<?=urlencode($_REQUEST["sudodn"])?>&action=del&<?=pql_get_define("PQL_ATTR_SUDORUNAS")?>=<?=$sudo_role[pql_get_define("PQL_ATTR_SUDORUNAS")]?>"><img src="images/del.png"  width="12" height="12" border="0" alt="Delete command from role"></a>
+          <a href="sudo_modify.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&type=<?=pql_get_define("PQL_ATTR_SUDORUNAS")?>&view=sudo&sudodn=<?=urlencode($_REQUEST["sudodn"])?>&action=mod&<?=pql_get_define("PQL_ATTR_SUDORUNAS")?>=<?=$sudo_role[pql_get_define("PQL_ATTR_SUDORUNAS")]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify/change run as"></a>
+          <a href="sudo_modify.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&type=<?=pql_get_define("PQL_ATTR_SUDORUNAS")?>&view=sudo&sudodn=<?=urlencode($_REQUEST["sudodn"])?>&action=del&<?=pql_get_define("PQL_ATTR_SUDORUNAS")?>=<?=$sudo_role[pql_get_define("PQL_ATTR_SUDORUNAS")]?>"><img src="images/del.png"  width="12" height="12" border="0" alt="Delete command from role"></a>
         </td>
       </tr>
 
@@ -134,15 +134,15 @@ function attribute_print_form() {
 
   // {{{ Form header
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Create Sudo Roles')?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Create Sudo Roles')?>
         <tr class="c2">
-          <td class="title"><?=$LANG->_("Role")?></td>
-          <td class="title"><?=$LANG->_("User")?></td>
-          <td class="title"><?=$LANG->_("Command")?></td>
-          <td class="title"><?=$LANG->_("As User")?></td>
-          <td class="title"><?=$LANG->_("On Host")?></td>
+          <td class="title"><?php echo $LANG->_("Role")?></td>
+          <td class="title"><?php echo $LANG->_("User")?></td>
+          <td class="title"><?php echo $LANG->_("Command")?></td>
+          <td class="title"><?php echo $LANG->_("As User")?></td>
+          <td class="title"><?php echo $LANG->_("On Host")?></td>
         </tr>
 
         <tr class="c2">
@@ -154,28 +154,28 @@ function attribute_print_form() {
 ?>
           <!-- SUDO ROLE -->
           <td>
-            <?=pql_format_error_span($error["sudodn"])?>
+            <?php echo pql_format_error_span($error["sudodn"])?>
 <?php if(@$sudo_role["cn"]) {
 		echo $sudo_role["cn"];
 ?>
-            <input type="hidden" name="sudodn" value="<?=$sudo_role["dn"]?>">
+            <input type="hidden" name="sudodn" value="<?php echo $sudo_role["dn"]?>">
 <?php  } else {
 		if(!is_array($sudo_results) or ($_REQUEST["sudodn"] == 'new')) {
 		  if($_REQUEST["sudodn"] == 'new') {
 			unset($_REQUEST["sudodn"]);
 		  }
 ?>
-            <input type="text" name="sudodn" size="20" value="<?=$_REQUEST["sudodn"]?>">
+            <input type="text" name="sudodn" size="20" value="<?php echo $_REQUEST["sudodn"]?>">
 <?php	} elseif($_REQUEST["sudodn"]) {
 		  // Just in case we choose 'New' on 'SudoCommand' and this is specified...
 ?>
-            <input type="text" name="sudodn" size="20" value="<?=$_REQUEST["sudodn"]?>">
+            <input type="text" name="sudodn" size="20" value="<?php echo $_REQUEST["sudodn"]?>">
 <?php	} else { ?>
             <select name="sudodn" onChange="this.form.submit()">
 <?php	  for($r = 0; $r < count($sudo_results); $r++) { ?>
-              <option value="<?=$sudo_results[$r]['dn']?>"<?php if($_REQUEST["sudodn"] == $sudo_results[$r]['dn']) { echo " SELECTED"; }?>><?=$sudo_results[$r][pql_get_define("PQL_ATTR_CN")]?></option>
+              <option value="<?php echo $sudo_results[$r]['dn']?>"<?php if($_REQUEST["sudodn"] == $sudo_results[$r]['dn']) { echo " SELECTED"; }?>><?=$sudo_results[$r][pql_get_define("PQL_ATTR_CN")]?></option>
 <?php	  } ?>
-              <option value="new"><?=$LANG->_('New')?></option>
+              <option value="new"><?php echo $LANG->_('New')?></option>
             </select>
 <?php	}
 	  }
@@ -189,7 +189,7 @@ function attribute_print_form() {
 
           <!-- SUDO USER -->
           <td>
-            <?=pql_format_error_span($error["userdn"])?>
+            <?php echo pql_format_error_span($error["userdn"])?>
 <?php if($_REQUEST["action"] and ($_REQUEST["type"] == 'sudouser')) {
 		// ADDING a value (to existing attribute)
 		// CHANGING a sudo user
@@ -229,10 +229,10 @@ function attribute_print_form() {
 	  if(is_array($user_results)) {
 ?>
             <select name='userdn'>
-              <option value="none"<?php if($_REQUEST["userdn"] == 'none') { echo " SELECTED"; } ?>><?=$LANG->_("None")?></option>
-              <option value="ALL"<?php if($_REQUEST["userdn"] == 'ALL') { echo " SELECTED"; } ?>><?=$LANG->_("ALL")?></option>
+              <option value="none"<?php if($_REQUEST["userdn"] == 'none') { echo " SELECTED"; } ?>><?php echo $LANG->_("None")?></option>
+              <option value="ALL"<?php if($_REQUEST["userdn"] == 'ALL') { echo " SELECTED"; } ?>><?php echo $LANG->_("ALL")?></option>
 <?php	foreach($user_results as $dn => $user) { ?>
-              <option value="<?=$dn?>"<?php if($_REQUEST["userdn"] == $dn) { echo " SELECTED"; } ?>><?=$user?></option>
+              <option value="<?php echo $dn?>"<?php if($_REQUEST["userdn"] == $dn) { echo " SELECTED"; } ?>><?=$user?></option>
 <?php	} ?>
             </select>
 <?php } elseif($user_results) {
@@ -245,9 +245,9 @@ function attribute_print_form() {
 			echo $user_results;
 		  }
 ?>
-            <input type="hidden" name="userdn" value="<?=$user_results?>">
+            <input type="hidden" name="userdn" value="<?php echo $user_results?>">
 <?php	} else { ?>
-            <input type="text"   name="userdn" value="<?=$user_results?>">
+            <input type="text"   name="userdn" value="<?php echo $user_results?>">
 <?php	}
 	  }
 ?>
@@ -260,17 +260,17 @@ function attribute_print_form() {
 
           <!-- SUDO COMMAND -->
           <td>
-            <?=pql_format_error_span($error["command"])?>
+            <?php echo pql_format_error_span($error["command"])?>
 <?php if(@$sudo_role["sudocommand"] and ($_REQUEST["type"] == 'sudocommand')) {
 		// Changing sudo command value
 ?>
-            <input type="hidden" name="oldvalue" value="<?=$_REQUEST["sudocommand"]?>">
-            <input type="text"   name="command"  value="<?=$_REQUEST["sudocommand"]?>">
+            <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["sudocommand"]?>">
+            <input type="text"   name="command"  value="<?php echo $_REQUEST["sudocommand"]?>">
 <?php } elseif(is_array($sudo_role)) {
 		// Changing something else than sudo command...
 		echo $sudo_role["sudocommand"];
 ?>
-            <input type="hidden" name="command" value="<?=$sudo_role["sudocommand"]?>">
+            <input type="hidden" name="command" value="<?php echo $sudo_role["sudocommand"]?>">
 <?php  } else {
 		// ADDING a sudo role...
 		if(!is_array($sudo_results) or ($_REQUEST["command"] == 'new')) {
@@ -278,13 +278,13 @@ function attribute_print_form() {
 			if($_REQUEST["command"] == 'new')
 			  unset($_REQUEST["command"]);
 ?>
-            <input type="text" name="command" size="20" value="<?=$_REQUEST["command"]?>">
+            <input type="text" name="command" size="20" value="<?php echo $_REQUEST["command"]?>">
 <?php	} elseif(is_array($sudo_results)) { ?>
             <select name="command" onChange="this.form.submit()">
 <?php		for($r = 0; $r < count($sudo_results); $r++) { ?>
-              <option value="<?=$sudo_results[$r]["sudocommand"]?>"<?php if($_REQUEST["command"] == $sudo_results[$r]["sudocommand"]) { echo " SELECTED"; }?>><?=$sudo_results[$r]["sudocommand"]?></option>
+              <option value="<?php echo $sudo_results[$r]["sudocommand"]?>"<?php if($_REQUEST["command"] == $sudo_results[$r]["sudocommand"]) { echo " SELECTED"; }?>><?=$sudo_results[$r]["sudocommand"]?></option>
 <?php		} ?>
-              <option value="new"<?php if($_REQUEST["command"] == "new") { echo " SELECTED"; }?>><?=$LANG->_('New')?></option>
+              <option value="new"<?php if($_REQUEST["command"] == "new") { echo " SELECTED"; }?>><?php echo $LANG->_('New')?></option>
             </select>
 <?php	}
 	  }
@@ -298,19 +298,19 @@ function attribute_print_form() {
 
           <!-- SUDO RUN AS -->
           <td>
-            <?=pql_format_error_span($error["runas"])?>
+            <?php echo pql_format_error_span($error["runas"])?>
 <?php if(@$sudo_role["sudorunas"] and ($_REQUEST["type"] == 'sudorunas')) {
 		// Changing sudo run-as value
 ?>
-            <input type="hidden" name="oldvalue" value="<?=$_REQUEST["sudorunas"]?>">
-            <input type="text"   name="runas"    value="<?=$_REQUEST["sudorunas"]?>">
+            <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["sudorunas"]?>">
+            <input type="text"   name="runas"    value="<?php echo $_REQUEST["sudorunas"]?>">
 <?php } elseif(is_array($sudo_role)) {
 		// Changing something else than sudo run-as...
 		echo $sudo_role["sudorunas"];
 ?>
-            <input type="hidden" name="runas" value="<?=$sudo_role["sudorunas"]?>">
+            <input type="hidden" name="runas" value="<?php echo $sudo_role["sudorunas"]?>">
 <?php } else { ?>
-            <input type="text" name="runas" size="20" value="<?=$_REQUEST["runas"]?>">
+            <input type="text" name="runas" size="20" value="<?php echo $_REQUEST["runas"]?>">
 <?php } ?>
           </td>
 <?php
@@ -320,7 +320,7 @@ function attribute_print_form() {
 ?>
           <!-- SUDO HOST -->
           <td>
-            <?=pql_format_error_span($error["computer"])?>
+            <?php echo pql_format_error_span($error["computer"])?>
 <?php if($_REQUEST["action"] and ($_REQUEST["type"] == 'sudohost')) {
 		// ADDING a value (to existing attribute)
 		
@@ -340,11 +340,11 @@ function attribute_print_form() {
 	  if(is_array($computer_results)) {
 ?>
             <select name="computer">
-              <option value="ALL"<?php if($_REQUEST["computer"] == 'ALL') { echo " SELECTED"; } ?>><?=$LANG->_("ALL")?></option>
+              <option value="ALL"<?php if($_REQUEST["computer"] == 'ALL') { echo " SELECTED"; } ?>><?php echo $LANG->_("ALL")?></option>
 <?php	for($i=0; $i < count($computer_results); $i++) {
 			$host = $_pql->get_attribute($computer_results[$i], pql_get_define("PQL_ATTR_CN"));
 ?>
-              <option value="<?=$host?>"<?php if($_REQUEST["computer"] == $host) { echo " SELECTED"; } ?>><?=$host?></option>
+              <option value="<?php echo $host?>"<?php if($_REQUEST["computer"] == $host) { echo " SELECTED"; } ?>><?=$host?></option>
 <?php	} ?>
             </select>
 <?php } elseif($computer_results) {
@@ -352,9 +352,9 @@ function attribute_print_form() {
 		  // ADDING a value (to existing attribute)
 		  echo $computer_results;
 ?>
-            <input type="hidden" name="computer" value="<?=$computer_results?>">
+            <input type="hidden" name="computer" value="<?php echo $computer_results?>">
 <?php	} else { ?>
-            <input type="text"   name="computer" value="<?=$computer_results?>">
+            <input type="text"   name="computer" value="<?php echo $computer_results?>">
 <?php	}
 	  }
 ?>
@@ -373,15 +373,15 @@ function attribute_print_form() {
     <input type="hidden" name="action" value="add">
     <input type="hidden" name="view"   value="sudo">
 <?php if($_REQUEST["type"]) { ?>
-    <input type="hidden" name="type"   value="<?=$_REQUEST["type"]?>">
+    <input type="hidden" name="type"   value="<?php echo $_REQUEST["type"]?>">
 <?php } ?>
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?php echo $_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?php echo $_REQUEST["domain"]?>">
     <br>
 <?php if($_REQUEST["action"] and $_REQUEST["type"]) { ?>
-    <input type="submit" value="<?=$LANG->_('Modify Sudo Role')?>">
+    <input type="submit" value="<?php echo $LANG->_('Modify Sudo Role')?>">
 <?php } else { ?>
-    <input type="submit" value="<?=$LANG->_('Add New Sudo Role')?>">
+    <input type="submit" value="<?php echo $LANG->_('Add New Sudo Role')?>">
 <?php } ?>
   </form>
 <?php

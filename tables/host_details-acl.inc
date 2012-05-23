@@ -3,10 +3,10 @@
 ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_("Host Control Access")."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_("Host Control Access")."\n"?>
         <tr class="title">
-          <td><?=$LANG->_("Hostname")?></td>
-          <td><?=$LANG->_("IP Address")?></td>
+          <td><?php echo $LANG->_("Hostname")?></td>
+          <td><?php echo $LANG->_("IP Address")?></td>
         </tr>
 
 <?php
@@ -49,20 +49,20 @@ foreach($hosts as $host_dn) {
 
 	// {{{ Hostname(s)
 ?>	
-        <tr class="<?=$row?>">
+        <tr class="<?php echo $row?>">
           <!-- HOSTNAME AND USERS -->
           <td>
 <?php if($_SESSION["opera"]) { ?>
-            <div id="el<?=$i?>aParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
-              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$i?>aImg">
-              <a class="item"><font color="black" class="heada"><?=$host?></font></a>
+            <div id="el<?php echo $i?>aParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
+              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $i?>aImg">
+              <a class="item"><font color="black" class="heada"><?php echo $host?></font></a>
             </div>
 <?php } else { ?>
-            <div id="el<?=$i?>aParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i."aImg"?>">
+            <div id="el<?php echo $i?>aParent" class="parent">
+              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $i."aImg"?>">
               </a>
-              <font color="black" class="heada"><?=$host?></font>
+              <font color="black" class="heada"><?php echo $host?></font>
             </div>
 <?php }
 // }}}
@@ -73,9 +73,9 @@ foreach($hosts as $host_dn) {
 	if(@$host_users) {
 	  if($_SESSION["opera"]) {
 ?>
-            <span id="el<?=$i?>aSpn" style="display:''">
+            <span id="el<?php echo $i?>aSpn" style="display:''">
 <?php } else { ?>
-            <div id="el<?=$i?>aChild" class="child">
+            <div id="el<?php echo $i?>aChild" class="child">
 <?php }
 
 	  for($j=0; $j < count($host_users); $j++) {
@@ -92,8 +92,8 @@ foreach($hosts as $host_dn) {
 		  $user = $_pql->get_attribute($host_users[$j], pql_get_define("PQL_ATTR_UID"));
 ?>
              &nbsp;&nbsp;&nbsp;
-             <a href="host_modify.php?host=<?=urlencode($host_dn)?>&userdn=<?=urlencode($host_users[$j])?>&action=remove_user_from_host"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>"></a>
-             &nbsp;<?=$user."\n"?>
+             <a href="host_modify.php?host=<?php echo urlencode($host_dn)?>&userdn=<?=urlencode($host_users[$j])?>&action=remove_user_from_host"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>"></a>
+             &nbsp;<?php echo $user."\n"?>
              <br>
 <?php }
 
@@ -125,21 +125,21 @@ foreach($hosts as $host_dn) {
           <!-- IP ADDRESS -->
           <td>
 <?php if($_SESSION["opera"]) { ?>
-            <div id="el<?=$i?>bParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
-              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$i?>bImg">
-              <a class="item"><font color="black" class="heada"><?=$host_ip?></font></a>
+            <div id="el<?php echo $i?>bParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
+              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $i?>bImg">
+              <a class="item"><font color="black" class="heada"><?php echo $host_ip?></font></a>
             </div>
 
-            <span id="el<?=$i?>bSpn" style="display:''">
+            <span id="el<?php echo $i?>bSpn" style="display:''">
 <?php } else { ?>
-            <div id="el<?=$i?>bParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i?>bImg">
+            <div id="el<?php echo $i?>bParent" class="parent">
+              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $i?>bImg">
               </a>
-              <a class="item"><font color="black" class="heada"><?=$host_ip?></font></a>
+              <a class="item"><font color="black" class="heada"><?php echo $host_ip?></font></a>
             </div>
 
-            <div id="el<?=$i?>bChild" class="child">
+            <div id="el<?php echo $i?>bChild" class="child">
 <?php }
 
 	  echo "              <br>\n";
@@ -161,18 +161,18 @@ foreach($hosts as $host_dn) {
 ?>
           <!-- IP ADDRESS -->
           <td>
-            <div id="el<?=$i?>bParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
-              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$i?>bImg">
-              <a class="item"><font color="black" class="heada"><?=$LANG->_('no ip')?></font></a>
+            <div id="el<?php echo $i?>bParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
+              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $i?>bImg">
+              <a class="item"><font color="black" class="heada"><?php echo $LANG->_('no ip')?></font></a>
             </div>
 
-            <span id="el<?=$i?>bSpn" style="display:''">
+            <span id="el<?php echo $i?>bSpn" style="display:''">
 <?php } else { ?>
-            <div id="el<?=$i?>bParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i?>Img">
+            <div id="el<?php echo $i?>bParent" class="parent">
+              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $i?>Img">
               </a>
-              <a class="item"><font color="black" class="heada"><?=$LANG->_('no ip')?></font></a>
+              <a class="item"><font color="black" class="heada"><?php echo $LANG->_('no ip')?></font></a>
             </div>
           </td>
         </tr>
@@ -190,9 +190,9 @@ foreach($hosts as $host_dn) {
           <td colspan="4">
             <img src="images/info.png" width="16" height="16" alt="" border="0">
 <?php if(@$_REQUEST["domain"]) { ?>
-            <?=$LANG->_('Note that you will only see users from \uthis\U branch here!')?>
+            <?php echo $LANG->_('Note that you will only see users from \uthis\U branch here!')?>
 <?php } else { ?>
-            <?=$LANG->_('Note that you will have to go into a branch to \uadd\U users to a host.')?>
+            <?php echo $LANG->_('Note that you will have to go into a branch to \uadd\U users to a host.')?>
 <?php } ?>
           </td>
         </tr>

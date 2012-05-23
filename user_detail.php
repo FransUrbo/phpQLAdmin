@@ -92,7 +92,7 @@ if($username and is_array($username)) {
 }
 ?>
 
-  <span class="title1"><?=$username?></span>
+  <span class="title1"><?php echo $username?></span>
 
   <br><br>
 <?php

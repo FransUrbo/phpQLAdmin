@@ -53,7 +53,7 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 // }}}
 ?>
     <link rel="stylesheet" href="tools/normal.css" type="text/css">
-    <span class="title1"><?=$LANG->_('Computer')?>: <?=pql_maybe_idna_decode(urldecode($host))?></span>
+    <span class="title1"><?php echo $LANG->_('Computer')?>: <?=pql_maybe_idna_decode(urldecode($host))?></span>
     <p>
 <?php
 if($_REQUEST["host"] == 'Global') {

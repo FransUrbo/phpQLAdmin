@@ -60,16 +60,16 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $DEL_DN))
 ?>
   <br><br>
   <img src="images/info.png" width="16" height="16" border="0">
-  <?=$LANG->_('Are you really sure'); ?>
+  <?php echo $LANG->_('Are you really sure'); ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="GET">
 <?php if(@$_REQUEST["subnet"]) { ?>
-    <input type="hidden" name="subnet" value="<?=urlencode($_REQUEST["subnet"])?>">
+    <input type="hidden" name="subnet" value="<?php echo urlencode($_REQUEST["subnet"])?>">
 <?php } else { ?>
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
 <?php } ?>
 	
-    <input type="submit" name="ok" value="<?=$LANG->_('Yes')?>">
-    <input type="button" name="back" value="<?=$LANG->_('No')?>" onClick="history.back();">
+    <input type="submit" name="ok" value="<?php echo $LANG->_('Yes')?>">
+    <input type="button" name="back" value="<?php echo $LANG->_('No')?>" onClick="history.back();">
   </form>
 <?php
 // }}}

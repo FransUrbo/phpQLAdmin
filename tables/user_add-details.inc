@@ -1,7 +1,7 @@
 <?php /* $Id: user_add-details.inc,v 1.49 2008-03-18 23:11:29 turbo Exp $ */ ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8" name="user_add">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8" name="user_add">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('User data')?></th>
 <?php
 	// {{{ Does KERBEROS exists in $schemes
 	$krb_scheme = 0;
@@ -18,15 +18,15 @@
 ?>
         <!-- Username (UID) -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Username')?></td>
+          <td class="title"><?php echo $LANG->_('Username')?></td>
           <td>
             <?php if(!empty($error_text["uid"])) { echo pql_format_error_span($error_text["uid"]); } ?>
 <?php		if($lockusername) { ?>
-            <input type="hidden" name="uid" value="<?=$_REQUEST["uid"]?>">
-            &nbsp;&nbsp;&nbsp;<b><?=$_REQUEST["uid"]?></b>
+            <input type="hidden" name="uid" value="<?php echo $_REQUEST["uid"]?>">
+            &nbsp;&nbsp;&nbsp;<b><?php echo $_REQUEST["uid"]?></b>
 <?php		} else { ?>
-            <?=pql_templates_mark_importance($mark); ?>
-            <input type="text" name="uid" value="<?=$_REQUEST["uid"]?>">
+            <?php echo pql_templates_mark_importance($mark); ?>
+            <input type="text" name="uid" value="<?php echo $_REQUEST["uid"]?>">
 <?php		} ?>
           </td>
         </tr>
@@ -34,16 +34,16 @@
 <?php		if(!$lockusername) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=$LANG->_('Numbers, letters and the following special chars: @, %, . (dot), _, -.\nIf left out, a username will be created automatically')?>.</td>
+          <td><?php echo $LANG->_('Numbers, letters and the following special chars: @, %, . (dot), _, -.\nIf left out, a username will be created automatically')?>.</td>
         </tr>
 
 <?php		}
 		} else { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?php echo pql_complete_constant($LANG->_('Automatically generated %what%'), array('what' => $LANG->_('username'))); ?> => <b><?=$_REQUEST["uid"]?></b>.</td>
+          <td><?php echo pql_complete_constant($LANG->_('Automatically generated %what%'), array('what' => $LANG->_('username'))); ?> => <b><?php echo $_REQUEST["uid"]?></b>.</td>
         </tr>
-        <input type="hidden" name="uid" value="<?=$_REQUEST["uid"]?>">
+        <input type="hidden" name="uid" value="<?php echo $_REQUEST["uid"]?>">
 
 <?php 	}
 	  }
@@ -54,10 +54,10 @@
 ?>
         <!-- Firstname -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Surname')?></td>
+          <td class="title"><?php echo $LANG->_('Surname')?></td>
           <td>
             <?php if(!empty($error_text["surname"])) { echo pql_format_error_span($error_text["surname"]); }?>
-            <?=pql_templates_mark_importance($mark); ?>
+            <?php echo pql_templates_mark_importance($mark); ?>
             <input type="text" name="surname" value="<?php if(!empty($_REQUEST["surname"])) { echo $_REQUEST["surname"]; }?>">
           </td>
         </tr>
@@ -70,10 +70,10 @@
 
         <!-- Lastname -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Lastname')?></td>
+          <td class="title"><?php echo $LANG->_('Lastname')?></td>
           <td>
             <?php if(!empty($error_text["name"])) { echo pql_format_error_span($error_text["name"]); }?>
-            <?=pql_templates_mark_importance($mark); ?>
+            <?php echo pql_templates_mark_importance($mark); ?>
             <input type="text" name="name" value="<?php if(!empty($_REQUEST["name"])) { echo $_REQUEST["name"]; }?>">
           </td>
         </tr>
@@ -91,9 +91,9 @@
 
         <!-- Password scheme -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
+          <td class="title"><?php echo $LANG->_('Password encryption scheme')?></td>
           <td>
-            <?=pql_templates_mark_importance($mark); ?>
+            <?php echo pql_templates_mark_importance($mark); ?>
 
 <?php	if(!empty($schemes[1])) {
 			// We got more than one password scheme...
@@ -107,7 +107,7 @@
 				if(!$_REQUEST["pwscheme"]) 
 				  $_REQUEST["pwscheme"] = $scheme;
 ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>"<?php
+            <input type="radio" name="pwscheme" value="<?php echo $scheme?>"<?php
 			   if((!$_REQUEST["pwscheme"] and ($scheme == $_REQUEST["defaultpasswordscheme"]))
 				  or ($_REQUEST["pwscheme"] and ($scheme == $_REQUEST["pwscheme"])))
 			   {
@@ -117,7 +117,7 @@
 				 //    b. this is the (pre)choosen password scheme
 				 echo " CHECKED";
 			   }
-?> onChange="document.user_add.dosave.value='yes'; submit()"><?=$scheme?>
+?> onChange="document.user_add.dosave.value='yes'; submit()"><?php echo $scheme?>
 																																																	
 <?php		  }
 			}
@@ -129,8 +129,8 @@
 			$schemes[0] = preg_replace('/\}/', '', $schemes[0]);
 		  }
 ?>
-            <input type="radio" name="pwscheme" value="<?=$schemes[0]?>"><?=$schemes[0]?>
-            <input type="radio" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>" CHECKED><?=$_REQUEST["defaultpasswordscheme"]?>
+            <input type="radio" name="pwscheme" value="<?php echo $schemes[0]?>"><?=$schemes[0]?>
+            <input type="radio" name="pwscheme" value="<?php echo $_REQUEST["defaultpasswordscheme"]?>" CHECKED><?=$_REQUEST["defaultpasswordscheme"]?>
 <?php
 		} else {
 		  if(!@$_REQUEST["pwscheme"])
@@ -140,8 +140,8 @@
 			$schemes[0] = preg_replace('/\}/', '', $schemes[0]);
 		  }
 ?>
-            Scheme: <b>{<?=$schemes[0]?>}</b>
-            <input type="hidden" name="pwscheme" value="<?=$schemes[0]?>"<?php if($_REQUEST["defaultpasswordscheme"] == $scheme) { echo " CHECKED"; }?>>
+            Scheme: <b>{<?php echo $schemes[0]?>}</b>
+            <input type="hidden" name="pwscheme" value="<?php echo $schemes[0]?>"<?php if($_REQUEST["defaultpasswordscheme"] == $scheme) { echo " CHECKED"; }?>>
 <?php	} ?>
           </td>
         </tr>
@@ -151,12 +151,12 @@
 		if(!$_REQUEST["pwscheme"])
 		  $_REQUEST["pwscheme"] = $_REQUEST["defaultpasswordscheme"];
 ?>
-        <input type="hidden" name="pwscheme" value="<?=$_REQUEST["pwscheme"]?>">
+        <input type="hidden" name="pwscheme" value="<?php echo $_REQUEST["pwscheme"]?>">
 <?php	if($lockpassword) { ?>
         <!-- Password scheme -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
-          <td>&nbsp;&nbsp;&nbsp;<b><?=$_REQUEST["pwscheme"]?></b></td>
+          <td class="title"><?php echo $LANG->_('Password encryption scheme')?></td>
+          <td>&nbsp;&nbsp;&nbsp;<b><?php echo $_REQUEST["pwscheme"]?></b></td>
         </tr>
 
 <?php	} ?>
@@ -170,7 +170,7 @@
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
+          <td><?php echo $LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
         </tr>
 <?php }
 // }}}
@@ -182,15 +182,15 @@
 <?php if($krb_scheme or $_SESSION["ADVANCED_MODE"]) {
 			$class = pql_format_table(0);
 ?>
-        <tr class="<?=$class?>">
+        <tr class="<?php echo $class?>">
 <?php	if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
-          <td class="title"><?=$LANG->_('Password')?></td>
+          <td class="title"><?php echo $LANG->_('Password')?></td>
 <?php	} else { ?>
           <td class="title">
-            <?=$LANG->_('Kerberos V Principal')?>
+            <?php echo $LANG->_('Kerberos V Principal')?>
 <?php		if(!empty($schemes[1])) { // We got more than one password scheme... ?>
             <br>(or)<br>
-            <?=$LANG->_('Password')?>
+            <?php echo $LANG->_('Password')?>
 <?php		} ?>
           </td>
 <?php	}
@@ -200,44 +200,44 @@
           <td>
 <?php		if(!eregi('KERBEROS', $_REQUEST["pwscheme"]) and !$_REQUEST["autogenerated_password"]) { ?>
             &nbsp;&nbsp;<input type="checkbox" name="autogenerate">
-            <?=$LANG->_('Autogenerate password')?><br>
+            <?php echo $LANG->_('Autogenerate password')?><br>
 <?php		} ?>
 
 <?php	} ?>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
             <?php if(!empty($error_text["password"])) { echo pql_format_error_span($error_text["password"]); }?>
-            <?=pql_templates_mark_importance($mark); ?>
+            <?php echo pql_templates_mark_importance($mark); ?>
 <?php	if($lockpassword) { ?>
-            <input type="hidden" name="password" value="<?=$_REQUEST["password"]?>">
-            <b><?=$_REQUEST["password"]?></b>
+            <input type="hidden" name="password" value="<?php echo $_REQUEST["password"]?>">
+            <b><?php echo $_REQUEST["password"]?></b>
 <?php	} else { ?>
-            <input type="text" name="password" value="<?=$_REQUEST["password"]?>"<?php if($krb_scheme) { ?> size="30"<?php } ?>>
+            <input type="text" name="password" value="<?php echo $_REQUEST["password"]?>"<?php if($krb_scheme) { ?> size="30"<?php } ?>>
 <?php	}
 
 		if(!$lockpassword and !eregi('KERBEROS', $_REQUEST["pwscheme"])) {
 ?>
-            <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
+            <input type="checkbox" name="crypted"><?php echo $LANG->_('Password is already encrypted')?>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
 <?php	} ?>
           </td>
         </tr>
 
 <?php	if(!empty($_REQUEST["clear_text_password"])) { ?>
-        <tr class="<?=$class?>">
-          <td class="title"><?=$LANG->_('Password that will be set')?></td>
+        <tr class="<?php echo $class?>">
+          <td class="title"><?php echo $LANG->_('Password that will be set')?></td>
           <td>
-            <?=pql_templates_mark_importance($mark); ?>
-            <b><?=$_REQUEST["clear_text_password"]?></b>
+            <?php echo pql_templates_mark_importance($mark); ?>
+            <b><?php echo $_REQUEST["clear_text_password"]?></b>
           </td>
         </tr>
-        <input type="hidden" name="clear_text_password" value="<?=$_REQUEST["clear_text_password"]?>">
+        <input type="hidden" name="clear_text_password" value="<?php echo $_REQUEST["clear_text_password"]?>">
 
 <?php	} elseif($auto_generated_kerberos_pw) { ?>
-        <tr class="<?=$class?>">
-          <td class="title"><?=$LANG->_('Password')?></td>
+        <tr class="<?php echo $class?>">
+          <td class="title"><?php echo $LANG->_('Password')?></td>
           <td>
-            <?=pql_templates_mark_importance($mark); ?>
-            <input type="text" name="clear_text_password" value="<?=$_REQUEST["clear_text_password"]?>">
+            <?php echo pql_templates_mark_importance($mark); ?>
+            <input type="text" name="clear_text_password" value="<?php echo $_REQUEST["clear_text_password"]?>">
           </td>
         </tr>
 
@@ -246,13 +246,13 @@
 <?php	if(!$lockpassword) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=$LANG->_('If you enter an already encrypted password, you must make sure that the password scheme you\'ve choosen is the correct one. Also, choose the checkbox \uPassword is already encrypted\U')?></td>
+          <td><?php echo $LANG->_('If you enter an already encrypted password, you must make sure that the password scheme you\'ve choosen is the correct one. Also, choose the checkbox \uPassword is already encrypted\U')?></td>
         </tr>
 <?php	}
 	  } else { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password')?></td>
-          <td><?=$LANG->_('Will be auto generated')?></td>
+          <td class="title"><?php echo $LANG->_('Password')?></td>
+          <td><?php echo $LANG->_('Will be auto generated')?></td>
         </tr>
         <input type="hidden" name="autogenerate" value="on">
 <?php }
@@ -279,7 +279,7 @@
 		 ($_REQUEST["template"] == "forward")) {
 		// Weee! Just because it would look strange with a table header, but nothing in it!
 ?>
-      <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Account properties')?></th>
 <?php }
 
 	  // {{{ Login shell
@@ -290,14 +290,14 @@
 
         <!-- Loginshell -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Login shell')?></td>
+          <td class="title"><?php echo $LANG->_('Login shell')?></td>
           <td>
             <?php echo pql_format_error_span($error["loginshell"]); ?>
             &nbsp;&nbsp;
             <select name="loginshell">
               <option value="/bin/false"<?php if(empty($_REQUEST["loginshell"])) { ?> SELECTED<? } ?>>/bin/false</option>
 <?php	  foreach($shells as $shell) { ?>
-              <option value="<?=$shell?>"<?php if(@($_REQUEST["loginshell"] == $shell)) { ?> SELECTED<? } ?>><?=$shell?></option>
+              <option value="<?php echo $shell?>"<?php if(@($_REQUEST["loginshell"] == $shell)) { ?> SELECTED<? } ?>><?=$shell?></option>
 <?php	  } ?>
             </select>
           </td>
@@ -315,38 +315,38 @@
 
         <!-- Email address -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Main address')?></td>
+          <td class="title"><?php echo $LANG->_('Main address')?></td>
           <td>
             <?php if(!empty($error_text["mail"])) { echo pql_format_error_span($error_text["mail"]); }?>
 <?php		if($lockemailaddress) { ?>
-            &nbsp;&nbsp;&nbsp;<b><?=$_REQUEST["mail"]?></b>
-            <input type="hidden" name="mail" value="<?=$_REQUEST["mail"]?>">
+            &nbsp;&nbsp;&nbsp;<b><?php echo $_REQUEST["mail"]?></b>
+            <input type="hidden" name="mail" value="<?php echo $_REQUEST["mail"]?>">
 <?php		} else { ?>
-            <?=pql_templates_mark_importance($mark); ?>
-            <input type="text" name="mail" value="<?=$_REQUEST["mail"]?>">
+            <?php echo pql_templates_mark_importance($mark); ?>
+            <input type="text" name="mail" value="<?php echo $_REQUEST["mail"]?>">
 <?php		} ?>
 <?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
-              <option value="<?=$defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
+              <option value="<?php echo $defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
 <?php			foreach($additionaldomainname as $additional) { ?>
-              <option value="<?=$additional?>"><?=pql_maybe_idna_decode($additional)?></option>
+              <option value="<?php echo $additional?>"><?=pql_maybe_idna_decode($additional)?></option>
 <?php   		} ?>
             </select>
 <?php 		} elseif(@$defaultdomain) { ?>
-            <b>@<?=pql_maybe_idna_decode($defaultdomain)?></b>
-            <input type="hidden" name="email_domain" value="<?=$defaultdomain?>">
+            <b>@<?php echo pql_maybe_idna_decode($defaultdomain)?></b>
+            <input type="hidden" name="email_domain" value="<?php echo $defaultdomain?>">
 <?php 		} ?>
           </td>
         </tr>
 
 <?php 		if(is_array($additionaldomainname)) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Alias')?></td>
+          <td class="title"><?php echo $LANG->_('Alias')?></td>
           <td>
             <table>
               <td colspan="2"><input type="checkbox" name="include_additional" checked></td>
               <td>
-                <?=$LANG->_('Include username in additional domains as alias')?>
+                <?php echo $LANG->_('Include username in additional domains as alias')?>
               </td>
             </table>
           </td>
@@ -355,7 +355,7 @@
 
         <tr class="subtitle">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=$LANG->_('The email address and the username will be automatically converted to lowercase')?></td>
+          <td><?php echo $LANG->_('The email address and the username will be automatically converted to lowercase')?></td>
         </tr>
 <?php			} ?>
 
@@ -379,15 +379,15 @@
 				// {{{ More than one subbranch - show a select menu
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Put user in subbranch')?></td>
+          <td class="title"><?php echo $LANG->_('Put user in subbranch')?></td>
           <td>
             &nbsp;&nbsp;
             <select name="subbranch">
-              <option value="<?=pql_format_urls($_REQUEST["domain"])?>"><?=$_REQUEST["domain"]?></option>
+              <option value="<?php echo pql_format_urls($_REQUEST["domain"])?>"><?=$_REQUEST["domain"]?></option>
 <?php
 				for($i=0; $i < count($branches); $i++) {
 ?>
-              <option value="<?=pql_format_urls($branches[$i])?>"><?=$branches[$i]?></option>
+              <option value="<?php echo pql_format_urls($branches[$i])?>"><?=$branches[$i]?></option>
 <?php
 				}
 ?>
@@ -399,14 +399,14 @@
 			} else {
 				// {{{ Only one subbranch
 ?>
-        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?php echo $url["domain"]?>">
 <?php
 // }}}
 			}
 		} else {
 			// We've already specified a subbranch in where to put the user
 ?>
-        <input type="hidden" name="subbranch" value="<?=pql_format_urls($_REQUEST["subbranch"])?>">
+        <input type="hidden" name="subbranch" value="<?php echo pql_format_urls($_REQUEST["subbranch"])?>">
 <?php	}
 	  } else {
 		// We're NOT running in advanced mode
@@ -418,15 +418,15 @@
 			$xyz = $_pql->get_dn($branch, 'objectclass=*', 'BASE');
 			if(is_array($xyz)) {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$branch?>">
+        <input type="hidden" name="subbranch" value="<?php echo $branch?>">
 <?php
 			} else {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?php echo $url["domain"]?>">
 <?php		}
 		} else {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?php echo $url["domain"]?>">
 <?php	}
 	  } // end if ADVANCED mode
 
@@ -436,16 +436,16 @@
 
         <!-- Forwarding address -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Forwarding address')?></td>
+          <td class="title"><?php echo $LANG->_('Forwarding address')?></td>
           <td>
             <?php if(!empty($error_text["forwardingaddress"])) { echo pql_format_error_span($error_text["forwardingaddress"]); }?>
-            <?=pql_templates_mark_importance($mark); ?>
-            <input type="text" name="forwardingaddress" value="<?=$_REQUEST["forwardingaddress"]?>"><?=$LANG->_('Email')?>
+            <?php echo pql_templates_mark_importance($mark); ?>
+            <input type="text" name="forwardingaddress" value="<?php echo $_REQUEST["forwardingaddress"]?>"><?=$LANG->_('Email')?>
           </td>
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('You can add more forwarding address in the user details page')?></td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo $LANG->_('You can add more forwarding address in the user details page')?></td>
         </tr>
 <?php } // template == forward
 // }}}
@@ -456,17 +456,17 @@
 
         <!-- Account status -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Status')?></td>
+          <td class="title"><?php echo $LANG->_('Status')?></td>
           <td>
-            <?=pql_templates_mark_importance($mark); ?>
+            <?php echo pql_templates_mark_importance($mark); ?>
             <select name="account_status">
-              <option value="active" SELECTED><?=$LANG->_('Active')?></option>
+              <option value="active" SELECTED><?php echo $LANG->_('Active')?></option>
 <?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
-              <option value="nopop"><?=$LANG->_('POP locked')?></option>
+              <option value="nopop"><?php echo $LANG->_('POP locked')?></option>
 <?php } else { ?>
-              <option value="noaccess"><?=$LANG->_('Account locked')?></option>
+              <option value="noaccess"><?php echo $LANG->_('Account locked')?></option>
 <?php } ?>
-              <option value="disabled"><?=$LANG->_('Disabled')?></option>
+              <option value="disabled"><?php echo $LANG->_('Disabled')?></option>
             </select>
           </td>
         </tr>
@@ -485,7 +485,7 @@
         <!-- deliveryMode -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
-          <td><input type="checkbox" name="nolocal" CHECKED><?=$LANG->_('No local delivery allowed')?></td>
+          <td><input type="checkbox" name="nolocal" CHECKED><?php echo $LANG->_('No local delivery allowed')?></td>
         </tr>
 <?php 	  } else { ?>
           <input type="hidden" name="nolocal" value="1">
@@ -522,10 +522,10 @@
 	  } // template == forward
 ?>
     <input type="hidden" name="dosave"                 id="dosave">
-    <input type="hidden" name="rootdn"                 value="<?=$url["rootdn"]?>">
-    <input type="hidden" name="domain"                 value="<?=$url["domain"]?>">
-    <input type="hidden" name="template"               value="<?=$_REQUEST["template"]?>">
-    <input type="hidden" name="autogenerated_password" value="<?=$_REQUEST["autogenerated_password"]?>">
+    <input type="hidden" name="rootdn"                 value="<?php echo $url["rootdn"]?>">
+    <input type="hidden" name="domain"                 value="<?php echo $url["domain"]?>">
+    <input type="hidden" name="template"               value="<?php echo $_REQUEST["template"]?>">
+    <input type="hidden" name="autogenerated_password" value="<?php echo $_REQUEST["autogenerated_password"]?>">
 
 <?php
 // }}}
@@ -535,7 +535,7 @@
 <?php if($_SESSION["ADVANCED_MODE"] == 1) { ?>
     <input type="submit" value="--&gt;&gt;">
 <?php } else { ?>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
 <?php } ?>
   </form>
 

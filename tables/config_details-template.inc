@@ -21,10 +21,10 @@ $templates = pql_get_templates();
       <!-- -------------------- -->
 <?php 		$class=pql_format_table(0); ?>
       <tr>
-        <td class="title" colspan="2"><h4><?=$templates[$i]["short"]?></h4> (<?=pql_complete_constant($LANG->_('User template configuration - %name%'),
+        <td class="title" colspan="2"><h4><?php echo $templates[$i]["short"]?></h4> (<?=pql_complete_constant($LANG->_('User template configuration - %name%'),
 																									  array('name' => $templates[$i]["name"]))?>)</td>
         <td class="title">
-          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT")?>&view=template"><?php if($templates[$i]["name"] != 'internal_group') { ?><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"><?php } ?></a>
+          <a href="config_edit_attribute.php?rootdn=<?php echo $dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT")?>&view=template"><?php if($templates[$i]["name"] != 'internal_group') { ?><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"><?php } ?></a>
         </td>
       </tr>
 
@@ -89,19 +89,19 @@ $templates = pql_get_templates();
       <!-- -------------------- -->
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Generate uid and gid numbers')?></td>
-        <td class="<?=$class?>"><?php if($templates[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
-        <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")?>&view=template&toggle=1"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")?>"></a>
+        <td class="title"><?php echo $LANG->_('Generate uid and gid numbers')?></td>
+        <td class="<?php echo $class?>"><?php if($templates[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
+        <td class="<?php echo $class?>">
+          <a href="config_edit_attribute.php?rootdn=<?php echo $dn?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")?>&view=template&toggle=1"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")?>"></a>
         </td>
       </tr>
 
       <tr>
         <td class="title"></td>
-        <td class="<?=$class?>">
-          <a href="config_template_del.php?rootdn=<?=$dn?>"><?=pql_complete_constant($LANG->_('Delete template %name%'), array('name' => $templates[$i]["name"]))?></a>
+        <td class="<?php echo $class?>">
+          <a href="config_template_del.php?rootdn=<?php echo $dn?>"><?=pql_complete_constant($LANG->_('Delete template %name%'), array('name' => $templates[$i]["name"]))?></a>
         </td>
-        <td class="<?=$class?>"></td>
+        <td class="<?php echo $class?>"></td>
       </tr>
     </th>
 <?php		}
@@ -115,19 +115,19 @@ $templates = pql_get_templates();
     <th>
       <tr>
         <td class="title"></td>
-        <td class="<?=$class?>">
-          <a href="config_template_add.php?rootdn=<?=$_SESSION["BASE_DN"][0]?>"><?=$LANG->_('Add template')?></a>
+        <td class="<?php echo $class?>">
+          <a href="config_template_add.php?rootdn=<?php echo $_SESSION["BASE_DN"][0]?>"><?=$LANG->_('Add template')?></a>
         </td>
-        <td class="<?=$class?>"></td>
+        <td class="<?php echo $class?>"></td>
       </tr>
 <?php	if(!empty($oldformat)) { ?>
 
       <tr>
         <td class="title"></td>
-        <td class="<?=$class?>">
-          <a href="scripts/update_templates.php?rootdn=<?=$_SESSION["BASE_DN"][0]?>"><?=$LANG->_('Update templates')?></a>
+        <td class="<?php echo $class?>">
+          <a href="scripts/update_templates.php?rootdn=<?php echo $_SESSION["BASE_DN"][0]?>"><?=$LANG->_('Update templates')?></a>
         </td>
-        <td class="<?=$class?>"></td>
+        <td class="<?php echo $class?>"></td>
       </tr>
 <?php	} ?>
     </th>
@@ -136,9 +136,9 @@ $templates = pql_get_templates();
 ?>
     <th>
       <tr>
-        <td class="title"><?=$LANG->_('No templates defined')?></td>
-        <td class="<?=$class?>">
-          <a href="config_template_add.php?rootdn=<?=$_SESSION["BASE_DN"][0]?>"><?=$LANG->_('Add template')?></a>
+        <td class="title"><?php echo $LANG->_('No templates defined')?></td>
+        <td class="<?php echo $class?>">
+          <a href="config_template_add.php?rootdn=<?php echo $_SESSION["BASE_DN"][0]?>"><?=$LANG->_('Add template')?></a>
         </td>
       </tr>
     </th>
@@ -150,7 +150,7 @@ $templates = pql_get_templates();
     <th>
       <tr>
         <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-        <td class="<?=$class?>"><?=pql_complete_constant($LANG->_("The old ways for phpQLAdmin to do things with users was to have some information in the root dn (\b%rootdn%\B in your case). But the new way is to keep that information in specific objects below the '\b%templates%,%rootdn%\B' branch (created if it doesn't exists already).<br>I see that you still have information in your root dn. To make phpQLAdmin work at it's best, please update your database.<br>I can't let you change stuff that's retreived from %rootdn%, so if you'd like to change any of that, please update your database."), array('templates' => pql_get_define("PQL_CONF_SUBTREE_TEMPLATES"), 'rootdn' => $_SESSION["BASE_DN"][0]))?></td>
+        <td class="<?php echo $class?>"><?=pql_complete_constant($LANG->_("The old ways for phpQLAdmin to do things with users was to have some information in the root dn (\b%rootdn%\B in your case). But the new way is to keep that information in specific objects below the '\b%templates%,%rootdn%\B' branch (created if it doesn't exists already).<br>I see that you still have information in your root dn. To make phpQLAdmin work at it's best, please update your database.<br>I can't let you change stuff that's retreived from %rootdn%, so if you'd like to change any of that, please update your database."), array('templates' => pql_get_define("PQL_CONF_SUBTREE_TEMPLATES"), 'rootdn' => $_SESSION["BASE_DN"][0]))?></td>
       </tr>
     </th>
   </table>

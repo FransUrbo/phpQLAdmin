@@ -61,25 +61,25 @@ function pql_sudo_list_expand($role, $alist, $attribute, $extraURL) {
   $url = $_SERVER['REQUEST_URI'];
   if(is_array($alist)) {
 ?>
-  <div id='<?=$role.$attribute?>Parent' class='parent' <?=$mouse["over"]." ".$mouse["out"]?>>
+  <div id='<?php echo $role.$attribute?>Parent' class='parent' <?=$mouse["over"]." ".$mouse["out"]?>>
     <nobr>
-      <a class="item" onClick="if (capable) {expandBase('<?=$role.$attribute?>', true); return false;}">
+      <a class="item" onClick="if (capable) {expandBase('<?php echo $role.$attribute?>', true); return false;}">
         <img name='imEx' src='images/plus.png' border='0' alt='+' width='9' height='9' id='<?php echo $role.$attribute; ?>Img'>
       </a>
 
-      <a class="item" onClick="if (capable) {expandBase('<?=$role.$attribute?>', false)}">
-        <span class="heada"><?=$alist[0]?></span>
+      <a class="item" onClick="if (capable) {expandBase('<?php echo $role.$attribute?>', false)}">
+        <span class="heada"><?php echo $alist[0]?></span>
       </a>
     </nobr>
   </div>
 
-  <div id='<?=$role.$attribute?>Child' class='child' style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+  <div id='<?php echo $role.$attribute?>Child' class='child' style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
 <?php
 	for($w = 1; $w < count($alist); $w++) {
 	  $alt_msg = pql_complete_constant($LANG->_('Delete %who% from Sudo role'), array('who' => $alist[$w]));
 ?>
     <nobr>
-      <a class="tblItem" title="<?=$alist[$w]?>" href="<?=$_SERVER['REQUEST_URI'].$extraURL?>" target="pqlmain"><?=$alist[$w]?></a>
+      <a class="tblItem" title="<?php echo $alist[$w]?>" href="<?=$_SERVER['REQUEST_URI'].$extraURL?>" target="pqlmain"><?=$alist[$w]?></a>
     </nobr>
 <?php
 	  //print "&attribute=" . $attribute . "&" . $attribute . "=" . $alist[$w] . "\">";
@@ -90,7 +90,7 @@ function pql_sudo_list_expand($role, $alist, $attribute, $extraURL) {
       $alt_msg = pql_complete_constant($LANG->_('Delete %who% from Sudo role'), array('who' => $alist));
 ?>
     <nobr>
-      <a class="tblItem" title="<?=$alist?>" href="<?=$_SERVER['REQUEST_URI'].$extraURL?>" target="pqlmain"><?=$alist?></a>
+      <a class="tblItem" title="<?php echo $alist?>" href="<?=$_SERVER['REQUEST_URI'].$extraURL?>" target="pqlmain"><?=$alist?></a>
     </nobr>
 <?php
 	  //print "\t\t" . $alist;

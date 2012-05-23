@@ -1,6 +1,6 @@
   <!-- Access list -->
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left"><?=$LANG->_('User access')?>
+    <th colspan="2" align="left"><?php echo $LANG->_('User access')?>
 <?php
 // {{{ Retreive values
 $super_admin = 0;
@@ -137,19 +137,19 @@ if(!$super_admin) {
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
   $class=pql_format_table(0);
 ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Super administrator')?></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Super administrator')?></td>
 <?php	if($super_admin) { ?>
-        <td><?=$LANG->_('Yes')?></td>
+        <td><?php echo $LANG->_('Yes')?></td>
         <td>
-          <a href="domain_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
+          <a href="domain_edit_attributes.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
             <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to create domains below %domain%'), array('domain' => $_GET["rootdn"])); ?>">
           </a>
         </td>
 <?php } else { ?>
-        <td><?=$LANG->_('No')?></td>
+        <td><?php echo $LANG->_('No')?></td>
         <td>
-          <a href="domain_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain' => $_GET["domain"])); ?>">
+          <a href="domain_edit_attributes.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain' => $_GET["domain"])); ?>">
           </a>
         </td>
 <?php   } ?>
@@ -161,13 +161,13 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 
 // {{{ Are the user allowed to administrate mailserver information?
 ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Administrate global mailservers')?></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Administrate global mailservers')?></td>
 <?php if($controlsadministrator) { ?>
-        <td><?=$LANG->_('Yes')?></td>
+        <td><?php echo $LANG->_('Yes')?></td>
         <td>
 <?php	if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-          <a href="domain_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
+          <a href="domain_edit_attributes.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
             <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to manage global mailservers'), array('domain' => $_GET["rootdn"])); ?>">
           </a>
 <?php	} ?>
@@ -175,14 +175,14 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 <?php } else {
 		if($super_admin) {
 ?>
-        <td><?=$LANG->_('Yes (user is superadmin)')?></td>
+        <td><?php echo $LANG->_('Yes (user is superadmin)')?></td>
 <?php	} else {
 ?>
-        <td><?=$LANG->_('No')?></td>
+        <td><?php echo $LANG->_('No')?></td>
 <?php	} ?>
         <td>
 <?php	if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-          <a href="domain_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain' => $_GET["domain"])); ?>">
+          <a href="domain_edit_attributes.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain' => $_GET["domain"])); ?>">
           </a>
 <?php	} ?>
         </td>
@@ -194,13 +194,13 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 
 // {{{ Are the user allowed to administrate webserver information?
 ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Administrate global webservers')?></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Administrate global webservers')?></td>
 <?php if($webserveradministrator) { ?>
-        <td><?=$LANG->_('Yes')?></td>
+        <td><?php echo $LANG->_('Yes')?></td>
         <td>
 <?php	if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-          <a href="domain_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")?>=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
+          <a href="domain_edit_attributes.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")?>=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
             <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to manage global webservers'), array('domain' => $_GET["rootdn"])); ?>">
           </a>
 <?php	} ?>
@@ -208,14 +208,14 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 <?php } else {
 		if($super_admin) {
 ?>
-        <td><?=$LANG->_('Yes (user is superadmin)')?></td>
+        <td><?php echo $LANG->_('Yes (user is superadmin)')?></td>
 <?php	} else {
 ?>
-        <td><?=$LANG->_('No')?></td>
+        <td><?php echo $LANG->_('No')?></td>
 <?php	} ?>
         <td>
 <?php	if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-          <a href="domain_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")?>=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to manage global webservers'), array('domain' => $_GET["domain"])); ?>">
+          <a href="domain_edit_attributes.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&branchdn=superadmin&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")?>=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to manage global webservers'), array('domain' => $_GET["domain"])); ?>">
           </a>
 <?php	} ?>
         </td>

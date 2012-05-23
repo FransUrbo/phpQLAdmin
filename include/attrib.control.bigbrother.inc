@@ -41,17 +41,17 @@ function bigbrother_print_view($host) {
 	bigbrother_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left">bigbrother (<?=$LANG->_('Global mail forwarding/surveillance')?>)
+    <th colspan="2" align="left">bigbrother (<?php echo $LANG->_('Global mail forwarding/surveillance')?>)
       <tr class="title">
-        <td><?=$LANG->_('Mail sent to/from')?></td>
-        <td><?=$LANG->_('Copy to')?></td>
+        <td><?php echo $LANG->_('Mail sent to/from')?></td>
+        <td><?php echo $LANG->_('Copy to')?></td>
         <td></td>
       </tr>
 <?php
 	if(!@is_array($_REQUEST["bigbrother"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td colspan="3"><?=$LANG->_('Not set')?></td>
+        <td colspan="3"><?php echo $LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
@@ -59,10 +59,10 @@ function bigbrother_print_view($host) {
 			$address = explode(':', $addresses);
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$address[0]?></td>
-        <td><?=$address[1]?></td>
+        <td><?php echo $address[0]?></td>
+        <td><?php echo $address[1]?></td>
         <td align="right">
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>&type=del&submit=1&<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>=<?=urldecode($addresses)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Remove address')?>"></a>
+          <a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>&type=del&submit=1&<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>=<?=urldecode($addresses)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Remove address')?>"></a>
         </td>
       </tr>
 <?php
@@ -70,7 +70,7 @@ function bigbrother_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td colspan="3"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add address')?></a></td>
+        <td colspan="3"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add address')?></a></td>
       </tr>
     </th>
   </table>
@@ -83,16 +83,16 @@ function bigbrother_print_view($host) {
 function bigbrother_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["bigbrother"]); $i++) { ?>
-    <input type="hidden" name="bigbrother[<?=$i?>]" value="<?=$_REQUEST["bigbrother"][$i]?>">
+    <input type="hidden" name="bigbrother[<?php echo $i?>]" value="<?=$_REQUEST["bigbrother"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="2" align="left">bigbrother (<?=$LANG->_('Global mail forwarding/surveillance')?>)</th>
+      <th colspan="2" align="left">bigbrother (<?php echo $LANG->_('Global mail forwarding/surveillance')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('Mail sent to/from')?></td>
-          <td><?=$LANG->_('Copy to')?></td>
+          <td><?php echo $LANG->_('Mail sent to/from')?></td>
+          <td><?php echo $LANG->_('Copy to')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -104,11 +104,11 @@ function bigbrother_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

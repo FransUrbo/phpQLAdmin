@@ -59,15 +59,15 @@ if (empty($_REQUEST['total_keys'])) { ?>
   Before saving the translation, make sure the directory 'translations'
   exists in the phpQLAdmin root and that it''s writable by the webserver.
   <p>  
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="POST">
     <input type="hidden" name="mode" value="select">
     <select class="field_listbox" name="user_lang" size="1" onchange="this.form.submit()">
 <?php $supp = $LANG->get_supported();
 	  while(list($k, $v) = each($supp)) {
 ?>
-      <option value="<?=$k?>"<?php if($user_lang == $k) { echo " SELECTED"; } ?>><?=$v?></option>
+      <option value="<?php echo $k?>"<?php if($user_lang == $k) { echo " SELECTED"; } ?>><?=$v?></option>
 <?php  } ?>
-      <option value="new"<?php if($user_lang == 'new') { echo " SELECTED"; } ?>><?=$LANG->_('New')?></option>
+      <option value="new"<?php if($user_lang == 'new') { echo " SELECTED"; } ?>><?php echo $LANG->_('New')?></option>
     </select>
 <?php
 if($user_lang != 'new') {
@@ -93,16 +93,16 @@ if($user_lang != 'new') {
 <?php
 } else {
 ?>
-  <?=$LANG->_('Language name')?>:
+  <?php echo $LANG->_('Language name')?>:
   <input type="text" name="user_lang">
   <br>
 <?php
 }
 ?>
 
-<form action="<?=$_SERVER["PHP_SELF"]?>" method=POST>
+<form action="<?php echo $_SERVER["PHP_SELF"]?>" method=POST>
   <input type="hidden" name="mode" value="save">
-  <input type="hidden" name="lang" value="<?=$user_lang?>">
+  <input type="hidden" name="lang" value="<?php echo $user_lang?>">
 
   <textarea rows=10 cols=80 name="toptext">
 <?php if($user_lang == 'new') { ?>
@@ -205,7 +205,7 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 ?>
   </table>
 
-  <input type="hidden" name="total_keys" value="<?=$count-1?>">
+  <input type="hidden" name="total_keys" value="<?php echo $count-1?>">
   <br>
   <input type="submit" value="Save Translation"><p>
 </form>

@@ -1,26 +1,26 @@
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Default domain values')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Default domain values')?>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Branch DN')?></td>
-        <td><?=$_REQUEST["domain"]?></td>
+        <td class="title"><?php echo $LANG->_('Branch DN')?></td>
+        <td><?php echo $_REQUEST["domain"]?></td>
         <!-- TODO: Should we be able to rename the RDN? -->
         <td></td>
       </tr>
   
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Default domain name')?></td>
+        <td class="title"><?php echo $LANG->_('Default domain name')?></td>
         <td><?php if($defaultdomain){echo pql_maybe_idna_decode($defaultdomain);}else{echo $LANG->_('Not set');} ?></td>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-        <td><?=$defaultdomain_link?></td>
+        <td><?php echo $defaultdomain_link?></td>
 <?php } else { ?>
         <td></td>
 <?php } ?>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Additional domain name')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?php echo $LANG->_('Additional domain name')?></td>
 <?php if($additionaldomainname) {
 		if(!is_array($additionaldomainname)) {
 		  $additionaldomainname = array($additionaldomainname);
@@ -35,11 +35,11 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
 <?php		} ?>
-        <td><?=$additional?></td>
+        <td><?php echo $additional?></td>
 <?php		if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>=<?=$additional?>&submit=3&action=modify&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"), 'what' => $domainname)); ?>"></a>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&delval=<?=$additional?>&submit=4&action=delete&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete additional domain name')?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>=<?=$additional?>&submit=3&action=modify&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"), 'what' => $domainname)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&delval=<?=$additional?>&submit=4&action=delete&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete additional domain name')?>" border="0"></a>
         </td>
 <?php		} else { ?>
         <td></td>
@@ -51,30 +51,30 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
         </td>
       </tr>
 <?php } else { ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
         </td>
 <?php } ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Base home directory for users')?></td>
+        <td class="title"><?php echo $LANG->_('Base home directory for users')?></td>
         <td><?php if($basehomedir){echo $basehomedir;}else{echo $LANG->_('Not set');} ?></td>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-        <td><?=$basehomedir_link?></td>
+        <td><?php echo $basehomedir_link?></td>
 <?php } else { ?>
         <td></td>
 <?php } ?>
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Base mail directory for users')?></td>
+        <td class="title"><?php echo $LANG->_('Base mail directory for users')?></td>
         <td><?php if($basemaildir){echo $basemaildir;}else{echo $LANG->_('Not set');} ?></td>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-        <td><?=$basemaildir_link?></td>
+        <td><?php echo $basemaildir_link?></td>
 <?php } else { ?>
         <td></td>
 <?php } ?>
@@ -82,23 +82,23 @@
   
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Maximum allowed users in branch')?></td>
+        <td class="title"><?php echo $LANG->_('Maximum allowed users in branch')?></td>
         <td><?php if($maximumdomainusers){echo $maximumdomainusers;}else{echo $LANG->_('Unlimited');} ?></td>
-        <td><?=$maximumdomainusers_link?></td>
+        <td><?php echo $maximumdomainusers_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Maximum allowed mailinglists in branch')?></td>
+        <td class="title"><?php echo $LANG->_('Maximum allowed mailinglists in branch')?></td>
         <td><?php if($maximummailinglists){echo $maximummailinglists;}else{echo $LANG->_('Unlimited');} ?></td>
-        <td><?=$maximummailinglists_link?></td>
+        <td><?php echo $maximummailinglists_link?></td>
       </tr>
 <?php } ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Default quota')?></td>
+        <td class="title"><?php echo $LANG->_('Default quota')?></td>
         <td><?php if($basequota){echo $basequota;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-        <td><?=$basequota_link?></td>
+        <td><?php echo $basequota_link?></td>
 <?php } else { ?>
         <td></td>
 <?php } ?>
@@ -106,86 +106,86 @@
 
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Default password scheme')?></td>
+        <td class="title"><?php echo $LANG->_('Default password scheme')?></td>
         <td><?php if($defaultpasswordscheme){echo $defaultpasswordscheme;}else{echo $LANG->_('No default');} ?></td>
-        <td><?=$defaultpasswordscheme_link?></td>
+        <td><?php echo $defaultpasswordscheme_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Default account template')?></td>
+        <td class="title"><?php echo $LANG->_('Default account template')?></td>
         <td><?php if($defaultaccounttype) {
 		  // Retreive the short name of the account type (template name)
 		  require($_SESSION["path"]."/include/pql_templates.inc");
 		  $template = pql_get_template($defaultaccounttype);
 		  echo $template["short"];}else{echo $LANG->_('No default');} ?></td>
-        <td><?=$defaultaccounttype_link?></td>
+        <td><?php echo $defaultaccounttype_link?></td>
       </tr>
 
 <?php	if($defaultaccounttype) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock account type')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?php echo $LANG->_('Lock account type')?></td>
         <td><?php if($lockaccounttype){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$lockaccounttype_link?></td>
+        <td><?php echo $lockaccounttype_link?></td>
       </tr>
 
 <?php	} ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))); ?></td>
         <td><?php if($autocreateusername){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$autocreateusername_link?></td>
+        <td><?php echo $autocreateusername_link?></td>
       </tr>
 
 <?php	if($autocreateusername) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock username field')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?php echo $LANG->_('Lock username field')?></td>
         <td><?php if($lockusername){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$lockusername_link?></td>
+        <td><?php echo $lockusername_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Username prefix')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?php echo $LANG->_('Username prefix')?></td>
         <td><?php if($usernameprefix){echo $usernameprefix;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
-        <td><?=$usernameprefix_link?></td>
+        <td><?php echo $usernameprefix_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Length of user suffix')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?php echo $LANG->_('Length of user suffix')?></td>
         <td><?php if($usernameprefixlength){echo $usernameprefixlength;}else{echo "4 (<i>".$LANG->_('Default')."</i>)";} ?></td>
-        <td><?=$usernameprefixlength_link?></td>
+        <td><?php echo $usernameprefixlength_link?></td>
       </tr>
 
 <?php	} ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))); ?></td>
         <td><?php if($autocreatemailaddress){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$autocreatemailaddress_link?></td>
+        <td><?php echo $autocreatemailaddress_link?></td>
       </tr>
 
 <?php   if($autocreatemailaddress) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock email address field')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?php echo $LANG->_('Lock email address field')?></td>
         <td><?php if($lockemailaddress){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$lockemailaddress_link?></td>
+        <td><?php echo $lockemailaddress_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock domain address')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?php echo $LANG->_('Lock domain address')?></td>
         <td><?php if($lockdomainaddress){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$lockdomainaddress_link?></td>
+        <td><?php echo $lockdomainaddress_link?></td>
       </tr>
 
 <?php	} ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('password'))); ?></td>
         <td><?php if($autocreatepassword){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$autocreatepassword_link?></td>
+        <td><?php echo $autocreatepassword_link?></td>
       </tr>
 
 <?php   if($autocreatepassword) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock password field')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?php echo $LANG->_('Lock password field')?></td>
         <td><?php if($lockpassword){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$lockpassword_link?></td>
+        <td><?php echo $lockpassword_link?></td>
       </tr>
 
 <?php	} ?>
@@ -195,16 +195,16 @@
 ?>
       <!-- -------------------- --!>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('EZMLM Virtual User')?></td>
+        <td class="title"><?php echo $LANG->_('EZMLM Virtual User')?></td>
         <td><?php if($ezmlmvirtualuser) { echo $ezmlmvirtualuser; } else { echo "<i>Not set</i>"; }?>&nbsp;</td>
-        <td><?=$ezmlmvirtualuser_link?></td>
+        <td><?php echo $ezmlmvirtualuser_link?></td>
       </tr>
 
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Start In My Account')?></td>
+        <td class="title"><?php echo $LANG->_('Start In My Account')?></td>
         <td><?php if($startinmyaccount){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
-        <td><?=$startinmyaccount_link?></td>
+        <td><?php echo $startinmyaccount_link?></td>
       </tr>
 
     </th>

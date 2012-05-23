@@ -34,9 +34,9 @@ function attribute_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Add user as webserver admin')?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Add user as webserver admin')?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('User DN')?></td>
+          <td class="title"><?php echo $LANG->_('User DN')?></td>
           <td>
             <?php echo pql_format_error_span($error_text[$_REQUEST[$attrib]]) . "\n"; ?>
 <?php
@@ -101,7 +101,7 @@ function attribute_print_form() {
   }
 ?>
 
-            <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
+            <input type="hidden" name="<?php echo $attrib?>" value="<?=$i?>">
 <?php
   if(isset($domains)) {
 	require("./left-trailer.html");
@@ -111,17 +111,17 @@ function attribute_print_form() {
       </th>
     </table>
 
-    <input type="hidden" name="host"          value="<?=$_REQUEST["host"]?>">
-    <input type="hidden" name="server"        value="<?=$_REQUEST["server"]?>">
-    <input type="hidden" name="virthost"      value="<?=$_REQUEST["virthost"]?>">
-    <input type="hidden" name="ref"           value="<?=$_REQUEST["ref"]?>">
+    <input type="hidden" name="host"          value="<?php echo $_REQUEST["host"]?>">
+    <input type="hidden" name="server"        value="<?php echo $_REQUEST["server"]?>">
+    <input type="hidden" name="virthost"      value="<?php echo $_REQUEST["virthost"]?>">
+    <input type="hidden" name="ref"           value="<?php echo $_REQUEST["ref"]?>">
 
-    <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="action"        value="<?=$action?>">
-    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"        value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="action"        value="<?php echo $action?>">
+    <input type="hidden" name="view"          value="<?php echo $_REQUEST["view"]?>">
     <input type="hidden" name="submit"        value="yes">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

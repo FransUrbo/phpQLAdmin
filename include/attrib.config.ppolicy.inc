@@ -30,22 +30,22 @@ function attribute_check_ppolicy() {
 function attribute_print_form_ppolicy($error_text) {
   global $LANG, $table_columns;
 ?>
-  <span class="title1"><?=$LANG->_('Create a password policy')?></span>
+  <span class="title1"><?php echo $LANG->_('Create a password policy')?></span>
 
   <br><br>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Add password policy'); ?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Add password policy'); ?>
 <?php foreach($table_columns as $attrib => $text) {
 	  $link = 'config_edit_attribute.php?attrib='.$attrib;
 	  $class=pql_format_table(0);
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$text?></td>
+        <td class="title"><?php echo $text?></td>
         <td>
-          <?=pql_format_error_span($error_text[$attrib]); ?>
+          <?php echo pql_format_error_span($error_text[$attrib]); ?>
 <?php	if(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_NAME"))) or
 		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_DESC"))) or
 		   ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_CHECK_MODULE"))) or
@@ -64,9 +64,9 @@ function attribute_print_form_ppolicy($error_text) {
           &nbsp;&nbsp;
 <?php		} ?>
 <?php		if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MINLEN"))) { ?>
-          <input type="text" name="<?=$attrib?>" size="7" value="<?=$_REQUEST[$attrib]?>">&nbsp;<?=$LANG->_('characters')?>
+          <input type="text" name="<?php echo $attrib?>" size="7" value="<?=$_REQUEST[$attrib]?>">&nbsp;<?=$LANG->_('characters')?>
 <?php		} else { ?>
-          <input type="text" name="<?=$attrib?>" size="20" value="<?=$_REQUEST[$attrib]?>">
+          <input type="text" name="<?php echo $attrib?>" size="20" value="<?=$_REQUEST[$attrib]?>">
 <?php		} ?>
 <?php	} elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MINAGE"))) or
 				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MAXAGE"))) or
@@ -76,15 +76,15 @@ function attribute_print_form_ppolicy($error_text) {
 			// Seconds value
 ?>
           &nbsp;&nbsp;
-          <input type="text" name="<?=$attrib?>" size="9" value="<?=$_REQUEST[$attrib]?>">
-          <select name="<?=$attrib?>_time">
-            <option value="seconds" SELECTED><?=$LANG->_('Seconds')?></option>
-            <option value="minutes"><?=$LANG->_('Minutes')?></option>
-            <option value="hours"><?=$LANG->_('Hours')?></option>
-            <option value="days"><?=$LANG->_('Days')?></option>
-            <option value="weeks"><?=$LANG->_('Weeks')?></option>
-            <option value="months"><?=$LANG->_('Months')?></option>
-            <option value="years"><?=$LANG->_('Years')?></option>
+          <input type="text" name="<?php echo $attrib?>" size="9" value="<?=$_REQUEST[$attrib]?>">
+          <select name="<?php echo $attrib?>_time">
+            <option value="seconds" SELECTED><?php echo $LANG->_('Seconds')?></option>
+            <option value="minutes"><?php echo $LANG->_('Minutes')?></option>
+            <option value="hours"><?php echo $LANG->_('Hours')?></option>
+            <option value="days"><?php echo $LANG->_('Days')?></option>
+            <option value="weeks"><?php echo $LANG->_('Weeks')?></option>
+            <option value="months"><?php echo $LANG->_('Months')?></option>
+            <option value="years"><?php echo $LANG->_('Years')?></option>
           </select>
 <?php	} elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_LOCKOUT"))) or
 				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_MUST_CHANGE"))) or
@@ -93,20 +93,20 @@ function attribute_print_form_ppolicy($error_text) {
 			// Boolean value
 ?>
           &nbsp;&nbsp;
-          <select name="<?=$attrib?>">
-            <option value="TRUE" SELECTED><?=$LANG->_('TRUE')?></option>
-            <option value="FALSE"><?=$LANG->_('FALSE')?></option>
+          <select name="<?php echo $attrib?>">
+            <option value="TRUE" SELECTED><?php echo $LANG->_('TRUE')?></option>
+            <option value="FALSE"><?php echo $LANG->_('FALSE')?></option>
           </select>
 <?php	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_CHKQUAL"))) {
 			// enum(0,1,2) value
 ?>
-          &nbsp;<input type="radio" name="<?=$attrib?>" value="0"><?=$LANG->_('No syntax checking')?><br>
-          &nbsp;<input type="radio" name="<?=$attrib?>" value="1"><?=$LANG->_('Server checks syntax - return true if failed to check password')?><br>
-          &nbsp;<input type="radio" name="<?=$attrib?>" value="2" CHECKED><?=$LANG->_('Server checks syntax - return false if failed to check password')?><br>
+          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="0"><?=$LANG->_('No syntax checking')?><br>
+          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="1"><?=$LANG->_('Server checks syntax - return true if failed to check password')?><br>
+          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="2" CHECKED><?=$LANG->_('Server checks syntax - return false if failed to check password')?><br>
 <?php	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_PPOLICY_ATTR"))) { ?>
           <font color="red">*</font>
           userPassword (harcoded)
-          <input type="hidden" name="<?=$attrib?>" value="userPassword">
+          <input type="hidden" name="<?php echo $attrib?>" value="userPassword">
 <?php	} ?>
         </td>
       </tr>
@@ -116,7 +116,7 @@ function attribute_print_form_ppolicy($error_text) {
 
     <input type="hidden" name="submit" value="submit">
     <input type="hidden" name="action" value="add">
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
     <br>
     <input type="submit" value="Create">
   </form>

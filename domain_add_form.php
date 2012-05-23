@@ -17,29 +17,29 @@ $server = urldecode($server[0]);
 
   <form action="domain_add.php" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Create domain')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Create domain')?></th>
 <?php if($_SESSION["BASE_DN"][1]) {
          // We have more than one Root DN (namingContexts), show
          // a drop down with every Root DN...
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Branch base')?></td>
+          <td class="title"><?php echo $LANG->_('Branch base')?></td>
           <td>
             <select name="rootdn">
 <?php    foreach($_SESSION["BASE_DN"] as $dn)  { ?>
-              <option value="<?=$dn?>"><?=$dn?></option>
+              <option value="<?php echo $dn?>"><?=$dn?></option>
 <?php    } ?>
             </select>
           </td>
         </tr>
 <?php } else { ?>
-        <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+        <input type="hidden" name="rootdn" value="<?php echo $_REQUEST["rootdn"]?>">
 <?php } ?>
 
         <tr>
-          <td class="title"><?=$LANG->_('Branch name')?></td>
+          <td class="title"><?php echo $LANG->_('Branch name')?></td>
           <td>
-            <input type="text" name="domain" value="<?=$_REQUEST["domain"]?>" size="30">
+            <input type="text" name="domain" value="<?php echo $_REQUEST["domain"]?>" size="30">
 <?php if(! $_SESSION["BASE_DN"][1]) { ?>
             <table cellspacing="0" cellpadding="3" border="0">
               <th>
@@ -67,7 +67,7 @@ $server = urldecode($server[0]);
         </tr>
 
         <tr>
-          <td class="title"><?=$LANG->_('Default domain name')?></td>
+          <td class="title"><?php echo $LANG->_('Default domain name')?></td>
           <td>
             <input type="text" name="defaultdomain" size="30">
           </td>
@@ -75,7 +75,7 @@ $server = urldecode($server[0]);
 
 <?php if(pql_get_define("PQL_CONF_BIND9_USE")) { ?>
         <tr>
-          <td class="title"><?=$LANG->_('Create DNS template')?></td>
+          <td class="title"><?php echo $LANG->_('Create DNS template')?></td>
           <td>
             <input type="checkbox" name="template" CHECKED> Yes
           </td>

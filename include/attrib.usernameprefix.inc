@@ -25,21 +25,21 @@ function attribute_print_form($type = "modify") {
 	if(empty($_REQUEST[$attrib]) and ($attrib == 'usernameprefixlength'))
 	  $_REQUEST[$attrib] = 4;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Username prefix to use when automaticly creating username in domain %domain%'), array('domain' => urldecode(pql_format_urls($_REQUEST["orgname"])))); ?></th>
         <tr class="<?php pql_format_table(); ?>">
 <?php if($attrib == 'usernameprefix') { ?>
-          <td class="title"><?=$LANG->_('Username prefix')?></td>
+          <td class="title"><?php echo $LANG->_('Username prefix')?></td>
 <?php } elseif($attrib == 'usernameprefixlength') { ?>
-          <td class="title"><?=$LANG->_('Length of suffix')?></td>
+          <td class="title"><?php echo $LANG->_('Length of suffix')?></td>
 <?php } ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
 <?php if($attrib == 'usernameprefix') { ?>
-            <input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50">
+            <input type="text" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50">
 <?php } elseif($attrib == 'usernameprefixlength') { ?>
-            <input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="10">
+            <input type="text" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>" size="10">
 <?php } ?>
           </td>
         </tr>
@@ -50,9 +50,9 @@ function attribute_print_form($type = "modify") {
             <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
             <table>
 <?php if($attrib == 'usernameprefix') { ?>
-              <?=$LANG->_('The username will be created with this as prefix, and a incrementing number after it when automaticly creating a username (uid)')?>
+              <?php echo $LANG->_('The username will be created with this as prefix, and a incrementing number after it when automaticly creating a username (uid)')?>
 <?php } elseif($attrib == 'usernameprefixlength') { ?>
-              <?=$LANG->_('This is the length of the automaticly generated numbers after the prefix')?>
+              <?php echo $LANG->_('This is the length of the automaticly generated numbers after the prefix')?>
 <?php } ?>
             </table>
           </td>
@@ -61,12 +61,12 @@ function attribute_print_form($type = "modify") {
     </table>
 
     <input type="hidden" name="submit" value="2">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $attrib?>">
+    <input type="hidden" name="domain" value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

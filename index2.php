@@ -109,29 +109,29 @@ if($startinmyaccount) {
 ?>
 <html>
   <head>
-    <title><?=pql_get_define("PQL_CONF_WHOAREWE")?></title>
+    <title><?php echo pql_get_define("PQL_CONF_WHOAREWE")?></title>
   </head>
 
-  <!-- frames == <?=$frames?> -->
+  <!-- frames == <?php echo $frames?> -->
 
-  <frameset cols="260,*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
+  <frameset cols="260,*" rows="*" border="<?php echo $border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
     <!-- LEFT frame -->
 <?php if($frames >= 3) { ?>
-    <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
+    <frameset cols="*" rows="<?php echo $size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
 <?php } ?>
-      <frame src="left-base.php<?=$adv_uri?>" name="pqlbase">
+      <frame src="left-base.php<?php echo $adv_uri?>" name="pqlbase">
 <?php if($frames >= 4) { ?>
-      <frameset cols="*" rows="70%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
+      <frameset cols="*" rows="70%,*" border="<?php echo $border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
 <?php } ?>
 <?php if($_SESSION["USE_USERS"]) { ?>
-        <frame src="left.php<?=$adv_uri?>" name="pqlnav">
+        <frame src="left.php<?php echo $adv_uri?>" name="pqlnav">
 <?php } ?>
 
 <?php if(@$_REQUEST["advanced"] and !$_SESSION["SINGLE_USER"]) {
 		// {{{ Advance mode - show controls and mailinglist managers
 		if($frames >= 5) {
 ?>
-        <frameset cols="*" rows="50%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 5 -->
+        <frameset cols="*" rows="50%,*" border="<?php echo $border?>" frameborder="<?=$border?>"><!-- $frames >= 5 -->
 <?php	} 
 
 		if($_SESSION["USE_CONTROLS"] or $_SESSION["USE_WEBSRV"]    or $_SESSION["USE_HOSTACL"] or
@@ -143,7 +143,7 @@ if($startinmyaccount) {
 
 		if($frames >= 6) {
 ?>
-        <frameset cols="*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 6 -->
+        <frameset cols="*" rows="*" border="<?php echo $border?>" frameborder="<?=$border?>"><!-- $frames >= 6 -->
 <?php	}
 
 		if($_SESSION["USE_EZMLM"]) { ?>
@@ -182,7 +182,7 @@ if($startinmyaccount) {
     $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 ?>&domain=<?php echo 'place domain here'; ?>&user=<?php echo $_SESSION["USER_DN"]; ?>" name="pqlmain">
 <?php } else { ?>
-    <frame src="home.php<?=$adv_uri?>" name="pqlmain">
+    <frame src="home.php<?php echo $adv_uri?>" name="pqlmain">
 <?php }
 // }}}
 ?>

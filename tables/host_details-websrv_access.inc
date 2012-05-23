@@ -16,7 +16,7 @@ if(isset($members)) {
   if(is_array($members))
 	asort($members);
 ?>
-    <th colspan="2" align="left"><?=$LANG->_('Access control')?>
+    <th colspan="2" align="left"><?php echo $LANG->_('Access control')?>
 <?php
   $class = pql_format_table(0);
   $url_tmp  = "host_edit_attribute.php?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"]);

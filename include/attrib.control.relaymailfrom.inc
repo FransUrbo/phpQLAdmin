@@ -71,9 +71,9 @@ function relaymailfrom_print_view($host) {
 	}
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">relaymailfrom (<?=$LANG->_('Allowed senders for relaying', 4)?>)</th>
+    <th align="left">relaymailfrom (<?php echo $LANG->_('Allowed senders for relaying', 4)?>)</th>
       <tr class="title">
-        <td class="title" colspan="3"><?=$LANG->_('Email')?></td>
+        <td class="title" colspan="3"><?php echo $LANG->_('Email')?></td>
       </tr>
 
 <?php
@@ -95,21 +95,21 @@ function relaymailfrom_print_view($host) {
 function relaymailfrom_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["relaymailfrom"]); $i++) { ?>
-    <input type="hidden" name="relaymailfrom[<?=$i?>]" value="<?=$_REQUEST["relaymailfrom"][$i]?>">
+    <input type="hidden" name="relaymailfrom[<?php echo $i?>]" value="<?=$_REQUEST["relaymailfrom"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">relaymailfrom (<?=$LANG->_('Allowed senders for relaying', 4)?>)</th>
+      <th colspan="3" align="left">relaymailfrom (<?php echo $LANG->_('Allowed senders for relaying', 4)?>)</th>
         <tr class="title">
-          <td class="title" colspan="3"><?=$LANG->_('Address')?></td>
+          <td class="title" colspan="3"><?php echo $LANG->_('Address')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td>
             <?php echo pql_format_error_span($error["relaymailfrom"][$i]); ?>
-            <input type="text" name="relaymailfrom[<?=$i?>]" size="40">
+            <input type="text" name="relaymailfrom[<?php echo $i?>]" size="40">
           </td>
         </tr>
 
@@ -126,11 +126,11 @@ function relaymailfrom_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

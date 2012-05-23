@@ -63,9 +63,9 @@ function attribute_print_form($type = "modify") {
 	  $_REQUEST["mailreplytext"] = $_pql->get_attribute($_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 	// }}}
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Delivery mode')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Delivery mode')?></th>
 <?php if(!$_SESSION["SINGLE_USER"]) {
 		if($_SESSION["NEW_STYLE_QUOTA"]) {
 			// LDAP_MODE (default: "deliveryMode")
@@ -77,14 +77,14 @@ function attribute_print_form($type = "modify") {
 			//   - reply		Send an auto_reply mail with text from mailReplyText
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Delivery mode')?></td>
+          <td class="title"><?php echo $LANG->_('Delivery mode')?></td>
           <td>
-            <?=pql_format_error_span($error["deliverymode"])?>
-            <input type="checkbox" name="nolocal"   <?php if($_REQUEST["nolocal"] or in_array('nolocal', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('Do not deliver to local mail box')?><br>
-            <input type="checkbox" name="noforward" <?php if($_REQUEST["noforward"] or in_array('noforward', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('Do not forward mail to other account/address')?><br>
-            <input type="radio" name="delivery_type" value="noprogram" <?php if($_REQUEST["noprogram"] or in_array('noprogram', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('No program deliveries')?><br>
+            <?php echo pql_format_error_span($error["deliverymode"])?>
+            <input type="checkbox" name="nolocal"   <?php if($_REQUEST["nolocal"] or in_array('nolocal', $deliverymode)) { echo "CHECKED"; } ?>><?php echo $LANG->_('Do not deliver to local mail box')?><br>
+            <input type="checkbox" name="noforward" <?php if($_REQUEST["noforward"] or in_array('noforward', $deliverymode)) { echo "CHECKED"; } ?>><?php echo $LANG->_('Do not forward mail to other account/address')?><br>
+            <input type="radio" name="delivery_type" value="noprogram" <?php if($_REQUEST["noprogram"] or in_array('noprogram', $deliverymode)) { echo "CHECKED"; } ?>><?php echo $LANG->_('No program deliveries')?><br>
 <?php if($_REQUEST["programpath"]) { ?>
-            <input type="radio" name="delivery_type" value="program"><input type="text" name="programpath" value="<?=$_REQUEST["programpath"]?>">
+            <input type="radio" name="delivery_type" value="program"><input type="text" name="programpath" value="<?php echo $_REQUEST["programpath"]?>">
 <?php } else { ?>
             <input type="radio" name="delivery_type" value="program"><input type="text" name="programpath">
 <?php } ?>
@@ -93,16 +93,16 @@ function attribute_print_form($type = "modify") {
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" align="right"><img src="images/info.png" width="16" height="16" border="0"></td>
-          <td><?=$LANG->_('If all unset, then do normal delivery')?></td>
+          <td><?php echo $LANG->_('If all unset, then do normal delivery')?></td>
         </tr>
 <?php	} else { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Delivery mode')?></td>
+          <td class="title"><?php echo $LANG->_('Delivery mode')?></td>
           <td>
-            <?=pql_format_error_span($error["deliverymode"])?>
+            <?php echo pql_format_error_span($error["deliverymode"])?>
             <select name="deliverymode">
-              <option value="local" <?php if($_REQUEST["deliverymode"] == "local") { echo "SELECTED"; } ?>><?=$LANG->_('Deliver mail to local mail box')?>
-              <option value="forward" <?php if($_REQUEST["deliverymode"] == "forward") { echo "SELECTED"; } ?>><?=$LANG->_('Forward mail to other account/address')?>
+              <option value="local" <?php if($_REQUEST["deliverymode"] == "local") { echo "SELECTED"; } ?>><?php echo $LANG->_('Deliver mail to local mail box')?>
+              <option value="forward" <?php if($_REQUEST["deliverymode"] == "forward") { echo "SELECTED"; } ?>><?php echo $LANG->_('Forward mail to other account/address')?>
             </select>
           </td>
         </tr>
@@ -110,20 +110,20 @@ function attribute_print_form($type = "modify") {
 	  }
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Send automatic reply')?></td>
-          <td><input type="checkbox" name="reply" value="ok" <?php if(($_REQUEST["reply"] == "ok") or in_array('reply', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('Send an auto reply')?></td>
+          <td class="title"><?php echo $LANG->_('Send automatic reply')?></td>
+          <td><input type="checkbox" name="reply" value="ok" <?php if(($_REQUEST["reply"] == "ok") or in_array('reply', $deliverymode)) { echo "CHECKED"; } ?>><?php echo $LANG->_('Send an auto reply')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Text for replying')?></td>
-          <td valign="center"><?php echo pql_format_error_span($error["mailreplytext"]); ?> <textarea name="mailreplytext" cols="40" rows="10"><?=$_REQUEST["mailreplytext"]?></textarea></td>
+          <td class="title"><?php echo $LANG->_('Text for replying')?></td>
+          <td valign="center"><?php echo pql_format_error_span($error["mailreplytext"]); ?> <textarea name="mailreplytext" cols="40" rows="10"><?php echo $_REQUEST["mailreplytext"]?></textarea></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <table>
             <td><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
             <td>
-              <?=$LANG->_('If send auto reply is enabled, QmailLDAP will first store the mail in the users mailbox (or forward the mail to other account/address), <i>THEN</i> send the reply')?>.
+              <?php echo $LANG->_('If send auto reply is enabled, QmailLDAP will first store the mail in the users mailbox (or forward the mail to other account/address), <i>THEN</i> send the reply')?>.
             </td>
           </table>
         </tr>
@@ -133,7 +133,7 @@ function attribute_print_form($type = "modify") {
           <table>
             <td><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
             <td>
-              <?=$LANG->_('If the \'No program deliveries\' is set, QmailLDAP will ignore <i>deliveryProgramPath</i> and <i>.qmail</i> files')?>.
+              <?php echo $LANG->_('If the \'No program deliveries\' is set, QmailLDAP will ignore <i>deliveryProgramPath</i> and <i>.qmail</i> files')?>.
             </td>
           </table>
         </tr>
@@ -142,18 +142,18 @@ function attribute_print_form($type = "modify") {
     </table>
 
 <?php if($_SESSION["SINGLE_USER"]) { ?>
-    <input type="hidden" name="deliverymode" value="<?=$_REQUEST["deliverymode"]?>">
+    <input type="hidden" name="deliverymode" value="<?php echo $_REQUEST["deliverymode"]?>">
 <?php } ?>
     <input type="hidden" name="submit"       value="1">
-    <input type="hidden" name="attrib"       value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="attrib"       value="<?php echo $_REQUEST["attrib"]?>">
 	<!-- DLW: oldvalue should be 3 values for the 3 fields. -->
-    <input type="hidden" name="oldvalue"     value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"       value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"       value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"         value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"         value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="oldvalue"     value="<?php echo $_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"       value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"       value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"         value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"         value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 
 <?php

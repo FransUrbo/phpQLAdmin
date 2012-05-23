@@ -99,17 +99,17 @@ function attribute_init() {
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Change quota')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Change quota')?></th>
 <?php if(!empty($_SESSION["USE_CONTROLS"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Options')?></td>
+          <td class="title"><?php echo $LANG->_('Options')?></td>
           <td>
             <input type="radio" name="options" value="default" <?php if($_REQUEST["options"] == "default") { echo "checked"; } ?>>
-            <?=$LANG->_('Standard')?>
+            <?php echo $LANG->_('Standard')?>
             <input type="radio" name="options" value="user" <?php if($_REQUEST["options"] == "user") { echo "checked"; } ?>>
-            <?=$LANG->_('User defined')?>
+            <?php echo $LANG->_('User defined')?>
           </td>
         </tr>
 <?php } else { ?>
@@ -117,13 +117,13 @@ function attribute_print_form($type = "modify") {
 <?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Maximum size of mailbox')?></td>
+          <td class="title"><?php echo $LANG->_('Maximum size of mailbox')?></td>
           <td><?php echo pql_format_error_span($error["maxsize"]); ?><input type="text" name="maxsize" value="<?php echo $_REQUEST["maxsize"]; ?>"> KB</td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Maximum number of mails')?></td>
-          <td><?php echo pql_format_error_span($error["maxmails"]); ?><input type="text" name="maxmails" value="<?php echo $_REQUEST["maxmails"]; ?>"> <?=$LANG->_('Mails')?></td>
+          <td class="title"><?php echo $LANG->_('Maximum number of mails')?></td>
+          <td><?php echo pql_format_error_span($error["maxmails"]); ?><input type="text" name="maxmails" value="<?php echo $_REQUEST["maxmails"]; ?>"> <?php echo $LANG->_('Mails')?></td>
         </tr>
 
 <?php if(!empty($_SESSION["USE_CONTROLS"])) { ?>
@@ -135,7 +135,7 @@ function attribute_print_form($type = "modify") {
                 <img src="images/info.png" width="16" height="16" alt="" border="0">
               </td>
               <td>
-                &nbsp;<?=$LANG->_('With \'Standard\', QmailLDAP will get quotas from its configuration file (~controls/ldapdefaultquota) or corresponding value in QmailLDAP/Controls. See "q-l mailbox" below your QmailLDAP/Controls object(s).')?>
+                &nbsp;<?php echo $LANG->_('With \'Standard\', QmailLDAP will get quotas from its configuration file (~controls/ldapdefaultquota) or corresponding value in QmailLDAP/Controls. See "q-l mailbox" below your QmailLDAP/Controls object(s).')?>
               </td>
             </tr>
           </table>
@@ -145,15 +145,15 @@ function attribute_print_form($type = "modify") {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="domain" value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="domain" value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
 <?php if($_REQUEST["attrib"] == 'mailquota') { ?>
-    <input type="hidden" name="user" value="<?=urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="user" value="<?php echo urlencode($_REQUEST["user"])?>">
 <?php } ?>
-    <input type="hidden" name="view" value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="view" value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 
 <?php

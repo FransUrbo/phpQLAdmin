@@ -44,7 +44,7 @@ if(is_array($dhcp_config)) {
 // }}}
 	  }
 ?>
-    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>&config=<?=urlencode($dhcp_config_dn)?>"><img alt="/ <?=$confname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($confname)?><?=$mark_config?>"></a>
+    <a href="<?php echo $_SERVER["PHP_SELF"]?>?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>&config=<?=urlencode($dhcp_config_dn)?>"><img alt="/ <?=$confname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($confname)?><?=$mark_config?>"></a>
 <?php
 	// "
 	}
@@ -107,7 +107,7 @@ if(is_array($dhcp_config)) {
 		} else
 		  unset($mark_setup);
 ?>
-      <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>&config=<?=urlencode($_REQUEST["config"])?>&setup=<?=urlencode($setup_dn)?>"><img alt="/ <?=$setupname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($setupname)?><?=$mark_setup?>"></a>
+      <a href="<?php echo $_SERVER["PHP_SELF"]?>?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>&config=<?=urlencode($_REQUEST["config"])?>&setup=<?=urlencode($setup_dn)?>"><img alt="/ <?=$setupname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($setupname)?><?=$mark_setup?>"></a>
 <?php
 	// "
 	}
@@ -141,7 +141,7 @@ if(is_array($dhcp_config)) {
 
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
-      <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>&config=<?=urlencode($_REQUEST["config"])?>&setup=<?=urlencode($setup_dn)?>"><img alt="/ <?=$setupname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($setupname)?><?=$mark_setup?>"></a>
+      <a href="<?php echo $_SERVER["PHP_SELF"]?>?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>&config=<?=urlencode($_REQUEST["config"])?>&setup=<?=urlencode($setup_dn)?>"><img alt="/ <?=$setupname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($setupname)?><?=$mark_setup?>"></a>
     </th>
   </table>
 <?php
@@ -154,10 +154,10 @@ if(is_array($dhcp_config)) {
   <br>
 
   <table cellspacing="0" border="0" width="70%" cellpadding="0">
-    <th colspan="3" align="left"><?=$LANG->_('DHCP Configuration')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('DHCP Configuration')?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">RDN</td>
-        <td>&nbsp;<?=$RDN?></td>
+        <td>&nbsp;<?php echo $RDN?></td>
         <td></td>
       </tr>
 <?php
@@ -167,7 +167,7 @@ if(is_array($dhcp_config)) {
 		  $info = split(' ', $data[$i]);
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$info[0]?>&nbsp;&nbsp;</td>
+        <td class="title"><?php echo $info[0]?>&nbsp;&nbsp;</td>
         <td>&nbsp;<?php
 		  for($j=1; $info[$j]; $j++) {
 			$info[$j] = preg_replace('/"/', '', $info[$j]);
@@ -178,7 +178,7 @@ if(is_array($dhcp_config)) {
 		  }?></td>
         <td valign="right">
 <?php if($attrib != pql_get_define("PQL_ATTR_CN")) { ?>
-          <a href="dhcp3_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&view=<?=$_REQUEST["view"]?>&attrib=<?=$attrib?>&data=<?=urlencode($data[$i])?>&action=modify"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change DHCP3 data')?>" border="0"></a>&nbsp;&nbsp;<a href="dhcp3_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&view=<?=$_REQUEST["view"]?>&attrib=<?=$attrib?>&data=<?=urlencode($data[$i])?>&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>
+          <a href="dhcp3_edit_attributes.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&view=<?=$_REQUEST["view"]?>&attrib=<?=$attrib?>&data=<?=urlencode($data[$i])?>&action=modify"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change DHCP3 data')?>" border="0"></a>&nbsp;&nbsp;<a href="dhcp3_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&view=<?=$_REQUEST["view"]?>&attrib=<?=$attrib?>&data=<?=urlencode($data[$i])?>&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -186,11 +186,11 @@ if(is_array($dhcp_config)) {
 	  } else {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$attrib?>&nbsp;&nbsp;</td>
-        <td>&nbsp;<?=$data?></td>
+        <td class="title"><?php echo $attrib?>&nbsp;&nbsp;</td>
+        <td>&nbsp;<?php echo $data?></td>
         <td valign="right">
 <?php if($attrib != pql_get_define("PQL_ATTR_CN")) { ?>
-          <a href="dhcp3_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&view=<?=$_REQUEST["view"]?>&attrib=<?=$attrib?>&data=<?=urlencode($data[$i])?>&action=modify"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change DHCP3 data')?>" border="0"></a>&nbsp;&nbsp;<a href="dhcp3_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&view=<?=$_REQUEST["view"]?>&attrib=<?=$attrib?>&data=<?=urlencode($data[$i])?>&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>
+          <a href="dhcp3_edit_attributes.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&view=<?=$_REQUEST["view"]?>&attrib=<?=$attrib?>&data=<?=urlencode($data[$i])?>&action=modify"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change DHCP3 data')?>" border="0"></a>&nbsp;&nbsp;<a href="dhcp3_edit_attributes.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&view=<?=$_REQUEST["view"]?>&attrib=<?=$attrib?>&data=<?=urlencode($data[$i])?>&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -208,8 +208,8 @@ if(is_array($dhcp_config)) {
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td colspan="2">&nbsp;
-          <a href="dhcp3_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&setup=<?=urlencode($setup_dn)?>&action=<?=$action?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP option')?>">
-            <?=$LANG->_('Add DHCP option')?>
+          <a href="dhcp3_add.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($_REQUEST["config"])?>&setup=<?=urlencode($setup_dn)?>&action=<?=$action?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP option')?>">
+            <?php echo $LANG->_('Add DHCP option')?>
           </a>
         </td>
       </tr>
@@ -219,16 +219,16 @@ if(is_array($dhcp_config)) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td colspan="3">
-          <a href="dhcp3_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($RDN)?>&action=subnet&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP subnetwork')?>">
-            <?=$LANG->_('Add DHCP subnetwork')?>
+          <a href="dhcp3_add.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($RDN)?>&action=subnet&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP subnetwork')?>">
+            <?php echo $LANG->_('Add DHCP subnetwork')?>
           </a>
         </td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td colspan="3">
-          <a href="dhcp3_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($RDN)?>&action=host&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP host statement')?>">
-            <?=$LANG->_('Add DHCP host statement')?>
+          <a href="dhcp3_add.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&config=<?=urlencode($RDN)?>&action=host&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP host statement')?>">
+            <?php echo $LANG->_('Add DHCP host statement')?>
           </a>
         </td>
       </tr>

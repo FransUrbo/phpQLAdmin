@@ -71,7 +71,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
   // {{{ Server control header
 ?>
     <!-- Server Control -->
-    <div id="el<?=$div_counter?>Parent" class="parent">
+    <div id="el<?php echo $div_counter?>Parent" class="parent">
       <a class="item" href="control.php">
         <font color="black" class="heada"><b>Computers</b></font>
       </a>
@@ -92,8 +92,8 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	$host[0] = urldecode($host[0]);
 ?>
     <!-- Add physical server link -->
-    <div id="el<?=$div_counter?>Parent" class="parent">
-      <a href="host_add.php"><?=$LANG->_('Add physical server/host')?></a>
+    <div id="el<?php echo $div_counter?>Parent" class="parent">
+      <a href="host_add.php"><?php echo $LANG->_('Add physical server/host')?></a>
     </div>
 
 <?php
@@ -105,12 +105,12 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	// {{{ No physical hosts
 ?>
 <?php if($_SESSION["opera"]) { ?>
-  <div id="el<?=$div_counter?>Parent" class="parent" onclick="showhide(el<?=$div_counter?>Spn, el<?=$div_counter?>Img)">
-    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$div_counter?>Img">
+  <div id="el<?php echo $div_counter?>Parent" class="parent" onclick="showhide(el<?=$div_counter?>Spn, el<?=$div_counter?>Img)">
+    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $div_counter?>Img">
     <font color="black" class="heada">no server hosts defined</font>
   </div>
 <?php } else { ?>
-  <div id="el<?=$div_counter?>Parent" class="parent">
+  <div id="el<?php echo $div_counter?>Parent" class="parent">
     <img src="images/navarrow.png" width="9" height="9" border="0">
     <font color="black" class="heada">no server hosts defined</font>
   </div>
@@ -121,7 +121,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	foreach($DATA as $physical_dn => $physical_data) {
 	  // {{{ Get physical hostname for display
 ?>
-          <!-- Physical server: <?=$physical_dn?> -->
+          <!-- Physical server: <?php echo $physical_dn?> -->
 <?php
 	  if($physical_dn == 'Global')
 		$host = 'Global';
@@ -206,9 +206,9 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 			  // {{{ No QLC plugins
 			  if($_SESSION["opera"]) {
 ?>
-  <span id="el<?=$div_counter?>Spn" style="display:''">
+  <span id="el<?php echo $div_counter?>Spn" style="display:''">
 <?php		  } else { ?>
-  <div id="el<?=$div_counter?>Child" class="child">
+  <div id="el<?php echo $div_counter?>Child" class="child">
 <?php		  } ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <img src="images/navarrow.png" width="9" height="9" border="0">
@@ -241,9 +241,9 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 		  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			if($_SESSION["opera"]) {
 ?>
-  <span id="el<?=$div_counter?>Spn" style="display:''">
+  <span id="el<?php echo $div_counter?>Spn" style="display:''">
 <?php	    } else { ?>
-  <div id="el<?=$div_counter?>Parent" class="parent">
+  <div id="el<?php echo $div_counter?>Parent" class="parent">
 <?php	    } ?>
     <nobr>&nbsp;&nbsp;&nbsp;
       <img src="images/navarrow.png" width="9" height="9" border="0">
@@ -346,9 +346,9 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 		  if($_SESSION["opera"]) {
 ?>
 
-          <span id="el<?=$div_counter?>Spn" style="display:''">
+          <span id="el<?php echo $div_counter?>Spn" style="display:''">
 <?php	  } else { ?>
-          <div id="el<?=$div_counter?>Child" class="child">
+          <div id="el<?php echo $div_counter?>Child" class="child">
 <?php	  } ?>
             <nobr>&nbsp;&nbsp;&nbsp;
               <img src="images/navarrow.png" width="9" height="9" border="0">

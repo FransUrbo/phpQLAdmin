@@ -2,16 +2,16 @@
 // Just to simplify and shorten the href below
 $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&domainname=".$_REQUEST["domainname"];
 ?>
-  <span class="title1"><?=$LANG->_('List')?>: <?=$ezmlm->mailing_lists[$listno]["name"]."@".$_REQUEST["domainname"]?></span>
+  <span class="title1"><?php echo $LANG->_('List')?>: <?=$ezmlm->mailing_lists[$listno]["name"]."@".$_REQUEST["domainname"]?></span>
 
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('List information')?></th>
+    <th colspan="3" align="left"><?php echo $LANG->_('List information')?></th>
       <tr>
-        <td class="title"><?=$LANG->_('Configuration')?></td>
-        <td class="title"><?=$LANG->_('Value')?></td>
-        <td class="title"><?=$LANG->_('Options')?></td>
+        <td class="title"><?php echo $LANG->_('Configuration')?></td>
+        <td class="title"><?php echo $LANG->_('Value')?></td>
+        <td class="title"><?php echo $LANG->_('Options')?></td>
       </tr>
 <?php foreach($ezmlm->mailing_lists[$listno] as $key => $value) {
 		// Defined value
@@ -31,8 +31,8 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><b><?=$key?></b></td>
-        <td><?=$value?></td>
+        <td><b><?php echo $key?></b></td>
+        <td><?php echo $value?></td>
 <?php		}
 		} elseif($key == 'subscriber') {
 			$j = 0;
@@ -43,18 +43,18 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
 ?>
       <tr class="<?php pql_format_table(); ?>">
 <?php			if($j == 0) { ?>
-        <td><b><?=$key?></b></td>
+        <td><b><?php echo $key?></b></td>
 <?php			} else { ?>
         <td></td>
 <?php			} ?>
-        <td><?=$x?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="<?=$link?>&listno=<?=$_REQUEST["listno"]?>&type=<?=$key?>&<?=$key?>=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete attribute')?>" border="0"></a></td>
+        <td><?php echo $x?></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="<?php echo $link?>&listno=<?=$_REQUEST["listno"]?>&type=<?=$key?>&<?=$key?>=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete attribute')?>" border="0"></a></td>
 <?php			$j++;
 			}
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td></td>
-        <td><a href="<?=$link?>&listno=<?=$_REQUEST["listno"]?>&type=subscriber"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('subscriber'))); ?></a></td>
+        <td><a href="<?php echo $link?>&listno=<?=$_REQUEST["listno"]?>&type=subscriber"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('subscriber'))); ?></a></td>
         <td></td>
       </tr>
 
@@ -71,18 +71,18 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
 ?>
       <tr class="<?php pql_format_table(); ?>">
 <?php			if($j == 0) { ?>
-        <td><b><?=$key?></b></td>
+        <td><b><?php echo $key?></b></td>
 <?php			} else { ?>
         <td></td>
 <?php			} ?>
-        <td><?=$x?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="<?=$link?>&listno=<?=$_REQUEST["listno"]?>&type=<?=$key?>&<?=$key?>=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete attribute')?>" border="0"></a></td>
+        <td><?php echo $x?></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="<?php echo $link?>&listno=<?=$_REQUEST["listno"]?>&type=<?=$key?>&<?=$key?>=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete attribute')?>" border="0"></a></td>
 <?php			$j++;
 			}
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td></td>
-        <td><a href="<?=$link?>&listno=<?=$_REQUEST["listno"]?>&type=killaddress"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('rejected address'))); ?></a></td>
+        <td><a href="<?php echo $link?>&listno=<?=$_REQUEST["listno"]?>&type=killaddress"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('rejected address'))); ?></a></td>
         <td></td>
       </tr>
 <?php	}
@@ -95,7 +95,7 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
 ?>
         <td></td>
 <?php		} else { // Editable/Deletable values ?>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="<?=$link?>&listno=<?=$_REQUEST["listno"]?>&type=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Toggle')?>" border="0"></a>&nbsp;&nbsp;<a href="<?=$list?>&listno=<?=$_REQUEST["listno"]?>&type=<?=$key?>"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="<?php echo $link?>&listno=<?=$_REQUEST["listno"]?>&type=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Toggle')?>" border="0"></a>&nbsp;&nbsp;<a href="<?=$list?>&listno=<?=$_REQUEST["listno"]?>&type=<?=$key?>"></a></td>
 <?php		}
 		}
 ?>
@@ -107,7 +107,7 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
 
       <tr class="<?php pql_format_table(); ?>">
         <td><b>subscriber</b></td>
-        <td><a href="<?=$link?>&listno=<?=$_REQUEST["listno"]?>&type=subscriber"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('subscriber'))); ?></a></td>
+        <td><a href="<?php echo $link?>&listno=<?=$_REQUEST["listno"]?>&type=subscriber"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('subscriber'))); ?></a></td>
         <td></td>
       </tr>
 <?php }
@@ -118,7 +118,7 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
 	  <tr><td></td><td></td><td></td></tr>
       <tr class="<?php pql_format_table(); ?>">
         <td><b>killlist</b></td>
-        <td><a href="<?=$link?>&listno=<?=$_REQUEST["listno"]?>&type=killaddress"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('rejected address'))); ?></a></td>
+        <td><a href="<?php echo $link?>&listno=<?=$_REQUEST["listno"]?>&type=killaddress"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('rejected address'))); ?></a></td>
         <td></td>
       </tr>
 <?php } ?>
@@ -128,9 +128,9 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left"><?=$LANG->_('Actions')?></th>
+    <th align="left"><?php echo $LANG->_('Actions')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="ezmlm_del.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&listno=<?=$_REQUEST["listno"]?>"><?=$LANG->_('Delete list')?></a></td>
+        <td><a href="ezmlm_del.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&listno=<?=$_REQUEST["listno"]?>"><?=$LANG->_('Delete list')?></a></td>
       </tr>
     </th>
   </table>

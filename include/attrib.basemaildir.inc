@@ -34,24 +34,24 @@ function attribute_print_form() {
     global $error, $LANG;
 	// DLW: Need a way to unset basemaildir.
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default maildirectory base'), 'domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Mail directory')?></td>
-          <td><?php echo pql_format_error_span($error["basemaildir"]); ?><input type="text" name="basemaildir" value="<?=$_REQUEST["basemaildir"]?>" size="50"></td>
+          <td class="title"><?php echo $LANG->_('Mail directory')?></td>
+          <td><?php echo pql_format_error_span($error["basemaildir"]); ?><input type="text" name="basemaildir" value="<?php echo $_REQUEST["basemaildir"]?>" size="50"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="2">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["basemaildir"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["basemaildir"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

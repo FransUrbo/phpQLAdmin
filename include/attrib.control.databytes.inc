@@ -44,12 +44,12 @@ function databytes_print_view($host) {
 	databytes_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">databytes (<?=$LANG->_('Maximum number databytes in message')?>)</th>
+    <th colspan="3" align="left">databytes (<?php echo $LANG->_('Maximum number databytes in message')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Maximum')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["databytes"]) { echo $_REQUEST["databytes"].' '.pql_control_print_filesize($databytes); } else { echo '<i>'.$LANG->_('unlimited').'</i>'; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DATABYTES")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DATABYTES")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Maximum')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["databytes"]) { echo $_REQUEST["databytes"].' '.pql_control_print_filesize($databytes); } else { echo '<i>'.$LANG->_('unlimited').'</i>'; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DATABYTES")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DATABYTES")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -61,27 +61,27 @@ function databytes_print_view($host) {
 function databytes_print_form() {
 	global $attrib, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">databytes (<?=$LANG->_('Maximum number databytes in message')?>)</th>
+      <th colspan="3" align="left">databytes (<?php echo $LANG->_('Maximum number databytes in message')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Maximum')?></td>
-          <td><?php echo pql_format_error_span($error["databytes"]); ?><input type="text" name="databytes" value="<?=$_REQUEST["databytes"]?>"> <?=$LANG->_('Bytes')?></td>
+          <td class="title"><?php echo $LANG->_('Maximum')?></td>
+          <td><?php echo pql_format_error_span($error["databytes"]); ?><input type="text" name="databytes" value="<?php echo $_REQUEST["databytes"]?>"> <?=$LANG->_('Bytes')?></td>
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Set to 0 to allow unlimited message size')?></td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('Set to 0 to allow unlimited message size')?></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $view?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

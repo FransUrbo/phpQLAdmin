@@ -35,38 +35,38 @@ $options = pql_dhcp3_get_service_options($servicedn);
 		  unset($mark);
 		}
 ?>
-      <a href="<?=$_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&$type=".urlencode($dn)?>"><img alt="// <?=$name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$name?><?=$mark?>"></a>
+      <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&$type=".urlencode($dn)?>"><img alt="// <?=$name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$name?><?=$mark?>"></a>
 <?php } ?>
       </th>
     </table>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_("DHCP3 details")."\n"?>
+      <th colspan="3" align="left"><?php echo $LANG->_("DHCP3 details")."\n"?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">RDN</td>
-          <td><?=$_REQUEST["host"]?></td>
+          <td><?php echo $_REQUEST["host"]?></td>
           <td></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Service DN')?></td>
-          <td><?=$servicedn?></td>
+          <td class="title"><?php echo $LANG->_('Service DN')?></td>
+          <td><?php echo $servicedn?></td>
           <td>
 <?php if(!$servicedn) { ?>
-            <?=$servicedn_link?>
+            <?php echo $servicedn_link?>
 <?php } ?>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Primary server')?></td>
-          <td><?=$options["primarydn"]?></td>
+          <td class="title"><?php echo $LANG->_('Primary server')?></td>
+          <td><?php echo $options["primarydn"]?></td>
           <td></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Secondary server')?></td>
-          <td><?=$options["secondarydn"]?></td>
+          <td class="title"><?php echo $LANG->_('Secondary server')?></td>
+          <td><?php echo $options["secondarydn"]?></td>
           <td></td>
         </tr>
 

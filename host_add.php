@@ -84,24 +84,24 @@ if(!$exists) {
   // Output a form to offer to create 
   require($_SESSION["path"]."/header.html");
 ?>
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="1" cellpadding="3" border="0">
-        <th colspan="3" align="left"><?=$LANG->_("Add New Computer organizational unit")?>
+        <th colspan="3" align="left"><?php echo $LANG->_("Add New Computer organizational unit")?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="center"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-            <td><?=$LANG->_("Unfortunatly I can't find the computer organizational unit<br>in any of the LDAP suffixes defined. I can't add a host until<br>this is created.")?></td>
+            <td><?php echo $LANG->_("Unfortunatly I can't find the computer organizational unit<br>in any of the LDAP suffixes defined. I can't add a host until<br>this is created.")?></td>
           </tr>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
 
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_("Create ou=Computers in root DN")?></td>
+            <td class="title"><?php echo $LANG->_("Create ou=Computers in root DN")?></td>
 
             <td>
 <?php	$i=0;
 	foreach($_pql->ldap_basedn as $dn) {
 	  $dn = pql_format_normalize_dn($dn);
 ?>
-              <input type="radio" name="suffix" value="<?=urlencode($dn)?>"<?php if($i==0) { echo " CHECKED"; }?>><?=$dn?><br>
+              <input type="radio" name="suffix" value="<?php echo urlencode($dn)?>"<?php if($i==0) { echo " CHECKED"; }?>><?=$dn?><br>
 <?php	  $i++;
 	} ?>
             </td>
@@ -109,7 +109,7 @@ if(!$exists) {
 <?php } else { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="center"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-            <td><?=$LANG->_("Unfortunatly you're not super admin, so I can't create it for you.")?></td>
+            <td><?php echo $LANG->_("Unfortunatly you're not super admin, so I can't create it for you.")?></td>
           </tr>
 <?php } ?>
         </th>
@@ -117,7 +117,7 @@ if(!$exists) {
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
 
       <input type="hidden" name="action" value="compou">
-      <input type="submit" name="Submit" value="<?=$LANG->_('Add New organizationalUnit')?>">
+      <input type="submit" name="Submit" value="<?php echo $LANG->_('Add New organizationalUnit')?>">
 <?php } ?>
     </form>
 <?php
@@ -128,29 +128,29 @@ if(!$exists) {
 // {{{ Create the 'Add New Computer' form
 require($_SESSION["path"]."/header.html");
 ?>
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="1" cellpadding="3" border="0">
-        <th colspan="3" align="left"><?=$LANG->_("Add New Computer")?>
+        <th colspan="3" align="left"><?php echo $LANG->_("Add New Computer")?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_("Fully Qualified Domain Name")?></td>
+            <td class="title"><?php echo $LANG->_("Fully Qualified Domain Name")?></td>
             <td>
-              <input type="text" name="hostname" size="40"<?php if(empty($error_text["hostname"])) { ?> value="<?=$_REQUEST['hostname']?>"<?php }?>>
+              <input type="text" name="hostname" size="40"<?php if(empty($error_text["hostname"])) { ?> value="<?php echo $_REQUEST['hostname']?>"<?php }?>>
               <?php if(!empty($error_text["hostname"])) { echo pql_format_error_span($error_text["hostname"]); } ?>
             </td>
           </tr>
 
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_("IP Address")?></td>
+            <td class="title"><?php echo $LANG->_("IP Address")?></td>
             <td>
-              <input type="text" name="hostip" size="20"<?php if(empty($error_text["hostip"])) { ?> value="<?=$_REQUEST['hostip']?>"<?php }?>>
+              <input type="text" name="hostip" size="20"<?php if(empty($error_text["hostip"])) { ?> value="<?php echo $_REQUEST['hostip']?>"<?php }?>>
               <?php if(!empty($error_text["hostip"])) { echo pql_format_error_span($error_text["hostip"]); } ?>
             </td>
           </tr>
 <?php if(pql_get_define("PQL_CONF_BIND9_USE")) { ?>
 
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('Create DNS object')?></td>
-            <td><input type="checkbox" name="dns"<?php if(!@empty($_REQUEST["dns"])) { echo "CHECKED"; } ?>>&nbsp;<?=$LANG->_('Yes')?></td>
+            <td class="title"><?php echo $LANG->_('Create DNS object')?></td>
+            <td><input type="checkbox" name="dns"<?php if(!@empty($_REQUEST["dns"])) { echo "CHECKED"; } ?>>&nbsp;<?php echo $LANG->_('Yes')?></td>
           </tr>
 <?php } ?>
         </th>
@@ -158,7 +158,7 @@ require($_SESSION["path"]."/header.html");
 
       <input type="hidden" name="view"   value="newhost">
       <input type="hidden" name="action" value="add_host">
-      <input type="submit" name="Submit" value="<?=$LANG->_('Add New Host')?>">
+      <input type="submit" name="Submit" value="<?php echo $LANG->_('Add New Host')?>">
     </form>
 <?php
 // }}}

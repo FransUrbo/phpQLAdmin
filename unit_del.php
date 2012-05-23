@@ -15,12 +15,12 @@ include($_SESSION["path"]."/header.html");
 <br>
 <br>
 <img src="images/info.png" width="16" height="16" border="0">
-<?=$LANG->_('Attention: If you deleted a domain, all users within this domain will be deleted too')?>!
+<?php echo $LANG->_('Attention: If you deleted a domain, all users within this domain will be deleted too')?>!
 <br>
 <br>
-<?=$LANG->_('Are you really sure')?>?
+<?php echo $LANG->_('Are you really sure')?>?
 <br>
-<a href="domain_del.php?domain=<?=$domain?>&unit=<?=$unit?>&ok=1"><?=$LANG->_('Yes')?></a>, <a href="javascript:history.back()"><?=$LANG->_('No')?></a>
+<a href="domain_del.php?domain=<?php echo $domain?>&unit=<?=$unit?>&ok=1"><?=$LANG->_('Yes')?></a>, <a href="javascript:history.back()"><?=$LANG->_('No')?></a>
 <br>
 <?php
   } else {

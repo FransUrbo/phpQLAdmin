@@ -60,7 +60,7 @@ function percenthack_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left">percenthack
       <tr>
-        <td class="title" colspan="3"><?=$LANG->_('Percent relaying domains', 4)?>
+        <td class="title" colspan="3"><?php echo $LANG->_('Percent relaying domains', 4)?>
       </tr>
 
 <?php
@@ -82,19 +82,19 @@ function percenthack_print_view($host) {
 function percenthack_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["percenthack"]); $i++) { ?>
-    <input type="hidden" name="percenthack[<?=$i?>]" value="<?=$_REQUEST["percenthack"][$i]?>">
+    <input type="hidden" name="percenthack[<?php echo $i?>]" value="<?=$_REQUEST["percenthack"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">percenthack (<?=$LANG->_('Percent relaying domains', 4)?>)</th>
+      <th colspan="3" align="left">percenthack (<?php echo $LANG->_('Percent relaying domains', 4)?>)</th>
 <?php $class = pql_format_table(0); ?>
         <tr>
-          <td class="title"><?=$LANG->_('Domain')?></td>
-          <td class="<?=$class?>">
+          <td class="title"><?php echo $LANG->_('Domain')?></td>
+          <td class="<?php echo $class?>">
             <?php echo pql_format_error_span($error["percenthack"][$i]); ?>
-            <input type="text" name="percenthack[<?=$i?>]" size="40">
+            <input type="text" name="percenthack[<?php echo $i?>]" size="40">
           </td>
         </tr>
       </th>
@@ -102,11 +102,11 @@ function percenthack_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

@@ -103,19 +103,19 @@ function ldapdefaultquota_print_view($host) {
 <?php } else { ?>
       defaultQuotaSize, defaultQuotaCount
 <?php } ?>
-      (<?=$LANG->_('Default quota')?>)</th>
+      (<?php echo $LANG->_('Default quota')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Maximum number of mails')?></td>
-        <td class="<?=$class?>"><?=$quota["maxmails"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Maximum number of mails')?></td>
+        <td class="<?php echo $class?>"><?=$quota["maxmails"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Maximum size of mailbox')?></td>
-        <td class="<?=$class?>"><?=$quota["maxsize"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Maximum size of mailbox')?></td>
+        <td class="<?php echo $class?>"><?=$quota["maxsize"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -127,26 +127,26 @@ function ldapdefaultquota_print_view($host) {
 function ldapdefaultquota_print_form($type = "modify") {
     global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Change quota')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Change quota')?></th>
 <?php if(!@empty($_SESSION["USE_CONTROLS"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Options')?></td>
-          <td><input type="radio" name="options" value="default" <?php if($_REQUEST["options"] == "default"){ echo "checked"; }?>> Unlimited <input type="radio" name="options" value="user" <?php if($_REQUEST["options"] == "user"){ echo "checked"; }?>> <?=$LANG->_('User defined')?></td>
+          <td class="title"><?php echo $LANG->_('Options')?></td>
+          <td><input type="radio" name="options" value="default" <?php if($_REQUEST["options"] == "default"){ echo "checked"; }?>> Unlimited <input type="radio" name="options" value="user" <?php if($_REQUEST["options"] == "user"){ echo "checked"; }?>> <?php echo $LANG->_('User defined')?></td>
         </tr>
 
 <?php } else { ?>
         <input type="hidden" name="options" value="user">
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Maximum size of mailbox')?></td>
-          <td><?php echo pql_format_error_span($error["maxsize"]); ?><input type="text" name="maxsize" value="<?=$_REQUEST["maxsize"]?>"> KB</td>
+          <td class="title"><?php echo $LANG->_('Maximum size of mailbox')?></td>
+          <td><?php echo pql_format_error_span($error["maxsize"]); ?><input type="text" name="maxsize" value="<?php echo $_REQUEST["maxsize"]?>"> KB</td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Maximum number of mails')?></td>
-          <td><?php echo pql_format_error_span($error["maxmails"]); ?><input type="text" name="maxmails" value="<?=$_REQUEST["maxmails"]?>"> Mails</td>
+          <td class="title"><?php echo $LANG->_('Maximum number of mails')?></td>
+          <td><?php echo pql_format_error_span($error["maxmails"]); ?><input type="text" name="maxmails" value="<?php echo $_REQUEST["maxmails"]?>"> Mails</td>
         </tr>
 
         <tr class="subtitle">
@@ -157,11 +157,11 @@ function ldapdefaultquota_print_form($type = "modify") {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

@@ -65,19 +65,19 @@ function concurrencylocal_print_view($host) {
 	if($_REQUEST["concurrencyremote"] == 0)	  $_REQUEST["concurrencyremote"] = "0 (".$LANG->_('remote delivery disabled').")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">concurrencylocal, concurrencyremote<br>(<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
+    <th colspan="3" align="left">concurrencylocal, concurrencyremote<br>(<?php echo $LANG->_('Maximum simultaneous deliveries')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Local')?></td>
-        <td class="<?=$class?>"><?=$_REQUEST["concurrencylocal"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Local')?></td>
+        <td class="<?php echo $class?>"><?=$_REQUEST["concurrencylocal"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Remote')?></td>
-        <td class="<?=$class?>"><?=$_REQUEST["concurrencyremote"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Remote')?></td>
+        <td class="<?php echo $class?>"><?=$_REQUEST["concurrencyremote"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -89,35 +89,35 @@ function concurrencylocal_print_view($host) {
 function concurrencylocal_print_form() {
 	global $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
+      <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?php echo $LANG->_('Maximum simultaneous deliveries')?>)</th>
 <?php if($_REQUEST["attrib"] == "concurrencylocal") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Local')?></td>
-          <td><?php echo pql_format_error_span($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?=$_REQUEST["concurrencylocal"]?>"> <?=$LANG->_('Default')?>: 10</td>
+          <td class="title"><?php echo $LANG->_('Local')?></td>
+          <td><?php echo pql_format_error_span($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?php echo $_REQUEST["concurrencylocal"]?>"> <?=$LANG->_('Default')?>: 10</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == "concurrencyremote") { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Remote')?></td>
-          <td><?php echo pql_format_error_span($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?=$_REQUEST["concurrencyremote"]?>"> <?=$LANG->_('Default')?>: 20</td>
+          <td class="title"><?php echo $LANG->_('Remote')?></td>
+          <td><?php echo pql_format_error_span($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?php echo $_REQUEST["concurrencyremote"]?>"> <?=$LANG->_('Default')?>: 20</td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to set the default values')?>.</td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('Leave the fields empty to set the default values')?>.</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }
@@ -180,13 +180,13 @@ function concurrencylocal_help() {
 	global $LANG;
 ?>
 <?php if($_REQUEST["attrib"] == "concurrencylocal") { ?>
-	<b><?=$LANG->_('Local')?></b><br>
+	<b><?php echo $LANG->_('Local')?></b><br>
 	Maximum number of simultaneous local delivery attempts.
 	Default: 10.  If 0, local deliveries will be put on
 	hold.  concurrencylocal is limited at compile time to
 	120.
 <?php } if($_REQUEST["attrib"] == "concurrencyremote") { ?>
-	<b><?=$LANG->_('Remote')?></b><br>
+	<b><?php echo $LANG->_('Remote')?></b><br>
 	Maximum number of simultaneous remote delivery
 	attempts.  Default: 20.  If 0, remote deliveries will
 	be put on hold.  concurrencyremote is limited at

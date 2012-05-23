@@ -48,35 +48,35 @@ function attribute_print_form() {
 	}
 	$spamassassin[3] = $tmp;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for user %user%'), array('what' => $LANG->_('Mail header line'), 'user' => $_REQUEST["user"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Where')?></td>
-          <td class="title"><input type="text" name="where" value="<?=$spamassassin[1]?>" size="50"></td>
+          <td class="title"><?php echo $LANG->_('Where')?></td>
+          <td class="title"><input type="text" name="where" value="<?php echo $spamassassin[1]?>" size="50"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('X-Spam-???')?></td>
-          <td class="title"><input type="text" name="xspam" value="<?=$spamassassin[2]?>" size="50"></td>
+          <td class="title"><?php echo $LANG->_('X-Spam-???')?></td>
+          <td class="title"><input type="text" name="xspam" value="<?php echo $spamassassin[2]?>" size="50"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('What')?></td>
-          <td class="title"><input type="text" name="what" value="<?=$spamassassin[3]?>" size="50"></td>
+          <td class="title"><?php echo $LANG->_('What')?></td>
+          <td class="title"><input type="text" name="what" value="<?php echo $spamassassin[3]?>" size="50"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="2">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["spamassassin"]?>">
-    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["spamassassin"]?>">
+    <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

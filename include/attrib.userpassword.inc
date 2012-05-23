@@ -101,11 +101,11 @@ function attribute_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Set password')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Set password')?></th>
 <?php if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"]) { ?>
         <!-- Password scheme -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
+          <td class="title"><?php echo $LANG->_('Password encryption scheme')?></td>
           <td>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
 <?php	if(preg_match('/,/', $passwordschemes)) {
@@ -113,20 +113,20 @@ function attribute_print_form() {
 			$schemes = explode(",", $passwordschemes);
 			foreach($schemes as $scheme) {
 ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
+            <input type="radio" name="pwscheme" value="<?php echo $scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 
 <?php		}
 		} elseif($passwordschemes) { ?>
-            <?=$LANG->_('Scheme')?>: <b><?=$passwordschemes?></b>
-            <input type="hidden" name="pwscheme" value="<?=$passwordschemes?>">
+            <?php echo $LANG->_('Scheme')?>: <b><?=$passwordschemes?></b>
+            <input type="hidden" name="pwscheme" value="<?php echo $passwordschemes?>">
 <?php	} else { ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>" CHECKED><?=$scheme?>
-            <input type="radio" name="pwscheme" value="<?=$defaultpasswordscheme?>"><?=$defaultpasswordscheme?>
+            <input type="radio" name="pwscheme" value="<?php echo $scheme?>" CHECKED><?=$scheme?>
+            <input type="radio" name="pwscheme" value="<?php echo $defaultpasswordscheme?>"><?=$defaultpasswordscheme?>
 <?php	} ?>
           </td>
         </tr>
 <?php } elseif($defaultpasswordscheme and !$principal) { ?>
-        <input type="hidden" name="pwscheme" value="<?=$defaultpasswordscheme?>">
+        <input type="hidden" name="pwscheme" value="<?php echo $defaultpasswordscheme?>">
 <?php } elseif($principal) { ?>
         <input type="hidden" name="pwscheme" value="KERBEROS">
 <?php } ?>
@@ -134,18 +134,18 @@ function attribute_print_form() {
 <?php if($principal) { ?>
         <!-- Kerberos V principal -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Kerberos V principal')?></td>
-          <td><?=$principal?></td>
+          <td class="title"><?php echo $LANG->_('Kerberos V principal')?></td>
+          <td><?php echo $principal?></td>
         </tr>
-        <input type="hidden" name="principal" value="<?=$principal?>">
+        <input type="hidden" name="principal" value="<?php echo $principal?>">
 
 <?php } ?>
         <!-- Password -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">
-            <?=$LANG->_('Password')?>
+            <?php echo $LANG->_('Password')?>
 <?php if(pql_get_define("PQL_CONF_STRONGPASSWD_USE")){ ?> 
-            <br><?=$LANG->_('Re-Type Password')?><br>
+            <br><?php echo $LANG->_('Re-Type Password')?><br>
 <?php } ?>
             <?php echo pql_format_error_span($error["userpassword"]) . "\n"; ?>
           </td>
@@ -167,7 +167,7 @@ function attribute_print_form() {
           <td>
             <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
             <table>
-              <?=$LANG->_('A password can only contain numbers and letters, special characters are not allowed')?>
+              <?php echo $LANG->_('A password can only contain numbers and letters, special characters are not allowed')?>
             </table>
           </td>
         </tr>
@@ -176,12 +176,12 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="domain" value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"   value="<?=$_REQUEST["user"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="domain" value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"   value="<?php echo $_REQUEST["user"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

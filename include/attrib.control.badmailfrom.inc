@@ -76,7 +76,7 @@ function badmailfrom_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left">badmailfrom
       <tr>
-        <td class="title" colspan="3"><?=$LANG->_('Blocked senders')?></td>
+        <td class="title" colspan="3"><?php echo $LANG->_('Blocked senders')?></td>
       </tr>
 
 <?php
@@ -98,35 +98,35 @@ function badmailfrom_print_view($host) {
 function badmailfrom_print_form() {
     global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["badmailfrom"]); $i++) { ?>
-    <input type="hidden" name="badmailfrom[<?=$i?>]" value="<?=$_REQUEST["badmailfrom"][$i]?>">
+    <input type="hidden" name="badmailfrom[<?php echo $i?>]" value="<?=$_REQUEST["badmailfrom"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">badmailfrom (<?=$LANG->_('Blocked senders')?>)
+      <th colspan="3" align="left">badmailfrom (<?php echo $LANG->_('Blocked senders')?>)
 <?php $class = pql_format_table(0); ?>
         <tr>
-          <td class="title"><?=$LANG->_('Email')?></td>
-          <td class="<?=$class?>">
+          <td class="title"><?php echo $LANG->_('Email')?></td>
+          <td class="<?php echo $class?>">
             <?php echo pql_format_error_span($error["badmailfrom"][$i]); ?>
-            <input type="text" name="badmailfrom[<?=$i?>]" size="40">
+            <input type="text" name="badmailfrom[<?php echo $i?>]" size="40">
           </td>
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To block a whole domain simply leave user empty (eg. @domain.com). To delete a blocked address remove the value and save')?>.</td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('To block a whole domain simply leave user empty (eg. @domain.com). To delete a blocked address remove the value and save')?>.</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

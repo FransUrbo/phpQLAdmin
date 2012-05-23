@@ -28,31 +28,31 @@ function attribute_print_form($type = "modify") {
     global $error, $LANG;
     $attrib = $_REQUEST["attrib"];
 ?>
-  <form enctype="multipart/form-data" action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form enctype="multipart/form-data" action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add JPEG photo for user %user%'), array('user' => $_REQUEST["user"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Filename')?></td>
+          <td class="title"><?php echo $LANG->_('Filename')?></td>
           <td>
-            <input type="file" name="<?=$attrib?>" size="70">
+            <input type="file" name="<?php echo $attrib?>" size="70">
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;</td>
-          <td><?=$LANG->_('Leave empty to remove photo')?></td>
+          <td><?php echo $LANG->_('Leave empty to remove photo')?></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="2">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"   value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $attrib?>">
+    <input type="hidden" name="domain" value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn" value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"   value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Upload')?>">
+    <input type="submit" value="<?php echo $LANG->_('Upload')?>">
   </form>
 <?php
 }

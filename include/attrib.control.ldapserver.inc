@@ -155,48 +155,48 @@ function ldapserver_print_view($host) {
 	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Server connection options')?></th>
+    <th colspan="3" align="left"><?php echo $LANG->_('Server connection options')?></th>
 <?php pql_format_table_single( $tbl_txt, $tbl_url, $_REQUEST["ldapserver"], pql_get_define("PQL_ATTR_LDAPSERVER"), $class); ?>
 <?php $class=pql_format_table(0); ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Base DN')?></td>
-        <td><?=$_REQUEST["ldapbasedn"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPBASEDN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPBASEDN")?>"></a></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Base DN')?></td>
+        <td><?php echo $_REQUEST["ldapbasedn"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPBASEDN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPBASEDN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Login')?></td>
-        <td><?=$_REQUEST["ldaplogin"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPLOGIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPLOGIN")?>"></a></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Login')?></td>
+        <td><?php echo $_REQUEST["ldaplogin"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPLOGIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPLOGIN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Password')?></td>
-        <td><?=$_REQUEST["ldappassword"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPPASSWORD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPPASSWORD")?>"></a></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Password')?></td>
+        <td><?php echo $_REQUEST["ldappassword"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPPASSWORD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPPASSWORD")?>"></a></td>
       </tr>
 
 <?php if($_REQUEST["ldapserver"] == $LANG->_('Not set') or $_REQUEST["ldapbasedn"] == $LANG->_('Not set')) { ?>
 <?php $class=pql_format_table(0); ?>
       <tr class="subtitle">
-        <td colspan="3"><span class="error"><?=$LANG->_('You have to set both, host and base dn to make qmail-ldap work')?>.</td>
+        <td colspan="3"><span class="error"><?php echo $LANG->_('You have to set both, host and base dn to make qmail-ldap work')?>.</td>
       </tr>
 
 <?php } ?>
 <?php $class=pql_format_table(0); ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Group login')?></td>
-        <td><?=$_REQUEST["ldapgrouplogin"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_GROUP_LOGIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_GROUP_LOGIN")?>"></a></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Group login')?></td>
+        <td><?php echo $_REQUEST["ldapgrouplogin"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_GROUP_LOGIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_GROUP_LOGIN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Group login password')?></td>
-        <td><?=$_REQUEST["ldapgrouppassword"]?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_GROUP_PASSWD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_GROUP_PASSWD")?>"></a></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Group login password')?></td>
+        <td><?php echo $_REQUEST["ldapgrouppassword"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_GROUP_PASSWD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_GROUP_PASSWD")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -208,54 +208,54 @@ function ldapserver_print_view($host) {
 function ldapserver_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('LDAP server connection option')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('LDAP server connection option')?></th>
 <?php if($_REQUEST["attrib"] == 'ldapserver') {
 	 	for($i=0; $i < count($_REQUEST["ldapserver"]); $i++) { ?>
-	<input type="hidden" name="ldapserver[<?=$i?>]" value="<?=$_REQUEST["ldapserver"][$i]?>">
+	<input type="hidden" name="ldapserver[<?php echo $i?>]" value="<?=$_REQUEST["ldapserver"][$i]?>">
 <?php 	} ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('LDAP Server')?></td>
+          <td class="title"><?php echo $LANG->_('LDAP Server')?></td>
           <td>
             <?php echo pql_format_error_span($error["ldapserver"][$i]); ?>
-            <input type="text" name="ldapserver[<?=$i?>]" size="40">
+            <input type="text" name="ldapserver[<?php echo $i?>]" size="40">
           </td>
         </tr>
 
 <?php } if(($_REQUEST["attrib"] == 'ldapbasedn') or !is_array($_REQUEST["ldapserver"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Base DN')?></td>
-          <td><?php echo pql_format_error_span($error["ldapbasedn"]); ?><input type="text" name="ldapbasedn" value="<?=$_REQUEST["ldapbasedn"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Base DN')?></td>
+          <td><?php echo pql_format_error_span($error["ldapbasedn"]); ?><input type="text" name="ldapbasedn" value="<?php echo $_REQUEST["ldapbasedn"]?>"></td>
         </tr>
 
 <?php } if(!is_array($_REQUEST["ldapserver"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td colspan="2"><input type="checkbox" name="ldaplogin_use" value="1" <?php if($_REQUEST["ldaplogin_use"] == "1"){ echo "checked"; } ?>> <?=$LANG->_('Use login and password')?></td>
+          <td colspan="2"><input type="checkbox" name="ldaplogin_use" value="1" <?php if($_REQUEST["ldaplogin_use"] == "1"){ echo "checked"; } ?>> <?php echo $LANG->_('Use login and password')?></td>
         </tr>
 
 <?php } if(($_REQUEST["attrib"] == 'ldaplogin') or !is_array($_REQUEST["ldapserver"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Login (valid dn)')?></td>
-          <td><?php echo pql_format_error_span($error["ldaplogin"]); ?><input type="text" name="ldaplogin" value="<?=$_REQUEST["ldaplogin"]?>" size="80"></td>
+          <td class="title"><?php echo $LANG->_('Login (valid dn)')?></td>
+          <td><?php echo pql_format_error_span($error["ldaplogin"]); ?><input type="text" name="ldaplogin" value="<?php echo $_REQUEST["ldaplogin"]?>" size="80"></td>
         </tr>
 
 <?php } if(($_REQUEST["attrib"] == 'ldappassword') or !is_array($_REQUEST["ldapserver"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password')?></td>
-          <td><?php echo pql_format_error_span($error["ldappassword"]); ?><input type="password" name="ldappassword" value="<?=$_REQUEST["ldappassword"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Password')?></td>
+          <td><?php echo pql_format_error_span($error["ldappassword"]); ?><input type="password" name="ldappassword" value="<?php echo $_REQUEST["ldappassword"]?>"></td>
         </tr>
 
 <?php } if(($_REQUEST["attrib"] == 'ldapgrouplogin') or !is_array($_REQUEST["ldapserver"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Group login')?></td>
+          <td class="title"><?php echo $LANG->_('Group login')?></td>
           <td><?php echo pql_format_error_span($error["ldapgrouplogin"]); ?><input type="text" name="ldapgrouplogin" size="80"></td>
         </tr>
 
 <?php } if(($_REQUEST["attrib"] == 'ldapgrouppassword') or !is_array($_REQUEST["ldapserver"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Group login password')?></td>
+          <td class="title"><?php echo $LANG->_('Group login password')?></td>
           <td><?php echo pql_format_error_span($error["ldapgrouppassword"]); ?><input type="password" name="ldapgrouppassword"></td>
         </tr>
 
@@ -263,7 +263,7 @@ function ldapserver_print_form() {
 <?php if($_REQUEST["attrib"] == 'ldapserver') { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td colspan="2"><input type="checkbox" name="ldap_test" value="1" <?php if($_REQUEST["ldap_test"] == "1") { echo "checked"; }?>>
-			<?=$LANG->_('Test connection after submitting form (it will be tested for each server seperatly)')?>
+			<?php echo $LANG->_('Test connection after submitting form (it will be tested for each server seperatly)')?>
           </td>
         </tr>
 
@@ -278,11 +278,11 @@ function ldapserver_print_form() {
 
     <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="type"     value="modify">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost"   value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost"   value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }
@@ -353,7 +353,7 @@ function ldapserver_help() {
 	global $LANG;
 ?>
 <?php if($_REQUEST["attrib"] == 'ldapserver') { ?>
-  <b><?=$LANG->_('Host')?></b><br>
+  <b><?php echo $LANG->_('Host')?></b><br>
 	Your ldap server's hostname. If you want more than one ldap-server for redundancy,
 	use the "add more servers" link to add another server. To clear additional server simply
 	remove the value and save.<p>
@@ -362,24 +362,24 @@ function ldapserver_help() {
     not encoded (such as <u>ldapi:///var/run/ldapi</u> - phpQLAdmin will automatically URL encode the value for you).<br>
     <b>NOTE 2:</b> If using LDAPI, the connection will <u><i>not</i></u> be tested!
 <?php } if($_REQUEST["attrib"] == 'ldapbasedn') { ?>
-  <b><?=$LANG->_('Base DN')?></b><br>
+  <b><?php echo $LANG->_('Base DN')?></b><br>
     The BaseDN for ldap searches. See OpenLDAP's documentation for more information about BaseDN. Required.
     <br>
     <i>Example: <u>o=yourcorp,c=ch</u></i>
 <?php } if($_REQUEST["attrib"] == 'ldaplogin') { ?>
-  <b><?=$LANG->_('Login')?></b><br>
+  <b><?php echo $LANG->_('Login')?></b><br>
 	If you need to authentificate against your ldap server to retrieve the user information, this is the username to do so.
     <br>
 	<i>Note1: This is a ldap dn, not a unix username.</i>
     <br>
 	<i>Note2: If unset, all searches will be done anonymously so make sure everyone can read the relevant values.</i>
 <?php } if($_REQUEST["attrib"] == 'ldappassword') { ?>
-  <b><?=$LANG->_('Password')?></b><br>
+  <b><?php echo $LANG->_('Password')?></b><br>
 	The password for the user defined in ldaplogin if needed.
     <br>
     <i>Note: This should be entered as cleartext, not encrypted!</i>
 <?php } if($_REQUEST["attrib"] == 'ldapgrouplogin') { ?>
-  <b><?=$LANG->_('Group login')?></b><br>
+  <b><?php echo $LANG->_('Group login')?></b><br>
 	If qmail-group need to authentificate against your ldap server to retrieve the user information, this is the username
     to do so.
     <br>
@@ -387,7 +387,7 @@ function ldapserver_help() {
     <br>
 	<i>Note2: If unset, it will default to the value in ldaplogin.</i>
 <?php } if($_REQUEST["attrib"] == 'ldapgrouppassword') { ?>
-  <b><?=$LANG->_('Group login password')?></b><br>
+  <b><?php echo $LANG->_('Group login password')?></b><br>
 	The password for the user defined in ldapgrouplogin if needed.
     <br>
     <b>NOTE 1:</b> This should be entered as cleartext, not encrypted!</i>

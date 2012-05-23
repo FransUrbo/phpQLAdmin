@@ -39,12 +39,12 @@ function smtpclustercookie_print_view($host) {
 	smtpclustercookie_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">smtpclustercookie (<?=$LANG->_('Cluster cookie')?>)
+    <th colspan="3" align="left">smtpclustercookie (<?php echo $LANG->_('Cluster cookie')?>)
       <tr class="<?php pql_format_table(); ?>">
 <?php $class=pql_format_table(0); ?>
-        <td class="title"><?=$LANG->_('Cookie')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["smtpclustercookie"]) { echo $_REQUEST["smtpclustercookie"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE")?>&type=add"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Cookie')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["smtpclustercookie"]) { echo $_REQUEST["smtpclustercookie"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE")?>&type=add"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -57,23 +57,23 @@ function smtpclustercookie_print_view($host) {
 function smtpclustercookie_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="2" align="left">smtpclustercookie (<?=$LANG->_('Cluster cookie')?>)
+      <th colspan="2" align="left">smtpclustercookie (<?php echo $LANG->_('Cluster cookie')?>)
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Cookie')?></td>
-          <td><?php echo pql_format_error_span($error["smtpclustercookie"]); ?><input type="text" name="smtpclustercookie" value="<?=$_REQUEST["smtpclustercookie"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Cookie')?></td>
+          <td><?php echo pql_format_error_span($error["smtpclustercookie"]); ?><input type="text" name="smtpclustercookie" value="<?php echo $_REQUEST["smtpclustercookie"]?>"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="type"   value="<?=$_REQUEST["type"]?>">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="type"   value="<?php echo $_REQUEST["type"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

@@ -427,7 +427,7 @@ if(!empty($DNs[0])) {
 	
   if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])) {
 ?>
-    <form action="<?=$link?>" method="post">
+    <form action="<?php echo $link?>" method="post">
       <input type="submit" value="Continue">
     </form>
 <?php

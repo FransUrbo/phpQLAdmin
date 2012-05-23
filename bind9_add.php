@@ -19,11 +19,11 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 
   <br><br>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('DNS domain to branch'))); ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Domain name')?></td>
+          <td class="title"><?php echo $LANG->_('Domain name')?></td>
           <td><input type="text" name="domainname" size="40"></td>
         </tr>
 <?php	if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
@@ -32,8 +32,8 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Update QLC object(s)')?></td>
-          <td><input type="checkbox" name="qlc" CHECKED>&nbsp;<?=$LANG->_('Yes')?></td>
+          <td class="title"><?php echo $LANG->_('Update QLC object(s)')?></td>
+          <td><input type="checkbox" name="qlc" CHECKED>&nbsp;<?php echo $LANG->_('Yes')?></td>
         </tr>
 <?php	} ?>
       </th>
@@ -41,10 +41,10 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 
     <input type="hidden" name="action"          value="add">
     <input type="hidden" name="type"            value="domain">
-    <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domain"          value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
+    <input type="hidden" name="view"            value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="rootdn"          value="<?php echo $_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"          value="<?php echo $_REQUEST["domain"]?>">
+    <input type="hidden" name="dns_domain_name" value="<?php echo $_REQUEST["dns_domain_name"]?>">
     <input type="submit" value="<?php echo "--&gt;&gt;"; ?>">
   </form>
 <?php
@@ -133,9 +133,9 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 
   <br><br>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Add host to domain')?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Add host to domain')?>
         <tr class="title">
           <td></td>
           <td>Source</td>
@@ -170,7 +170,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Host name</td>
-          <td><input type="text" name="hostname" value="<?=$_REQUEST["hostname"]?>" size="15"></td>
+          <td><input type="text" name="hostname" value="<?php echo $_REQUEST["hostname"]?>" size="15"></td>
           <td>
             <select name="record_type">
               <option value="">Please select record type</option>
@@ -183,13 +183,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
               <option value="txt" <?php if($_REQUEST["record_type"] == 'txt') { echo "SELECTED"; } ?>>TXT</option>
             </select>
           </td>
-          <td><input type="text" name="dest" value="<?=$_REQUEST["dest"]?>" size="20"></td>
+          <td><input type="text" name="dest" value="<?php echo $_REQUEST["dest"]?>" size="20"></td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="4">
             <img src="images/info.png" width="16" height="16" alt="" border="0">
-            <?=$LANG->_('\bNOTE\B: If destination is not IP and not within current zone, it \umust\U end with dot!')?>
+            <?php echo $LANG->_('\bNOTE\B: If destination is not IP and not within current zone, it \umust\U end with dot!')?>
           </td>
         </tr>
       </th>
@@ -198,14 +198,14 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
     <input type="hidden" name="submit"          value="0">
     <input type="hidden" name="action"          value="add">
     <input type="hidden" name="type"            value="host">
-    <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="domain"          value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domainname"      value="<?=$_REQUEST["domainname"]?>">
-    <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
+    <input type="hidden" name="view"            value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="domain"          value="<?php echo $_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"          value="<?php echo $_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domainname"      value="<?php echo $_REQUEST["domainname"]?>">
+    <input type="hidden" name="dns_domain_name" value="<?php echo $_REQUEST["dns_domain_name"]?>">
 <?php if($_REQUEST["host"] and $_REQUEST["ref"]) { ?> 
-    <input type="hidden" name="host"            value="<?=$_REQUEST["host"]?>">
-    <input type="hidden" name="ref"             value="<?=$_REQUEST["ref"]?>">
+    <input type="hidden" name="host"            value="<?php echo $_REQUEST["host"]?>">
+    <input type="hidden" name="ref"             value="<?php echo $_REQUEST["ref"]?>">
 <?php } ?>
     <br>
     <input type="submit" value="Save">

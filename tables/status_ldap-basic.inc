@@ -12,31 +12,31 @@ if($timestamp_current and $timestamp_start) {
 // {{{ Basic LDAP server status
 ?>
 
-  <span class="title1"><?=$LANG->_('Basic LDAP Server Status')?></span>
+  <span class="title1"><?php echo $LANG->_('Basic LDAP Server Status')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('LDAP Server Status')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('LDAP Server Status')?>
       <tr>
-        <td class="title"><?=$LANG->_('LDAP Server Version')?></td>
+        <td class="title"><?php echo $LANG->_('LDAP Server Version')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$version?></td>
+        <td class="<?php echo $class?>"><?=$version?></td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('LDAP Server Startup Time')?></td>
+        <td class="title"><?php echo $LANG->_('LDAP Server Startup Time')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$time_start?></td>
+        <td class="<?php echo $class?>"><?=$time_start?></td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('Current Time on Server')?></td>
+        <td class="title"><?php echo $LANG->_('Current Time on Server')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$time_current?></td>
+        <td class="<?php echo $class?>"><?=$time_current?></td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('LDAP Server Uptime')?></td>
+        <td class="title"><?php echo $LANG->_('LDAP Server Uptime')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$time_uptime?></td>
+        <td class="<?php echo $class?>"><?=$time_uptime?></td>
       </tr>
     </th>
   </table>
@@ -50,16 +50,16 @@ if(is_array($listeners)) {
 ?>
   <br>
 
-  <span class="title1"><?=$LANG->_('LDAP Server listeners opened')?></span>
+  <span class="title1"><?php echo $LANG->_('LDAP Server listeners opened')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">
 <?php foreach($listeners as $nr => $url) {
 		$url = urldecode($url);
 ?>
       <tr>
-        <td class="title"><?=$LANG->_('Listener #').$nr?></td>
+        <td class="title"><?php echo $LANG->_('Listener #').$nr?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$url?></td>
+        <td class="<?php echo $class?>"><?=$url?></td>
       </tr>
 <?php } ?>
     </th> 
@@ -89,14 +89,14 @@ if(is_array($overlays)) {
 ?>
   <br>
 
-  <span class="title1"><?=$LANG->_('LDAP Server overlays')?></span>
+  <span class="title1"><?php echo $LANG->_('LDAP Server overlays')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">
 <?php foreach($overlays as $nr => $overlay) { ?>
       <tr>
-        <td class="title"><?=$LANG->_('Overlay #').$nr?></td>
+        <td class="title"><?php echo $LANG->_('Overlay #').$nr?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$overlay?></td>
+        <td class="<?php echo $class?>"><?=$overlay?></td>
       </tr>
 <?php } ?>
     </th> 
@@ -113,13 +113,13 @@ if(is_array($max_file_descriptors)) {
 ?>
   <br>
 
-  <span class="title1"><?=$LANG->_('LDAP Server Configuration Setup')?></span>
+  <span class="title1"><?php echo $LANG->_('LDAP Server Configuration Setup')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">
       <tr>
-        <td class="title"><?=$LANG->_('Max File Descriptors')?></td>
+        <td class="title"><?php echo $LANG->_('Max File Descriptors')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$max_file_descriptors?></td>
+        <td class="<?php echo $class?>"><?=$max_file_descriptors?></td>
       </tr>
     </th>
   </table>

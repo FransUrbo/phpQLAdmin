@@ -81,19 +81,19 @@ function attribute_print_form($type = "set") {
 	  // Java script etc taken from http://dynarch.com/mishoo/calendar.epl
 ?>
 
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3">
       <th colspan="3" align="left">
 <?php if($_REQUEST["set"] == 'deleted') { ?>
-        <?=$LANG->_('Time when the account should be deleted')?></th>
+        <?php echo $LANG->_('Time when the account should be deleted')?></th>
 <?php } else { ?>
-        <?=$LANG->_('Time when the account is disabled')?></th>
+        <?php echo $LANG->_('Time when the account is disabled')?></th>
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
 <?php if($_REQUEST["set"] == 'deleted') { ?>
-          <td class="title"><?=$LANG->_('Deletion date')?></td>
+          <td class="title"><?php echo $LANG->_('Deletion date')?></td>
 <?php } else { ?>
-          <td class="title"><?=$LANG->_('Expiration date')?></td>
+          <td class="title"><?php echo $LANG->_('Expiration date')?></td>
 <?php } ?>
           <td><input type="text" name="date" id="f_date_c" readonly="1" /></td>
           <td><img src="jscalendar/img.gif" id="f_trigger_c" style="cursor: pointer; border: 1px solid red;" title="Date selector"
@@ -102,20 +102,20 @@ function attribute_print_form($type = "set") {
       </th>
     </table>
 
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
 <?php if($_REQUEST["attrib"] == sprintf("%s", pql_get_define("PQL_ATTR_ISACTIVE"))) { ?>
     <input type="hidden" name="submit"   value="5">
     <input type="hidden" name="action"   value="set">
-    <input type="hidden" name="set"      value="<?=$_REQUEST["set"]?>">
+    <input type="hidden" name="set"      value="<?php echo $_REQUEST["set"]?>">
 <?php } else { ?>
     <input type="hidden" name="submit"   value="1">
 <?php } ?>
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 
   <script type="text/javascript">

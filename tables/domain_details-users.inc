@@ -1,12 +1,12 @@
 <?php require("./left-head.html"); ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Registred users')?></th>
+    <th colspan="3" align="left"><?php echo $LANG->_('Registred users')?></th>
       <tr>
         <td class="title"></td>
-        <td class="title"><?=$LANG->_('Status')?></td>
-        <td class="title"><?=$LANG->_('Address')?></td>
+        <td class="title"><?php echo $LANG->_('Status')?></td>
+        <td class="title"><?php echo $LANG->_('Address')?></td>
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID"))) { ?>
-        <td class="title"><?=$LANG->_('Username')?></td>
+        <td class="title"><?php echo $LANG->_('Username')?></td>
 <?php } else { ?>
         <td class="title"><?php echo pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);?></td>
 <?php } ?>
@@ -84,9 +84,9 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <!-- Options -->
-        <td><a href="<?=$urldet?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$userdn?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a></td>
+        <td><a href="<?php echo $urldet?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$userdn?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a></td>
         <!-- Status -->
-        <td><?=$status?></td>
+        <td><?php echo $status?></td>
         <!-- User -->
         <td nowrap="1">
 <?php
@@ -96,7 +96,7 @@
         </td>
 <?php				if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == sprintf("%s", pql_get_define("PQL_ATTR_UID"))) { ?>
         <!-- Username -->
-        <td><?=$uid?></td>
+        <td><?php echo $uid?></td>
 <?php				} ?>
       </tr>
 
@@ -105,7 +105,7 @@
 		}
 ?>
       <tr class="subtitle">
-        <td colspan="4"><a href="user_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new user')?></a></td>
+        <td colspan="4"><a href="user_add.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new user')?></a></td>
       </tr>
     </th>
   </table>

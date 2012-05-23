@@ -36,12 +36,12 @@ function ldaprebind_print_view($host) {
 	ldaprebind_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">ldaprebind (<?=$LANG->_('Rebind to LDAP server')?>)</th>
+    <th colspan="3" align="left">ldaprebind (<?php echo $LANG->_('Rebind to LDAP server')?>)</th>
 <?php $class=pql_format_table(0); ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Do rebind')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["ldaprebind"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>&<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>=<?php if(@$_REQUEST["ldaprebind"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPREBIND")?>"></a></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Do rebind')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["ldaprebind"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>&<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>=<?php if(@$_REQUEST["ldaprebind"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPREBIND")?>"></a></td>
       </tr>
     </th>
   </table>

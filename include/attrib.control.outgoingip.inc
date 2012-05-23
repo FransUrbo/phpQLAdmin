@@ -76,12 +76,12 @@ function outgoingip_print_view($host) {
 	outgoingip_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">outgoingip (<?=$LANG->_('IP that qmail-remote binds to')?>)
+    <th colspan="3" align="left">outgoingip (<?php echo $LANG->_('IP that qmail-remote binds to')?>)
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title">IP</td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["outgoingip"]) { echo $_REQUEST["outgoingip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_OUTGOINGIP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_OUTGOINGIP")?>"></a></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["outgoingip"]) { echo $_REQUEST["outgoingip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_OUTGOINGIP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_OUTGOINGIP")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -94,22 +94,22 @@ function outgoingip_print_view($host) {
 function outgoingip_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="2" align="left">outgoingip (<?=$LANG->_('IP that qmail-remote binds to')?>)</th>
+      <th colspan="2" align="left">outgoingip (<?php echo $LANG->_('IP that qmail-remote binds to')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('IP Address')?></td>
-          <td><?php echo pql_format_error_span($error["outgoingip"]); ?><input type="text" name="outgoingip" value="<?=$_REQUEST["outgoingip"]?>"></td>
+          <td class="title"><?php echo $LANG->_('IP Address')?></td>
+          <td><?php echo pql_format_error_span($error["outgoingip"]); ?><input type="text" name="outgoingip" value="<?php echo $_REQUEST["outgoingip"]?>"></td>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

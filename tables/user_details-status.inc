@@ -22,29 +22,29 @@ if($status == "deleted") {
 ?>
   <!-- accountstatus -->
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left"><?=$LANG->_('Account status')?></th>
+    <th colspan="2" align="left"><?php echo $LANG->_('Account status')?></th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Account expiration date</td>
-        <td><?=$time_expiration?></td>
-        <td align="center"><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_EXPIRATION")?>&user=<?=$url["user"]?>&set=expiration&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
+        <td><?php echo $time_expiration?></td>
+        <td align="center"><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_EXPIRATION")?>&user=<?=$url["user"]?>&set=expiration&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
       </tr>
 
-      <form action="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>" method="post" accept-charset="UTF-8">
+      <form action="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>" method="post" accept-charset="UTF-8">
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Status</td>
           <td>
             <select name="set">
-              <option value="active"   <?php if($status == "active")   { echo "SELECTED"; } ?>><?=$LANG->_('Active')?></option>
-              <option value="disabled" <?php if($status == "disabled") { echo "SELECTED"; } ?>><?=$LANG->_('Disabled')?></option>
-              <option value="deleted"  <?php if($status == "deleted")  { echo "SELECTED"; } ?>><?=$LANG->_('Deleted')?></option>
-              <option value="noaccess" <?php if($status == "noaccess") { echo "SELECTED"; } ?>><?=$LANG->_('No access')?></option>
+              <option value="active"   <?php if($status == "active")   { echo "SELECTED"; } ?>><?php echo $LANG->_('Active')?></option>
+              <option value="disabled" <?php if($status == "disabled") { echo "SELECTED"; } ?>><?php echo $LANG->_('Disabled')?></option>
+              <option value="deleted"  <?php if($status == "deleted")  { echo "SELECTED"; } ?>><?php echo $LANG->_('Deleted')?></option>
+              <option value="noaccess" <?php if($status == "noaccess") { echo "SELECTED"; } ?>><?php echo $LANG->_('No access')?></option>
 <?php if ($_SESSION["OLD_STYLE_QUOTA"]) { ?>
-              <option value="nopop"    <?php if($status == "nopop")    { echo "SELECTED"; } ?>><?=$LANG->_('POP Locked')?></option>
+              <option value="nopop"    <?php if($status == "nopop")    { echo "SELECTED"; } ?>><?php echo $LANG->_('POP Locked')?></option>
 <?php } ?>
             </select>
           </td>
           <td>
-            <input type="submit" value="<?=$LANG->_('Change')?>">
+            <input type="submit" value="<?php echo $LANG->_('Change')?>">
           </td>
         </form>
       </tr>
@@ -52,7 +52,7 @@ if($status == "deleted") {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Account deletion date</td>
-        <td><?=$date?></td>
+        <td><?php echo $date?></td>
         <td></td>
       </tr>
 <?php } ?>

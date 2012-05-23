@@ -76,12 +76,12 @@ function qmqpcip_print_view($host) {
 	qmqpcip_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-	 <th colspan="3" align="left">qmqpcip (<?=$LANG->_('QMQP Client IP')?>)
+	 <th colspan="3" align="left">qmqpcip (<?php echo $LANG->_('QMQP Client IP')?>)
 <?php $class = pql_format_table(0); ?>
       <tr>
         <td class="title">IP</td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["qmqpcip"]) { echo $_REQUEST["qmqpcip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QMQPCIP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QMQPCIP")?>"></a></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["qmqpcip"]) { echo $_REQUEST["qmqpcip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QMQPCIP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QMQPCIP")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -94,15 +94,15 @@ function qmqpcip_print_view($host) {
 function qmqpcip_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">qmqpcip (<?=$LANG->_('QMQP Client IP')?>)</th>
+      <th colspan="3" align="left">qmqpcip (<?php echo $LANG->_('QMQP Client IP')?>)</th>
 <?php $class = pql_format_table(0); ?>
         <tr>
-          <td class="title"><?=$LANG->_('IP Address')?></td>
-          <td class="<?=$class?>">
+          <td class="title"><?php echo $LANG->_('IP Address')?></td>
+          <td class="<?php echo $class?>">
             <?php echo pql_format_error_span($error["qmqpcip"]); ?>
-            <input type="text" name="qmqpcip" value="<?=$_REQUEST["qmqpcip"]?>" size="40">
+            <input type="text" name="qmqpcip" value="<?php echo $_REQUEST["qmqpcip"]?>" size="40">
           </td>
         </tr>
       </th>
@@ -110,11 +110,11 @@ function qmqpcip_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

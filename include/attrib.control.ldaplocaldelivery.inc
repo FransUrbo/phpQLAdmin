@@ -36,12 +36,12 @@ function ldaplocaldelivery_print_view($host) {
 	ldaplocaldelivery_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">ldaplocaldelivery (<?=$LANG->_('Deliver locally if ldap didn\'t match a user')?>)
+    <th colspan="3" align="left">ldaplocaldelivery (<?php echo $LANG->_('Deliver locally if ldap didn\'t match a user')?>)
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Local deliveries')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["ldaplocaldelivery"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>&<?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>=<?php if(@$_REQUEST["ldaplocaldelivery"]) { echo "0"; } else { echo "1"; }?>&type=modify&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Local deliveries')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["ldaplocaldelivery"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>&<?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>=<?php if(@$_REQUEST["ldaplocaldelivery"]) { echo "0"; } else { echo "1"; }?>&type=modify&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>"></a></td>
       </tr>
     </th>
   </table>

@@ -275,11 +275,11 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 
 if($domainname) {
 ?>
-  <span class="title1"><?=$LANG->_('Organization name')?>: <?=pql_maybe_idna_decode(urldecode($domainname))?></span>
+  <span class="title1"><?php echo $LANG->_('Organization name')?>: <?=pql_maybe_idna_decode(urldecode($domainname))?></span>
 <?php
 } elseif($o) {
 ?>
-  <span class="title1"><?=$LANG->_('Organization name')?>: <?=urldecode($o)?></span>
+  <span class="title1"><?php echo $LANG->_('Organization name')?>: <?=urldecode($o)?></span>
 <?php
 }
 ?>

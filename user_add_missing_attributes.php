@@ -9,14 +9,14 @@ require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 ?>
 
-  <span class="title1"><?=$LANG->_('Object class violation')?></span>
+  <span class="title1"><?php echo $LANG->_('Object class violation')?></span>
   <br><br>
 
-  Sorry, but the request you tried to perform (modify attribute <b><?=$MISSING['attrib']?></b>)
+  Sorry, but the request you tried to perform (modify attribute <b><?php echo $MISSING['attrib']?></b>)
   did not work - the object you tried to modify is missing an object class.
   <br><br>
   To be able to fullfill the query, you will have to add the objectclass 
-  <b><?=$MISSING['objectclass']?></b> to the object.
+  <b><?php echo $MISSING['objectclass']?></b> to the object.
   <br>
   This objectclass however require the following attributes (which isn't in the object either):
   <br><br>

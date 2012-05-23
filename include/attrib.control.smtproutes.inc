@@ -110,34 +110,34 @@ function smtproutes_print_view($host) {
 	}
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">smtproutes (<?=$LANG->_('Defined SMTP routes')?>)</th>
+    <th colspan="3" align="left">smtproutes (<?php echo $LANG->_('Defined SMTP routes')?>)</th>
       <tr class="title">
-        <td><?=$LANG->_('Source domain')?></td>
+        <td><?php echo $LANG->_('Source domain')?></td>
         <td>&nbsp;</td>
-        <td><?=$LANG->_('Relay host')?></td>
+        <td><?php echo $LANG->_('Relay host')?></td>
         <td>&nbsp;</td>
-        <td><?=$LANG->_('Port')?></td>
+        <td><?php echo $LANG->_('Port')?></td>
         <td></td>
       </tr>
 <?php
 	if(!is_array($routes)) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td colspan="6"><?=$LANG->_('No routes defined')?></td>
+        <td colspan="6"><?php echo $LANG->_('No routes defined')?></td>
       </tr>
 <?php
 	} else {
 		foreach($routes as $route) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($route[0])?></td>
+        <td><?php echo pql_maybe_idna_decode($route[0])?></td>
         <td><b>=&gt;</b></td>
-        <td><?=pql_maybe_idna_decode($route[1])?></td>
+        <td><?php echo pql_maybe_idna_decode($route[1])?></td>
         <td><b>:</b></td>
-        <td><?=pql_maybe_idna_decode($route[2])?></td>
+        <td><?php echo pql_maybe_idna_decode($route[2])?></td>
         <td>
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtproutes&type=modify&set=<?=$route[0].":".$route[1].":".$route[2]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a>
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtproutes&type=del&submit=1&set=<?=$route[0].":".$route[1].":".$route[2]?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$LANG->_('Delete options')?>"></a>
+          <a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=smtproutes&type=modify&set=<?=$route[0].":".$route[1].":".$route[2]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a>
+          <a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=smtproutes&type=del&submit=1&set=<?=$route[0].":".$route[1].":".$route[2]?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$LANG->_('Delete options')?>"></a>
         </td>
       </tr>
 
@@ -146,7 +146,7 @@ function smtproutes_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtproutes&type=add"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add SMTP route')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=smtproutes&type=add"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add SMTP route')?></a></td>
         <td></td>
         <td></td>
         <td></td>
@@ -227,7 +227,7 @@ function smtproutes_print_form() {
 	}
 ?>
 
-    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php if(($ch_domainname and $ch_relay and $ch_port)
 		 or
 		 ($_REQUEST["type"] == 'add' and is_array($_REQUEST["smtproutes"]))) {
@@ -236,10 +236,10 @@ function smtproutes_print_form() {
 		for($i=0; $i < count($_REQUEST["domain"]); $i++) {
 			if($_REQUEST["domain"][$i] != $ch_domainname) {
 ?>
-    <!-- Relay #<?=$i?>: <?=$_REQUEST["domain"][$i]?> -> <?=$_REQUEST["relay"][$i]?>:<?=$_REQUEST["port"][$i]?> -->
-    <input type="hidden" name="domainname[<?=$i?>]" value="<?=$_REQUEST["domain"][$i]?>">
-    <input type="hidden" name="relay[<?=$i?>]"      value="<?=$_REQUEST["relay"][$i]?>">
-    <input type="hidden" name="port[<?=$i?>]"       value="<?=$_REQUEST["port"][$i]?>">
+    <!-- Relay #<?php echo $i?>: <?=$_REQUEST["domain"][$i]?> -> <?=$_REQUEST["relay"][$i]?>:<?=$_REQUEST["port"][$i]?> -->
+    <input type="hidden" name="domainname[<?php echo $i?>]" value="<?=$_REQUEST["domain"][$i]?>">
+    <input type="hidden" name="relay[<?php echo $i?>]"      value="<?=$_REQUEST["relay"][$i]?>">
+    <input type="hidden" name="port[<?php echo $i?>]"       value="<?=$_REQUEST["port"][$i]?>">
 
 <?php		}
 		}
@@ -268,55 +268,55 @@ function smtproutes_print_form() {
 ?>
 
     <!-- This is the number of the relay (see above) we are changing -->
-    <input type="hidden" name="change"        value="<?=$change?>">
+    <input type="hidden" name="change"        value="<?php echo $change?>">
 
 <?php } ?>
     <table cellspacing="0" cellpadding="0" border="0">
-      <th colspan="3" align="left">smtproutes (<?=$LANG->_('SMTP routes')?>)</th>
+      <th colspan="3" align="left">smtproutes (<?php echo $LANG->_('SMTP routes')?>)</th>
         <!-- A --------------------------------- -->
         <tr class="title">
-          <td><?=$LANG->_('Source domain')?></td>
+          <td><?php echo $LANG->_('Source domain')?></td>
 <?php if(@$_REQUEST["attrib"] && @$_REQUEST["rootdn"] && @$_REQUEST["set"]) { ?>
           <td>QmailLDAP/Controls</td>
 <?php } else { ?>
-          <td><?=$LANG->_('Relay host')?></td>
+          <td><?php echo $LANG->_('Relay host')?></td>
 <?php } ?>
 <?php if($_REQUEST["type"] != 'del') { ?>
-          <td><?=$LANG->_('Port')?></td>
+          <td><?php echo $LANG->_('Port')?></td>
 <?php } ?>
         </tr>
 
         <!-- B --------------------------------- -->
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["domainname_$counter"]); ?><input type="text" name="domainname[<?=$counter?>]" value="<?=pql_maybe_idna_decode($_REQUEST["domainname"][$objnr])?>" <?php if(!@empty($_REQUEST["domainname"][$objnr])) { echo "READONLY"; } ?>>&nbsp;&nbsp;<b><?php if($type != 'del') { ?>=><?php } ?></b></td>
+          <td><?php echo pql_format_error_span($error["domainname_$counter"]); ?><input type="text" name="domainname[<?php echo $counter?>]" value="<?=pql_maybe_idna_decode($_REQUEST["domainname"][$objnr])?>" <?php if(!@empty($_REQUEST["domainname"][$objnr])) { echo "READONLY"; } ?>>&nbsp;&nbsp;<b><?php if($type != 'del') { ?>=><?php } ?></b></td>
           <td>
 <?php if(@$_REQUEST["attrib"] && @$_REQUEST["rootdn"] && @$_REQUEST["set"]) { ?>
             <select name="relay[]" size="5" multiple>
 <?php	for($i=0; $i < count($hosts); $i++) { ?>
-              <option value="<?=$hosts[$i]?>"><?=pql_maybe_idna_decode($hosts[$i])?></option>
+              <option value="<?php echo $hosts[$i]?>"><?=pql_maybe_idna_decode($hosts[$i])?></option>
 <?php	} ?>
             </select>
 <?php } else { ?>
-            <?php echo pql_format_error_span($error["relay_$counter"]); ?><input type="text" name="relay[<?=$counter?>]" value="<?=$_REQUEST["relay"][$objnr]?>">&nbsp;&nbsp;<b>:</b></td>
+            <?php echo pql_format_error_span($error["relay_$counter"]); ?><input type="text" name="relay[<?php echo $counter?>]" value="<?=$_REQUEST["relay"][$objnr]?>">&nbsp;&nbsp;<b>:</b></td>
 <?php } ?>
           </td>
 <?php if($_REQUEST["type"] != 'del') { ?>
-          <td><?php echo pql_format_error_span($error["port_$counter"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$objnr?>]" value="<?php if($ch_port) { echo $ch_port; } else { echo $port[$objnr]; } ?>"></td>
+          <td><?php echo pql_format_error_span($error["port_$counter"]); ?><input type="text" size="4" maxlength="4" name="port[<?php echo $objnr?>]" value="<?php if($ch_port) { echo $ch_port; } else { echo $port[$objnr]; } ?>"></td>
 <?php } ?>
         </tr>
 
 <?php for($i=1, $j=$counter; $i <= $_REQUEST["routecount"]; $i++, $counter++) { ?>
         <!-- C --------------------------------- -->
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["domainname_$i"]); ?><input type="text" name="domainname[<?=$i?>]" value="<?=$_REQUEST["domainname"][$i]?>">&nbsp;&nbsp;<b>=></b></td>
-          <td><?php echo pql_format_error_span($error["relay_$i"]); ?><input type="text" name="relay[<?=$i?>]" value="<?=$_REQUEST["relay"][$i]?>">&nbsp;&nbsp;<b>:</b></td>
-          <td><?php echo pql_format_error_span($error["port_$i"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$i?>]" value="<?=$_REQUEST["port"][$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["domainname_$i"]); ?><input type="text" name="domainname[<?php echo $i?>]" value="<?=$_REQUEST["domainname"][$i]?>">&nbsp;&nbsp;<b>=></b></td>
+          <td><?php echo pql_format_error_span($error["relay_$i"]); ?><input type="text" name="relay[<?php echo $i?>]" value="<?=$_REQUEST["relay"][$i]?>">&nbsp;&nbsp;<b>:</b></td>
+          <td><?php echo pql_format_error_span($error["port_$i"]); ?><input type="text" size="4" maxlength="4" name="port[<?php echo $i?>]" value="<?=$_REQUEST["port"][$i]?>"></td>
         </tr>
 
 <?php } ?>
 <?php if(@empty($_REQUEST["attrib"])) { ?>
         <tr class="subtitle">
-          <td colspan="3"><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&routecount=<?=($_REQUEST["routecount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>">add additional route</a>(<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td colspan="3"><a href="<?php echo $_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&routecount=<?=($_REQUEST["routecount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>">add additional route</a>(<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
 <?php } 
@@ -329,27 +329,27 @@ function smtproutes_print_form() {
         </tr>
 <?php } else { ?>
         <tr class="subtitle">
-          <td colspan="3"><img src="images/info.png" width="16" height="16" border="0">You have selected to remove the domain <b><?=$_REQUEST["domainname"][0]?></b> from <i>smtproutes</i>. Please select host(s) to remove it from. All other entries in the object(s) will be preserved</td>
+          <td colspan="3"><img src="images/info.png" width="16" height="16" border="0">You have selected to remove the domain <b><?php echo $_REQUEST["domainname"][0]?></b> from <i>smtproutes</i>. Please select host(s) to remove it from. All other entries in the object(s) will be preserved</td>
         </tr>
 <?php } ?>
       </th>
     </table>
 
     <input type="hidden" name="submit"        value="1">
-    <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="attrib"        value="<?php echo $_REQUEST["attrib"]?>">
 <?php if(@$_REQUEST["mxhost"]) { ?>
-    <input type="hidden" name="mxhost"        value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="mxhost"        value="<?php echo $_REQUEST["mxhost"]?>">
 <?php } ?>
 <?php if(@$_REQUEST["rootdn"]) { ?>
-    <input type="hidden" name="rootdn"        value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="rootdn"        value="<?php echo urlencode($_REQUEST["rootdn"])?>">
 <?php } ?>
 <?php if(!@is_array($_REQUEST["domain"])) { ?>
-    <input type="hidden" name="domain"        value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="domain"        value="<?php echo urlencode($_REQUEST["domain"])?>">
 <?php } ?>
-    <input type="hidden" name="type"          value="<?=$_REQUEST["type"]?>">
-    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="type"          value="<?php echo $_REQUEST["type"]?>">
+    <input type="hidden" name="view"          value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit"                      value="<?=$LANG->_('Save')?>">
+    <input type="submit"                      value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

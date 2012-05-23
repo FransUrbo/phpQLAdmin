@@ -60,37 +60,37 @@ function attribute_init() {
 function attribute_print_form() {
     global $_pql, $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Mail server')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Mail server')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Options')?></td>
-          <td><input type="radio" name="options" value="dns" <?php if($_REQUEST["options"]=="dns"){ echo "checked"; }?>><?=$LANG->_('Standard (DNS entry)')?><input type="radio" name="options" value="user" <?php if($_REQUEST["options"]=="user"){ echo "checked"; }?>><?=$LANG->_('User defined')?><input type="radio" name="options" value="none" <?php if($_REQUEST["options"]=="none"){ echo "checked"; }?>><?=$LANG->_('None')?></td>
+          <td class="title"><?php echo $LANG->_('Options')?></td>
+          <td><input type="radio" name="options" value="dns" <?php if($_REQUEST["options"]=="dns"){ echo "checked"; }?>><?php echo $LANG->_('Standard (DNS entry)')?><input type="radio" name="options" value="user" <?php if($_REQUEST["options"]=="user"){ echo "checked"; }?>><?=$LANG->_('User defined')?><input type="radio" name="options" value="none" <?php if($_REQUEST["options"]=="none"){ echo "checked"; }?>><?=$LANG->_('None')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Host address (FQDN)')?></td>
-          <td><?php echo pql_format_error_span($error["mailhost"]); ?><input type="text" name="mailhost" value="<?=$_REQUEST["mailhost"]?>"></td>
+          <td class="title"><?php echo $LANG->_('Host address (FQDN)')?></td>
+          <td><?php echo pql_format_error_span($error["mailhost"]); ?><input type="text" name="mailhost" value="<?php echo $_REQUEST["mailhost"]?>"></td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="2">
             <?php echo pql_format_error_span($error["dns"]); ?>
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('With option DNS, the first MX record of this domain will be taken')?>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo $LANG->_('With option DNS, the first MX record of this domain will be taken')?>
           </td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

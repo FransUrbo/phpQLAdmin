@@ -27,17 +27,17 @@ if(($_REQUEST["action"] == 'del') and ($_REQUEST["type"] == 'domain') and $_REQU
 		pql_header($url);
     } else {
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>"      method="GET">
-    <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domain"          value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
-    <input type="hidden" name="action"          value="<?=$_REQUEST["action"]?>">
-    <input type="hidden" name="type"            value="<?=$_REQUEST["type"]?>">
-    <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>"      method="GET">
+    <input type="hidden" name="rootdn"          value="<?php echo $_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"          value="<?php echo $_REQUEST["domain"]?>">
+    <input type="hidden" name="dns_domain_name" value="<?php echo $_REQUEST["dns_domain_name"]?>">
+    <input type="hidden" name="action"          value="<?php echo $_REQUEST["action"]?>">
+    <input type="hidden" name="type"            value="<?php echo $_REQUEST["type"]?>">
+    <input type="hidden" name="view"            value="<?php echo $_REQUEST["view"]?>">
 
-    <span class="title2"><?=$LANG->_('Are you really sure')?>?</span>
-    <input type="submit" name="ok"              value="<?=$LANG->_('Yes')?>">
-    <input type="button" name="back"            value="<?=$LANG->_('No')?>" onClick="history.back();">
+    <span class="title2"><?php echo $LANG->_('Are you really sure')?>?</span>
+    <input type="submit" name="ok"              value="<?php echo $LANG->_('Yes')?>">
+    <input type="button" name="back"            value="<?php echo $LANG->_('No')?>" onClick="history.back();">
   </form>
 <?php        
     }

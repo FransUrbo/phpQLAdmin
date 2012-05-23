@@ -62,36 +62,36 @@ function attribute_print_form() {
 	$dnattrs = explode("=", $dnparts[0]);
 	$len = strlen($dnattrs[1]);
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Rename this RDN')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Rename this RDN')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Old RDN')?></td>
-          <td><?=$_REQUEST["oldvalue"]?></td>
+          <td class="title"><?php echo $LANG->_('Old RDN')?></td>
+          <td><?php echo $_REQUEST["oldvalue"]?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('New RDN')?></td>
-          <td><b><?=$dnattrs[0]?>=<input type="text" name="user" size="<?=$len+1?>"><b>,<?=$rdn?></b></td>
+          <td class="title"><?php echo $LANG->_('New RDN')?></td>
+          <td><b><?php echo $dnattrs[0]?>=<input type="text" name="user" size="<?=$len+1?>"><b>,<?=$rdn?></b></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Keep old RDN')?></td>
+          <td class="title"><?php echo $LANG->_('Keep old RDN')?></td>
           <td><input type="checkbox" name="keepold">Yes</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="rdn"      value="<?=$rdn?>">
-    <img src="images/info.png" width="16" height="16" border="0">&nbsp;<?=$LANG->_('It is only possible to change the RDN within the same base')?>.
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="rdn"      value="<?php echo $rdn?>">
+    <img src="images/info.png" width="16" height="16" border="0">&nbsp;<?php echo $LANG->_('It is only possible to change the RDN within the same base')?>.
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

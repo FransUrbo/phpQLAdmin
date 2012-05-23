@@ -50,12 +50,12 @@ function timeoutsmtpd_print_view($host) {
 	timeoutsmtpd_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Timeoutsmtpd (How long to wait for SMTP client)')?></th>
+    <th colspan="3" align="left"><?php echo $LANG->_('Timeoutsmtpd (How long to wait for SMTP client)')?></th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Wait')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["timeoutsmtpd"]) { echo $_REQUEST["timeoutsmtpd"]; } else { echo $LANG->_('Default', 4).': 1200'; }?> <?=$LANG->_('Seconds', 4)?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Wait')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["timeoutsmtpd"]) { echo $_REQUEST["timeoutsmtpd"]; } else { echo $LANG->_('Default', 4).': 1200'; }?> <?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -68,12 +68,12 @@ function timeoutsmtpd_print_view($host) {
 function timeoutsmtpd_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Timeoutsmtpd (How long to wait for SMTP client)')?></th>
+      <th colspan="3" align="left"><?php echo $LANG->_('Timeoutsmtpd (How long to wait for SMTP client)')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Wait')?></td>
-          <td><?php echo pql_format_error_span($error["timeoutsmtpd"]); ?><input type="text" name="timeoutsmtpd" value="<?=$_REQUEST["timeoutsmtpd"]?>"><?=$LANG->_('Seconds', 4)?></td>
+          <td class="title"><?php echo $LANG->_('Wait')?></td>
+          <td><?php echo pql_format_error_span($error["timeoutsmtpd"]); ?><input type="text" name="timeoutsmtpd" value="<?php echo $_REQUEST["timeoutsmtpd"]?>"><?=$LANG->_('Seconds', 4)?></td>
         </tr>
 
         <tr class="subtitle">
@@ -84,11 +84,11 @@ function timeoutsmtpd_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

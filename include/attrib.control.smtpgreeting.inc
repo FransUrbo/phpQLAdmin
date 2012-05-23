@@ -40,12 +40,12 @@ function smtpgreeting_print_view($host) {
 	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
+    <th colspan="3" align="left">smtpgreeting (<?php echo $LANG->_('SMTP greeting message')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Message')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["smtpgreeting"]) { echo pql_maybe_idna_decode($_REQUEST["smtpgreeting"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_SMTPGREETING")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_SMTPGREETING")?>"></a></td>
+        <td class="title"><?php echo $LANG->_('Message')?></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["smtpgreeting"]) { echo pql_maybe_idna_decode($_REQUEST["smtpgreeting"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_SMTPGREETING")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_SMTPGREETING")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -57,27 +57,27 @@ function smtpgreeting_print_view($host) {
 function smtpgreeting_print_form() {
     global $attrib, $smtpgreeting, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
+      <th colspan="3" align="left">smtpgreeting (<?php echo $LANG->_('SMTP greeting message')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Message')?></td>
-          <td><?php echo pql_format_error_span($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?=$_REQUEST["smtpgreeting"]?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'', 4)?>)</td>
+          <td class="title"><?php echo $LANG->_('Message')?></td>
+          <td><?php echo pql_format_error_span($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?php echo $_REQUEST["smtpgreeting"]?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'', 4)?>)</td>
         </tr>
 
         <tr>
-          <td colspan="2" class="subtitle"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to use default configuration')?>.</td>
+          <td colspan="2" class="subtitle"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('Leave the fields empty to use default configuration')?>.</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="type"   value="modify">
-    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?php echo $_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?php echo $_REQUEST["view"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

@@ -103,7 +103,7 @@ if($_SESSION["lynx"]) {
   $buttons += $button;
 }
 ?>
-  <span class="title1"><?=$LANG->_('phpQLAdmin configuration')?></span>
+  <span class="title1"><?php echo $LANG->_('phpQLAdmin configuration')?></span>
 
   <br><br>
 

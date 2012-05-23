@@ -313,54 +313,54 @@ include($_SESSION["path"]."/header.html");
     }
   //--></script>
 
-  <span class="title1"><?=$LANG->_('phpQLAdmin ldap connection')?></span>
+  <span class="title1"><?php echo $LANG->_('phpQLAdmin ldap connection')?></span>
 
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('PHP Extensions needed')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('PHP Extensions needed')?>
       <tr>
-        <td class="title"><?=$LANG->_('LDAP')?></td>
-        <td class="<?php pql_format_table(); ?>"><?=$ldap_ext?>&nbsp;</td>
+        <td class="title"><?php echo $LANG->_('LDAP')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $ldap_ext?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('IDN')?></td>
-        <td class="<?php pql_format_table(); ?>"><?=$idn_ext?>&nbsp;</td>
+        <td class="title"><?php echo $LANG->_('IDN')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $idn_ext?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('MHASH')?></td>
-        <td class="<?php pql_format_table(); ?>"><?=$idn_ext?>&nbsp;</td>
+        <td class="title"><?php echo $LANG->_('MHASH')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $idn_ext?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('MemCache')?></td>
-        <td class="<?php pql_format_table(); ?>"><?=$memcache_ext?>&nbsp;</td>
+        <td class="title"><?php echo $LANG->_('MemCache')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $memcache_ext?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('GD')?></td>
-        <td class="<?php pql_format_table(); ?>"><?=$gd_ext?>&nbsp;</td>
+        <td class="title"><?php echo $LANG->_('GD')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $gd_ext?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('KRB5')?></td>
-        <td class="<?php pql_format_table(); ?>"><?=$krb5_ext?>&nbsp;</td>
+        <td class="title"><?php echo $LANG->_('KRB5')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $krb5_ext?>&nbsp;</td>
       </tr>
     </th>
 
-<?=pql_format_table_empty(2)?>
+<?php echo pql_format_table_empty(2)?>
 
-    <th colspan="3" align="left"><?=$LANG->_('LDAP server connection and setup tests')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('LDAP server connection and setup tests')?>
       <tr>
-        <td class="title"><?=$LANG->_('User directory connection')?></td>
-        <td class="<?php pql_format_table(); ?>"><?=$connection?>&nbsp;</td>
+        <td class="title"><?php echo $LANG->_('User directory connection')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $connection?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('Control directory connection')?></td>
-        <td class="<?php pql_format_table(); ?>"><?=$connection_control?>&nbsp;</td>
+        <td class="title"><?php echo $LANG->_('Control directory connection')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $connection_control?>&nbsp;</td>
       </tr>
 <?php if($_SESSION["ADVANCED_MODE"] == 1) {
 		// Just so that we don't have to call pql_get_subschemas() multiple times here - takes time!
@@ -370,29 +370,29 @@ include($_SESSION["path"]."/header.html");
       <tr></tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('LDAP server contains phpQLAdminConfig objectclass')?></td>
+        <td class="title"><?php echo $LANG->_('LDAP server contains phpQLAdminConfig objectclass')?></td>
 <?php	 if($ldap["objectclasses"]["phpqladminconfig"]) { ?>
-        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('Yes')?></td>
 <?php    } else { ?>
-        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
 <?php    } ?>
       </tr>
 
       <tr>
-        <td class="title"><?=$LANG->_('LDAP server contains phpQLAdminBranch objectclass')?></td>
+        <td class="title"><?php echo $LANG->_('LDAP server contains phpQLAdminBranch objectclass')?></td>
 <?php	 if($ldap["objectclasses"]["phpqladminbranch"]) { ?>
-        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('Yes')?></td>
 <?php    } else { ?>
-	<td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
+	<td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
 <?php    } ?>
       </tr>
 
       <tr>
         <td class="title">LDAP server contains schema for <a href="http://www.ietf.org/rfc/rfc2377.txt" target="_new">RFC 2377</a></td>
 <?php	 if($ldap["objectclasses"]["dcorganizationnameform"]) { ?>
-        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('Yes')?></td>
 <?php    } else { ?>
-        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
 <?php    }
       }
 ?>
@@ -400,40 +400,40 @@ include($_SESSION["path"]."/header.html");
     </th>
 <?php if($basedn) { ?>
 
-<?=pql_format_table_empty(2)?>
+<?php echo pql_format_table_empty(2)?>
 
-    <th colspan="3" align="left"><?=$LANG->_('Modification access - phpQLAdmin configuration')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Modification access - phpQLAdmin configuration')?>
 <?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to write phpQLAdmin configuration in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$TEST["basedn"][$dn]?></td>
+        <td class="<?php echo $class?>"><?=$TEST["basedn"][$dn]?></td>
       </tr>
 
 <?php    } ?>
     </th>
 
-<?=pql_format_table_empty(2)?>
+<?php echo pql_format_table_empty(2)?>
 
-    <th colspan="3" align="left"><?=$LANG->_('Branch creation access')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('Branch creation access')?>
 <?php   foreach($_SESSION["BASE_DN"] as $dn) { ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branches in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$TEST["branches"][$dn]?></td>
+        <td class="<?php echo $class?>"><?=$TEST["branches"][$dn]?></td>
       </tr>
 
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branch with ACIs in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$TEST["acis"][$dn]?></td>
+        <td class="<?php echo $class?>"><?=$TEST["acis"][$dn]?></td>
       </tr>
 
 <?php	  if(!$TEST_simple["branches"][$dn] and $TEST_simple["acis"][$dn] and !pql_get_define("PQL_CONF_ACI_USE")) { ?>
       <tr>
         <td class="title" align="right"><img src="images/info.png" width="16" height="16" border="0" align="right"></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$LANG->_("WARNING: You do not have access<br>without ACI's but ACI's is disabled.<br>Please enable ACI's in the configuration!")?></td>
+        <td class="<?php echo $class?>"><?=$LANG->_("WARNING: You do not have access<br>without ACI's but ACI's is disabled.<br>Please enable ACI's in the configuration!")?></td>
       </tr>
 
 <?php	  } ?>
@@ -442,9 +442,9 @@ include($_SESSION["path"]."/header.html");
 <?php   } ?>
     </th>
 
-<?=pql_format_table_empty(2)?>
+<?php echo pql_format_table_empty(2)?>
 
-    <th colspan="3" align="left"><?=$LANG->_('DN modification access - domain DN\'s')?>
+    <th colspan="3" align="left"><?php echo $LANG->_('DN modification access - domain DN\'s')?>
 <?php    if(is_array($domains)) {
             asort($domains);
 		    foreach($domains as $key => $domain) {
@@ -452,7 +452,7 @@ include($_SESSION["path"]."/header.html");
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to modify DN \b%dn%\B'), array('dn' => $domain)); ?></b></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?=$class?>"><?=$TEST["branches"][$domain]?></td>
+        <td class="<?php echo $class?>"><?=$TEST["branches"][$domain]?></td>
       </tr>
 
 <?php       }
@@ -470,8 +470,8 @@ include($_SESSION["path"]."/header.html");
                 <td><img src="images/info.png" width="16" height="16" border="0" align="right"></td>
                 <td>
                   <ul>
-                    <li><?=$LANG->_('This is a simple test to show if the ldap extension is loaded\nand that the connections are working. It also does some\nrudimentary ACL tests')?>.</li>
-                    <li><?=$LANG->_("NOTE: If you get denied access to create branches but when<br>trying with ACIs, it works. This doesn't mean that you don't<br>have access to create branches, it means that you \umust\U use<br>ACIs, otherwise you will not be allowed to create an object<br>(you will receive 'Insufficient access').")?></li>
+                    <li><?php echo $LANG->_('This is a simple test to show if the ldap extension is loaded\nand that the connections are working. It also does some\nrudimentary ACL tests')?>.</li>
+                    <li><?php echo $LANG->_("NOTE: If you get denied access to create branches but when<br>trying with ACIs, it works. This doesn't mean that you don't<br>have access to create branches, it means that you \umust\U use<br>ACIs, otherwise you will not be allowed to create an object<br>(you will receive 'Insufficient access').")?></li>
                   </ul>
                 </td>
               </tr>

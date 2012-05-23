@@ -50,7 +50,7 @@ if(isset($msg)) {
 }
 // }}}
 ?>
-  <span class="title1"><?=$_REQUEST["cat"]?></span>
+  <span class="title1"><?php echo $_REQUEST["cat"]?></span>
   <br><br>
 <?php
 // {{{ Load the requested control category

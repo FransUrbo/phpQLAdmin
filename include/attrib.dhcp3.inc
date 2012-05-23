@@ -55,27 +55,27 @@ function attribute_print_form($data) {
 	}
   }
 ?>
-  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$info[0]?></td>
-          <td>&nbsp;<input type="input" name="<?=$info[0]?>" size="40" value="<?=$value?>"></td>
+          <td class="title"><?php echo $info[0]?></td>
+          <td>&nbsp;<input type="input" name="<?php echo $info[0]?>" size="40" value="<?=$value?>"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="value"    value="<?=$info[0]?>">
-    <input type="hidden" name="oldvalue" value="<?=urlencode($data)?>">
-    <input type="hidden" name="config"   value="<?=urlencode($_REQUEST["config"])?>">
-    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
+    <input type="hidden" name="attrib"   value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="value"    value="<?php echo $info[0]?>">
+    <input type="hidden" name="oldvalue" value="<?php echo urlencode($data)?>">
+    <input type="hidden" name="config"   value="<?php echo urlencode($_REQUEST["config"])?>">
+    <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="view"     value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="action"   value="<?php echo $_REQUEST["action"]?>">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

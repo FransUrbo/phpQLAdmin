@@ -92,7 +92,7 @@ if(count($VIRTHOSTS)) {
 		  unset($mark);
 		}
 ?>
-    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&host=<?=urlencode($name)?>&ref=<?=$_REQUEST["ref"]?>"><img alt="// <?=$name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$name?><?=$mark?>"></a>
+    <a href="<?php echo $_SERVER["PHP_SELF"]?>?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&host=<?=urlencode($name)?>&ref=<?=$_REQUEST["ref"]?>"><img alt="// <?=$name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$name?><?=$mark?>"></a>
 <?php } ?>
     </th>
   </table>
@@ -116,7 +116,7 @@ if(count($VIRTHOSTS)) {
 		  unset($mark);
 		}
 ?>
-    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST['host'])?>&hostdir=<?=$virt_host_location?>&ref=<?=$_REQUEST["ref"]?>"><img alt="// <?=$virt_host_location?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$virt_host_location?><?=$mark?>"></a>
+    <a href="<?php echo $_SERVER["PHP_SELF"]?>?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST['host'])?>&hostdir=<?=$virt_host_location?>&ref=<?=$_REQUEST["ref"]?>"><img alt="// <?=$virt_host_location?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$virt_host_location?><?=$mark?>"></a>
 <?php } ?>
     </th>
   </table>
@@ -161,9 +161,9 @@ if((pql_validate_administrator($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADM
 ?>
   <br>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left"><?=$LANG->_('Actions')?></th>
+    <th align="left"><?php echo $LANG->_('Actions')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&ref=domain"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host'))); ?></a></td>
+        <td><a href="websrv_add.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&ref=domain"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host'))); ?></a></td>
       </tr>
     </th>
   </table>

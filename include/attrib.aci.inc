@@ -83,21 +83,21 @@ function attribute_print_form($action) {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Access Control Information')?>
+      <th colspan="3" align="left"><?php echo $LANG->_('Access Control Information')?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Object DN')?></td>
+          <td class="title"><?php echo $LANG->_('Object DN')?></td>
           <td><?php if(!empty($_REQUEST["user"])) { echo $_REQUEST["user"]; } else { echo $_REQUEST["domain"]; } ?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('OID')?></td>
-          <td><b><?=$aci["count"]?></b></td>
+          <td class="title"><?php echo $LANG->_('OID')?></td>
+          <td><b><?php echo $aci["count"]?></b></td>
         </tr>
         <input type="hidden" name="aci_oid" value="1.2.3">
 
 <?php if($olv >= 23) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Scope')?></td>
+          <td class="title"><?php echo $LANG->_('Scope')?></td>
           <td>
             <select name="aci_scope">
               <option value="entry" SELECTED>Entry itself</option>
@@ -109,14 +109,14 @@ function attribute_print_form($action) {
         </tr>
 <?php } else { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Scope')?></td>
+          <td class="title"><?php echo $LANG->_('Scope')?></td>
           <td><b>entry</b></td>
         </tr>
         <input type="hidden" name="aci_scope" value="entry">
 <?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Action')?></td>
+          <td class="title"><?php echo $LANG->_('Action')?></td>
           <td>
             <select name="aci_action">
               <option value="grant" SELECTED>Grant</option>
@@ -126,7 +126,7 @@ function attribute_print_form($action) {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Permissions')?></td>
+          <td class="title"><?php echo $LANG->_('Permissions')?></td>
           <td>
             <input type="checkbox" name="aci_permission_read"><u>r</u>ead
             <input type="checkbox" name="aci_permission_write"><u>w</u>rite
@@ -136,7 +136,7 @@ function attribute_print_form($action) {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Target')?></td>
+          <td class="title"><?php echo $LANG->_('Target')?></td>
           <td>
             <select name="aci_target">
               <option value="all">All attributes</option>
@@ -147,7 +147,7 @@ function attribute_print_form($action) {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Type')?></td>
+          <td class="title"><?php echo $LANG->_('Type')?></td>
           <td>
             <select name="aci_type">
               <option value="access-id">Specific DN</option>
@@ -161,26 +161,26 @@ function attribute_print_form($action) {
         <!-- TODO: It would be VERY nice to have a user/object selector
                    ala attrib.administrator.inc here instead of a input -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Subject')?></td>
+          <td class="title"><?php echo $LANG->_('Subject')?></td>
           <td><input type="text" name="aci_subject" size="30"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-          <td><?=$LANG->_("The OID value isn't used. This new ACI will be added at the<br>end of the existing list. You can move it yourself later.")?></td>
+          <td><?php echo $LANG->_("The OID value isn't used. This new ACI will be added at the<br>end of the existing list. You can move it yourself later.")?></td>
         </tr>
       </th>
     </table>
 
-    <input type="hidden" name="rootdn"        value="<?=urlencode($_REQUEST["rootdn"])?>">
-    <input type="hidden" name="domain"        value="<?=urlencode($_REQUEST["domain"])?>">
-    <input type="hidden" name="user"          value="<?=urlencode($_REQUEST["user"])?>">
-    <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="type"          value="<?=$action?>">
+    <input type="hidden" name="rootdn"        value="<?php echo urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="domain"        value="<?php echo urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="user"          value="<?php echo urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="attrib"        value="<?php echo $_REQUEST["attrib"]?>">
+    <input type="hidden" name="view"          value="<?php echo $_REQUEST["view"]?>">
+    <input type="hidden" name="type"          value="<?php echo $action?>">
     <input type="hidden" name="submit"        value="1">
     <br>
-    <input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?php echo $LANG->_('Save')?>">
   </form>
 <?php
 }

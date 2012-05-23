@@ -41,12 +41,12 @@
 
 <?php	foreach($attributes as $attrib) { ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left"><?=$LANG->_('Control options')?>: <?php echo pql_complete_constant($LANG->_('Defined in %attribute%'), array('attribute' => $attrib)); ?>
+    <th align="left"><?php echo $LANG->_('Control options')?>: <?php echo pql_complete_constant($LANG->_('Defined in %attribute%'), array('attribute' => $attrib)); ?>
 <?php		foreach($domainnames as $d) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=pql_maybe_idna_decode($d)?></td>
-        <td><?=$DEFINED[$attrib][$d]?></td>
-        <td><?=$LINKS[$attrib][$d]?></td>
+        <td class="title"><?php echo pql_maybe_idna_decode($d)?></td>
+        <td><?php echo $DEFINED[$attrib][$d]?></td>
+        <td><?php echo $LINKS[$attrib][$d]?></td>
       </tr>
 
 <?php		} ?>

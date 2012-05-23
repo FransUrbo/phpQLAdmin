@@ -1,13 +1,13 @@
   <!-- Basic user details - Full name (sn), Login shell etc -->
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
+    <th colspan="3" align="left"><?php echo $LANG->_('User data')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Username')?></td>
+        <td class="title"><?php echo $LANG->_('Username')?></td>
 <?php $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]); ?>
         <td><?php if(!empty($$ref)) { echo $$ref; } ?></td>
         <td>
 <?php if(@empty($_SESSION["SINGLE_USER"])) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uid&user=<?=$url["user"]?>&oldvalue=<?=$uid?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change username')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uid&user=<?=$url["user"]?>&oldvalue=<?=$uid?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change username')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -25,15 +25,15 @@
 		}
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('User DN')?></td>
-        <td><?=$_GET["user"]?></td>
+        <td class="title"><?php echo $LANG->_('User DN')?></td>
+        <td><?php echo $_GET["user"]?></td>
         <td>
 <?php	if(@empty($_SESSION["SINGLE_USER"])) {
 			@ldap_get_option($_pql->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, $version);
 			if($version >= 3) {
 			  // Only allow an admin to rename object (if we're using LDAP v3)
 ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=modrdn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Rename DN')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=modrdn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Rename DN')?>" border="0"></a>
 <?php		}
 	  	}
 ?>
@@ -45,33 +45,33 @@
 	  if(empty($USER_IS_GROUP)) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Password')?></td>
-        <td><?=$userpassword?></td>
+        <td class="title"><?php echo $LANG->_('Password')?></td>
+        <td><?php echo $userpassword?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=userpassword&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Set password')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=userpassword&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Set password')?>" border="0"></a>
         </td>
       </tr>
 
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Password policy')?></td>
+        <td class="title"><?php echo $LANG->_('Password policy')?></td>
         <td><?php if($ppolicy_entry){echo $ppolicy_entry;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-        <td><?=$ppolicy_entry_link?></td>
+        <td><?php echo $ppolicy_entry_link?></td>
 <?php } else { ?>
         <td></td>
 <?php } ?>
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Firstname')?></td>
+        <td class="title"><?php echo $LANG->_('Firstname')?></td>
         <td><?php if(!empty($givenname)) { echo $givenname; }?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=givenname&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$givenname?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change First name')?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=givenname&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$givenname?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change First name')?>" border="0"></a></td>
       </tr>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Lastname')?></td>
+        <td class="title"><?php echo $LANG->_('Lastname')?></td>
         <td><?php if(!empty($sn)) { echo $sn; }?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=sn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$sn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change last name')?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=sn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$sn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change last name')?>" border="0"></a></td>
       </tr>
 <?php
 	  // {{{ Surname and Lastname
@@ -97,22 +97,22 @@
 	  if(!@empty($_SESSION["ADVANCED_MODE"]) and empty($USER_IS_GROUP)) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Login shell')?></td>
+        <td class="title"><?php echo $LANG->_('Login shell')?></td>
         <td><?php if(!empty($loginshell)){echo $loginshell;}else{echo $LANG->_('None');} ?></td>
         <td>
 <?php	if(@empty($_SESSION["SINGLE_USER"])) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=loginshell&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change login shell')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=loginshell&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change login shell')?>" border="0"></a>
 <?php	} ?>
         </td>
       </tr>
 
       <!-- DLW: Why do only some of these have "oldvalue" entries? -->
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Home directory')?></td>
+        <td class="title"><?php echo $LANG->_('Home directory')?></td>
         <td><?php if(!empty($homedirectory)){echo $homedirectory;}else{echo $LANG->_('None');} ?></td>
         <td>
 <?php	if(@empty($_SESSION["SINGLE_USER"])) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=homedirectory&user=<?=$url["user"]?>&oldvalue=<?=urlencode($homedirectory);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change home directory')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=homedirectory&user=<?=$url["user"]?>&oldvalue=<?=urlencode($homedirectory);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change home directory')?>" border="0"></a>
 <?php	} ?>
         </td>
       </tr>
@@ -126,9 +126,9 @@
 			  $group_name = "<i>unknown</i>";
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('UID;GID')?></td>
-        <td><?=$uidnumber . ";" . $gidnumber?> (<?=$group_name?>)</td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uidnumber&user=<?=$url["user"]?>&oldvalue=<?=urlencode($uidnumber . ";" . $gidnumber);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change UID/GID')?>" border="0"></a></td>
+        <td class="title"><?php echo $LANG->_('UID;GID')?></td>
+        <td><?php echo $uidnumber . ";" . $gidnumber?> (<?=$group_name?>)</td>
+        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uidnumber&user=<?=$url["user"]?>&oldvalue=<?=urlencode($uidnumber . ";" . $gidnumber);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change UID/GID')?>" border="0"></a></td>
       </tr>
 
 <?php			$class = pql_format_table(0);
@@ -154,17 +154,17 @@
 
 	  // {{{ Disable or not to start in advanced mode (also affects the 'Advanced mode' selector in left-base.php).
 ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Disable advanced mode selector')?></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Disable advanced mode selector')?></td>
 <?php if($disableadvancedmode) { ?>
-        <td><?=$LANG->_('Yes')?></td>
+        <td><?php echo $LANG->_('Yes')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user from select Advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user from select Advanced mode')?>"></a>
         </td>
 <?php } else { ?>
-        <td><?=$LANG->_('No')?></td>
+        <td><?php echo $LANG->_('No')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to select Advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to select Advanced mode')?>"></a>
         </td>
 <?php } ?>
       </tr>
@@ -174,17 +174,17 @@
 	  // {{{ When user do a login, should the advanced mode be loaded?
 	  if(!pql_get_define("PQL_CONF_DISABLE_ADVANCED_MODE")) {
 ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$LANG->_('Start in advanced mode')?></td>
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Start in advanced mode')?></td>
 <?php	if($startwithadvancedmode) { ?>
-        <td><?=$LANG->_('Yes')?></td>
+        <td><?php echo $LANG->_('Yes')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Do not start in advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Do not start in advanced mode')?>"></a>
         </td>
 <?php	} else { ?>
-        <td><?=$LANG->_('No')?></td>
+        <td><?php echo $LANG->_('No')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Make sure we start in advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Make sure we start in advanced mode')?>"></a>
         </td>
 <?php	} ?>
       </tr>

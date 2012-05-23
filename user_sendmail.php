@@ -9,7 +9,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 include($_SESSION["path"]."/header.html");
 ?>
-  <span class="title1"><?=$LANG->_('Send testmail')?></span>
+  <span class="title1"><?php echo $LANG->_('Send testmail')?></span>
   <br><br>
 <?php
 if(!$_pql->get_dn($_REQUEST["user"], '(objectclass=*)', 'BASE')) {
