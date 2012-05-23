@@ -27,7 +27,7 @@ $table_columns = array( "ppolicy_changed"	=> $LANG->_('Last time password was ch
         <td>
           <!-- NOTE: Don''t know if all of these can/should be changed/-able... -->
 <?php if(@empty($_SESSION["SINGLE_USER"])) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=$attrib?>&user=<?=$url["user"]?>&oldvalue=<?=$$key?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change value')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=<?php echo $attrib?>&user=<?php echo $url["user"]?>&oldvalue=<?php echo $$key?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change value')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>

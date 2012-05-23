@@ -228,7 +228,7 @@ function attribute_print_form($action) {
           <td>
             <?php echo pql_format_error_span($error[$_REQUEST[$attrib]]) . "\n"; ?>
 <?php if($action != 'add') { ?>
-            <input type="text" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50"></td>
+            <input type="text" name="<?php echo $attrib?>" value="<?php echo $_REQUEST[$attrib]?>" size="50"></td>
 <?php } else {
 		// TODO: This is a REALLY bad idea. If we have a 'huge' database
 		// (hundred, thousands or more users), this will take AGES!
@@ -313,8 +313,8 @@ function attribute_print_form($action) {
 			}
 ?>
 
-            <input type="hidden" name="<?php echo $attrib?>_<?=$i?>" value="on">
-            <input type="hidden" name="<?php echo $attrib?>" value="<?=$i?>">
+            <input type="hidden" name="<?php echo $attrib?>_<?php echo $i?>" value="on">
+            <input type="hidden" name="<?php echo $attrib?>" value="<?php echo $i?>">
 <?php
 			// }}}
 		} else {
@@ -347,9 +347,9 @@ function attribute_print_form($action) {
 					if($domain == $_SESSION["BASE_DN"][0]) {
 						$shown_first_rootdn = 1;
 ?>
-              <option value="<?php echo $domain?>">*&nbsp;<?=$domain?></option>
+              <option value="<?php echo $domain?>">*&nbsp;<?php echo $domain?></option>
 <?php				} else { ?>
-              <option value="<?php echo $domain?>">&nbsp;&nbsp;&nbsp;<?=$domain?></option>
+              <option value="<?php echo $domain?>">&nbsp;&nbsp;&nbsp;<?php echo $domain?></option>
 <?php				}
 				}
 			}
@@ -379,7 +379,7 @@ function attribute_print_form($action) {
 		 ($attrib != pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
       {
 ?>
-    <input type="hidden" name="<?php echo $attrib?>"  value="<?=$_REQUEST[$attrib]?>">
+    <input type="hidden" name="<?php echo $attrib?>"  value="<?php echo $_REQUEST[$attrib]?>">
 <?php } ?>
     <input type="hidden" name="user"          value="<?php echo urlencode($_REQUEST["user"])?>">
     <input type="hidden" name="action"        value="<?php echo $action?>">

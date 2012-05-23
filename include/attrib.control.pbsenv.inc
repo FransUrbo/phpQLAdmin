@@ -68,7 +68,7 @@ function pbsenv_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["pbsenv"]); $i++) { ?>
-    <input type="hidden" name="pbsenv[<?php echo $i?>]" value="<?=$_REQUEST["pbsenv"][$i]?>"></td>
+    <input type="hidden" name="pbsenv[<?php echo $i?>]" value="<?php echo $_REQUEST["pbsenv"][$i]?>"></td>
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

@@ -105,7 +105,7 @@ function qmqpservers_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["qmqpservers"]); $i++) { ?>
-    <input type="hidden" name="qmqpservers[<?php echo $i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>">
+    <input type="hidden" name="qmqpservers[<?php echo $i?>]" value="<?php echo $_REQUEST["qmqpservers"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

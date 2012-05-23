@@ -71,7 +71,7 @@ if($_SESSION["ADVANCED_MODE"] == 1) {
 <?php	foreach($servers as $server) {
 			$host = split(';', $server);
 ?>
-          <option value="<?php echo $server?>"><?=pql_maybe_idna_decode(urldecode($host[0]))?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></option>
+          <option value="<?php echo $server?>"><?php echo pql_maybe_idna_decode(urldecode($host[0]))?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></option>
 <?php	} ?>
         </select>
         <input type="submit" value="<?php echo "--&gt;&gt;"?>" name="submit">

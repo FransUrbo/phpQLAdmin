@@ -69,15 +69,15 @@ function concurrencylocal_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Local')?></td>
-        <td class="<?php echo $class?>"><?=$_REQUEST["concurrencylocal"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"></a></td>
+        <td class="<?php echo $class?>"><?php echo $_REQUEST["concurrencylocal"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Remote')?></td>
-        <td class="<?php echo $class?>"><?=$_REQUEST["concurrencyremote"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"></a></td>
+        <td class="<?php echo $class?>"><?php echo $_REQUEST["concurrencyremote"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -95,13 +95,13 @@ function concurrencylocal_print_form() {
 <?php if($_REQUEST["attrib"] == "concurrencylocal") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Local')?></td>
-          <td><?php echo pql_format_error_span($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?php echo $_REQUEST["concurrencylocal"]?>"> <?=$LANG->_('Default')?>: 10</td>
+          <td><?php echo pql_format_error_span($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?php echo $_REQUEST["concurrencylocal"]?>"> <?php echo $LANG->_('Default')?>: 10</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == "concurrencyremote") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Remote')?></td>
-          <td><?php echo pql_format_error_span($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?php echo $_REQUEST["concurrencyremote"]?>"> <?=$LANG->_('Default')?>: 20</td>
+          <td><?php echo pql_format_error_span($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?php echo $_REQUEST["concurrencyremote"]?>"> <?php echo $LANG->_('Default')?>: 20</td>
         </tr>
 
 <?php } ?>

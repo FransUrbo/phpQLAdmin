@@ -35,7 +35,7 @@ $options = pql_dhcp3_get_service_options($servicedn);
 		  unset($mark);
 		}
 ?>
-      <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&$type=".urlencode($dn)?>"><img alt="// <?=$name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$name?><?=$mark?>"></a>
+      <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&$type=".urlencode($dn)?>"><img alt="// <?php echo $name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo $name?><?php echo $mark?>"></a>
 <?php } ?>
       </th>
     </table>

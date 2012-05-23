@@ -69,14 +69,14 @@ function bouncefrom_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('User for bouncing')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["bouncefrom"]) { echo $_REQUEST["bouncefrom"]; } else { echo $LANG->_('Default').": MAILER-DAEMON"; }?></td>
-        <td class="<?php echo $class?>"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCEFROM")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEFROM")?>"></a></td>
+        <td class="<?php echo $class?>"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_BOUNCEFROM")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEFROM")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Host for bouncing')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["bouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["bouncehost"]); } else { echo $LANG->_('Default') . ': ' . pql_maybe_idna_decode($cn)." (" . $LANG->_('Taken from \'me\'') . ")";}?></td>
-        <td class="<?php echo $class?>"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCEHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEHOST")?>"></a></td>
+        <td class="<?php echo $class?>"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_BOUNCEHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -94,18 +94,18 @@ function bouncefrom_print_form() {
 <?php if($_REQUEST["attrib"] == 'bouncefrom') { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('User for bouncing')?></td>
-          <td><?php echo pql_format_error_span($error["bouncefrom"]); ?><input type="text" name="bouncefrom" value="<?php echo $_REQUEST["bouncefrom"]?>"> <?=$LANG->_('Default')?>: MAILER-DAEMON</td>
+          <td><?php echo pql_format_error_span($error["bouncefrom"]); ?><input type="text" name="bouncefrom" value="<?php echo $_REQUEST["bouncefrom"]?>"> <?php echo $LANG->_('Default')?>: MAILER-DAEMON</td>
         </tr>
 
 <?php } if($_REQUEST["attrib"] == 'bouncehost') { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Host for bouncing')?></td>
-          <td><?php echo pql_format_error_span($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?php echo $_REQUEST["bouncehost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?php echo $_REQUEST["bouncehost"]?>"> <?php echo $LANG->_('Default')?>: <?php echo $_REQUEST["mxhost"]?> (<?php echo $LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('The combination of user and host will return the email address used for bouning messages, e.g. MAILER-DAEMON@mail.host.ch')?>.<br><?=$LANG->_('Leave the fields empty to use default configuration')?>.
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo $LANG->_('The combination of user and host will return the email address used for bouning messages, e.g. MAILER-DAEMON@mail.host.ch')?>.<br><?php echo $LANG->_('Leave the fields empty to use default configuration')?>.
           </td>
         </tr>
       </th>

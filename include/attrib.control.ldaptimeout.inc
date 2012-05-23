@@ -53,7 +53,7 @@ function ldaptimeout_print_view($host) {
 <?php
 	} // end if is_array
 ?>
-        <td><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=ldaptimeout"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=ldaptimeout"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>

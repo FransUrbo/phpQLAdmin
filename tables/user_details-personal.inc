@@ -24,31 +24,31 @@
               </tr>
         
               <tr class="<?php pql_format_table(); ?>">
-                <td class="title"><?php echo $LANG->_('Telephone number')?> (<?=$LANG->_('Work')?>)</td>
+                <td class="title"><?php echo $LANG->_('Telephone number')?> (<?php echo $LANG->_('Work')?>)</td>
                 <td><?php if($telephonenumber) { echo $telephonenumber; } else { echo $LANG->_('Not set'); }?></td>
                 <td><?php echo $telephonenumber_link?></td>
               </tr>
         
               <tr class="<?php pql_format_table(); ?>">
-                <td class="title"><?php echo $LANG->_('Telephone number')?> (<?=$LANG->_('Home')?>)</td>
+                <td class="title"><?php echo $LANG->_('Telephone number')?> (<?php echo $LANG->_('Home')?>)</td>
                 <td><?php if($homephone) { echo $homephone; } else { echo $LANG->_('Not set'); }?></td>
                 <td><?php echo $homephone_link?></td>
               </tr>
         
               <tr class="<?php pql_format_table(); ?>">
-                <td class="title"><?php echo $LANG->_('Telephone number')?> (<?=$LANG->_('Mobile')?>)</td>
+                <td class="title"><?php echo $LANG->_('Telephone number')?> (<?php echo $LANG->_('Mobile')?>)</td>
                 <td><?php if($mobile) { echo $mobile; } else { echo $LANG->_('Not set'); }?></td>
                 <td><?php echo $mobile_link?></td>
               </tr>
         
               <tr class="<?php pql_format_table(); ?>">
-                <td class="title"><?php echo $LANG->_('Telephone number')?> (<?=$LANG->_('Pager')?>)</td>
+                <td class="title"><?php echo $LANG->_('Telephone number')?> (<?php echo $LANG->_('Pager')?>)</td>
                 <td><?php if($pager) { echo $pager; } else { echo $LANG->_('Not set'); }?></td>
                 <td><?php echo $pager_link?></td>
               </tr>
         
               <tr class="<?php pql_format_table(); ?>">
-                <td class="title"><?php echo $LANG->_('Street address')?> (<?=$LANG->_('Home')?>)</td>
+                <td class="title"><?php echo $LANG->_('Street address')?> (<?php echo $LANG->_('Home')?>)</td>
                 <td><?php if($homepostaladdress) { echo $homepostaladdress; } else { echo $LANG->_('Not set'); }?></td>
                 <td><?php echo $homepostaladdress_link?></td>
               </tr>
@@ -87,9 +87,9 @@
               
               <tr class="<?php pql_format_table(); ?>" align="left" valign="top">
 <?php  if(empty($photo)) { ?>
-                <td class="title" align="center"><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_PHOTO")?>&user=<?=$url["user"]?>&action=add&view=<?=$_GET["view"]?>"><?=$LANG->_('Add picture')?></a></td>
+                <td class="title" align="center"><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_PHOTO")?>&user=<?php echo $url["user"]?>&action=add&view=<?php echo $_GET["view"]?>"><?php echo $LANG->_('Add picture')?></a></td>
 <?php } else { ?>
-                <td class="title" align="center"><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_PHOTO")?>&user=<?=$url["user"]?>&action=replace&view=<?=$_GET["view"]?>"><?=$LANG->_('Replace picture')?></a></td>
+                <td class="title" align="center"><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_PHOTO")?>&user=<?php echo $url["user"]?>&action=replace&view=<?php echo $_GET["view"]?>"><?php echo $LANG->_('Replace picture')?></a></td>
 <?php } ?>
               </tr>
             </th>

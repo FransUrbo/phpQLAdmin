@@ -36,7 +36,7 @@ function attribute_print_form($type = "modify") {
             <?php echo pql_format_error_span($error[$attrib]); ?>
             <select name="<?php echo $attrib?>">
 <?php for($i=0; $i < count($templates); $i++) { ?>
-              <option value="<?php echo $templates[$i]["name"]?>"<?php if($templates[$i]["name"] == $_REQUEST["defaultaccounttype"]) { echo " SELECTED"; }?>><?=$templates[$i]["short"]?></option>
+              <option value="<?php echo $templates[$i]["name"]?>"<?php if($templates[$i]["name"] == $_REQUEST["defaultaccounttype"]) { echo " SELECTED"; }?>><?php echo $templates[$i]["short"]?></option>
 <?php } ?>
               <option value="alias"><?php echo $LANG->_('Alias object')?></option>
             </select>

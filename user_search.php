@@ -9,13 +9,13 @@ include($_SESSION["path"]."/header.html");
   <span class="title2"><?php echo $LANG->_('Find entry/entries whose')?></span>
   <form action="search.php" method="POST">
     <select name="attribute">
-      <option value="<?php echo pql_get_define("PQL_ATTR_UID")?>" SELECTED><?=$LANG->_('Username')?></option>
-      <option value="<?php echo pql_get_define("PQL_ATTR_CN")?>"><?=$LANG->_('Common name')?></option>
-      <option value="<?php echo pql_get_define("PQL_ATTR_MAIL")?>"><?=$LANG->_('Mail address')?></option>
-      <option value="<?php echo pql_get_define("PQL_ATTR_MAILHOST")?>"><?=$LANG->_('Mail host')?></option>
-      <option value="<?php echo pql_get_define("PQL_ATTR_FORWARDS")?>"><?=$LANG->_('Forwarding address')?></option>
-      <option value="<?php echo pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")?>"><?=$LANG->_('DNS Hostname')?></option>
-      <option value="<?php echo pql_get_define("PQL_ATTR_ARECORD")?>"><?=$LANG->_('DNS IP Address')?></option>
+      <option value="<?php echo pql_get_define("PQL_ATTR_UID")?>" SELECTED><?php echo $LANG->_('Username')?></option>
+      <option value="<?php echo pql_get_define("PQL_ATTR_CN")?>"><?php echo $LANG->_('Common name')?></option>
+      <option value="<?php echo pql_get_define("PQL_ATTR_MAIL")?>"><?php echo $LANG->_('Mail address')?></option>
+      <option value="<?php echo pql_get_define("PQL_ATTR_MAILHOST")?>"><?php echo $LANG->_('Mail host')?></option>
+      <option value="<?php echo pql_get_define("PQL_ATTR_FORWARDS")?>"><?php echo $LANG->_('Forwarding address')?></option>
+      <option value="<?php echo pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")?>"><?php echo $LANG->_('DNS Hostname')?></option>
+      <option value="<?php echo pql_get_define("PQL_ATTR_ARECORD")?>"><?php echo $LANG->_('DNS IP Address')?></option>
     </select>
 
     <select name="filter_type">

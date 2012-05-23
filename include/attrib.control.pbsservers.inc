@@ -105,7 +105,7 @@ function pbsservers_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["pbsservers"]); $i++) { ?>
-    <input type="hidden" name="pbsservers[<?php echo $i?>]" value="<?=$_REQUEST["pbsservers"][$i]?>">
+    <input type="hidden" name="pbsservers[<?php echo $i?>]" value="<?php echo $_REQUEST["pbsservers"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

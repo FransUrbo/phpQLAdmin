@@ -84,7 +84,7 @@ function percenthack_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["percenthack"]); $i++) { ?>
-    <input type="hidden" name="percenthack[<?php echo $i?>]" value="<?=$_REQUEST["percenthack"][$i]?>">
+    <input type="hidden" name="percenthack[<?php echo $i?>]" value="<?php echo $_REQUEST["percenthack"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

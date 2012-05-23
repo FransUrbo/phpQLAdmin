@@ -60,7 +60,7 @@ function attribute_print_form($data) {
       <th colspan="3" align="left">
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $info[0]?></td>
-          <td>&nbsp;<input type="input" name="<?php echo $info[0]?>" size="40" value="<?=$value?>"></td>
+          <td>&nbsp;<input type="input" name="<?php echo $info[0]?>" size="40" value="<?php echo $value?>"></td>
         </tr>
       </th>
     </table>

@@ -38,8 +38,8 @@
         <td><?php echo $additional?></td>
 <?php		if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>=<?=$additional?>&submit=3&action=modify&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"), 'what' => $domainname)); ?>"></a>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&delval=<?=$additional?>&submit=4&action=delete&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete additional domain name')?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>=<?php echo $additional?>&submit=3&action=modify&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"), 'what' => $domainname)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&delval=<?php echo $additional?>&submit=4&action=delete&view=<?php echo $_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?php echo $LANG->_('Delete additional domain name')?>" border="0"></a>
         </td>
 <?php		} else { ?>
         <td></td>
@@ -51,12 +51,12 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&submit=3&action=add&view=<?php echo $_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
         </td>
       </tr>
 <?php } else { ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")?>&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&submit=3&action=add&view=<?php echo $_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
         </td>
 <?php } ?>
 

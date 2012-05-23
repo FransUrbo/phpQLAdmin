@@ -51,14 +51,14 @@ function custombouncetext_print_view($host) {
 	$cn = $_pql_control->get_attribute($host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">custombouncetext (<?php echo $LANG->_('Additional bounce text')?>) for host <u><?=$cn?></u></th>
+    <th colspan="3" align="left">custombouncetext (<?php echo $LANG->_('Additional bounce text')?>) for host <u><?php echo $cn?></u></th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Message')?></td>
         <td><?php echo nl2br($_REQUEST["custombouncetext"]); ?></td>
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=custombouncetext"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=custombouncetext"><img src="images/edit.png" width="12" height="12" border="0"><?php echo $LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>

@@ -100,7 +100,7 @@ function badmailfrom_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["badmailfrom"]); $i++) { ?>
-    <input type="hidden" name="badmailfrom[<?php echo $i?>]" value="<?=$_REQUEST["badmailfrom"][$i]?>">
+    <input type="hidden" name="badmailfrom[<?php echo $i?>]" value="<?php echo $_REQUEST["badmailfrom"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

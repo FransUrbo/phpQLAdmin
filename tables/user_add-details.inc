@@ -129,8 +129,8 @@
 			$schemes[0] = preg_replace('/\}/', '', $schemes[0]);
 		  }
 ?>
-            <input type="radio" name="pwscheme" value="<?php echo $schemes[0]?>"><?=$schemes[0]?>
-            <input type="radio" name="pwscheme" value="<?php echo $_REQUEST["defaultpasswordscheme"]?>" CHECKED><?=$_REQUEST["defaultpasswordscheme"]?>
+            <input type="radio" name="pwscheme" value="<?php echo $schemes[0]?>"><?php echo $schemes[0]?>
+            <input type="radio" name="pwscheme" value="<?php echo $_REQUEST["defaultpasswordscheme"]?>" CHECKED><?php echo $_REQUEST["defaultpasswordscheme"]?>
 <?php
 		} else {
 		  if(!@$_REQUEST["pwscheme"])
@@ -297,7 +297,7 @@
             <select name="loginshell">
               <option value="/bin/false"<?php if(empty($_REQUEST["loginshell"])) { ?> SELECTED<? } ?>>/bin/false</option>
 <?php	  foreach($shells as $shell) { ?>
-              <option value="<?php echo $shell?>"<?php if(@($_REQUEST["loginshell"] == $shell)) { ?> SELECTED<? } ?>><?=$shell?></option>
+              <option value="<?php echo $shell?>"<?php if(@($_REQUEST["loginshell"] == $shell)) { ?> SELECTED<? } ?>><?php echo $shell?></option>
 <?php	  } ?>
             </select>
           </td>
@@ -327,9 +327,9 @@
 <?php		} ?>
 <?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
-              <option value="<?php echo $defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
+              <option value="<?php echo $defaultdomain?>"><?php echo pql_maybe_idna_decode($defaultdomain)?></option>
 <?php			foreach($additionaldomainname as $additional) { ?>
-              <option value="<?php echo $additional?>"><?=pql_maybe_idna_decode($additional)?></option>
+              <option value="<?php echo $additional?>"><?php echo pql_maybe_idna_decode($additional)?></option>
 <?php   		} ?>
             </select>
 <?php 		} elseif(@$defaultdomain) { ?>
@@ -383,11 +383,11 @@
           <td>
             &nbsp;&nbsp;
             <select name="subbranch">
-              <option value="<?php echo pql_format_urls($_REQUEST["domain"])?>"><?=$_REQUEST["domain"]?></option>
+              <option value="<?php echo pql_format_urls($_REQUEST["domain"])?>"><?php echo $_REQUEST["domain"]?></option>
 <?php
 				for($i=0; $i < count($branches); $i++) {
 ?>
-              <option value="<?php echo pql_format_urls($branches[$i])?>"><?=$branches[$i]?></option>
+              <option value="<?php echo pql_format_urls($branches[$i])?>"><?php echo $branches[$i]?></option>
 <?php
 				}
 ?>
@@ -440,7 +440,7 @@
           <td>
             <?php if(!empty($error_text["forwardingaddress"])) { echo pql_format_error_span($error_text["forwardingaddress"]); }?>
             <?php echo pql_templates_mark_importance($mark); ?>
-            <input type="text" name="forwardingaddress" value="<?php echo $_REQUEST["forwardingaddress"]?>"><?=$LANG->_('Email')?>
+            <input type="text" name="forwardingaddress" value="<?php echo $_REQUEST["forwardingaddress"]?>"><?php echo $LANG->_('Email')?>
           </td>
         </tr>
 

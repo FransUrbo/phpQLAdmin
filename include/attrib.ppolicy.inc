@@ -29,7 +29,7 @@ function attribute_print_form() {
 <?php if(is_array($ppolicies)) {
 		for($i=0; $ppolicies[$i]; $i++) {
 ?>
-            <input type="radio" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>">
+            <input type="radio" name="<?php echo $attrib?>" value="<?php echo $_REQUEST[$attrib]?>">
 <?php	} ?>
 <?php } else { ?>
             <?php echo $LANG->_('No password policies defined')?>.

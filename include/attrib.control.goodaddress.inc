@@ -68,7 +68,7 @@ function goodmailaddr_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["goodmailaddr"]); $i++) { ?>
-    <input type="hidden" name="goodmailaddr[<?php echo $i?>]" value="<?=$_REQUEST["goodmailaddr"][$i]?>">
+    <input type="hidden" name="goodmailaddr[<?php echo $i?>]" value="<?php echo $_REQUEST["goodmailaddr"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

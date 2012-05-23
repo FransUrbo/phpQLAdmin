@@ -8,7 +8,7 @@
         <td>
           <select name="template">
 <?php for($i=0; $i < count($templates); $i++) { ?>
-            <option value="<?php echo $templates[$i]["name"]?>" <?php if($templates[$i]["name"] == $defaultaccounttype) { echo "SELECTED"; }?>><?=$templates[$i]["short"]?></option>
+            <option value="<?php echo $templates[$i]["name"]?>" <?php if($templates[$i]["name"] == $defaultaccounttype) { echo "SELECTED"; }?>><?php echo $templates[$i]["short"]?></option>
 <?php } ?>
             <option value="alias"><?php echo $LANG->_('Alias object')?></option>
           </select>

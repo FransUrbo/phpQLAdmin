@@ -70,7 +70,7 @@ function ldapclusterhosts_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["ldapclusterhosts"]); $i++) { ?>
-    <input type="hidden" name="ldapclusterhosts[<?php echo $i?>]" value="<?=$_REQUEST["ldapclusterhosts"][$i]?>">
+    <input type="hidden" name="ldapclusterhosts[<?php echo $i?>]" value="<?php echo $_REQUEST["ldapclusterhosts"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

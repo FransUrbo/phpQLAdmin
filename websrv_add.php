@@ -257,10 +257,10 @@ if(($error == 'true') or !$_REQUEST["type"] or
 					$mark = ' CHECKED';
 				}
 ?>
-            <input type="checkbox" name="host_<?php echo $i?>" value="<?=urlencode($server_dn)?>"<?=$mark?>><b><?=$server_fqdn?></b><br>
+            <input type="checkbox" name="host_<?php echo $i?>" value="<?php echo urlencode($server_dn)?>"<?php echo $mark?>><b><?php echo $server_fqdn?></b><br>
 <?php		  } else { ?>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><?php echo $server_fqdn?></b>&nbsp;<font color=red>(<?=$LANG->_('Preselected')?>)</font><br>
-            <input type="hidden"   name="host_<?php echo $i?>" value="<?=urlencode($server_dn)?>">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><?php echo $server_fqdn?></b>&nbsp;<font color=red>(<?php echo $LANG->_('Preselected')?>)</font><br>
+            <input type="hidden"   name="host_<?php echo $i?>" value="<?php echo urlencode($server_dn)?>">
 <?php		  }
 
 			  $i++;

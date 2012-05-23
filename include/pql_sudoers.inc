@@ -61,7 +61,7 @@ function pql_sudo_list_expand($role, $alist, $attribute, $extraURL) {
   $url = $_SERVER['REQUEST_URI'];
   if(is_array($alist)) {
 ?>
-  <div id='<?php echo $role.$attribute?>Parent' class='parent' <?=$mouse["over"]." ".$mouse["out"]?>>
+  <div id='<?php echo $role.$attribute?>Parent' class='parent' <?php echo $mouse["over"]." ".$mouse["out"]?>>
     <nobr>
       <a class="item" onClick="if (capable) {expandBase('<?php echo $role.$attribute?>', true); return false;}">
         <img name='imEx' src='images/plus.png' border='0' alt='+' width='9' height='9' id='<?php echo $role.$attribute; ?>Img'>
@@ -73,13 +73,13 @@ function pql_sudo_list_expand($role, $alist, $attribute, $extraURL) {
     </nobr>
   </div>
 
-  <div id='<?php echo $role.$attribute?>Child' class='child' style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+  <div id='<?php echo $role.$attribute?>Child' class='child' style="margin-bottom: 5px" <?php echo $mouse["over"]." ".$mouse["out"]?>>
 <?php
 	for($w = 1; $w < count($alist); $w++) {
 	  $alt_msg = pql_complete_constant($LANG->_('Delete %who% from Sudo role'), array('who' => $alist[$w]));
 ?>
     <nobr>
-      <a class="tblItem" title="<?php echo $alist[$w]?>" href="<?=$_SERVER['REQUEST_URI'].$extraURL?>" target="pqlmain"><?=$alist[$w]?></a>
+      <a class="tblItem" title="<?php echo $alist[$w]?>" href="<?php echo $_SERVER['REQUEST_URI'].$extraURL?>" target="pqlmain"><?php echo $alist[$w]?></a>
     </nobr>
 <?php
 	  //print "&attribute=" . $attribute . "&" . $attribute . "=" . $alist[$w] . "\">";
@@ -90,7 +90,7 @@ function pql_sudo_list_expand($role, $alist, $attribute, $extraURL) {
       $alt_msg = pql_complete_constant($LANG->_('Delete %who% from Sudo role'), array('who' => $alist));
 ?>
     <nobr>
-      <a class="tblItem" title="<?php echo $alist?>" href="<?=$_SERVER['REQUEST_URI'].$extraURL?>" target="pqlmain"><?=$alist?></a>
+      <a class="tblItem" title="<?php echo $alist?>" href="<?php echo $_SERVER['REQUEST_URI'].$extraURL?>" target="pqlmain"><?php echo $alist?></a>
     </nobr>
 <?php
 	  //print "\t\t" . $alist;

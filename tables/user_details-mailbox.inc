@@ -12,7 +12,7 @@
         <td><?php echo $mailmessagestore?></td>
         <td>
 <?php if(!$_SESSION["SINGLE_USER"]) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mailmessagestore&user=<?=$url["user"]?>&oldvalue=<?=$mailmessagestore?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=mailmessagestore&user=<?php echo $url["user"]?>&oldvalue=<?php echo $mailmessagestore?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -22,7 +22,7 @@
         <td><?php echo $mailhost?></td>
         <td>
 <?php if(!$_SESSION["SINGLE_USER"]) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mailhost&user=<?=$url["user"]?>&oldvalue=<?=$mailhost?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=mailhost&user=<?php echo $url["user"]?>&oldvalue=<?php echo $mailhost?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -32,7 +32,7 @@
         <td><?php echo $quota?></td>
         <td>
 <?php if(!$_SESSION["SINGLE_USER"]) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mailquota&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=mailquota&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
 <?php } ?>
         </td>
       </tr>

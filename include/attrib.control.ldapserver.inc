@@ -161,21 +161,21 @@ function ldapserver_print_view($host) {
       <tr class="<?php echo $class?>">
         <td class="title"><?php echo $LANG->_('Base DN')?></td>
         <td><?php echo $_REQUEST["ldapbasedn"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPBASEDN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPBASEDN")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPBASEDN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPBASEDN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr class="<?php echo $class?>">
         <td class="title"><?php echo $LANG->_('Login')?></td>
         <td><?php echo $_REQUEST["ldaplogin"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPLOGIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPLOGIN")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPLOGIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPLOGIN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr class="<?php echo $class?>">
         <td class="title"><?php echo $LANG->_('Password')?></td>
         <td><?php echo $_REQUEST["ldappassword"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPPASSWORD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPPASSWORD")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPPASSWORD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPPASSWORD")?>"></a></td>
       </tr>
 
 <?php if($_REQUEST["ldapserver"] == $LANG->_('Not set') or $_REQUEST["ldapbasedn"] == $LANG->_('Not set')) { ?>
@@ -189,14 +189,14 @@ function ldapserver_print_view($host) {
       <tr class="<?php echo $class?>">
         <td class="title"><?php echo $LANG->_('Group login')?></td>
         <td><?php echo $_REQUEST["ldapgrouplogin"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_GROUP_LOGIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_GROUP_LOGIN")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_GROUP_LOGIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change option').' '.pql_get_define("PQL_ATTR_GROUP_LOGIN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr class="<?php echo $class?>">
         <td class="title"><?php echo $LANG->_('Group login password')?></td>
         <td><?php echo $_REQUEST["ldapgrouppassword"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_GROUP_PASSWD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_GROUP_PASSWD")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_GROUP_PASSWD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change option').' '.pql_get_define("PQL_ATTR_GROUP_PASSWD")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -213,7 +213,7 @@ function ldapserver_print_form() {
       <th colspan="3" align="left"><?php echo $LANG->_('LDAP server connection option')?></th>
 <?php if($_REQUEST["attrib"] == 'ldapserver') {
 	 	for($i=0; $i < count($_REQUEST["ldapserver"]); $i++) { ?>
-	<input type="hidden" name="ldapserver[<?php echo $i?>]" value="<?=$_REQUEST["ldapserver"][$i]?>">
+	<input type="hidden" name="ldapserver[<?php echo $i?>]" value="<?php echo $_REQUEST["ldapserver"][$i]?>">
 <?php 	} ?>
 
         <tr class="<?php pql_format_table(); ?>">

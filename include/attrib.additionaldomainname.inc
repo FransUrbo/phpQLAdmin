@@ -65,7 +65,7 @@ function attribute_print_form() {
 
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?php echo $i?>" value="<?=$host?>"><?=pql_maybe_idna_decode($host)?><br>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?php echo $i?>" value="<?php echo $host?>"><?php echo pql_maybe_idna_decode($host)?><br>
 <?php	  			$i++;
 		  		}
 ?>
@@ -84,7 +84,7 @@ function attribute_print_form() {
 <?php		if(!pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?php echo $i?>" value="<?=$host?>"><?=pql_maybe_idna_decode($host)?><br>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?php echo $i?>" value="<?php echo $host?>"><?php echo pql_maybe_idna_decode($host)?><br>
 <?php	  			$i++;
 		  		}
 ?>

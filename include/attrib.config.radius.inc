@@ -55,9 +55,9 @@ function attribute_print_form_radprofile($error_text) {
 		  
 		  if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MINLEN"))) {
 ?>
-          <input type="text" name="<?php echo $attrib?>" size="7" value="<?=$_REQUEST[$attrib]?>">&nbsp;<?=$LANG->_('characters')?>
+          <input type="text" name="<?php echo $attrib?>" size="7" value="<?php echo $_REQUEST[$attrib]?>">&nbsp;<?php echo $LANG->_('characters')?>
 <?php	  } else { ?>
-          <input type="text" name="<?php echo $attrib?>" size="20" value="<?=$_REQUEST[$attrib]?>">
+          <input type="text" name="<?php echo $attrib?>" size="20" value="<?php echo $_REQUEST[$attrib]?>">
 <?php	  } ?>
 <?php	} elseif(($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MINAGE"))) or
 				 ($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_MAXAGE"))) or
@@ -68,7 +68,7 @@ function attribute_print_form_radprofile($error_text) {
 		  // Seconds value
 ?>
           &nbsp;&nbsp;
-          <input type="text" name="<?php echo $attrib?>" size="9" value="<?=$_REQUEST[$attrib]?>">
+          <input type="text" name="<?php echo $attrib?>" size="9" value="<?php echo $_REQUEST[$attrib]?>">
           <select name="<?php echo $attrib?>_time">
             <option value="seconds" SELECTED><?php echo $LANG->_('Seconds')?></option>
             <option value="minutes"><?php echo $LANG->_('Minutes')?></option>
@@ -92,16 +92,16 @@ function attribute_print_form_radprofile($error_text) {
 <?php	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_CHKQUAL"))) {
 			// enum(0,1,2) value
 ?>
-          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="0"><?=$LANG->_('No syntax checking')?><br>
-          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="1"><?=$LANG->_('Server checks syntax - return true if failed to check password')?><br>
-          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="2" CHECKED><?=$LANG->_('Server checks syntax - return false if failed to check password')?><br>
+          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="0"><?php echo $LANG->_('No syntax checking')?><br>
+          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="1"><?php echo $LANG->_('Server checks syntax - return true if failed to check password')?><br>
+          &nbsp;<input type="radio" name="<?php echo $attrib?>" value="2" CHECKED><?php echo $LANG->_('Server checks syntax - return false if failed to check password')?><br>
 <?php	} elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_RADIUS_ATTR"))) { ?>
           <font color="red">*</font>
           userPassword (harcoded)
           <input type="hidden" name="<?php echo $attrib?>" value="userPassword">
 <?php	} else { ?>
 
-          <input type="text" name="<?php echo $attrib?>" size="20" value="<?=$_REQUEST[$attrib]?>">
+          <input type="text" name="<?php echo $attrib?>" size="20" value="<?php echo $_REQUEST[$attrib]?>">
 <?php	} ?>
         </td>
       </tr>

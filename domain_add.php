@@ -24,7 +24,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 include($_SESSION["path"]."/header.html");
 ?>
-  <span class="title1"><?php echo $LANG->_('Create domain')?>: <?=$_REQUEST["domain"]?></span>
+  <span class="title1"><?php echo $LANG->_('Create domain')?>: <?php echo $_REQUEST["domain"]?></span>
   <br><br>
 <?php
 }
@@ -190,7 +190,7 @@ if($_pql->add($dn, $entry, 'branch', 'domain_add.php')) {
 		}
 ?>
 
-    <form action="<?php echo $url?>&msg=<?=$msg?>&rlnb=1" method="post">
+    <form action="<?php echo $url?>&msg=<?php echo $msg?>&rlnb=1" method="post">
       <input type="submit" value="<?php echo $LANG->_('Continue')?>">
     </form>
 <?php

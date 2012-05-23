@@ -50,7 +50,7 @@ function idhost_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Host')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["idhost"]) { echo pql_maybe_idna_decode($_REQUEST["idhost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_IDHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_IDHOST")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_IDHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_IDHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -67,7 +67,7 @@ function idhost_print_form() {
       <th colspan="3" align="left">idhost (<?php echo $LANG->_('Host name for Message-ID\'s')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Host')?></td>
-          <td><?php echo pql_format_error_span($error["idhost"]); ?><input type="text" name="idhost" value="<?php echo $_REQUEST["idhost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["idhost"]); ?><input type="text" name="idhost" value="<?php echo $_REQUEST["idhost"]?>"> <?php echo $LANG->_('Default')?>: <?php echo $_REQUEST["mxhost"]?> (<?php echo $LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr>

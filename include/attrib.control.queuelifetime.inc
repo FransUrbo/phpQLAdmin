@@ -60,7 +60,7 @@ function queuelifetime_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Remain')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["queuelifetime"]) { echo $_REQUEST["queuelifetime"]; } else { echo $LANG->_('Default', 4).": $queuelifetime"; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -78,7 +78,7 @@ function queuelifetime_print_form() {
       <th colspan="3" align="left">queuelifetime (<?php echo $LANG->_('Max lifetime of a message in queue')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Remain')?></td>
-          <td><?php echo pql_format_error_span($error["queuelifetime"]); ?><input type="text" name="queuelifetime" value="<?php echo $_REQUEST["queuelifetime"]?>"> <?=$LANG->_('Seconds', 4)?></td>
+          <td><?php echo pql_format_error_span($error["queuelifetime"]); ?><input type="text" name="queuelifetime" value="<?php echo $_REQUEST["queuelifetime"]?>"> <?php echo $LANG->_('Seconds', 4)?></td>
         </tr>
 
         <tr class="subtitle">

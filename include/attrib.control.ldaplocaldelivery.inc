@@ -41,7 +41,7 @@ function ldaplocaldelivery_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Local deliveries')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["ldaplocaldelivery"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>&<?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>=<?php if(@$_REQUEST["ldaplocaldelivery"]) { echo "0"; } else { echo "1"; }?>&type=modify&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>&<?php echo pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>=<?php if(@$_REQUEST["ldaplocaldelivery"]) { echo "0"; } else { echo "1"; }?>&type=modify&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?php echo pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>"></a></td>
       </tr>
     </th>
   </table>

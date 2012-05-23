@@ -66,7 +66,7 @@ function rbllist_print_view($host) {
         <td><?php echo $line[2]?></td>
         <td><?php for($i=3; $i < count($line); $i++) { echo $line[$i]." "; } ?></td>
         <td align="right">
-          <a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>&type=del&submit=1&<?=pql_get_define("PQL_ATTR_RBLLIST")?>=<?=urldecode($server)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Remove blocking list')?>"></a>
+          <a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_RBLLIST")?>&type=del&submit=1&<?php echo pql_get_define("PQL_ATTR_RBLLIST")?>=<?php echo urldecode($server)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Remove blocking list')?>"></a>
         </td>
       </tr>
 <?php
@@ -74,7 +74,7 @@ function rbllist_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td colspan="5"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add blocking list')?></a></td>
+        <td colspan="5"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_RBLLIST")?>"><img src="images/edit.png" width="12" height="12" border="0"><?php echo $LANG->_('Add blocking list')?></a></td>
       </tr>
     </th>
   </table>
@@ -89,7 +89,7 @@ function rbllist_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["rbllist"]); $i++) { ?>
-    <input type="hidden" name="rbllist[<?php echo $i?>]" value="<?=$_REQUEST["rbllist"][$i]?>">
+    <input type="hidden" name="rbllist[<?php echo $i?>]" value="<?php echo $_REQUEST["rbllist"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

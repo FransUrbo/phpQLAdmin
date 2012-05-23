@@ -114,14 +114,14 @@ if($startinmyaccount) {
 
   <!-- frames == <?php echo $frames?> -->
 
-  <frameset cols="260,*" rows="*" border="<?php echo $border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
+  <frameset cols="260,*" rows="*" border="<?php echo $border?>" frameborder="<?php echo $border?>"><!-- $frames >= 2 -->
     <!-- LEFT frame -->
 <?php if($frames >= 3) { ?>
-    <frameset cols="*" rows="<?php echo $size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
+    <frameset cols="*" rows="<?php echo $size?>%,*" border="<?php echo $border?>" frameborder="<?php echo $border?>"><!-- $frames >= 3 -->
 <?php } ?>
       <frame src="left-base.php<?php echo $adv_uri?>" name="pqlbase">
 <?php if($frames >= 4) { ?>
-      <frameset cols="*" rows="70%,*" border="<?php echo $border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
+      <frameset cols="*" rows="70%,*" border="<?php echo $border?>" frameborder="<?php echo $border?>"><!-- $frames >= 4 -->
 <?php } ?>
 <?php if($_SESSION["USE_USERS"]) { ?>
         <frame src="left.php<?php echo $adv_uri?>" name="pqlnav">
@@ -131,7 +131,7 @@ if($startinmyaccount) {
 		// {{{ Advance mode - show controls and mailinglist managers
 		if($frames >= 5) {
 ?>
-        <frameset cols="*" rows="50%,*" border="<?php echo $border?>" frameborder="<?=$border?>"><!-- $frames >= 5 -->
+        <frameset cols="*" rows="50%,*" border="<?php echo $border?>" frameborder="<?php echo $border?>"><!-- $frames >= 5 -->
 <?php	} 
 
 		if($_SESSION["USE_CONTROLS"] or $_SESSION["USE_WEBSRV"]    or $_SESSION["USE_HOSTACL"] or
@@ -143,7 +143,7 @@ if($startinmyaccount) {
 
 		if($frames >= 6) {
 ?>
-        <frameset cols="*" rows="*" border="<?php echo $border?>" frameborder="<?=$border?>"><!-- $frames >= 6 -->
+        <frameset cols="*" rows="*" border="<?php echo $border?>" frameborder="<?php echo $border?>"><!-- $frames >= 6 -->
 <?php	}
 
 		if($_SESSION["USE_EZMLM"]) { ?>

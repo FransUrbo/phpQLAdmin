@@ -52,7 +52,7 @@ function mailsizemax_print_view($host) {
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Bytes')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["mailsizemax"]) { echo $_REQUEST["mailsizemax"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=urlencode($host)?>&attrib=<?=pql_get_define("PQL_ATTR_MAILSIZEMAX")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo urlencode($host)?>&attrib=<?php echo pql_get_define("PQL_ATTR_MAILSIZEMAX")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>

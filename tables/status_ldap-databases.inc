@@ -27,7 +27,7 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->l
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $context?></td>
-        <td class="<?php echo $class?>"><?=$database_status['monitoredinfo']?></td>
+        <td class="<?php echo $class?>"><?php echo $database_status['monitoredinfo']?></td>
       </tr>
 <?php
 				}
@@ -39,7 +39,7 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->l
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $database_status[$attrib]?></td>
-        <td class="<?php echo $class?>"><?=$database_status['monitoredinfo']?></td>
+        <td class="<?php echo $class?>"><?php echo $database_status['monitoredinfo']?></td>
       </tr>
 <?php
 			  }
@@ -55,7 +55,7 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->l
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $status['namingcontexts']?></td>
-        <td class="<?php echo $class?>"><?=$status['description']?></td>
+        <td class="<?php echo $class?>"><?php echo $status['description']?></td>
       </tr>
 <?php	  }
 	  }

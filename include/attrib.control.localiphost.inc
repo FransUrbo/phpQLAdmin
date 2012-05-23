@@ -50,7 +50,7 @@ function localiphost_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Host')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["localiphost"]) { echo pql_maybe_idna_decode($_REQUEST["localiphost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALIPHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LOCALIPHOST")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LOCALIPHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LOCALIPHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -67,7 +67,7 @@ function localiphost_print_form() {
       <th colspan="3" align="left">localiphost (<?php echo $LANG->_('Substitution for local IP')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Host')?></td>
-          <td><?php echo pql_format_error_span($error["localiphost"]); ?><input type="text" name="localiphost" value="<?php echo $localiphost; ?>"> <?php echo $LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Value in \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["localiphost"]); ?><input type="text" name="localiphost" value="<?php echo $localiphost; ?>"> <?php echo $LANG->_('Default')?>: <?php echo $_REQUEST["mxhost"]?> (<?php echo $LANG->_('Value in \'me\'')?>)</td>
         </tr>
 
         <tr>

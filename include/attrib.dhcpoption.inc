@@ -51,7 +51,7 @@ function attribute_print_form() {
               <option value="broadcast-address"<?php if($_REQUEST[$attrib] == "broadcast-address") { echo " SELECTED"; }?>>broadcast-address</option>
               <option value="routers"<?php if($_REQUEST[$attrib] == "routers") { echo " SELECTED"; }?>>routers</option>
             </select>
-            <input type="input" name="<?php echo $attrib?>_value" value="<?=$_REQUEST[$attrib."_value"]?>">
+            <input type="input" name="<?php echo $attrib?>_value" value="<?php echo $_REQUEST[$attrib."_value"]?>">
           </td>
         </tr>
       </th>

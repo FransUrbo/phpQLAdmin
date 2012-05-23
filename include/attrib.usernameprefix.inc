@@ -37,9 +37,9 @@ function attribute_print_form($type = "modify") {
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
 <?php if($attrib == 'usernameprefix') { ?>
-            <input type="text" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50">
+            <input type="text" name="<?php echo $attrib?>" value="<?php echo $_REQUEST[$attrib]?>" size="50">
 <?php } elseif($attrib == 'usernameprefixlength') { ?>
-            <input type="text" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>" size="10">
+            <input type="text" name="<?php echo $attrib?>" value="<?php echo $_REQUEST[$attrib]?>" size="10">
 <?php } ?>
           </td>
         </tr>

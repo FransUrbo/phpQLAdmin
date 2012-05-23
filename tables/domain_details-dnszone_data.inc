@@ -57,23 +57,23 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td>
-          <a href="<?php echo $HREF?>&type=host&host=<?=$data['HOST']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "host"))?>"></a>
+          <a href="<?php echo $HREF?>&type=host&host=<?php echo $data['HOST']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "host"))?>"></a>
           <?php echo $data['HOST']?>
         </td>
 
         <td>
-          <a href="<?php echo $HREF?>&type=ttl&ttl=<?=$data['TTL']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "TTL"))?>"></a>
+          <a href="<?php echo $HREF?>&type=ttl&ttl=<?php echo $data['TTL']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "TTL"))?>"></a>
           <?php echo $data['TTL']?>
         </td>
 
         <td><?php echo $LANG->_($TYPE)?></td>
         <td>
-          <a href="<?php echo $HREF?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => $TYPE))?>"></a>
+          <a href="<?php echo $HREF?>&type=<?php echo lc($TYPE)?>&<?php echo lc($TYPE)?>=<?php echo $record?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify %type% record'), array('type' => $TYPE))?>"></a>
           <?php echo $record?>
         </td>
 
         <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?><?=$additional_uri?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
+          <a href="bind9_edit_attributes.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?php echo $_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?php echo $_REQUEST["view"]?>&dns_domain_name=<?php echo $dns_domain_name?>&type=<?php echo lc($TYPE)?>&<?php echo lc($TYPE)?>=<?php echo $record?><?php echo $additional_uri?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Delete host')?>"></a>
         </td>
       </tr>
 <?php					  } // foreach record
@@ -85,7 +85,7 @@
 ?>
 
       <tr class="subtitle">
-        <td><a href="bind9_add.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&domainname=<?=$dns_domain_name?>&action=add&type=host&submit=1&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?><?=$additional_uri?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?></a></td>
+        <td><a href="bind9_add.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?php echo $_REQUEST["domain"]?>&domainname=<?php echo $dns_domain_name?>&action=add&type=host&submit=1&view=<?php echo $_REQUEST["view"]?>&dns_domain_name=<?php echo $dns_domain_name?><?php echo $additional_uri?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?></a></td>
         <td></td>
         <td></td>
         <td></td>

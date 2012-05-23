@@ -65,7 +65,7 @@ function attribute_print_form() {
       <th colspan="3" align="left"><?php echo $LANG->_('Mail server')?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Options')?></td>
-          <td><input type="radio" name="options" value="dns" <?php if($_REQUEST["options"]=="dns"){ echo "checked"; }?>><?php echo $LANG->_('Standard (DNS entry)')?><input type="radio" name="options" value="user" <?php if($_REQUEST["options"]=="user"){ echo "checked"; }?>><?=$LANG->_('User defined')?><input type="radio" name="options" value="none" <?php if($_REQUEST["options"]=="none"){ echo "checked"; }?>><?=$LANG->_('None')?></td>
+          <td><input type="radio" name="options" value="dns" <?php if($_REQUEST["options"]=="dns"){ echo "checked"; }?>><?php echo $LANG->_('Standard (DNS entry)')?><input type="radio" name="options" value="user" <?php if($_REQUEST["options"]=="user"){ echo "checked"; }?>><?php echo $LANG->_('User defined')?><input type="radio" name="options" value="none" <?php if($_REQUEST["options"]=="none"){ echo "checked"; }?>><?php echo $LANG->_('None')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">

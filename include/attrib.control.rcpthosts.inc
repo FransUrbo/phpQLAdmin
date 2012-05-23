@@ -84,10 +84,10 @@ function rcpthosts_print_view($host) {
             <tr>
 <?php if(pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) { ?>
               <td><img src="images/edit.png" width="12" height="12" border="0" alt="replicate"></td>
-              <td><a href="control_edit_attribute.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_RCPTHOSTS")?>&type=replicate&mxhost=<?=$host?>&submit=1"><?=$LANG->_('Click here to start replication manually')?></a></td>
+              <td><a href="control_edit_attribute.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_RCPTHOSTS")?>&type=replicate&mxhost=<?php echo $host?>&submit=1"><?php echo $LANG->_('Click here to start replication manually')?></a></td>
 <?php } else { ?>
               <td><img src="images/info.png" width="16" height="16" border="0"></td>
-              <td><a href="control_edit_attribute.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_RCPTHOSTS")?>&mxhost=<?=$host?>&view=hosts"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
+              <td><a href="control_edit_attribute.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_RCPTHOSTS")?>&mxhost=<?php echo $host?>&view=hosts"><?php echo $LANG->_('Change options')?></a> (<?php echo $LANG->_('The automatic replication with domain is disabled')?>)</td>
 <?php } ?>
             </tr>
           </table>

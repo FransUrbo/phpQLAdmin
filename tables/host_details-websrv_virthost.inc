@@ -8,25 +8,25 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Server IP:PORT')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]?></td>
-        <td><a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]?>"><?=$img["mod"]?></a></td>
+        <td><a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]?>"><?php echo $img["mod"]?></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Server name')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]?></td>
-        <td><a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]?>"><?=$img["mod"]?></a></td>
+        <td><a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]?>"><?php echo $img["mod"]?></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Server administrator')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]?></td>
-        <td><a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]?>"><?=$img["mod"]?></a></td>
+        <td><a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]?>"><?php echo $img["mod"]?></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Document root')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]?></td>
-        <td><a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]?>"><?=$img["mod"]?></a></td>
+        <td><a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]?>"><?php echo $img["mod"]?></a></td>
       </tr>
 
       <?php echo pql_format_table_empty(2)?>
@@ -49,9 +49,9 @@
 <?php     } ?>
         <td><?php echo $srv?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>&oldvalue=<?=$srv?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>&oldvalue=<?php echo $srv?>"><?php echo $img["mod"]?></a>
 <?php	  if($srv) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>&oldvalue=<?=$srv?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>&oldvalue=<?php echo $srv?>"><?php echo $img["del"]?></a>
 <?php	  } ?>
         </td>
       </tr>
@@ -59,7 +59,7 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
-        <td><a href="<?php echo $LINK_URL?>&action=add&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server alias')))?></a></td>
+        <td><a href="<?php echo $LINK_URL?>&action=add&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>"><?php echo  pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server alias')))?></a></td>
         <td></td>
       </tr>
 <?php } else {
@@ -67,7 +67,7 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Server alias')?></td>
-        <td><a href="<?php echo $LINK_URL?>&action=add&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server alias')))?></a></td>
+        <td><a href="<?php echo $LINK_URL?>&action=add&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>"><?php echo  pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server alias')))?></a></td>
         <td></td>
       </tr>
 <?php } ?>
@@ -76,9 +76,9 @@
         <td class="title"><?php echo $LANG->_('Script alias URL')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?>"><?php echo $img["mod"]?></a>
 <?php if(@$virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?>"><?php echo $img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
@@ -87,9 +87,9 @@
         <td class="title"><?php echo $LANG->_('Script alias path')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?>"><?php echo $img["mod"]?></a>
 <?php if(@$virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?>"><?php echo $img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
@@ -98,9 +98,9 @@
         <td class="title"><?php echo $LANG->_('Error logfile')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?>"><?php echo $img["mod"]?></a>
 <?php if(@$virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?>"><?php echo $img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
@@ -109,9 +109,9 @@
         <td class="title"><?php echo $LANG->_('Transfer logfile')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?>"><?php echo $img["mod"]?></a>
 <?php if(@$virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?>"><?php echo $img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
@@ -140,9 +140,9 @@
 <?php     } ?>
         <td><?php echo $srv?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=$additional_attrib?>&oldvalue=<?=$srv?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo $additional_attrib?>&oldvalue=<?php echo $srv?>"><?php echo $img["mod"]?></a>
 <?php	  if($srv) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=$additional_attrib?>&oldvalue=<?=$srv?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo $additional_attrib?>&oldvalue=<?php echo $srv?>"><?php echo $img["del"]?></a>
 <?php 	  } ?>
         </td>
       </tr>
@@ -150,7 +150,7 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Additional option')?></td>
-        <td><a href="<?php echo $LINK_URL?>&action=add&type=<?=$additional_attrib?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
+        <td><a href="<?php echo $LINK_URL?>&action=add&type=<?php echo $additional_attrib?>"><?php echo  pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
         <td></td>
       </tr>
 <?php } else {
@@ -158,7 +158,7 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Additional option')?></td>
-        <td><a href="<?php echo $LINK_URL?>&action=add&type=<?=$additional_attrib?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
+        <td><a href="<?php echo $LINK_URL?>&action=add&type=<?php echo $additional_attrib?>"><?php echo  pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
         <td></td>
       </tr>
 <?php } ?>
@@ -170,9 +170,9 @@
         <td class="title"><?php echo $LANG->_('LDAP Server')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?>"><?php echo $img["mod"]?></a>
 <?php if(@$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?>"><?php echo $img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
@@ -181,9 +181,9 @@
         <td class="title"><?php echo $LANG->_('LDAP Login DN')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?>"><?php echo $img["mod"]?></a>
 <?php if(@$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?>"><?php echo $img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
@@ -192,9 +192,9 @@
         <td class="title"><?php echo $LANG->_('LDAP Login Password')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?></td>
         <td>
-          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?>"><?=$img["mod"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=mod&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?>"><?php echo $img["mod"]?></a>
 <?php if(@$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]) { ?>
-          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")?>&oldvalue=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?>"><?=$img["del"]?></a>
+          <a href="<?php echo $LINK_URL?>&action=del&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")?>&oldvalue=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?>"><?php echo $img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
@@ -205,7 +205,7 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Rewrite engine')?></td>
         <td><?php echo @$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")]?></td>
-        <td><a href="<?php echo $LINK_URL?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")?>&<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")?>=<?=$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")?>"></a>
+        <td><a href="<?php echo $LINK_URL?>&toggle=1&attrib=<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")?>&<?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")?>=<?php echo $virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Toggle')?><?php echo pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE")?>"></a>
 </td>
       </tr>
 

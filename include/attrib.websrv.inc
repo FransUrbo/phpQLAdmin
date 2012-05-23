@@ -47,7 +47,7 @@ function attribute_print_form() {
 <?php } else { ?>
             <td class="title"><?php echo pql_complete_constant($LANG->_('Set attribute %attribute%'), array('attribute' => $_REQUEST["attrib"])); ?></td>
 <?php } ?>
-            <td><input type="text" name="<?php echo $_REQUEST["attrib"]?>" value="<?=$attr_val?>" size="50"></td>
+            <td><input type="text" name="<?php echo $_REQUEST["attrib"]?>" value="<?php echo $attr_val?>" size="50"></td>
           </tr>
         </th>
       </table>

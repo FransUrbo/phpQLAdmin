@@ -10,7 +10,7 @@
 ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Delivery mode')?></td>
-        <td class="<?php echo $class?>"><?=$LANG->_('Default properties')?></td>
+        <td class="<?php echo $class?>"><?php echo $LANG->_('Default properties')?></td>
       </tr>
 <?php	} else {
 			$new_tr = 0;
@@ -21,12 +21,12 @@
 ?>
       <tr>
         <td class="title"></td>
-        <td class="<?php echo $class?>"><?=$mode_text?></td>
+        <td class="<?php echo $class?>"><?php echo $mode_text?></td>
       </tr>
 <?php			} else { ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Delivery mode')?></td>
-        <td class="<?php echo $class?>"><?=$mode_text?></td>
+        <td class="<?php echo $class?>"><?php echo $mode_text?></td>
       </tr>
 <?php			}  // end of new_tr
 
@@ -38,7 +38,7 @@
 ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Mail delivery program')?></td>
-        <td class="<?php echo pql_format_table()?>"><?=$deliveryprog?></td>
+        <td class="<?php echo pql_format_table()?>"><?php echo $deliveryprog?></td>
       </tr>
 <?php		}
 		} // end of if-else
@@ -47,7 +47,7 @@
       <tr class="subtitle">
         <td align="right"><img src="images/edit.png" width="12" height="12" alt="" border="0"></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=deliverymode&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>">
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=deliverymode&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>">
             <?php echo $LANG->_('Change properties')?>
           </a>
         </td>

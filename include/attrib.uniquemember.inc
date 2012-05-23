@@ -101,7 +101,7 @@ function attribute_print_form() {
   }
 ?>
 
-            <input type="hidden" name="<?php echo $attrib?>" value="<?=$i?>">
+            <input type="hidden" name="<?php echo $attrib?>" value="<?php echo $i?>">
 <?php
   if(isset($domains)) {
 	require("./left-trailer.html");

@@ -38,7 +38,7 @@ if(is_array($options)) {
         <td><?php echo pql_maybe_idna_decode($forwarder)?></td>
         <td><?php echo $options?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mailforwardingaddress&user=<?=$url["user"]?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$url["user"]?>&oldvalue=<?=$forwarder?>&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=mailforwardingaddress&user=<?php echo $url["user"]?>&mailforwardingaddress=<?php echo $forwarder?>&oldvalue=<?php echo $forwarder?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?php echo $url["user"]?>&oldvalue=<?php echo $forwarder?>&view=<?php echo $_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 <?php	} // end of foreach
@@ -47,7 +47,7 @@ if(is_array($options)) {
 
       <tr class="subtitle">
         <td colspan="3">
-          <a href="user_add_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mailforwardingaddress&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new forwarding address')?></a>
+          <a href="user_add_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=mailforwardingaddress&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?php echo $LANG->_('Create new forwarding address')?></a>
         </td>
       </tr>
     </th>

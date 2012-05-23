@@ -18,9 +18,9 @@ if(empty($forwarders)) {
 	foreach($forwarders as $forwarder) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="mailto:<?php echo $forwarder["email"]?>"><?=pql_maybe_idna_decode($forwarder["email"])?></a></td>
+        <td><a href="mailto:<?php echo $forwarder["email"]?>"><?php echo pql_maybe_idna_decode($forwarder["email"])?></a></td>
         <td>
-          <a href="user_detail.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?php echo urlencode($forwarder["reference"]); ?>"><?=$forwarder[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])]?></a>
+          <a href="user_detail.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&user=<?php echo urlencode($forwarder["reference"]); ?>"><?php echo $forwarder[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])]?></a>
         </td>
       </tr>
 <?php

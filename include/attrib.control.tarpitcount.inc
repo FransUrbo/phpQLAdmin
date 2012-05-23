@@ -80,14 +80,14 @@ function tarpitcount_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Tarpitting settings')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["tarpitcount"]) { echo pql_complete_constant($LANG->_('Delay submitting after %value% RCPTO\'s'), array('value' => $_REQUEST["tarpitcount"])); } else { echo '<i>'.$LANG->_('Disabled').'</i>'; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TARPITCOUNT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITCOUNT")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_TARPITCOUNT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITCOUNT")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Tarpit delay')?></td>
-        <td class="<?php echo $class?>"><?php if(@$_REQUEST["tarpitdelay"]) { echo $_REQUEST["tarpitdelay"]; } else { echo $LANG->_('Default').': 5'; }?> <?=$LANG->_('Seconds', 4)?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TARPITDELAY")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITDELAY")?>"></a></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["tarpitdelay"]) { echo $_REQUEST["tarpitdelay"]; } else { echo $LANG->_('Default').': 5'; }?> <?php echo $LANG->_('Seconds', 4)?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_TARPITDELAY")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITDELAY")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -111,7 +111,7 @@ function tarpitcount_print_form() {
 <?php } if($_REQUEST["attrib"] == "tarpitdelay") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Tarpit delay')?></td>
-          <td><?php echo pql_format_error_span($error["tarpitdelay"]); ?><input type="text" name="tarpitdelay" value="<?php echo $_REQUEST["tarpitdelay"]?>"> <?=$LANG->_('Seconds', 4)?></td>
+          <td><?php echo pql_format_error_span($error["tarpitdelay"]); ?><input type="text" name="tarpitdelay" value="<?php echo $_REQUEST["tarpitdelay"]?>"> <?php echo $LANG->_('Seconds', 4)?></td>
         </tr>
 
 <?php } ?>

@@ -32,7 +32,7 @@ function attribute_print_form($type = "modify") {
           <td class="title"><?php echo $LANG->_('Number of hits')?></td>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
-            <input type="text" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>" size="10">
+            <input type="text" name="<?php echo $attrib?>" value="<?php echo $_REQUEST[$attrib]?>" size="10">
           </td>
         </tr>
       </th>

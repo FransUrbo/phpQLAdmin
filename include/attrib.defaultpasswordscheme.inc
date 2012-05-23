@@ -38,7 +38,7 @@ function attribute_print_form($type = "modify") {
 <?php // Convert the array to a index
 	  foreach($schemes as $scheme) {
 ?>
-              <option value="<?php echo $scheme?>"><?=$scheme?></option>
+              <option value="<?php echo $scheme?>"><?php echo $scheme?></option>
 <?php } ?>
             </select>
           </td>

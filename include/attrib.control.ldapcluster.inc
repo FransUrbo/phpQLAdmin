@@ -44,7 +44,7 @@ function ldapcluster_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Clustering')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["ldapcluster"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>&<?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>=<?php if(@$_REQUEST["ldapcluster"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPCLUSTER")?>&<?php echo pql_get_define("PQL_ATTR_LDAPCLUSTER")?>=<?php if(@$_REQUEST["ldapcluster"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?php echo pql_get_define("PQL_ATTR_LDAPCLUSTER")?>"></a></td>
       </tr>
 
       <tr class="subtitle" colspan="3">

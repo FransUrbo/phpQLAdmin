@@ -74,14 +74,14 @@ function ldapuid_print_view($host) {
       <tr>
         <td class="title">UID</td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["ldapuid"]) { echo $_REQUEST["ldapuid"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPUID")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPUID")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPUID")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPUID")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title">GID</td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["ldapgid"]) { echo $_REQUEST["ldapgid"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPGID")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPGID")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPGID")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPGID")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -99,13 +99,13 @@ function ldapuid_print_form() {
 <?php if(@$_REQUEST["attrib"] == "ldapuid") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">UID</td>
-          <td><?php echo pql_format_error_span($error["ldapuid"])?><input type="text" name="ldapuid" value="<?=$_REQUEST["ldapuid"]?>"></td>
+          <td><?php echo pql_format_error_span($error["ldapuid"])?><input type="text" name="ldapuid" value="<?php echo $_REQUEST["ldapuid"]?>"></td>
         </tr>
 
 <?php } if(@$_REQUEST["attrib"] == "ldapgid") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">GID</td>
-          <td><?php echo pql_format_error_span($error["ldapgid"])?><input type="text" name="ldapgid" value="<?=$_REQUEST["ldapgid"]?>"></td>
+          <td><?php echo pql_format_error_span($error["ldapgid"])?><input type="text" name="ldapgid" value="<?php echo $_REQUEST["ldapgid"]?>"></td>
         </tr>
 
 <?php } ?>

@@ -31,7 +31,7 @@ function attribute_print_form($type = "modify") {
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td valign="center">
-            <textarea name="<?php echo $_REQUEST["attrib"]?>" cols="40" rows="10"><?=$_REQUEST["oldvalue"]?></textarea>
+            <textarea name="<?php echo $_REQUEST["attrib"]?>" cols="40" rows="10"><?php echo $_REQUEST["oldvalue"]?></textarea>
           </td>
         </tr>
       </th>

@@ -145,7 +145,7 @@ function attribute_print_form() {
 		pql_format_tree_end();
 		// }}}
 ?>
-            <input type="hidden" name="<?php echo $attrib?>" value="<?=$i?>">
+            <input type="hidden" name="<?php echo $attrib?>" value="<?php echo $i?>">
 <?php } else {
 		// No DHCP configuration!
 		echo $LANG->_('There is no configuration to choose from. You will have to go to a\nbranch/domain and create them before you can choose them here');

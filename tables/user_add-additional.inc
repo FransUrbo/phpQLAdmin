@@ -157,7 +157,7 @@
 		// Show all MX hosts we know about
 		for($i=0; $i < count($MX_HOSTS); $i++) {
 ?>
-            <input type="hidden" name="host_<?php echo $i?>" value="<?=$MX_HOSTS[$i]?>">
+            <input type="hidden" name="host_<?php echo $i?>" value="<?php echo $MX_HOSTS[$i]?>">
 <?php		if($i >= 1) echo "&nbsp;&nbsp;"; ?>
             <input type="radio"  name="host"   value="<?php echo $i?>"<?php if($i==0) { $checked = 1; ?> CHECKED<?php } ?>>
             <b><?php echo pql_maybe_idna_decode($MX_HOSTS[$i])?></b><br>
@@ -166,7 +166,7 @@
 
 <?php	if($i >= 1) echo "&nbsp;&nbsp;"; ?>
             <input type="radio"  name="host"   value="<?php echo $i?>"<?php if(!$checked) { $checked = 1; ?> CHECKED<?php } ?>>
-            <b><?php echo $LANG->_('User defined')?></b>:&nbsp;&nbsp;<input type="text" name="host_<?=$i?>" size="40">
+            <b><?php echo $LANG->_('User defined')?></b>:&nbsp;&nbsp;<input type="text" name="host_<?php echo $i?>" size="40">
             <input type="hidden" name="text_host" value="<?php echo $i?>">
           </td>
         </tr>

@@ -39,7 +39,7 @@ function attribute_print_form_templates($error_text) {
       <th colspan="3" align="left"><?php echo $LANG->_('Add user template'); ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Template name')?></td>
-          <td><?php echo pql_format_error_span($error_text["template_name"]); ?><input type="text" name="template_name" size="15" value="<?=$_REQUEST["template_name"]?>"></td>
+          <td><?php echo pql_format_error_span($error_text["template_name"]); ?><input type="text" name="template_name" size="15" value="<?php echo $_REQUEST["template_name"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -51,7 +51,7 @@ function attribute_print_form_templates($error_text) {
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Short description')?></td>
-          <td><?php echo pql_format_error_span($error_text["template_desc_short"]); ?><input type="text" name="template_desc_short" size="40" value="<?=$_REQUEST["template_desc_short"]?>"></td>
+          <td><?php echo pql_format_error_span($error_text["template_desc_short"]); ?><input type="text" name="template_desc_short" size="40" value="<?php echo $_REQUEST["template_desc_short"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -63,7 +63,7 @@ function attribute_print_form_templates($error_text) {
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Long description')?></td>
-          <td><?php echo pql_format_error_span($error_text["template_desc_long"]); ?><textarea name="template_desc_long" cols="40" rows="5" value="<?=$_REQUEST["template_desc_long"]?>"></textarea>
+          <td><?php echo pql_format_error_span($error_text["template_desc_long"]); ?><textarea name="template_desc_long" cols="40" rows="5" value="<?php echo $_REQUEST["template_desc_long"]?>"></textarea>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">

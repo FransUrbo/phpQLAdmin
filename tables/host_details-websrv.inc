@@ -135,7 +135,7 @@ if(is_array($physical_data) and count($physical_data)) {
 		  unset($mark);
 		}
 ?>
-    <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($tmp_container_dn)."&ref=".$_REQUEST["ref"]?><?php if($global) { echo "&global=1"; } ?>"><img alt="// <?=$server_name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$server_name?><?=$mark?>"></a>
+    <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($tmp_container_dn)."&ref=".$_REQUEST["ref"]?><?php if($global) { echo "&global=1"; } ?>"><img alt="// <?php echo $server_name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo $server_name?><?php echo $mark?>"></a>
 <?php } ?>
     </th>
   </table>
@@ -187,7 +187,7 @@ if(is_array($physical_data) and count($physical_data)) {
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
 <?php if(pql_get_define("PQL_CONF_HOSTACL_USE") and $_SESSION["ALLOW_BRANCH_CREATE"] and ($_REQUEST["ref"] != 'virtual')) { ?>
-    <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($container_dn)."&virthost=acl&ref=".$_REQUEST["ref"]?>"><img alt="// <?=$LANG->_('Access control')?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$LANG->_('Access control')?><?php if($_REQUEST["virthost"] == 'acl') { echo '&mark=yes'; } ?>"></a>
+    <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($container_dn)."&virthost=acl&ref=".$_REQUEST["ref"]?>"><img alt="// <?php echo $LANG->_('Access control')?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo $LANG->_('Access control')?><?php if($_REQUEST["virthost"] == 'acl') { echo '&mark=yes'; } ?>"></a>
 <?php }
 
 	  foreach($virt_hosts as $virthost_dn => $virthost_name) {
@@ -199,7 +199,7 @@ if(is_array($physical_data) and count($physical_data)) {
 		  unset($mark);
 		}
 ?>
-    <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($container_dn)."&virthost=".urlencode($virthost_name)."&ref=".$_REQUEST["ref"]?><?php if($global) { echo "&global=1"; } ?>"><img alt="// <?=$virthost_name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$virthost_name?><?=$mark?>"></a>
+    <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($container_dn)."&virthost=".urlencode($virthost_name)."&ref=".$_REQUEST["ref"]?><?php if($global) { echo "&global=1"; } ?>"><img alt="// <?php echo $virthost_name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo $virthost_name?><?php echo $mark?>"></a>
 <?php } ?>
     </th>
   </table>
@@ -232,7 +232,7 @@ if(is_array($physical_data) and count($physical_data)) {
 		  unset($mark);
 		}
 ?>
-    <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($container_dn)."&virthost=".urlencode($_REQUEST["virthost"])."&hostdir=$hostdir_name"."&ref=".$_REQUEST["ref"]?><?php if($global) { echo "&global=1"; } ?>"><img alt="// <?=$hostdir_name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$hostdir_name?><?=$mark?>"></a>
+    <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($container_dn)."&virthost=".urlencode($_REQUEST["virthost"])."&hostdir=$hostdir_name"."&ref=".$_REQUEST["ref"]?><?php if($global) { echo "&global=1"; } ?>"><img alt="// <?php echo $hostdir_name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo $hostdir_name?><?php echo $mark?>"></a>
 <?php } ?>
     </th>
   </table>
@@ -293,36 +293,36 @@ if(($_REQUEST["virthost"] != 'acl') and
     <th align="left"><?php echo $LANG->_('Actions')?></th>
 <?php if($physical_data) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?view=<?php echo $_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server'))); ?></a></td>
+        <td><a href="websrv_add.php?view=<?php echo $_REQUEST["view"]?>&host=<?php echo urlencode($_REQUEST["host"])?>&server=<?php echo urlencode($container_dn)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server'))); ?></a></td>
       </tr>
 <?php	if($got_virt_hosts) { ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?view=<?php echo $_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server directory'))); ?></a></td>
+        <td><a href="websrv_add.php?view=<?php echo $_REQUEST["view"]?>&host=<?php echo urlencode($_REQUEST["host"])?>&server=<?php echo urlencode($container_dn)?>&virthost=<?php echo urlencode($_REQUEST["virthost"])?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server directory'))); ?></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="host_del.php?view=<?php echo $_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?><?=$url_have_replicas?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
+        <td><a href="host_del.php?view=<?php echo $_REQUEST["view"]?>&host=<?php echo urlencode($_REQUEST["host"])?>&server=<?php echo urlencode($container_dn)?>&virthost=<?php echo urlencode($_REQUEST["virthost"])?><?php echo $url_have_replicas?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="host_copy.php?view=<?php echo $_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?><?=$url_have_replicas?>&action=move"><?php echo pql_complete_constant($LANG->_('Move %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
+        <td><a href="host_copy.php?view=<?php echo $_REQUEST["view"]?>&host=<?php echo urlencode($_REQUEST["host"])?>&server=<?php echo urlencode($container_dn)?>&virthost=<?php echo urlencode($_REQUEST["virthost"])?><?php echo $url_have_replicas?>&action=move"><?php echo pql_complete_constant($LANG->_('Move %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="host_copy.php?view=<?php echo $_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?><?=$url_have_replicas?>&action=clone"><?php echo pql_complete_constant($LANG->_('Clone %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
+        <td><a href="host_copy.php?view=<?php echo $_REQUEST["view"]?>&host=<?php echo urlencode($_REQUEST["host"])?>&server=<?php echo urlencode($container_dn)?>&virthost=<?php echo urlencode($_REQUEST["virthost"])?><?php echo $url_have_replicas?>&action=clone"><?php echo pql_complete_constant($LANG->_('Clone %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
       </tr>
 
 <?php		if($_REQUEST["hostdir"]) { ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="host_del.php?view=<?php echo $_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>&virthost=<?=urlencode($_REQUEST["virthost"])?>&hostdir=<?=$_REQUEST["hostdir"]?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this virtual server directory'))); ?></a></td>
+        <td><a href="host_del.php?view=<?php echo $_REQUEST["view"]?>&host=<?php echo urlencode($_REQUEST["host"])?>&server=<?php echo urlencode($container_dn)?>&virthost=<?php echo urlencode($_REQUEST["virthost"])?>&hostdir=<?php echo $_REQUEST["hostdir"]?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this virtual server directory'))); ?></a></td>
       </tr>
 <?php		}
 		}
 ?>
 <?php	if(($_REQUEST["ref"] == 'physical') and $_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="host_del.php?view=<?php echo $_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($container_dn)?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this web server'))); ?></a></td>
+        <td><a href="host_del.php?view=<?php echo $_REQUEST["view"]?>&host=<?php echo urlencode($_REQUEST["host"])?>&server=<?php echo urlencode($container_dn)?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this web server'))); ?></a></td>
       </tr>
 <?php	}
 	  }

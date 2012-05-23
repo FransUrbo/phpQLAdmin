@@ -56,7 +56,7 @@ function envnoathost_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Email')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["envnoathost"]) { echo pql_maybe_idna_decode($_REQUEST["envnoathost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_ENVNOATHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_ENVNOATHOST")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_ENVNOATHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_ENVNOATHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -73,7 +73,7 @@ function envnoathost_print_form() {
       <th colspan="3" align="left">envnoathost (<?php echo $LANG->_('Default domain for addresses without @')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Email')?></td>
-          <td><?php echo pql_format_error_span($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?php echo $_REQUEST["envnoathost"]?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?php echo $_REQUEST["envnoathost"]?>"> <?php echo $LANG->_('Default')?>: <?php echo $mxhost?> (<?php echo $LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr class="subtitle">

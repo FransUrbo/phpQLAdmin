@@ -142,22 +142,22 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Total Connections')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$connections_total?></td>
-        <td class="<?php echo $class?>" align="right"><?=$connections_average?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $connections_total?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $connections_average?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Entries Sent To Clients')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$sent_entries?></td>
-        <td class="<?php echo $class?>" align="right"><?=$sent_entries_average?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $sent_entries?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $sent_entries_average?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Kilobytes Sent To Clients')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$sent_kbytes?></td>
-        <td class="<?php echo $class?>" align="right"><?=$sent_kbytes_average?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $sent_kbytes?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $sent_kbytes_average?></td>
       </tr>
     </th>
   </table>
@@ -183,18 +183,18 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $operation?></td>
-        <td class="<?php echo $class?>" align="right"><?=$value["monitoropinitiated"]?></td>
-        <td class="<?php echo $class?>" align="right"><?=$value["monitoropcompleted"]?></td>
-        <td class="<?php echo $class?>" align="right"><?=$average?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $value["monitoropinitiated"]?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $value["monitoropcompleted"]?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $average?></td>
       </tr>
 
 <?php } ?>
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Total Operations')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$operations_initiated?></td>
-        <td class="<?php echo $class?>" align="right"><?=$operations_completed?></td>
-        <td class="<?php echo $class?>" align="right"><?=$operations_completed_average?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $operations_initiated?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $operations_completed?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $operations_completed_average?></td>
       </tr>
     </th>
   </table>
@@ -207,21 +207,21 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Open Connections')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$connections_current?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $connections_current?></td>
       </tr>
 <?php if($connections_threads) { ?>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Active Threads')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$connections_threads?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $connections_threads?></td>
       </tr>
 <?php } ?>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Databases In Use')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$databases?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $databases?></td>
       </tr>
     </th>
   </table>
@@ -235,61 +235,61 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Maximum number of threads as configured')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['max']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['max']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Maximum number of pending threads')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['max_pending']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['max_pending']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Number of open threads')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['open']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['open']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Number of threads being started')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['starting']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['starting']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Number of active threads')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['active']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['active']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Number of pending threads')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['pending']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['pending']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Number of active plus pending threads')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['backload']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['backload']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Thread pool state')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['state']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['state']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Queue of running threads - besides\nthose handling operations')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['runqueue']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['runqueue']?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('List of running plus standby threads\n- besides those handling operations')?></td>
-        <td class="<?php echo $class?>" align="right"><?=$threads['tasklist']?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $threads['tasklist']?></td>
       </tr>
     </th>
   </table>
@@ -323,12 +323,12 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
 ?>
       <tr>
         <td class="title" align="right"><?php echo $tmp[0]?>&nbsp;&nbsp;</td>
-        <td class="<?php echo $class?>" align="right"><?=$time_opened?></td>
-        <td class="<?php echo $class?>" align="right"><?=$compl[0]?></td>
-        <td class="<?php echo $class?>" align="right"><?=$compl[3]?></td>
-        <td class="<?php echo $class?>" align="right"><?=$tmp[5]?></td>
-        <td class="<?php echo $class?>" align="right"><?=$tmp[7]?></td>
-        <td class="<?php echo $class?>" align="right"><?=$tmp[4]?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $time_opened?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $compl[0]?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $compl[3]?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $tmp[5]?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $tmp[7]?></td>
+        <td class="<?php echo $class?>" align="right"><?php echo $tmp[4]?></td>
         <td class="<?php echo $class?>" align="right"><?php
 			if(eregi('^ldap:', $tmp[6])) {
 				echo "LDAP";

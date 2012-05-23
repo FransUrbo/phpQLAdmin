@@ -100,9 +100,9 @@ function attribute_print_form() {
           <input type="text" name="<?php echo $attrib?>" value="">
 <?php	 	if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
-              <option value="<?php echo $defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
+              <option value="<?php echo $defaultdomain?>"><?php echo pql_maybe_idna_decode($defaultdomain)?></option>
 <?php			foreach($additionaldomainname as $additional) { ?>
-              <option value="<?php echo $additional?>"><?=pql_maybe_idna_decode($additional)?></option>
+              <option value="<?php echo $additional?>"><?php echo pql_maybe_idna_decode($additional)?></option>
 <?php   		} ?>
             </select>
 <?php 		} else { ?>

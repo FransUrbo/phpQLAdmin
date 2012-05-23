@@ -44,7 +44,7 @@ function smtpclustercookie_print_view($host) {
 <?php $class=pql_format_table(0); ?>
         <td class="title"><?php echo $LANG->_('Cookie')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["smtpclustercookie"]) { echo $_REQUEST["smtpclustercookie"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE")?>&type=add"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE")?>&type=add"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>

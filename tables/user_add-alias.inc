@@ -15,7 +15,7 @@
 <?php if($branches[1]) { // More than one subbranch - show a select menu ?>
             <select name="subbranch">
 <?php	for($i=0; $i < count($branches); $i++) { ?>
-              <option value="<?php echo $branches[$i]?>"><?=$branches[$i]?></option>
+              <option value="<?php echo $branches[$i]?>"><?php echo $branches[$i]?></option>
 <?php	} ?>
             </select>
 <?php } else { // Only one subbranch
@@ -47,7 +47,7 @@
 
 			if($_SESSION["opera"]) {
 ?>
-            <div id="el2Parent" class="parent" onclick="showhide(el<?php echo $j?>Spn, el<?=$j?>Img)">
+            <div id="el2Parent" class="parent" onclick="showhide(el<?php echo $j?>Spn, el<?php echo $j?>Img)">
               <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $j?>Img">
               <font color="black" class="heada"><?php echo $d?></font>
             </div>
@@ -92,7 +92,7 @@
 				
 				foreach($cns as $userdn => $username) {
 ?>
-              <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="destination" value="<?php echo $userdn?>"><?=$username?></nobr><br>
+              <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="destination" value="<?php echo $userdn?>"><?php echo $username?></nobr><br>
 <?php           	$i++;
                	}
 			}

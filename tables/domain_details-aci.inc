@@ -57,12 +57,12 @@ if(!is_array($aci)) {
 
         <td><?php echo $aci[$i]["TYPE"]?></td>
         <td><?php echo $aci[$i]["SUBJECT"]?></td>
-        <td align="center"><a href="<?php echo $url?>&submit=3&type=edit"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change value')?>" border="0"></a>&nbsp;&nbsp;<a href="<?=$url?>&submit=2&type=delete"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>&nbsp;&nbsp;<?php if($i==0) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?=$url?>&submit=4&type=moveup"><img src="images/up.png" width="12" height="12" alt="move up" border="0"></a><?php } ?><?php if(@empty($aci[$i+1]["LINE"])) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?=$url?>&submit=4&type=movedown"><img src="images/down.png" width="12" height="12" alt="move down" border="0"></a><?php } ?></td>
+        <td align="center"><a href="<?php echo $url?>&submit=3&type=edit"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change value')?>" border="0"></a>&nbsp;&nbsp;<a href="<?php echo $url?>&submit=2&type=delete"><img src="images/del.png" width="12" height="12" alt="<?php echo $LANG->_('Delete value')?>" border="0"></a>&nbsp;&nbsp;<?php if($i==0) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?php echo $url?>&submit=4&type=moveup"><img src="images/up.png" width="12" height="12" alt="move up" border="0"></a><?php } ?><?php if(@empty($aci[$i+1]["LINE"])) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?php echo $url?>&submit=4&type=movedown"><img src="images/down.png" width="12" height="12" alt="move down" border="0"></a><?php } ?></td>
       </tr>
 <?php } ?>
 
       <tr class="subtitle">
-        <td colspan="8"><a href="<?php echo $URL?>type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new ACI')?></a></td>
+        <td colspan="8"><a href="<?php echo $URL?>type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo $LANG->_('Register new ACI')?></a></td>
       </tr>
     </th>
   </table>

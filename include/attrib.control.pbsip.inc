@@ -81,7 +81,7 @@ function pbsip_print_view($host) {
       <tr>
         <td class="title">IP</td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["pbsip"]) { echo $_REQUEST["pbsip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PBS_IP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_IP")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_PBS_IP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_IP")?>"></a></td>
       </tr>
     </th>
   </table>

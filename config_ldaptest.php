@@ -374,7 +374,7 @@ include($_SESSION["path"]."/header.html");
 <?php	 if($ldap["objectclasses"]["phpqladminconfig"]) { ?>
         <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('Yes')?></td>
 <?php    } else { ?>
-        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?php echo $LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
 <?php    } ?>
       </tr>
 
@@ -383,7 +383,7 @@ include($_SESSION["path"]."/header.html");
 <?php	 if($ldap["objectclasses"]["phpqladminbranch"]) { ?>
         <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('Yes')?></td>
 <?php    } else { ?>
-	<td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
+	<td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?php echo $LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
 <?php    } ?>
       </tr>
 
@@ -392,7 +392,7 @@ include($_SESSION["path"]."/header.html");
 <?php	 if($ldap["objectclasses"]["dcorganizationnameform"]) { ?>
         <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('Yes')?></td>
 <?php    } else { ?>
-        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?php echo $LANG->_('No')?>. <?php echo $LANG->_('Please load file')?> <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
 <?php    }
       }
 ?>
@@ -407,7 +407,7 @@ include($_SESSION["path"]."/header.html");
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to write phpQLAdmin configuration in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$TEST["basedn"][$dn]?></td>
+        <td class="<?php echo $class?>"><?php echo $TEST["basedn"][$dn]?></td>
       </tr>
 
 <?php    } ?>
@@ -420,20 +420,20 @@ include($_SESSION["path"]."/header.html");
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branches in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$TEST["branches"][$dn]?></td>
+        <td class="<?php echo $class?>"><?php echo $TEST["branches"][$dn]?></td>
       </tr>
 
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branch with ACIs in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$TEST["acis"][$dn]?></td>
+        <td class="<?php echo $class?>"><?php echo $TEST["acis"][$dn]?></td>
       </tr>
 
 <?php	  if(!$TEST_simple["branches"][$dn] and $TEST_simple["acis"][$dn] and !pql_get_define("PQL_CONF_ACI_USE")) { ?>
       <tr>
         <td class="title" align="right"><img src="images/info.png" width="16" height="16" border="0" align="right"></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$LANG->_("WARNING: You do not have access<br>without ACI's but ACI's is disabled.<br>Please enable ACI's in the configuration!")?></td>
+        <td class="<?php echo $class?>"><?php echo $LANG->_("WARNING: You do not have access<br>without ACI's but ACI's is disabled.<br>Please enable ACI's in the configuration!")?></td>
       </tr>
 
 <?php	  } ?>
@@ -452,7 +452,7 @@ include($_SESSION["path"]."/header.html");
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to modify DN \b%dn%\B'), array('dn' => $domain)); ?></b></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$TEST["branches"][$domain]?></td>
+        <td class="<?php echo $class?>"><?php echo $TEST["branches"][$domain]?></td>
       </tr>
 
 <?php       }

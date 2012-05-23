@@ -100,7 +100,7 @@ function attribute_print_form() {
       </th>
     </table>
 
-    <input type="hidden" name="<?php echo $_REQUEST["attrib"]?>" value="<?=$j?>">
+    <input type="hidden" name="<?php echo $_REQUEST["attrib"]?>" value="<?php echo $j?>">
     <input type="hidden" name="domain"   value="<?php echo urlencode($_REQUEST["domain"])?>">
     <input type="hidden" name="rootdn"   value="<?php echo urlencode($_REQUEST["rootdn"])?>">
     <input type="hidden" name="user"     value="<?php echo urlencode($_REQUEST["user"])?>">

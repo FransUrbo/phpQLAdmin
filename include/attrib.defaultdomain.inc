@@ -65,12 +65,12 @@ function attribute_print_form() {
 
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define("PQL_ATTR_LOCALS")?>_<?=$i?>" value="<?=$host?>"><?=$host?><br>
+            <input type="checkbox" name="<?php echo pql_get_define("PQL_ATTR_LOCALS")?>_<?php echo $i?>" value="<?php echo $host?>"><?php echo $host?><br>
 <?php	  			$i++;
 		  		}
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define("PQL_ATTR_LOCALS")?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
-            <input type="hidden" name="<?php echo pql_get_define("PQL_ATTR_LOCALS")?>" value="<?=$i?>">
+            <input type="checkbox" name="<?php echo pql_get_define("PQL_ATTR_LOCALS")?>_<?php echo $i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
+            <input type="hidden" name="<?php echo pql_get_define("PQL_ATTR_LOCALS")?>" value="<?php echo $i?>">
             &nbsp;<?php echo $LANG->_('If all left unset, no replication will take place')?>
 <?php		} else { ?>
               &nbsp;<?php echo $LANG->_('Automatic replication configured')?>
@@ -84,12 +84,12 @@ function attribute_print_form() {
 <?php		if(!pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define("PQL_ATTR_RCPTHOSTS")?>_<?=$i?>" value="<?=$host?>"><?=$host?><br>
+            <input type="checkbox" name="<?php echo pql_get_define("PQL_ATTR_RCPTHOSTS")?>_<?php echo $i?>" value="<?php echo $host?>"><?php echo $host?><br>
 <?php	  			$i++;
 		  		}
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define("PQL_ATTR_RCPTHOSTS")?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
-            <input type="hidden" name="<?php echo pql_get_define("PQL_ATTR_RCPTHOSTS")?>" value="<?=$i?>">
+            <input type="checkbox" name="<?php echo pql_get_define("PQL_ATTR_RCPTHOSTS")?>_<?php echo $i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
+            <input type="hidden" name="<?php echo pql_get_define("PQL_ATTR_RCPTHOSTS")?>" value="<?php echo $i?>">
             &nbsp;<?php echo $LANG->_('If all left unset, no replication will take place')?>
 <?php 		} else { ?>
               &nbsp;<?php echo $LANG->_('Automatic replication configured')?>

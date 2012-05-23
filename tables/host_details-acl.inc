@@ -53,13 +53,13 @@ foreach($hosts as $host_dn) {
           <!-- HOSTNAME AND USERS -->
           <td>
 <?php if($_SESSION["opera"]) { ?>
-            <div id="el<?php echo $i?>aParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
+            <div id="el<?php echo $i?>aParent" class="parent" onclick="showhide(el<?php echo $i?>aSpn, el<?php echo $i?>aImg); showhide(el<?php echo $i?>bSpn, el<?php echo $i?>bImg);">
               <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $i?>aImg">
               <a class="item"><font color="black" class="heada"><?php echo $host?></font></a>
             </div>
 <?php } else { ?>
             <div id="el<?php echo $i?>aParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
+              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?php echo $i?>b', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $i."aImg"?>">
               </a>
               <font color="black" class="heada"><?php echo $host?></font>
@@ -92,7 +92,7 @@ foreach($hosts as $host_dn) {
 		  $user = $_pql->get_attribute($host_users[$j], pql_get_define("PQL_ATTR_UID"));
 ?>
              &nbsp;&nbsp;&nbsp;
-             <a href="host_modify.php?host=<?php echo urlencode($host_dn)?>&userdn=<?=urlencode($host_users[$j])?>&action=remove_user_from_host"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>"></a>
+             <a href="host_modify.php?host=<?php echo urlencode($host_dn)?>&userdn=<?php echo urlencode($host_users[$j])?>&action=remove_user_from_host"><img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>"></a>
              &nbsp;<?php echo $user."\n"?>
              <br>
 <?php }
@@ -125,7 +125,7 @@ foreach($hosts as $host_dn) {
           <!-- IP ADDRESS -->
           <td>
 <?php if($_SESSION["opera"]) { ?>
-            <div id="el<?php echo $i?>bParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
+            <div id="el<?php echo $i?>bParent" class="parent" onclick="showhide(el<?php echo $i?>aSpn, el<?php echo $i?>aImg); showhide(el<?php echo $i?>bSpn, el<?php echo $i?>bImg);">
               <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $i?>bImg">
               <a class="item"><font color="black" class="heada"><?php echo $host_ip?></font></a>
             </div>
@@ -133,7 +133,7 @@ foreach($hosts as $host_dn) {
             <span id="el<?php echo $i?>bSpn" style="display:''">
 <?php } else { ?>
             <div id="el<?php echo $i?>bParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
+              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?php echo $i?>b', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $i?>bImg">
               </a>
               <a class="item"><font color="black" class="heada"><?php echo $host_ip?></font></a>
@@ -161,7 +161,7 @@ foreach($hosts as $host_dn) {
 ?>
           <!-- IP ADDRESS -->
           <td>
-            <div id="el<?php echo $i?>bParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
+            <div id="el<?php echo $i?>bParent" class="parent" onclick="showhide(el<?php echo $i?>aSpn, el<?php echo $i?>aImg); showhide(el<?php echo $i?>bSpn, el<?php echo $i?>bImg);">
               <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $i?>bImg">
               <a class="item"><font color="black" class="heada"><?php echo $LANG->_('no ip')?></font></a>
             </div>
@@ -169,7 +169,7 @@ foreach($hosts as $host_dn) {
             <span id="el<?php echo $i?>bSpn" style="display:''">
 <?php } else { ?>
             <div id="el<?php echo $i?>bParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?=$i?>b', true); return false;}">
+              <a class="item" onClick="if (capable) {expandBase('el<?php echo $i?>a', true); expandBase('el<?php echo $i?>b', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $i?>Img">
               </a>
               <a class="item"><font color="black" class="heada"><?php echo $LANG->_('no ip')?></font></a>

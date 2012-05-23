@@ -25,7 +25,7 @@ $radprofiles = pql_get_radprofiles();
         </td>
 
         <td class="<?php echo $class?>" align="right">
-          <a href="<?php echo $link?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change profile value')?>"></a>
+          <a href="<?php echo $link?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change profile value')?>"></a>
         </td>
       </tr>
 <?php	} ?>
@@ -43,7 +43,7 @@ $radprofiles = pql_get_radprofiles();
       $class=pql_format_table(0);
 ?>
         <td class="<?php echo $class?>" colspan="2">
-          <a href="config_radius_add.php?rootdn=<?php echo urlencode($_SESSION["BASE_DN"][0])?>"><?=$LANG->_('Add profile')?></a>
+          <a href="config_radius_add.php?rootdn=<?php echo urlencode($_SESSION["BASE_DN"][0])?>"><?php echo $LANG->_('Add profile')?></a>
         </td>
       </tr>
     </th>

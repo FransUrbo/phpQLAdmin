@@ -188,7 +188,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// for each host, get LDAP/Control plugins
 	foreach($hosts as $host) {
 ?>
-              <option value="<?php echo $host?>"><?=$host?></option>
+              <option value="<?php echo $host?>"><?php echo $host?></option>
 <?php
 	}
 ?>

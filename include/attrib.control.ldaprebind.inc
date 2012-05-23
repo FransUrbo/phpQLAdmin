@@ -41,7 +41,7 @@ function ldaprebind_print_view($host) {
       <tr class="<?php echo $class?>">
         <td class="title"><?php echo $LANG->_('Do rebind')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["ldaprebind"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>&<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>=<?php if(@$_REQUEST["ldaprebind"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPREBIND")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPREBIND")?>&<?php echo pql_get_define("PQL_ATTR_LDAPREBIND")?>=<?php if(@$_REQUEST["ldaprebind"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?php echo pql_get_define("PQL_ATTR_LDAPREBIND")?>"></a></td>
       </tr>
     </th>
   </table>

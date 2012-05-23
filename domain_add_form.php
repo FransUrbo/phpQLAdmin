@@ -27,7 +27,7 @@ $server = urldecode($server[0]);
           <td>
             <select name="rootdn">
 <?php    foreach($_SESSION["BASE_DN"] as $dn)  { ?>
-              <option value="<?php echo $dn?>"><?=$dn?></option>
+              <option value="<?php echo $dn?>"><?php echo $dn?></option>
 <?php    } ?>
             </select>
           </td>

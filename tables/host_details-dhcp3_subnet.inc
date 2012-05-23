@@ -28,7 +28,7 @@ $options = pql_dhcp3_get_subnet_options($_REQUEST["subnet"]);
 		  unset($mark);
 		}
 ?>
-      <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&$type=".urlencode($dn)?>"><img alt="// <?=$name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$name?><?=$mark?>"></a>
+      <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&$type=".urlencode($dn)?>"><img alt="// <?php echo $name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo $name?><?php echo $mark?>"></a>
 <?php } ?>
       </th>
     </table>
@@ -107,7 +107,7 @@ pql_format_table_single($txt, $link, $options["options"], pql_get_define("PQL_AT
 
         <tr class="<?php pql_format_table(); ?>">
           <td colspan="3">
-            <a href="dhcp3_add.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?=urlencode($servicedn)?>&action=subnet&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP subnetwork')?>">
+            <a href="dhcp3_add.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?php echo urlencode($servicedn)?>&action=subnet&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Add DHCP subnetwork')?>">
               <?php echo $LANG->_('Add DHCP subnetwork')?>
             </a>
           </td>
@@ -115,7 +115,7 @@ pql_format_table_single($txt, $link, $options["options"], pql_get_define("PQL_AT
 
         <tr class="<?php pql_format_table(); ?>">
           <td colspan="3">
-            <a href="dhcp3_add.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?=urlencode($servicedn)?>&action=host&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP host statement')?>">
+            <a href="dhcp3_add.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?php echo urlencode($servicedn)?>&action=host&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Add DHCP host statement')?>">
               <?php echo $LANG->_('Add DHCP host statement')?>
             </a>
           </td>
@@ -123,7 +123,7 @@ pql_format_table_single($txt, $link, $options["options"], pql_get_define("PQL_AT
 
         <tr class="<?php pql_format_table(); ?>">
           <td colspan="3">
-            <a href="dhcp3_del.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?=urlencode($servicedn)?>&subnet=<?=urlencode($_REQUEST["subnet"])?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete DHCP subnetwork')?>">
+            <a href="dhcp3_del.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?php echo urlencode($servicedn)?>&subnet=<?php echo urlencode($_REQUEST["subnet"])?>&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Delete DHCP subnetwork')?>">
               <?php echo $LANG->_('Delete DHCP subnetwork')?>
             </a>
           </td>

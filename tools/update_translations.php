@@ -65,7 +65,7 @@ if (empty($_REQUEST['total_keys'])) { ?>
 <?php $supp = $LANG->get_supported();
 	  while(list($k, $v) = each($supp)) {
 ?>
-      <option value="<?php echo $k?>"<?php if($user_lang == $k) { echo " SELECTED"; } ?>><?=$v?></option>
+      <option value="<?php echo $k?>"<?php if($user_lang == $k) { echo " SELECTED"; } ?>><?php echo $v?></option>
 <?php  } ?>
       <option value="new"<?php if($user_lang == 'new') { echo " SELECTED"; } ?>><?php echo $LANG->_('New')?></option>
     </select>

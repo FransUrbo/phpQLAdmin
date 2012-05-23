@@ -587,7 +587,7 @@ function attribute_print_form() {
           <td>
             <select name="filesystem" onChange="submit()">
 <?php	foreach($_REQUEST["FILESYSTEMS"] as $fs) { ?>
-              <option value="<?php echo $fs?>" <?php if($_REQUEST["filesystem"] == $fs) { echo "SELECTED"; }?>><?=$fs?></option>
+              <option value="<?php echo $fs?>" <?php if($_REQUEST["filesystem"] == $fs) { echo "SELECTED"; }?>><?php echo $fs?></option>
 <?php	} ?>
               <option value="autofs"   <?php if($_REQUEST["filesystem"] == 'autofs')   { echo "SELECTED"; }?>><?php echo $LANG->_('Submount')?></option>
               <option value="new"      <?php if($_REQUEST["filesystem"] == 'new')      { echo "SELECTED"; }?>><?php echo $LANG->_('Other')?></option>
@@ -655,7 +655,7 @@ function attribute_print_form() {
           <td>
             <select name="iocharset">
 <?php	foreach($_REQUEST["CODEPAGES"] as $iocharset) { ?>
-              <option name="<?php echo $iocharset?>"<?php if($_REQUEST["iocharset"] == $iocharset) { echo " SELECTED"; } ?>><?=$iocharset?></option>
+              <option name="<?php echo $iocharset?>"<?php if($_REQUEST["iocharset"] == $iocharset) { echo " SELECTED"; } ?>><?php echo $iocharset?></option>
 <?php	} ?>
             </select>
           </td>
@@ -801,7 +801,7 @@ function attribute_print_form() {
           <td>
             <select name="codepage">
 <?php		foreach($_REQUEST["CODEPAGES"] as $codepage) { ?>
-              <option name="<?php echo $codepage?>"<?php if($_REQUEST["codepage"] == $codepage) { echo " SELECTED"; } ?>><?=$codepage?></option>
+              <option name="<?php echo $codepage?>"<?php if($_REQUEST["codepage"] == $codepage) { echo " SELECTED"; } ?>><?php echo $codepage?></option>
 <?php		} ?>
             </select>
           </td>
@@ -834,7 +834,7 @@ function attribute_print_form() {
                  <tr class="<?php pql_format_table(); ?>">
                    <td class="title"><?php echo $LANG->_('Sync all data and metadata this often')?></td>
                    <td></td>
-                   <td><input type="text" name="ext3_journal_commit" value="<?php echo $_REQUEST["ext3_journal_commit"]?>">&nbsp;<?=$LANG->_('seconds');?><td>
+                   <td><input type="text" name="ext3_journal_commit" value="<?php echo $_REQUEST["ext3_journal_commit"]?>">&nbsp;<?php echo $LANG->_('seconds');?><td>
                  </tr>
 												
 <?php	} ?>

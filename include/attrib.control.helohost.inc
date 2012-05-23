@@ -52,7 +52,7 @@ function helohost_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Host')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["helohost"]) { echo pql_maybe_idna_decode($_REQUEST["helohost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_HELOHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_HELOHOST")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_HELOHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_HELOHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -69,7 +69,7 @@ function helohost_print_form() {
       <th colspan="3" align="left">helohost (Helo host)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Host')?></td>
-          <td><?php echo pql_format_error_span($error["helohost"]); ?><input type="text" name="helohost" value="<?php echo $_REQUEST["helohost"]?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["helohost"]); ?><input type="text" name="helohost" value="<?php echo $_REQUEST["helohost"]?>"> <?php echo $LANG->_('Default')?>: <?php echo $mxhost?> (<?php echo $LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr>

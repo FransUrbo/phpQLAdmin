@@ -89,7 +89,7 @@ function badrcptto_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
 <?php for($i=0; $i < count($_REQUEST["badrcptto"]); $i++) { ?>
-    <input type="hidden" name="badrcptto[<?php echo $i?>]" value="<?=$_REQUEST["badrcptto"][$i]?>">
+    <input type="hidden" name="badrcptto[<?php echo $i?>]" value="<?php echo $_REQUEST["badrcptto"][$i]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">

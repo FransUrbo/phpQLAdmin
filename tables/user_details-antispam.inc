@@ -312,7 +312,7 @@ if(is_array($spamassassin)) {
 	  if(@is_array($_REQUEST["addresses"])) {
 		for(; $i < count($_REQUEST["addresses"]);) {
 ?>
-        <!-- <?php echo $_REQUEST["addresses"][$i]?>:<?=$_REQUEST["addresses"][$i+1]?> -->
+        <!-- <?php echo $_REQUEST["addresses"][$i]?>:<?php echo $_REQUEST["addresses"][$i+1]?> -->
         <tr class="<?php pql_format_table(); ?>">
 <?php		switch($_REQUEST["addresses"][$i]) {
 				case "whitelist_from":
@@ -329,8 +329,8 @@ if(is_array($spamassassin)) {
           <td><?php echo $_REQUEST["addresses"][$i+1]?></td>
           <td></td>
         </tr>
-        <input type="hidden" name="addresses[<?php echo $i?>]" value="<?=$_REQUEST["addresses"][$i]?>">
-        <input type="hidden" name="addresses[<?php echo $i+1?>]" value="<?=$_REQUEST["addresses"][$i+1]?>">
+        <input type="hidden" name="addresses[<?php echo $i?>]" value="<?php echo $_REQUEST["addresses"][$i]?>">
+        <input type="hidden" name="addresses[<?php echo $i+1?>]" value="<?php echo $_REQUEST["addresses"][$i+1]?>">
 
 <?php		$i = $i+2;
 		}
@@ -338,7 +338,7 @@ if(is_array($spamassassin)) {
 
 	  if(@$_REQUEST["key"] and @$_REQUEST["email"]) {
 ?>
-        <!-- <?php echo $_REQUEST["key"]?>:<?=$_REQUEST["email"]?> -->
+        <!-- <?php echo $_REQUEST["key"]?>:<?php echo $_REQUEST["email"]?> -->
         <tr class="<?php pql_format_table(); ?>">
 <?php	switch($_REQUEST["key"]) {
 			case "whitelist_from":
@@ -355,8 +355,8 @@ if(is_array($spamassassin)) {
           <td><?php echo $_REQUEST["email"]?></td>
           <td></td>
         </tr>
-        <input type="hidden" name="addresses[<?php echo $i++?>]" value="<?=$_REQUEST["key"]?>">
-        <input type="hidden" name="addresses[<?php echo $i++?>]" value="<?=$_REQUEST["email"]?>">
+        <input type="hidden" name="addresses[<?php echo $i++?>]" value="<?php echo $_REQUEST["key"]?>">
+        <input type="hidden" name="addresses[<?php echo $i++?>]" value="<?php echo $_REQUEST["email"]?>">
 
 <?php } ?>
         <!-- Add a new rejected/allowed email address!? -->
@@ -395,13 +395,13 @@ if(is_array($spamassassin)) {
           <td><?php echo $_REQUEST["add_header"][$i][0]?></td>
           <td><?php echo $_REQUEST["add_header"][$i][1]?></td>
           <td><?php echo $_REQUEST["add_header"][$i][2]?></td>
-          <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=add_header&user=<?=$url["user"]?>&oldvalue=<?=$spamassassin?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=add_header&user=<?=$url["user"]?>&oldvalue=<?=$spamassassin?>&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete line')?>" border="0"></a></td>
+          <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=add_header&user=<?php echo $url["user"]?>&oldvalue=<?php echo $spamassassin?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=add_header&user=<?php echo $url["user"]?>&oldvalue=<?php echo $spamassassin?>&view=<?php echo $_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?php echo $LANG->_('Delete line')?>" border="0"></a></td>
         </tr>
 <?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
           <td></td>
-          <td><a href="user_add_attribute.php?rootdn=<?php echo $url["rootdn"]?>&attrib=add_header&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width\="12" height="12" alt="" border="0"><?=$LANG->_('Add line')?></a></td>
+          <td><a href="user_add_attribute.php?rootdn=<?php echo $url["rootdn"]?>&attrib=add_header&domain=<?php echo $url["domain"]?>&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width\="12" height="12" alt="" border="0"><?php echo $LANG->_('Add line')?></a></td>
           <td></td>
           <td></td>
         </tr>

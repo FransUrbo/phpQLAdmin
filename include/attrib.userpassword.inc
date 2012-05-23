@@ -113,15 +113,15 @@ function attribute_print_form() {
 			$schemes = explode(",", $passwordschemes);
 			foreach($schemes as $scheme) {
 ?>
-            <input type="radio" name="pwscheme" value="<?php echo $scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
+            <input type="radio" name="pwscheme" value="<?php echo $scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?php echo $scheme?>
 
 <?php		}
 		} elseif($passwordschemes) { ?>
-            <?php echo $LANG->_('Scheme')?>: <b><?=$passwordschemes?></b>
+            <?php echo $LANG->_('Scheme')?>: <b><?php echo $passwordschemes?></b>
             <input type="hidden" name="pwscheme" value="<?php echo $passwordschemes?>">
 <?php	} else { ?>
-            <input type="radio" name="pwscheme" value="<?php echo $scheme?>" CHECKED><?=$scheme?>
-            <input type="radio" name="pwscheme" value="<?php echo $defaultpasswordscheme?>"><?=$defaultpasswordscheme?>
+            <input type="radio" name="pwscheme" value="<?php echo $scheme?>" CHECKED><?php echo $scheme?>
+            <input type="radio" name="pwscheme" value="<?php echo $defaultpasswordscheme?>"><?php echo $defaultpasswordscheme?>
 <?php	} ?>
           </td>
         </tr>

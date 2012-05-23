@@ -45,7 +45,7 @@ function smtpgreeting_print_view($host) {
       <tr>
         <td class="title"><?php echo $LANG->_('Message')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["smtpgreeting"]) { echo pql_maybe_idna_decode($_REQUEST["smtpgreeting"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_SMTPGREETING")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_SMTPGREETING")?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_SMTPGREETING")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options').' '.pql_get_define("PQL_ATTR_SMTPGREETING")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -62,7 +62,7 @@ function smtpgreeting_print_form() {
       <th colspan="3" align="left">smtpgreeting (<?php echo $LANG->_('SMTP greeting message')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Message')?></td>
-          <td><?php echo pql_format_error_span($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?php echo $_REQUEST["smtpgreeting"]?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'', 4)?>)</td>
+          <td><?php echo pql_format_error_span($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?php echo $_REQUEST["smtpgreeting"]?>"> <?php echo $LANG->_('Default')?>: <?php echo $mxhost?> (<?php echo $LANG->_('Value in \'me\'', 4)?>)</td>
         </tr>
 
         <tr>

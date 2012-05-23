@@ -65,7 +65,7 @@
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?php echo $LANG->_('Telephone number')?> (<?=$LANG->_('Mobile')?>)</td>
+        <td class="title"><?php echo $LANG->_('Telephone number')?> (<?php echo $LANG->_('Mobile')?>)</td>
         <td><?php if($mobile) { echo $mobile; } else { echo $LANG->_('Not set'); }?></td>
         <td><?php echo $mobile_link?></td>
       </tr>
@@ -96,10 +96,10 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
 <?php		} ?>
-        <td><a href="user_detail.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$sa?>&view=<?=$_REQUEST["view"]?>"><?=urldecode($username)?></a></td>
+        <td><a href="user_detail.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&user=<?php echo $sa?>&view=<?php echo $_REQUEST["view"]?>"><?php echo urldecode($username)?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_SEEALSO")?>=<?=$sa?>&submit=3&action=modify&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify contact persons for %domain%'), array('domain' => $o)); ?>"></a>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_SEEALSO")?>=<?=$sa?>&submit=4&action=delete&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove contact person from')?> <?=$o?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>=<?php echo $sa?>&submit=3&action=modify&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify contact persons for %domain%'), array('domain' => $o)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>=<?php echo $sa?>&submit=4&action=delete&view=<?php echo $_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?php echo $LANG->_('Remove contact person from')?> <?php echo $o?>" border="0"></a>
         </td>
       </tr>
 
@@ -109,12 +109,12 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('contact person for domain'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&submit=3&action=add&view=<?php echo $_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('contact person for domain'))); ?></a>
         </td>
       </tr>
 <?php } else { ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('contact person for domain'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_ATTR_SEEALSO")?>&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&submit=3&action=add&view=<?php echo $_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('contact person for domain'))); ?></a>
         </td>
 <?php } ?>
     </th>

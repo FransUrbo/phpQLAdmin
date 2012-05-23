@@ -107,15 +107,15 @@ function ldapdefaultquota_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Maximum number of mails')?></td>
-        <td class="<?php echo $class?>"><?=$quota["maxmails"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
+        <td class="<?php echo $class?>"><?php echo $quota["maxmails"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Maximum size of mailbox')?></td>
-        <td class="<?php echo $class?>"><?=$quota["maxsize"]?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
+        <td class="<?php echo $class?>"><?php echo $quota["maxsize"]?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
       </tr>
     </th>
   </table>

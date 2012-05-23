@@ -151,9 +151,9 @@ if(@$_REQUEST["save"] and $_REQUEST["server"] and $_REQUEST["virthost"]) {
             <td>
 <?php $i=0; foreach($CONTAINERS as $container => $container_dn) { ?>
 <?php	if($_REQUEST["action"] == 'clone') { ?>
-              <input type="checkbox" name="container_<?php echo $i?>" value="<?=$container_dn?>"><?=$container?><br>
+              <input type="checkbox" name="container_<?php echo $i?>" value="<?php echo $container_dn?>"><?php echo $container?><br>
 <?php	} elseif($_REQUEST["action"] == 'move') { ?>
-              <input type="radio" name="container" value="<?php echo $container_dn?>"><?=$container?><br>
+              <input type="radio" name="container" value="<?php echo $container_dn?>"><?php echo $container?><br>
 <?php	} ?>
 <?php $i++; } ?>
             </td>

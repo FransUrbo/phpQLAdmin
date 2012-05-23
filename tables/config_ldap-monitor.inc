@@ -38,18 +38,18 @@ foreach($ldap as $x => $array) {
 
 <?php	foreach($array as $x => $value) { ?>
         <!-- --------------------------------------------------- -->
-        <!-- Objectclass #<?php echo $oc_counter?>: '<?=$value['NAME']?>:<?=$value['OID']?>' -->
+        <!-- Objectclass #<?php echo $oc_counter?>: '<?php echo $value['NAME']?>:<?php echo $value['OID']?>' -->
         <tr class="<?php echo $class?>">
           <!-- ATTRIBUTE NAMES -->
           <td>
 <?php		if($_SESSION["opera"]) { ?>
-            <div id="el<?php echo $j?>Parent" class="parent" onclick="showhide(el<?=$j?>aSpn, el<?=$j?>aImg); showhide(el<?=$j?>bSpn, el<?=$j?>bImg);">
+            <div id="el<?php echo $j?>Parent" class="parent" onclick="showhide(el<?php echo $j?>aSpn, el<?php echo $j?>aImg); showhide(el<?php echo $j?>bSpn, el<?php echo $j?>bImg);">
               <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $j?>aImg">
               <a class="item"><font color="black" class="heada"><?php echo $value['NAME']?></font></a>
             </div>
 <?php		} else { ?>
             <div id="el<?php echo $j?>Parent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?php echo $j?>', true); expandBase('el<?=$j+1?>', true); return false;}">
+              <a class="item" onClick="if (capable) {expandBase('el<?php echo $j?>', true); expandBase('el<?php echo $j+1?>', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $j?>Img">
               </a>
         
@@ -92,7 +92,7 @@ foreach($ldap as $x => $array) {
           <!-- ATTRIBUTE OIDs -->
           <td>
 <?php		if($_SESSION["opera"]) { ?>
-            <div id="el<?php echo $j?>Parent" class="parent" onclick="showhide(el<?=$j?>aSpn, el<?=$j?>aImg); showhide(el<?=$j?>bSpn, el<?=$j?>bImg);">
+            <div id="el<?php echo $j?>Parent" class="parent" onclick="showhide(el<?php echo $j?>aSpn, el<?php echo $j?>aImg); showhide(el<?php echo $j?>bSpn, el<?php echo $j?>bImg);">
               <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $j?>bImg">
               <a class="item"><font color="black" class="heada"><?php echo $value['OID']?></font></a>
             </div>
@@ -100,7 +100,7 @@ foreach($ldap as $x => $array) {
             <span id="el<?php echo $j?>bSpn" style="display:''">
 <?php		} else { ?>
             <div id="el<?php echo $j?>Parent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?php echo $j-1?>', true); expandBase('el<?=$j?>', true); return false;}">
+              <a class="item" onClick="if (capable) {expandBase('el<?php echo $j-1?>', true); expandBase('el<?php echo $j?>', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $j?>Img">
               </a>
               <a class="item"><font color="black" class="heada"><?php echo $value['OID']?></font></a>

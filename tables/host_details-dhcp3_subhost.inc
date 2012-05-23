@@ -28,7 +28,7 @@ $options = pql_dhcp3_get_subhost_options($_REQUEST["subhost"]);
 		  unset($mark);
 		}
 ?>
-      <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&$type=".urlencode($dn)?>"><img alt="// <?=$name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$name?><?=$mark?>"></a>
+      <a href="<?php echo $_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&$type=".urlencode($dn)?>"><img alt="// <?php echo $name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo $name?><?php echo $mark?>"></a>
 <?php } ?>
       </th>
     </table>
@@ -45,7 +45,7 @@ $options = pql_dhcp3_get_subhost_options($_REQUEST["subhost"]);
           <td class="title"><?php echo $LANG->_('Hardware address')?></td>
           <td><?php echo $options["hwaddr"]?></td>
           <td>
-            <a href="host_edit_attribute.php?host=<?php echo urlencode($_REQUEST["host"])?>&action=modify&attrib=hwaddr&view=dhcp3&hwaddr=<?=$_REQUEST["hwaddr"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add hardware address')?>">
+            <a href="host_edit_attribute.php?host=<?php echo urlencode($_REQUEST["host"])?>&action=modify&attrib=hwaddr&view=dhcp3&hwaddr=<?php echo $_REQUEST["hwaddr"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Add hardware address')?>">
             </a>
           </td>
         </tr>
@@ -92,7 +92,7 @@ pql_format_table_single($txt, $link, $options["option"], pql_get_define("PQL_ATT
 
         <tr class="<?php pql_format_table(); ?>">
           <td colspan="3">
-            <a href="dhcp3_add.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?=urlencode($servicedn)?>&action=subnet&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP subnetwork')?>">
+            <a href="dhcp3_add.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?php echo urlencode($servicedn)?>&action=subnet&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Add DHCP subnetwork')?>">
               <?php echo $LANG->_('Add DHCP subnetwork')?>
             </a>
           </td>
@@ -100,7 +100,7 @@ pql_format_table_single($txt, $link, $options["option"], pql_get_define("PQL_ATT
 
         <tr class="<?php pql_format_table(); ?>">
           <td colspan="3">
-            <a href="dhcp3_add.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?=urlencode($servicedn)?>&action=host&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Add DHCP host statement')?>">
+            <a href="dhcp3_add.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?php echo urlencode($servicedn)?>&action=host&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Add DHCP host statement')?>">
               <?php echo $LANG->_('Add DHCP host statement')?>
             </a>
           </td>
@@ -108,7 +108,7 @@ pql_format_table_single($txt, $link, $options["option"], pql_get_define("PQL_ATT
 
         <tr class="<?php pql_format_table(); ?>">
           <td colspan="3">
-            <a href="dhcp3_del.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?=urlencode($servicedn)?>&subhost=<?=urlencode($_REQUEST["subhost"])?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete DHCP subhost')?>">
+            <a href="dhcp3_del.php?host=<?php echo urlencode($_REQUEST["host"])?>&servicedn=<?php echo urlencode($servicedn)?>&subhost=<?php echo urlencode($_REQUEST["subhost"])?>&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Delete DHCP subhost')?>">
               <?php echo $LANG->_('Delete DHCP subhost')?>
             </a>
           </td>

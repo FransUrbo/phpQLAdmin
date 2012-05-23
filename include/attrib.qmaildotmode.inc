@@ -62,12 +62,12 @@ function attribute_print_form() {
           <td>
             <?php echo pql_format_error_span($error["qmaildotmode"]); ?>
             <select name="qmaildotmode">
-			  <option value="default" <?php echo @$qmaildotmode_select["default"]?>><?=$LANG->_('Default (taken from ldapDefaultDotMode)')?></option>
-			  <option value="both" <?php echo @$qmaildotmode_select["both"]?>><?=$LANG->_('Both (deliveryProgramPath + .qmail)')?></option>
-			  <option value="dotonly" <?php echo @$qmaildotmode_select["dotonly"]?>><?=$LANG->_('Dotonly (only .qmail)')?></option>
-			  <option value="ldaponly" <?php echo @$qmaildotmode_select["ldaponly"]?>><?=$LANG->_('LDAPOnly (deliveryProgramPath + .qmail ignored for ldap deliveries)')?></option>
-			  <option value="ldapwithprog" <?php echo @$qmaildotmode_select["ldapwithprog"]?>><?=$LANG->_('LDAPWithProg (deliveryProgramPath used, .qmail ignored)')?></option>
-			  <option value="none" <?php echo @$qmaildotmode_select["none"]?>><?=$LANG->_('None (deliveryProgramPath + .qmail ignored)')?></option>
+			  <option value="default" <?php echo @$qmaildotmode_select["default"]?>><?php echo $LANG->_('Default (taken from ldapDefaultDotMode)')?></option>
+			  <option value="both" <?php echo @$qmaildotmode_select["both"]?>><?php echo $LANG->_('Both (deliveryProgramPath + .qmail)')?></option>
+			  <option value="dotonly" <?php echo @$qmaildotmode_select["dotonly"]?>><?php echo $LANG->_('Dotonly (only .qmail)')?></option>
+			  <option value="ldaponly" <?php echo @$qmaildotmode_select["ldaponly"]?>><?php echo $LANG->_('LDAPOnly (deliveryProgramPath + .qmail ignored for ldap deliveries)')?></option>
+			  <option value="ldapwithprog" <?php echo @$qmaildotmode_select["ldapwithprog"]?>><?php echo $LANG->_('LDAPWithProg (deliveryProgramPath used, .qmail ignored)')?></option>
+			  <option value="none" <?php echo @$qmaildotmode_select["none"]?>><?php echo $LANG->_('None (deliveryProgramPath + .qmail ignored)')?></option>
             </select>
           </td>
         </tr>
@@ -81,7 +81,7 @@ function attribute_print_form() {
 
         <tr class="subtitle">
           <td colspan="2">
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo $LANG->_('Default dot mode is:')?>&nbsp;<b><?=$default_dot_mode?></b>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo $LANG->_('Default dot mode is:')?>&nbsp;<b><?php echo $default_dot_mode?></b>
           </td>
         </tr>
       </th>

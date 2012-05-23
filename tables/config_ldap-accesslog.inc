@@ -74,7 +74,7 @@
           <td><?php echo $LANG->_('Session')?></td>
           <td><?php echo $LANG->_('Type')?></td>
           <td><?php echo $LANG->_('Result')?></td>
-          <td><?php echo $LANG->_('Who')?>/<?=$LANG->_('What')?></td>
+          <td><?php echo $LANG->_('Who')?>/<?php echo $LANG->_('What')?></td>
         </tr>
 <?php for($i=$_REQUEST["start"]; $log[$i]; $i++) {
 	$reqstart = pql_format_timestamp($log[$i]["reqstart"]);
@@ -102,7 +102,7 @@
 
 	if($log[$i]["reqtype"] == 'search') {
 ?>
-            Scope: '<?php echo $log[$i]["reqscope"]?>', Filter: '<?=$log[$i]["reqfilter"]?>'
+            Scope: '<?php echo $log[$i]["reqscope"]?>', Filter: '<?php echo $log[$i]["reqfilter"]?>'
 <?php	  if($log[$i]["reqdn"]) { ?><br><?php } ?>
 <?php	} ?>
             <?php echo $log[$i]["reqdn"]?>

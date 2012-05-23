@@ -72,7 +72,7 @@ function attribute_print_form() {
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('New RDN')?></td>
-          <td><b><?php echo $dnattrs[0]?>=<input type="text" name="user" size="<?=$len+1?>"><b>,<?=$rdn?></b></td>
+          <td><b><?php echo $dnattrs[0]?>=<input type="text" name="user" size="<?php echo $len+1?>"><b>,<?php echo $rdn?></b></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">

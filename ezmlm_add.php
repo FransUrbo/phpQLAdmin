@@ -246,7 +246,7 @@ if(empty($_REQUEST["domainname"])) {
 <?php	foreach($domain_list as $branch => $data) {
 			for($i=0; $i < count($data); $i++) {
 ?>
-	          <option value="<?php echo $branch.";".$data[$i]?>"><?=$data[$i]?></option>
+	          <option value="<?php echo $branch.";".$data[$i]?>"><?php echo $data[$i]?></option>
 <?php
 			}
 		}
@@ -276,7 +276,7 @@ if(empty($_REQUEST["domainname"])) {
           <td class="title"><?php echo $LANG->_('List owner')?></td>
           <td>
             <input name="listowner" <?php if(!empty($_REQUEST["listowner"])) { echo 'value="'.$_REQUEST["listowner"].'"'; }?>>
-            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?=$LANG->_('If not set, mailbox in list directory')?>)</i>
+            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?php echo $LANG->_('If not set, mailbox in list directory')?>)</i>
           </td>
         </tr>
 
@@ -284,7 +284,7 @@ if(empty($_REQUEST["domainname"])) {
           <td class="title"><?php echo $LANG->_('From address')?></td>
           <td>
             <input name="fromaddress" <?php if(!empty($_REQUEST["fromaddress"])) { echo 'value="'.$_REQUEST["fromaddress"].'"'; }?>>
-            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?=$LANG->_('If not set, same as listname')?>)</i>
+            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?php echo $LANG->_('If not set, same as listname')?>)</i>
           </td>
         </tr>
 
@@ -292,7 +292,7 @@ if(empty($_REQUEST["domainname"])) {
           <td class="title"><?php echo $LANG->_('Parent list')?></td>
           <td>
             <input name="listparent" <?php if(!empty($_REQUEST["listparent"])) { echo 'value="'.$_REQUEST["listparent"].'"'; }?>>
-            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?=$LANG->_('Make the list a sublist of list')?>)</i>
+            <i>(<b><?php echo $LANG->_('Optional')?></b>: <?php echo $LANG->_('Make the list a sublist of list')?>)</i>
           </td>
         </tr>
       </th>

@@ -61,7 +61,7 @@ if($_REQUEST["advanced"] == 1) {
   <div id="el4Parent" class="parent">
     <form method=post action="index2.php" target="_top">
 <?php	if($_SESSION["konqueror"]) { ?>
-      <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?php echo $checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+      <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?php echo $checked?>><?php echo $LANG->_('\uA\Udvanced mode')."\n"?>
 <?php	} elseif($_SESSION["lynx"]) { ?>
 <?php	  if($_REQUEST["advanced"] == 1) { ?>
       <input type="hidden" name="advanced" value="0">
@@ -71,7 +71,7 @@ if($_REQUEST["advanced"] == 1) {
       <input type="submit" value="<?php echo $LANG->_('Advanced mode')."\n"?>">
 <?php	  } ?>
 <?php	} else { ?>
-      <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?php echo $checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+      <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?php echo $checked?>><?php echo $LANG->_('\uA\Udvanced mode')."\n"?>
 <?php	}
 	  }
 ?>

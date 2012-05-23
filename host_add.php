@@ -101,7 +101,7 @@ if(!$exists) {
 	foreach($_pql->ldap_basedn as $dn) {
 	  $dn = pql_format_normalize_dn($dn);
 ?>
-              <input type="radio" name="suffix" value="<?php echo urlencode($dn)?>"<?php if($i==0) { echo " CHECKED"; }?>><?=$dn?><br>
+              <input type="radio" name="suffix" value="<?php echo urlencode($dn)?>"<?php if($i==0) { echo " CHECKED"; }?>><?php echo $dn?><br>
 <?php	  $i++;
 	} ?>
             </td>

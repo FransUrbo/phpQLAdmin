@@ -72,7 +72,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				if($hosts[$i] != $_REQUEST["mxhost"]) {
 					$host = pql_maybe_idna_decode($hosts[$i]);
 ?>
-    &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"  name="newmx"  value="<?php echo $host?>"><b><?=$host?></b><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"  name="newmx"  value="<?php echo $host?>"><b><?php echo $host?></b><br>
 <?php			}
 			}
 ?>

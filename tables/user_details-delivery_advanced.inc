@@ -16,7 +16,7 @@
         <td class="title"><?php echo $LANG->_('Dot mode')?></td>
         <td><?php echo $qmaildotmode?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=qmaildotmode&user=<?=$url["user"]?>&oldvalue=<?=$qmaildotmode?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=qmaildotmode&user=<?php echo $url["user"]?>&oldvalue=<?php echo $qmaildotmode?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 
@@ -24,7 +24,7 @@
         <td class="title"><?php echo $LANG->_('Delivery program')?></td>
         <td><?php echo $deliveryprogrampath?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=deliveryprogrampath&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=deliveryprogrampath&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
     </th>

@@ -70,7 +70,7 @@ if(is_array($sudo_results)) {
           </td>
 
           <td>
-            <a href="sudo_modify.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&sudodn=<?=$sudodn?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt=""></a>&nbsp;<a href="sudo_modify.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&sudodn=<?=$sudodn?>&action=del&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt=""></a>
+            <a href="sudo_modify.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?php echo $_REQUEST["domain"]?>&sudodn=<?php echo $sudodn?>&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt=""></a>&nbsp;<a href="sudo_modify.php?rootdn=<?php echo $_REQUEST["rootdn"]?>&domain=<?php echo $_REQUEST["domain"]?>&sudodn=<?php echo $sudodn?>&action=del&view=<?php echo $_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt=""></a>
           </td>
         </tr>
 <?php	if($row == 'c1')
@@ -91,7 +91,7 @@ if(is_array($sudo_results)) {
         <tr class="subtitle">
           <td align="right" class="title"><img src="images/edit.png" width="12" height="12" alt="" border="0"></td>
           <td colspan="5">
-            <a href="sudo_add.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&action=add"><?=$LANG->_('Register new sudo role')?></a>
+            <a href="sudo_add.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?php echo urlencode($_REQUEST["domain"])?>&view=<?php echo $_REQUEST["view"]?>&action=add"><?php echo $LANG->_('Register new sudo role')?></a>
           </td>
         </tr>
 <?php } ?>
@@ -133,7 +133,7 @@ if(is_array($sudo_results)) {
         <tr class="c2">
           <td align="right" class="title"><img src="images/edit.png" width="12" height="12" alt="" border="0"></td>
           <td colspan="5">
-            <a href="sudo_add.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&action=add"><?=$LANG->_('Register new sudo role')?></a>
+            <a href="sudo_add.php?rootdn=<?php echo urlencode($_REQUEST["rootdn"])?>&domain=<?php echo urlencode($_REQUEST["domain"])?>&view=<?php echo $_REQUEST["view"]?>&action=add"><?php echo $LANG->_('Register new sudo role')?></a>
           </td>
         </tr>
 <?php } ?>

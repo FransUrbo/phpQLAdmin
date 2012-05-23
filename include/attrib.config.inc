@@ -179,7 +179,7 @@ function attribute_print_form() {
             uid=<input type="text" name="radius_identity_name" value="<?php echo $_REQUEST["radius_identity_name"]?>" size="10">,
             <select name="ou_dn">
 <?php		for($i=0; $ous[$i]; $i++) { ?>
-              <option value="<?php echo $ous[$i]?>"><?=$ous[$i]?></option>
+              <option value="<?php echo $ous[$i]?>"><?php echo $ous[$i]?></option>
 <?php		} ?>
             </select>
           </td>
@@ -287,12 +287,12 @@ function attribute_print_form() {
 				} // if(print) 
 			  } // foreach(objectclasses)
 ?>
-      <input type="hidden" name="<?php echo $attrib?>_<?=$i?>" value="on">
-      <input type="hidden" name="<?php echo $attrib?>" value="<?=$i?>">
+      <input type="hidden" name="<?php echo $attrib?>_<?php echo $i?>" value="on">
+      <input type="hidden" name="<?php echo $attrib?>" value="<?php echo $i?>">
 <?php		} else {
 			  // No objectclasses in LDAP!
 ?>
-          <td class="<?php echo $class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
+          <td class="<?php echo $class?>"><i><a href="javascript:errorWindow()"><?php echo $LANG->_('No objectclasses')?>!</i></a></td
 <?php
 			}
 		  } elseif($attrib == sprintf("%s", pql_get_define("PQL_ATTR_LANG"))) {
@@ -301,7 +301,7 @@ function attribute_print_form() {
 ?>
             <select name="<?php echo $attrib?>">
 <?php		foreach($languages as $l => $lang) { ?>
-              <option value="<?php echo $l?>"><?=$lang?></option>
+              <option value="<?php echo $l?>"><?php echo $lang?></option>
 <?php		} ?>
             </select>
 <?php
@@ -317,12 +317,12 @@ function attribute_print_form() {
 					// We don't want to include schemes we've already
 					// configured branch to use...
 ?>
-            <input type="checkbox" name="<?php echo $attrib?>_<?=$j?>" value="<?=$values[$i]?>"><?=$values[$i]?><br>
+            <input type="checkbox" name="<?php echo $attrib?>_<?php echo $j?>" value="<?php echo $values[$i]?>"><?php echo $values[$i]?><br>
 <?php				$j++;
 				  }
 				}
 ?>
-            <input type="hidden"   name="<?php echo $attrib?>"   value="<?=$j?>">
+            <input type="hidden"   name="<?php echo $attrib?>"   value="<?php echo $j?>">
           </td>
 <?php		  }
 			} else {

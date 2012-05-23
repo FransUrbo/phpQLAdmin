@@ -52,7 +52,7 @@ function attribute_print_form() {
               <option value="authoritative"<?php if($_REQUEST[$attrib] == "authoritative") { echo " SELECTED"; }?>>authoritative</option>
               <option value="log-facility"<?php if($_REQUEST[$attrib] == "log-facility") { echo " SELECTED"; }?>>log-facility</option>
             </select>
-            <input type="input" name="<?php echo $attrib?>_value" value="<?=$_REQUEST[$attrib."_value"]?>">
+            <input type="input" name="<?php echo $attrib?>_value" value="<?php echo $_REQUEST[$attrib."_value"]?>">
           </td>
         </tr>
       </th>

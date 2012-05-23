@@ -7,7 +7,7 @@
         <td><?php if(!empty($$ref)) { echo $$ref; } ?></td>
         <td>
 <?php if(@empty($_SESSION["SINGLE_USER"])) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uid&user=<?=$url["user"]?>&oldvalue=<?=$uid?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change username')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=uid&user=<?php echo $url["user"]?>&oldvalue=<?php echo $uid?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change username')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -33,7 +33,7 @@
 			if($version >= 3) {
 			  // Only allow an admin to rename object (if we're using LDAP v3)
 ?>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=modrdn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Rename DN')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=modrdn&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Rename DN')?>" border="0"></a>
 <?php		}
 	  	}
 ?>
@@ -48,7 +48,7 @@
         <td class="title"><?php echo $LANG->_('Password')?></td>
         <td><?php echo $userpassword?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=userpassword&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Set password')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=userpassword&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Set password')?>" border="0"></a>
         </td>
       </tr>
 
@@ -66,12 +66,12 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Firstname')?></td>
         <td><?php if(!empty($givenname)) { echo $givenname; }?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=givenname&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$givenname?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change First name')?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=givenname&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>&oldvalue=<?php echo $givenname?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change First name')?>" border="0"></a></td>
       </tr>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Lastname')?></td>
         <td><?php if(!empty($sn)) { echo $sn; }?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=sn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$sn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change last name')?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=sn&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>&oldvalue=<?php echo $sn?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change last name')?>" border="0"></a></td>
       </tr>
 <?php
 	  // {{{ Surname and Lastname
@@ -101,7 +101,7 @@
         <td><?php if(!empty($loginshell)){echo $loginshell;}else{echo $LANG->_('None');} ?></td>
         <td>
 <?php	if(@empty($_SESSION["SINGLE_USER"])) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=loginshell&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change login shell')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=loginshell&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change login shell')?>" border="0"></a>
 <?php	} ?>
         </td>
       </tr>
@@ -112,7 +112,7 @@
         <td><?php if(!empty($homedirectory)){echo $homedirectory;}else{echo $LANG->_('None');} ?></td>
         <td>
 <?php	if(@empty($_SESSION["SINGLE_USER"])) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=homedirectory&user=<?=$url["user"]?>&oldvalue=<?=urlencode($homedirectory);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change home directory')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=homedirectory&user=<?php echo $url["user"]?>&oldvalue=<?php echo urlencode($homedirectory);?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change home directory')?>" border="0"></a>
 <?php	} ?>
         </td>
       </tr>
@@ -127,8 +127,8 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('UID;GID')?></td>
-        <td><?php echo $uidnumber . ";" . $gidnumber?> (<?=$group_name?>)</td>
-        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uidnumber&user=<?=$url["user"]?>&oldvalue=<?=urlencode($uidnumber . ";" . $gidnumber);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change UID/GID')?>" border="0"></a></td>
+        <td><?php echo $uidnumber . ";" . $gidnumber?> (<?php echo $group_name?>)</td>
+        <td><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=uidnumber&user=<?php echo $url["user"]?>&oldvalue=<?php echo urlencode($uidnumber . ";" . $gidnumber);?>&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change UID/GID')?>" border="0"></a></td>
       </tr>
 
 <?php			$class = pql_format_table(0);
@@ -159,12 +159,12 @@
 <?php if($disableadvancedmode) { ?>
         <td><?php echo $LANG->_('Yes')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user from select Advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&user=<?php echo $url["user"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=1&view=<?php echo $_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Disallow user from select Advanced mode')?>"></a>
         </td>
 <?php } else { ?>
         <td><?php echo $LANG->_('No')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to select Advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&user=<?php echo $url["user"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE")?>&oldvalue=0&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Allow user to select Advanced mode')?>"></a>
         </td>
 <?php } ?>
       </tr>
@@ -179,12 +179,12 @@
 <?php	if($startwithadvancedmode) { ?>
         <td><?php echo $LANG->_('Yes')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Do not start in advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&user=<?php echo $url["user"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=1&view=<?php echo $_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Do not start in advanced mode')?>"></a>
         </td>
 <?php	} else { ?>
         <td><?php echo $LANG->_('No')?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Make sure we start in advanced mode')?>"></a>
+          <a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&user=<?php echo $url["user"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=0&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Make sure we start in advanced mode')?>"></a>
         </td>
 <?php	} ?>
       </tr>

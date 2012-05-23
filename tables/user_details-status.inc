@@ -26,10 +26,10 @@ if($status == "deleted") {
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Account expiration date</td>
         <td><?php echo $time_expiration?></td>
-        <td align="center"><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_EXPIRATION")?>&user=<?=$url["user"]?>&set=expiration&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
+        <td align="center"><a href="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_EXPIRATION")?>&user=<?php echo $url["user"]?>&set=expiration&view=<?php echo $_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
       </tr>
 
-      <form action="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>" method="post" accept-charset="UTF-8">
+      <form action="user_edit_attribute.php?rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&attrib=<?php echo pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>" method="post" accept-charset="UTF-8">
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Status</td>
           <td>

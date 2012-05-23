@@ -300,14 +300,14 @@ if(!$_SESSION["SINGLE_USER"]) {
 			// {{{ NOT DNS hostname
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="<?php echo $HREF?>" target="_new"><?=$cn?></a></td>
+        <td><a href="<?php echo $HREF?>" target="_new"><?php echo $cn?></a></td>
         <td><?php echo $uid?></td>
         <td><?php echo $mail?></td>
         <td><?php echo $status?></td>
         <td>
-          <a href="user_detail.php?rootdn=<?php echo $rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($entry)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
+          <a href="user_detail.php?rootdn=<?php echo $rootdn?>&domain=<?php echo $_REQUEST["domain"]?>&user=<?php echo urlencode($entry)?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change user data')?>" border="0"></a>
           &nbsp;
-          <a href="user_del.php?rootdn=<?php echo $rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($entry); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
+          <a href="user_del.php?rootdn=<?php echo $rootdn?>&domain=<?php echo $_REQUEST["domain"]?>&user=<?php echo urlencode($entry); ?>"><img src="images/del.png" width="12" height="12" alt="<?php echo $LANG->_('Delete user')?>" border="0"></a>
         </td>
       </tr>
 <?php
@@ -323,11 +323,11 @@ if(!$_SESSION["SINGLE_USER"]) {
         <td><?php echo $ip?></td>
         <td><?php echo $host?></td>
 <?php		} ?>
-        <td><a href="domain_detail.php?rootdn=<?php echo $rootdn?>&domain=<?=$domain?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><?=urldecode($domain)?></td>
+        <td><a href="domain_detail.php?rootdn=<?php echo $rootdn?>&domain=<?php echo $domain?>&view=dnszone&dns_domain_name=<?php echo $dns_domain_name?>"><?php echo urldecode($domain)?></td>
         <td align="right">
-          <a href="bind9_edit_attributes.php?rootdn=<?php echo $rootdn?>&domain=<?=$domain?>&action=modify&rdn=<?=$entry?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change host data')?>" border="0"></a>
+          <a href="bind9_edit_attributes.php?rootdn=<?php echo $rootdn?>&domain=<?php echo $domain?>&action=modify&rdn=<?php echo $entry?>&view=dnszone&dns_domain_name=<?php echo $dns_domain_name?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo $LANG->_('Change host data')?>" border="0"></a>
           &nbsp;
-          <a href="bind9_edit_attributes.php?rootdn=<?php echo $rootdn?>&domain=<?=$domain?>&action=del&rdn=<?=$entry?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete host')?>" border="0"></a>
+          <a href="bind9_edit_attributes.php?rootdn=<?php echo $rootdn?>&domain=<?php echo $domain?>&action=del&rdn=<?php echo $entry?>&view=dnszone&dns_domain_name=<?php echo $dns_domain_name?>"><img src="images/del.png" width="12" height="12" alt="<?php echo $LANG->_('Delete host')?>" border="0"></a>
         </td>
       </tr>
 <?php

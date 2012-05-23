@@ -18,25 +18,25 @@ if($timestamp_current and $timestamp_start) {
       <tr>
         <td class="title"><?php echo $LANG->_('LDAP Server Version')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$version?></td>
+        <td class="<?php echo $class?>"><?php echo $version?></td>
       </tr>
 
       <tr>
         <td class="title"><?php echo $LANG->_('LDAP Server Startup Time')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$time_start?></td>
+        <td class="<?php echo $class?>"><?php echo $time_start?></td>
       </tr>
 
       <tr>
         <td class="title"><?php echo $LANG->_('Current Time on Server')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$time_current?></td>
+        <td class="<?php echo $class?>"><?php echo $time_current?></td>
       </tr>
 
       <tr>
         <td class="title"><?php echo $LANG->_('LDAP Server Uptime')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$time_uptime?></td>
+        <td class="<?php echo $class?>"><?php echo $time_uptime?></td>
       </tr>
     </th>
   </table>
@@ -59,7 +59,7 @@ if(is_array($listeners)) {
       <tr>
         <td class="title"><?php echo $LANG->_('Listener #').$nr?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$url?></td>
+        <td class="<?php echo $class?>"><?php echo $url?></td>
       </tr>
 <?php } ?>
     </th> 
@@ -96,7 +96,7 @@ if(is_array($overlays)) {
       <tr>
         <td class="title"><?php echo $LANG->_('Overlay #').$nr?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$overlay?></td>
+        <td class="<?php echo $class?>"><?php echo $overlay?></td>
       </tr>
 <?php } ?>
     </th> 
@@ -119,7 +119,7 @@ if(is_array($max_file_descriptors)) {
       <tr>
         <td class="title"><?php echo $LANG->_('Max File Descriptors')?></td>
         <?php $class=pql_format_table(0); ?>
-        <td class="<?php echo $class?>"><?=$max_file_descriptors?></td>
+        <td class="<?php echo $class?>"><?php echo $max_file_descriptors?></td>
       </tr>
     </th>
   </table>

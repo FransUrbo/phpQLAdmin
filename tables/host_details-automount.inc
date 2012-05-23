@@ -30,8 +30,8 @@ function table_go_through_details($host, $mnt_pnt, $mnt_data) {
     $MOUNT["Description"][]	= $mnt_data["description"];
 ?>
               &nbsp;&nbsp;&nbsp;
-              <a class="tblItem" href="host_edit_attribute.php?host=<?php echo urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&mountpoint=<?=$mnt_pnt?>&action=delete&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mnt_pnt))?>"></a>
-              <a class="tblItem" href="host_edit_attribute.php?host=<?php echo urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&mountpoint=<?=$mnt_pnt?>&action=modify&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mnt_pnt))?>"></a>
+              <a class="tblItem" href="host_edit_attribute.php?host=<?php echo urlencode($host)?>&mount=<?php echo urlencode($mnt_data["dn"])?>&mountpoint=<?php echo $mnt_pnt?>&action=delete&attrib=<?php echo pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?php echo $_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mnt_pnt))?>"></a>
+              <a class="tblItem" href="host_edit_attribute.php?host=<?php echo urlencode($host)?>&mount=<?php echo urlencode($mnt_data["dn"])?>&mountpoint=<?php echo $mnt_pnt?>&action=modify&attrib=<?php echo pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mnt_pnt))?>"></a>
               &nbsp;<?php echo $MOUNT["Device"]."\n"?>
 
             <br>
@@ -158,7 +158,7 @@ foreach($automounts as $host => $host_data) {
   } else {
     // Here 'a' is hard coded, because it's only called ONCE (for each host).
 ?>
-          <div id="el<?php echo $host_cnt?>aParent" class="parent" <?=$mouse?>>
+          <div id="el<?php echo $host_cnt?>aParent" class="parent" <?php echo $mouse?>>
               <a class="item" <?php echo $expand1?>>
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $host_cnt?>aImg">
               </a>
@@ -168,7 +168,7 @@ foreach($automounts as $host => $host_data) {
               </a>
           </div>
 
-          <div id="el<?php echo $host_cnt?>aChild" class="child" style="margin-bottom: 5px" <?=$mouse?>>
+          <div id="el<?php echo $host_cnt?>aChild" class="child" style="margin-bottom: 5px" <?php echo $mouse?>>
 <?php
   }
 // }}}
@@ -193,7 +193,7 @@ foreach($automounts as $host => $host_data) {
   // {{{ Go through the additional information (mountpoint, fs, options etc)
   for($j=1; $titles[$j]; $j++) {
 ?>
-        <!-- <?php echo $letters[$j]?>: <?=$titles[$j]?> -->
+        <!-- <?php echo $letters[$j]?>: <?php echo $titles[$j]?> -->
         <td>
 <?php
     if($_SESSION["opera"]) {
@@ -206,9 +206,9 @@ foreach($automounts as $host => $host_data) {
 				  $j.'eChild', $j.'eImg'));
     } else {
 ?>
-          <div id="el<?php echo $host_cnt?><?=$letters[$j]?>Parent" class="parent" <?=$mouse?>>
+          <div id="el<?php echo $host_cnt?><?php echo $letters[$j]?>Parent" class="parent" <?php echo $mouse?>>
               <a class="item" <?php echo $expand1?>>
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $host_cnt?><?=$letters[$j]?>Img">
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $host_cnt?><?php echo $letters[$j]?>Img">
               </a>
 
               <a class="item" <?php echo $expand2?>>
@@ -216,7 +216,7 @@ foreach($automounts as $host => $host_data) {
               </a>
           </div>
 
-          <div id="el<?php echo $host_cnt?><?=$letters[$j]?>Child" class="child" style="margin-bottom: 5px" <?=$mouse?>>
+          <div id="el<?php echo $host_cnt?><?php echo $letters[$j]?>Child" class="child" style="margin-bottom: 5px" <?php echo $mouse?>>
 <?php
     }
 
@@ -259,7 +259,7 @@ if($_REQUEST["host"] and ($_REQUEST["host"] != 'Global')) {
       <tr class="<?php echo $row?>">
         <td colspan="5">
           <img src="images/navarrow.png" width="9" height="9" border="0">
-          <a href="host_edit_attribute.php?action=add<?php echo $host?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>">
+          <a href="host_edit_attribute.php?action=add<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?php echo $_REQUEST["view"]?>">
 	    &nbsp;<?php echo $LANG->_("Add new mount point")?>
           </a>
         </td>

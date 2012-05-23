@@ -45,7 +45,7 @@ function attribute_print_form() {
           <td class="title"><?php echo $LANG->_('Range')?></td>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
-            <input type="input" name="<?php echo $attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50">
+            <input type="input" name="<?php echo $attrib?>" value="<?php echo $_REQUEST[$attrib]?>" size="50">
           </td>
         </tr>
 

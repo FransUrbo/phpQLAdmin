@@ -105,7 +105,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	// {{{ No physical hosts
 ?>
 <?php if($_SESSION["opera"]) { ?>
-  <div id="el<?php echo $div_counter?>Parent" class="parent" onclick="showhide(el<?=$div_counter?>Spn, el<?=$div_counter?>Img)">
+  <div id="el<?php echo $div_counter?>Parent" class="parent" onclick="showhide(el<?php echo $div_counter?>Spn, el<?php echo $div_counter?>Img)">
     <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?php echo $div_counter?>Img">
     <font color="black" class="heada">no server hosts defined</font>
   </div>

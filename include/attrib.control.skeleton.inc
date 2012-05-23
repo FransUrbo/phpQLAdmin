@@ -126,7 +126,7 @@ function xxx_print_view($host) {
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('value')?></td>
         <td class="<?php echo $class?>"><?php if(@$_REQUEST["xxx"]) { echo $_REQUEST["xxx"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=urlencode($host)?>&attrib=<?=pql_get_define("PQL_ATTR_xxx")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo urlencode($host)?>&attrib=<?php echo pql_get_define("PQL_ATTR_xxx")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -146,7 +146,7 @@ function xxx_print_form() {
       <th colspan="3" align="left">xxx <?php echo $LANG->_('title')?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">xxx attribute</td>
-          <td><?php echo pql_format_error_span($error["xxx"]); ?><input type="text" name="xxx" value="<?php echo $_REQUEST["xxx"]?>"> <?=$LANG->_('Default')?>: write default value here</td>
+          <td><?php echo pql_format_error_span($error["xxx"]); ?><input type="text" name="xxx" value="<?php echo $_REQUEST["xxx"]?>"> <?php echo $LANG->_('Default')?>: write default value here</td>
         </tr>
 
         <tr>

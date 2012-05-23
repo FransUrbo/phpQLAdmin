@@ -54,8 +54,8 @@ function timeoutsmtpd_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo $LANG->_('Wait')?></td>
-        <td class="<?php echo $class?>"><?php if(@$_REQUEST["timeoutsmtpd"]) { echo $_REQUEST["timeoutsmtpd"]; } else { echo $LANG->_('Default', 4).': 1200'; }?> <?=$LANG->_('Seconds', 4)?></td>
-        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"></a></td>
+        <td class="<?php echo $class?>"><?php if(@$_REQUEST["timeoutsmtpd"]) { echo $_REQUEST["timeoutsmtpd"]; } else { echo $LANG->_('Default', 4).': 1200'; }?> <?php echo $LANG->_('Seconds', 4)?></td>
+        <td class="<?php echo $class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?php echo $host?>&attrib=<?php echo pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -73,7 +73,7 @@ function timeoutsmtpd_print_form() {
       <th colspan="3" align="left"><?php echo $LANG->_('Timeoutsmtpd (How long to wait for SMTP client)')?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo $LANG->_('Wait')?></td>
-          <td><?php echo pql_format_error_span($error["timeoutsmtpd"]); ?><input type="text" name="timeoutsmtpd" value="<?php echo $_REQUEST["timeoutsmtpd"]?>"><?=$LANG->_('Seconds', 4)?></td>
+          <td><?php echo pql_format_error_span($error["timeoutsmtpd"]); ?><input type="text" name="timeoutsmtpd" value="<?php echo $_REQUEST["timeoutsmtpd"]?>"><?php echo $LANG->_('Seconds', 4)?></td>
         </tr>
 
         <tr class="subtitle">

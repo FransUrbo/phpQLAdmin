@@ -74,7 +74,7 @@ function attribute_print_form() {
 <?php } ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
-            <?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_INFO"))) { ?><textarea name="<?php echo $attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30">
+            <?php if($attrib == sprintf("%s", pql_get_define("PQL_ATTR_INFO"))) { ?><textarea name="<?php echo $attrib?>" rows="10" cols="50"><?php echo $_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?php echo $attrib?>" value="<?php echo $_REQUEST[$attrib]?>" size="30">
           </td><?php } ?>
 
         </tr>

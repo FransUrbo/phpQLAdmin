@@ -2,12 +2,12 @@
     <th align="left"><?php echo $LANG->_('Actions')?></th>
 <?php if($_REQUEST["host"] != 'Global') { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="host_del.php?host=<?php echo urlencode($_REQUEST["host"])?>&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Remove physical server')?></a></td>
+        <td><a href="host_del.php?host=<?php echo urlencode($_REQUEST["host"])?>&view=<?php echo $_REQUEST["view"]?>"><?php echo $LANG->_('Remove physical server')?></a></td>
       </tr>
 
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="bind9_edit_attributes.php?host=<?php echo urlencode($_REQUEST["host"])?>&type=a&action=modify"><?=$LANG->_('Replace IP address globally')?></a></td>
+        <td><a href="bind9_edit_attributes.php?host=<?php echo urlencode($_REQUEST["host"])?>&type=a&action=modify"><?php echo $LANG->_('Replace IP address globally')?></a></td>
       </tr>
     </th>
   </table>

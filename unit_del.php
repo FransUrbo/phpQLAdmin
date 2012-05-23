@@ -20,7 +20,7 @@ include($_SESSION["path"]."/header.html");
 <br>
 <?php echo $LANG->_('Are you really sure')?>?
 <br>
-<a href="domain_del.php?domain=<?php echo $domain?>&unit=<?=$unit?>&ok=1"><?=$LANG->_('Yes')?></a>, <a href="javascript:history.back()"><?=$LANG->_('No')?></a>
+<a href="domain_del.php?domain=<?php echo $domain?>&unit=<?php echo $unit?>&ok=1"><?php echo $LANG->_('Yes')?></a>, <a href="javascript:history.back()"><?php echo $LANG->_('No')?></a>
 <br>
 <?php
   } else {

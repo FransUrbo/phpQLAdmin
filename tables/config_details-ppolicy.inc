@@ -63,7 +63,7 @@ $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('
         </td>
 
         <td class="<?php echo $class?>" align="right">
-          <a href="<?php echo $link?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change policy value')?>"></a>
+          <a href="<?php echo $link?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Change policy value')?>"></a>
         </td>
       </tr>
 <?php	} ?>
@@ -81,7 +81,7 @@ $table_columns = array(pql_get_define("PQL_ATTR_PPOLICY_NAME")					=> $LANG->_('
       $class=pql_format_table(0);
 ?>
         <td class="<?php echo $class?>" colspan="2">
-          <a href="config_ppolicy_add.php?rootdn=<?php echo urlencode($_SESSION["BASE_DN"][0])?>"><?=$LANG->_('Add policy')?></a>
+          <a href="config_ppolicy_add.php?rootdn=<?php echo urlencode($_SESSION["BASE_DN"][0])?>"><?php echo $LANG->_('Add policy')?></a>
         </td>
       </tr>
     </th>
