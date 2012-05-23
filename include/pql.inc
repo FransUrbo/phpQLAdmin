@@ -37,20 +37,18 @@ class pql {
   // {{{ string _find_base_option(attribute)
   function _find_base_option($attrib) {
 	$attrib = lc($attrib);
-	$success = 0;
 
 	$entry = $this->search(NULL, '(objectClass=*)', 'BASE', 0, 1, 0);
 	if(is_array($entry[$attrib])) {
-	  for($i=0; $i < $entry[$attrib]["count"]; $i++)
+	  $count = count($entry[$attrib]);
+
+	  for($i=0; $i < $count; $i++)
 		$val[] = urlencode(pql_maybe_encode($entry[$attrib][$i], $attrib, $this->ldap_linkid));
-	  $success = 1;
-	} elseif(!empty($entry[$attrib])) {
+	} elseif(!empty($entry[$attrib]))
 	  $val[] = urlencode(pql_maybe_encode($entry[$attrib], $attrib, $this->ldap_linkid));
-	  $success = 1;
-	}
 
 	// If we got at least one DN, return the array. Else return false
-	if($success) {
+	if(is_array($val)) {
 	  $new = NULL;
 	  
 	  // Remove any spaces after the RDN separator
