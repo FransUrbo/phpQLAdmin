@@ -82,6 +82,10 @@ function pql_get_define($define, $dn = NULL) {
 }
 // }}}
 
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  pql_set_define("PQL_CONF_DEBUG_ME", true);
+}
+
 // ----------------------------
 // 1. Load site specific configuration
 if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !preg_match('/index2\.php$/i', $_SERVER["SCRIPT_FILENAME"])) {
@@ -301,10 +305,6 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
 
 if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
   require($_SESSION["path"]."/include/pql_aci.inc");
-}
-
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-  pql_set_define("PQL_CONF_DEBUG_ME", true);
 }
 
 // Remove some variables so we don't clutter the global variable name space!
