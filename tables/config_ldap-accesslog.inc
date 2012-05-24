@@ -109,7 +109,7 @@
           </td>
         </tr>
 <?php
-	if($i >= ($_REQUEST["start"]*500)) {
+       if(($_REQUEST["start"] > 0) && ($i >= ($_REQUEST["start"]*500))) {
 	  break;
 	}
       }
