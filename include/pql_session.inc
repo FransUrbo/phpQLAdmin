@@ -6,7 +6,7 @@
 //echo "_SESSION: "; print_r($_SESSION);
 
 // {{{ Check if the user session have expired
-if(is_array($_SESSION) and !@$_SESSION["initial_load"] and
+if(@is_array($_SESSION) and !@$_SESSION["initial_load"] and
    ((!@$_SESSION["USER_DN"] and !@$_SESSION["USER_ID"]) or !@$_SESSION["USER_PASS"]))
 {
   $msg = 'Session expired...';
