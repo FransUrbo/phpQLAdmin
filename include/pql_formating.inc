@@ -918,6 +918,9 @@ function pql_format_urls(&$string) {
 
 // {{{ pql_format_bool(string)
 function pql_format_bool(&$value) {
+  if(is_array($value))
+	return;
+
   if(preg_match('/^true$/i', $value)) {
 	settype($value, "boolean");
 	$value = '1';
