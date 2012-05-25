@@ -12,8 +12,9 @@ if(empty($_REQUEST["submit"])) {
   include($_SESSION["path"]."/header.html");
 ?>
     <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
-      <input type="hidden" name="scope" value="<?php echo $_REQUEST["scope"]?>">
-      <input type="hidden" name="dn"    value="<?php echo urlencode($_REQUEST["dn"])?>">
+      <input type="hidden" name="scope"  value="<?php echo $_REQUEST["scope"]?>">
+      <input type="hidden" name="dn"     value="<?php echo urlencode($_REQUEST["dn"])?>">
+      <input type="hidden" name="domain" value="<?php echo urlencode($_REQUEST["domain"])?>">
 
       <span class="title3"><?php echo $LANG->_('Search options')?></span><br>
       <!-- TODO: The code to follow referrals isn''t implemented in 'include/pql.inc:search()' -->
@@ -32,7 +33,7 @@ if(empty($_REQUEST["submit"])) {
     </form>
   </body>
 </html>
-<?
+<?php
 } else {
   if(empty($_REQUEST["referrals"]))
 	$_REQUEST["referrals"] = 0;
@@ -47,8 +48,12 @@ if(empty($_REQUEST["submit"])) {
   if($_REQUEST["scope"] == "sub") {
 	// scope=subtree. Search and retreive object(s).
 
+	// TODO: If 'domain' is empty, try to use the 'dn', but a couple of
+	//       levels up...
+	$dn = $_REQUEST["domain"];
+
 	// Get the non-operational attributes for all objects below DN.
-	$objects1 = $_pql->search($_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "SUBTREE", $_REQUEST["referrals"]);
+	$objects1 = $_pql->search($dn, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "SUBTREE", $_REQUEST["referrals"]);
 	for($i=0; $i < count($objects1); $i++) {
 	  if($_REQUEST["operationals"])
 		// Get the operational attributes for each object
