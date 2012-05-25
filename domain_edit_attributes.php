@@ -25,7 +25,7 @@ function attribute_forward($msg) {
 		  . "&domain=" . $url["domain"]
 		  . "&user=". $url["user"]
 		  . "&view=" . $_REQUEST["view"] . "&msg=$msg";
-	} elseif(ereg('^config_detail', $_REQUEST["view"])) {
+	} elseif(preg_match('/^config_detail/', $_REQUEST["view"])) {
 		// Very special sircumstances - we've deleted an administrator from the config_details/ROOTDN page!
 		$tmp  = split('/', $_REQUEST["view"]);
 		$link = "config_detail.php?view=".$tmp[1];
