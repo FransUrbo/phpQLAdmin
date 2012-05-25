@@ -11,7 +11,7 @@
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="dump_object.php?scope=sub&dn=<?php echo $url["user"]?>&view=<?php echo $_GET["view"]?>"><?php echo $LANG->_('LDIF Dump branch')?></a></td>
+        <td><a href="dump_object.php?scope=sub&dn=<?php echo $url["user"]?>&domain=<?php echo $url["domain"]?>&view=<?php echo $_GET["view"]?>"><?php echo $LANG->_('LDIF Dump branch')?></a></td>
       </tr>
     </th>
   </table>
