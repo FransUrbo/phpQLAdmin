@@ -1,0 +1,4 @@
+*~
+.DEBUG_*
+include/config.inc
+phpQLadmin.log
