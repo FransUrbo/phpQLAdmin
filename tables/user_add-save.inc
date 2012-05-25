@@ -100,7 +100,7 @@ if(!empty($_REQUEST["mail"]) and
 	   pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAILALTERNATE")))
 	{
 		foreach($additionaldomainname as $additional) {
-		  if(!eregi($additional, $_REQUEST["mail"]))
+		  if(!preg_match("/$additional/i", $_REQUEST["mail"]))
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = strtolower($email_temp . "@" . $additional);
 	}
 	}
@@ -162,22 +162,22 @@ if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_QMA
 
 // {{{ Modify the password scheme in a way the LDAP server will understand - within {SCHEME}.
 if($_REQUEST["pwscheme"]) {
-  if(! eregi('\{', $_REQUEST["pwscheme"]))
+  if(! preg_match('/\{/', $_REQUEST["pwscheme"]))
 	$_REQUEST["pwscheme"] = '{'.$_REQUEST["pwscheme"];
   
-  if(! eregi('\}', $_REQUEST["pwscheme"]))
+  if(! preg_match('/\}/', $_REQUEST["pwscheme"]))
 	$_REQUEST["pwscheme"] .= '}';
 }
 // }}}
 
 // {{{ Add the password to the entry array
 if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_PASSWD"))) {
-  if(eregi('KERBEROS', $_REQUEST["pwscheme"])) {
+  if(preg_match('/KERBEROS/i', $_REQUEST["pwscheme"])) {
 	// {{{ We're using the {KERBEROS} password scheme. Special circumstances.
 	// The userPassword and krb5PrincipalName needs to be set. This is 
 	// automagicly created with the help of the username (uid) value and
 	// the REALM name.
-	if(eregi('@', $_REQUEST["password"]))
+	if(preg_match('/@/', $_REQUEST["password"]))
 	  // User know what he/she's doing. We specified the full principal
 	  // name directly in the password field! Use that as userPassword
 	  // and krb5PrincipalName.
@@ -333,12 +333,12 @@ if(!empty($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["root
   die("I have no idea how to continue from here...");
 }
 
-if(pql_get_define("PQL_CONF_SUBTREE_USERS") and (!empty($_REQUEST["subbranch"]) and !eregi('^ou=', $_REQUEST["subbranch"]))) {
+if(pql_get_define("PQL_CONF_SUBTREE_USERS") and (!empty($_REQUEST["subbranch"]) and !preg_match('/^ou=/i', $_REQUEST["subbranch"]))) {
   $userdn .= pql_get_define("PQL_CONF_SUBTREE_USERS").",";
 }
 
 if(!empty($_REQUEST["subbranch"])) {
-	if(eregi('=', $_REQUEST["subbranch"]))
+	if(preg_match('/=/', $_REQUEST["subbranch"]))
 	  $userdn .= urldecode($_REQUEST["subbranch"]);
 	else
 	  $userdn .= 'ou='.urldecode($_REQUEST["subbranch"].",".$_REQUEST["domain"]);
@@ -351,7 +351,7 @@ if(!empty($_REQUEST["subbranch"])) {
 // pql_user_add() will first URL encode the value, THEN UTF8 encode it
 // Hence, we must reverse this here ($_REQUEST["subbranch"] is already
 // URL decoded).
-if(!eregi('=', $_REQUEST["subbranch"])) {
+if(!preg_match('/=/', $_REQUEST["subbranch"])) {
   // When there's multiple subbranches
   $branch = 'ou='.pql_maybe_decode($_REQUEST["subbranch"]).','.$_REQUEST["domain"];
 } else {

@@ -42,9 +42,9 @@ $_REQUEST["domain"] = eregi_replace("\\\'", "'", $_REQUEST["domain"]);
 function attribute_forward($msg) {
     // URL Encode some of the most important information
     // (root DN, domain/branch DN and user DN)
-    if(!eregi('%3D', $_REQUEST["rootdn"]))  $_REQUEST["rootdn"] = urlencode($_REQUEST["rootdn"]);
-    if(!eregi('%3D', $_REQUEST["domain"]))  $_REQUEST["domain"] = urlencode($_REQUEST["domain"]);
-    if(!eregi('%3D', $_REQUEST["user"]))    $_REQUEST["user"]   = urlencode($_REQUEST["user"]);
+    if(!preg_match('/%3D/i', $_REQUEST["rootdn"]))  $_REQUEST["rootdn"] = urlencode($_REQUEST["rootdn"]);
+    if(!preg_match('/%3D/i', $_REQUEST["domain"]))  $_REQUEST["domain"] = urlencode($_REQUEST["domain"]);
+    if(!preg_match('/%3D/i', $_REQUEST["user"]))    $_REQUEST["user"]   = urlencode($_REQUEST["user"]);
     
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
       . "&user=" . $_REQUEST["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);

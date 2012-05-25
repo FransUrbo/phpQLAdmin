@@ -102,7 +102,7 @@ function pql_user_add_retreive_encryption_schemes($template, $rootdn) {
 	  $schemes = $template["passwordscheme"];
 	} else {
 	  $tmp = pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn);
-	  if(eregi(',', $tmp)) {
+	  if(preg_match('/,/', $tmp)) {
 		// We got more than one password scheme...
 		$schemes = split(",", $tmp);
 	  } else {
@@ -533,13 +533,13 @@ switch($_REQUEST["page_curr"]) {
 
 				  // Since we no longer use KERBEROS, unset the clear text password value
 				  unset($_REQUEST["clear_text_password"]);
-				} elseif(eregi('KERBEROS', $_REQUEST["pwscheme"])) {
+				} elseif(preg_match('/KERBEROS/i', $_REQUEST["pwscheme"])) {
 				  // Going (back?) to Kerberos scheme...
 				  $_REQUEST["clear_text_password"] = $_REQUEST["password"];
 				  $_REQUEST["password"] = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
 				}
 				// }}}
-			  } elseif(eregi("KERBEROS", $_REQUEST["pwscheme"])) {
+			  } elseif(preg_match("/KERBEROS/i", $_REQUEST["pwscheme"])) {
 				// {{{ Preselected kerberos password
 				// Should be in the form: userid@DOMAIN.LTD
 				// TODO: Is this regexp correct!?

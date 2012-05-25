@@ -59,7 +59,7 @@ if(isset($submit)) {
 <?php
 if($_SESSION["ADVANCED_MODE"] == 1) {
   // Should we show the 'change server' choices
-  if(pql_get_define("PQL_CONF_CHANGE_SERVER") and eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
+  if(pql_get_define("PQL_CONF_CHANGE_SERVER") and preg_match('/\+/', pql_get_define("PQL_CONF_HOST"))) {
 	$servers = split('\+', pql_get_define("PQL_CONF_HOST"));
 ?>
 
@@ -71,7 +71,7 @@ if($_SESSION["ADVANCED_MODE"] == 1) {
 <?php	foreach($servers as $server) {
 			$host = split(';', $server);
 ?>
-          <option value="<?php echo $server?>"><?php echo pql_maybe_idna_decode(urldecode($host[0]))?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></option>
+          <option value="<?php echo $server?>"><?php echo pql_maybe_idna_decode(urldecode($host[0]))?><?php if(!preg_match('/^ldapi:/i', $host[0])) { echo ":".$host[1]; } ?></option>
 <?php	} ?>
         </select>
         <input type="submit" value="<?php echo "--&gt;&gt;"?>" name="submit">

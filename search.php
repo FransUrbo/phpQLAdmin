@@ -135,7 +135,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			// Check if this object is a (posix)Group object.
 			$ocs = $_pql->get_attribute($enrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 			for($j=0; $j < count($ocs); $j++) {
-				if(eregi('group', $ocs[$j]))
+				if(preg_match('/group/i', $ocs[$j]))
 				  $is_group = 1;
 			}
 			
@@ -168,7 +168,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 		// Check if this object is a (posix)Group object.
 		$ocs = $_pql->get_attribute($enrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 		for($j=0; $j < count($ocs); $j++) {
-			if(eregi('group', $ocs[$j]))
+			if(preg_match('/group/i', $ocs[$j]))
 			  $is_group = 1;
 		}
 		

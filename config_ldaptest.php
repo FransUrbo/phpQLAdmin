@@ -97,7 +97,7 @@ if(!function_exists("ldap_connect")){
 	$server = urldecode($server[0]); 	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 	
 	// do additional tests
-	if(!eregi('^ldap', $_SESSION["USER_HOST"])) {
+	if(!preg_match('/^ldap/i', $_SESSION["USER_HOST"])) {
 	  if(!gethostbyname($_SESSION["USER_HOST"]))
 		// not resolved
 		$connection .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'),
@@ -131,7 +131,7 @@ if(!function_exists("ldap_connect")){
 	  $port = $host[1];
 	  
 	  // do additional tests
-	  if(!eregi('^ldap', $_SESSION["USER_HOST"])) {
+	  if(!preg_match('/^ldap/i', $_SESSION["USER_HOST"])) {
 		if(!gethostbyname($fqdn)) {
 		  // not resolved
 		  $connection_control .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'),

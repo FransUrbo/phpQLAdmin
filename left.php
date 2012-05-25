@@ -122,7 +122,7 @@ if(!isset($domains) or !is_array($domains)) {
 	  $d = $d[0];
 	// }}}
 	
-	if(!eregi('%3D', $domain))
+	if(!preg_match('/%3D/i', $domain))
 	  $domain = urlencode($domain);
 	
 	// Get Root DN

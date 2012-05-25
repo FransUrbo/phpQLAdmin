@@ -7,7 +7,7 @@ foreach($ldap as $x => $array) {
 ?>
       <th colspan="3" align="left"><?php echo $x?>
 <?php
-	if(!eregi($x, 'objectclasses')) {
+	if(!preg_match("/$x/i", 'objectclasses')) {
 ?>
 
         <tr>

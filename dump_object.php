@@ -57,7 +57,7 @@ if(empty($_REQUEST["submit"])) {
 									 'modifyTimestamp', 'subschemaSubentry', 'hasSubordinates', 'aci'));
 	  
 	  // URL decode a 'DNS TTL RDN'.
-	  if(eregi("^dNSTTL=", $objects1[$i]["dn"]))
+	  if(preg_match("/^dNSTTL=/i", $objects1[$i]["dn"]))
 		$objects1[$i]["dn"] = urldecode($objects1[$i]["dn"]);
 	  
 	  if($_REQUEST["operationals"])

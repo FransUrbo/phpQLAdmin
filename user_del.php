@@ -95,7 +95,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 									foreach($data["subscriber"] as $subscriber) {
 										// Go through each of the users mail addresses
 										foreach($mails as $mail) {
-											if(eregi($mail, $subscriber)) {
+											if(preg_match("/$mail/i", $subscriber)) {
 												// The user is subscribed to this list - unsubscribe
 												echo "Unsubscribing user from list ".$data["name"]."<br>";
 												$ezmlm->unsubscribe($number, $subscriber);

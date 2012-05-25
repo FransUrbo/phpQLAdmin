@@ -186,7 +186,7 @@ if(!$got_user_reference_attribute) {
 if(empty($userpassword)) {
     $userpassword = $LANG->_('None');
 } else {
-    if(eregi("\{KERBEROS\}", $userpassword) or eregi("\{SASL\}", $userpassword)) {
+    if(preg_match("/\{KERBEROS\}/i", $userpassword) or preg_match("/\{SASL\}/i", $userpassword)) {
 		$princ = split("\}", $userpassword);
 		$userpassword = $princ[1] . " (Kerberos V)";
     } else {
@@ -256,10 +256,10 @@ if($objectclasses and !is_array($objectclasses)) {
   $objectclasses = array($objectclasses);
 }
 foreach($objectclasses as $oc) {
-	if(eregi(pql_get_define("PQL_ATTR_GROUP_OC"), $oc))
+	if(preg_match('/'.pql_get_define("PQL_ATTR_GROUP_OC").'/i', $oc))
 	  $USER_IS_GROUP = 1;
 
-	if(eregi(pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS"), $oc))
+	if(preg_match('/'.pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS").'/i', $oc))
 	  $USER_IS_SAMBA = 1;
 }
 // }}}

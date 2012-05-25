@@ -93,10 +93,10 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 // }}}
 
 	// {{{ Just incase we have a new style quota, but not an old one...
-	if(($defaultquotasize and !eregi('not set', $defaultquotasize)) and
-	   ($defaultquotacount and !eregi('not set', $defaultquotacount)))
+	if(($defaultquotasize and !preg_match('/not set/i', $defaultquotasize)) and
+	   ($defaultquotacount and !preg_match('/not set/i', $defaultquotacount)))
 	  $quota = $defaultquotasize."S,".$defaultquotacount."C";
-	elseif($ldapdefaultquota and !eregi('not set', $ldapdefaultquota))
+	elseif($ldapdefaultquota and !preg_match('/not set/i', $ldapdefaultquota))
 	  $quota = $ldapdefaultquota;
 // }}}
 

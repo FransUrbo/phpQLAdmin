@@ -62,7 +62,7 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 // }}}
 
 foreach($_SESSION["BASE_DN"] as $dn) {
-    if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $dn)))
+    if(preg_match('/KERBEROS/i', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $dn)))
       $show_kerberos_info = 1;
 }
 

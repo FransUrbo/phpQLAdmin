@@ -352,12 +352,12 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	$IPs = array();
 	for($i=0; $hosts[$i]; $i++) {
 	  // {{{ Extract the host FQDN from the URL. A little crude...
-	  if(eregi('.*://', $_REQUEST["serverurl"]))
+	  if(preg_match('/.*:\/\//', $_REQUEST["serverurl"]))
 		$fqdn = eregi_replace('.*://', '', $_REQUEST["serverurl"]);
 	  else
 		$fqdn = $_REQUEST["serverurl"];
-	  if(eregi(':', $fqdn)) { $fqdn = eregi_replace(':.*', '', $fqdn); }
-	  if(eregi('/', $fqdn)) { $fqdn = eregi_replace('/.*', '', $fqdn); }
+	  if(preg_match('/:/', $fqdn)) { $fqdn = eregi_replace(':.*', '', $fqdn); }
+	  if(preg_match('/\//', $fqdn)) { $fqdn = eregi_replace('/.*', '', $fqdn); }
 	  // }}}
 	  
 	  // {{{ Setup the entry array
@@ -549,10 +549,10 @@ if(($error == 'true') or !$_REQUEST["type"] or
 
 	  // Deny
 	  if(isset($_REQUEST["access_deny"])) {
-		if(eregi('\*', $_REQUEST["access_deny"]))
+		if(preg_match('/\*/', $_REQUEST["access_deny"]))
 		  $_REQUEST["access_deny"] = "all";
 
-		if(!eregi('^from', $_REQUEST["access_deny"]))
+		if(!preg_match('/^from/i', $_REQUEST["access_deny"]))
 		  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_DENY")]  = "from ".$_REQUEST["access_deny"];
 		else
 		  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_DENY")]  = $_REQUEST["access_deny"];
@@ -560,10 +560,10 @@ if(($error == 'true') or !$_REQUEST["type"] or
 
 	  // Allow
 	  if(isset($_REQUEST["access_allow"])) {
-		if(eregi('\*', $_REQUEST["access_allow"]))
+		if(preg_match('/\*/', $_REQUEST["access_allow"]))
 		  $_REQUEST["access_allow"] = "all";
 
-		if(!eregi('^from', $_REQUEST["access_allow"]))
+		if(!preg_match('/^from/i', $_REQUEST["access_allow"]))
 		  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ALLOW")] = "from ".$_REQUEST["access_allow"];
 		else
 		  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ALLOW")] = $_REQUEST["access_allow"];

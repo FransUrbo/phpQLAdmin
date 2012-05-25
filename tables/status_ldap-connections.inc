@@ -330,11 +330,11 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
         <td class="<?php echo $class?>" align="right"><?php echo $tmp[7]?></td>
         <td class="<?php echo $class?>" align="right"><?php echo $tmp[4]?></td>
         <td class="<?php echo $class?>" align="right"><?php
-			if(eregi('^ldap:', $tmp[6])) {
+			if(preg_match('/^ldap:/i', $tmp[6])) {
 				echo "LDAP";
-			} elseif(eregi('^ldaps:', $tmp[6])) {
+			} elseif(preg_match('/^ldaps:/i', $tmp[6])) {
 				echo "LDAPS";
-			} elseif(eregi('^ldapi:', $tmp[6])) {
+			} elseif(preg_match('/^ldapi:/i', $tmp[6])) {
 				echo "LDAPI";
 			} ?></td>
       </tr>

@@ -92,7 +92,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
         <td><?php echo $LANG->_('LDAP server')?>:</td>
         <td align="left">
 <?php
-	if(eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
+	if(preg_match('/\+/', pql_get_define("PQL_CONF_HOST"))) {
 		$servers = split('\+', pql_get_define("PQL_CONF_HOST"));
 ?>
           <select name="server">
@@ -102,7 +102,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 			// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 			$host[0] = urldecode($host[0]);
 ?>
-            <option value="<?php echo $server?>"><?php echo $host[0]?><?php if(!eregi('^ldapi:', $host[0])) { ?>:<?php echo $host[1]?><?php } ?></option>
+            <option value="<?php echo $server?>"><?php echo $host[0]?><?php if(!preg_match('/^ldapi:/', $host[0])) { ?>:<?php echo $host[1]?><?php } ?></option>
 <?php	} ?>
           </select>
 <?php

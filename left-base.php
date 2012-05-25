@@ -41,7 +41,7 @@ if($_REQUEST["advanced"] == 1) {
   <div id="el2Parent" class="parent" style="margin-bottom: 5px">
     <?php echo $LANG->_('LDAP Server')?>:
     <nobr>
-      <span class="heada"><?php echo pql_maybe_idna_decode($host[0])?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></span>
+      <span class="heada"><?php echo pql_maybe_idna_decode($host[0])?><?php if(!preg_match('/^ldapi:/i', $host[0])) { echo ":".$host[1]; } ?></span>
     </nobr>
   </div>
 
@@ -101,7 +101,7 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
   if($_SESSION["ACCESSLOG_OVERLAY"])
 	$accesslog_overlay = array($LANG->_('LDAP Access logs')			=> 'config_ldap.php?type=accesslog&start=0');
 
-  if($_SESSION["CONFIG_BACKEND_ENABLED"] and eregi('CVS', $_SESSION["VERSION"]))
+  if($_SESSION["CONFIG_BACKEND_ENABLED"] and preg_match('/CVS/i', $_SESSION["VERSION"]))
 	$config_backend = array($LANG->_('LDAP Server Configuration')	=> 'config_ldap.php?type=config');
 
   // Level 2c2: LDAP server setup etc
