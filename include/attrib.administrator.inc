@@ -611,12 +611,11 @@ function attribute_save($type) {
 			  //	* Bind9 management is enabled
 			  //	* The current branch is a DNS branch
 			  //	* The user is DNS admin for this domain/branch
-			  if(pql_get_define("PQL_CONF_BIND9_USE") and
-				 $match = pql_get_define("PQL_CONF_SUBTREE_BIND9").',';
-				 preg_match("/$match/i", $branches[$i]) and
-				 pql_validate_administrator($_REQUEST["branchdn"],
-											pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $value))
-				$skip = 1;
+              if(pql_get_define("PQL_CONF_BIND9_USE") and
+                 preg_match('/'.pql_get_define("PQL_CONF_SUBTREE_BIND9").',/i', $branches[$i]) and
+                 pql_validate_administrator($_REQUEST["branchdn"],
+                                            pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $value))
+                $skip = 1;
 
 			  // ----------------
 			  // Skip any web branches if:
