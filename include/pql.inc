@@ -324,6 +324,9 @@ class pql {
   //		ONELEVEL
   //		BASE
   function search($dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0, $encode = 0) {
+# Can't enable this, other on login issues...
+#	  echo "search($dn, $filter, $level, $referals, $operational, $encode)<br>";
+
 	global $_SESSION, $pql_cache;
 	
 	// Normalize the DN
@@ -383,7 +386,7 @@ class pql {
 		echo "|search(): Looking below '<b>$dn</b>':<br>";
 	}
 	
-	if($enable_cache and !(($object = $pql_cache->get($dn, $object)) != true)) {
+	if($enable_cache and !(($object = $pql_cache->get($dn)) != true)) {
 	  // The object is cached -> return this (don't look for it in LDAP).
 	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
 		echo "|Returning cached object '$dn'<br>";
@@ -1123,7 +1126,7 @@ function smbpassword($passwd, $type){
   // Using Samba Password Support requires pear's Crypt_CHAP
   require_once 'Crypt/CHAP.php';
 
-  $hash = &new Crypt_CHAP_MSv2();
+  $hash = new Crypt_CHAP_MSv2();
   $hash->password = $passwd;
   if($type == 'lmPassword')
 	$passwd = strtoupper(bin2hex($hash->lmPasswordHash()));
