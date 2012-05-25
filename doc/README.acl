@@ -150,6 +150,33 @@ to do that, add the 'administrator' attribute to your top DN as well
 (don't forget to add the objectclass 'phpQLAdminBranch'!).
 
 
+A possibly better and recursive solution to the ACL issue is to use the
+OpenLDAP ACL rule that reads (see slapd.access(5)):
+
+            group[/<objectclass>[/<attrname>]]
+                 [.<groupstyle>]=<group>
+
+With this, we can create an ACL that looks something like this (for a
+'super administrator'):
+
+	access to dn.subtree="dc=com"
+	        by group/phpQLAdminBranch/administrator.exact="dc=com" write
+	        by * read
+
+And similarly, for a domain administrator:
+
+	access to dn.regex="(.+,)?ou=People,(dc=[^,]+,dc=[^,]+)$"
+	        by group/phpQLAdminBranch/administrator.expand="$2" write
+	        by * break
+
+If you want/need both, just add them to your configuration in this order
+(first the super admin, then the domain admin ACL), adding any restrictions
+below this. That means, that if a domain admin logs in (to the DB), the
+first ACL won't match, but the second one will, so any third, forth (etc)
+ACL won't be queried...
+
+
+
 If you like me is 'some kind of ISP' (hosting multiple domain or what
 not) and you have layed out your LDAP tree according to the DOMAIN
 layout, and where each branch (each dc object directly below the top
