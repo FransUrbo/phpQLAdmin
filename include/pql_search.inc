@@ -544,7 +544,7 @@ function pql_get_subschemas() {
 	if($result)
 	  $entry[$attrib] = $result;
   }
-  
+
   // Return 4 arrays with:
   //	ldapsyntaxes
   //	matchingrules
@@ -620,33 +620,33 @@ function pql_get_subschema($attrib) {
 	  //		SUP top STRUCTURAL MUST ( sn $ cn ) MAY ( description $ seeAlso $ 
 	  //		telephoneNumber $ userPassword ) X-ORIGIN 'RFC 2256' )
 	  // }}}
-
 	  for($i=0; $i < count($entry[0][$attrib]); $i++) {
 		// {{{ Retreive NAME
-		$words = explode("NAME", $entry[0][$attrib][$i]);
+		$words = explode("NAME ", $entry[0][$attrib][$i]);
 		if(!empty($words[1])) {
-		  if(preg_match("/^ \(/", $words[1])) {
-			$words = explode("\)", $words[1]);
-			$words = ereg_replace("\'", "", $words[0]);
+		  if(preg_match("/^\(/", $words[1])) {
+			$words = preg_replace("/^\( \'(.*?)\' \) .*/", "$1", $words[1]);
+			$words = preg_replace("/\'/", "", $words);
 			$words = explode(" ", $words);
-			$name  = lc($words[2]);
-			
-			$VALUE[$name]["NAME"] = $words[2];
-			for($j=3; $j < count($words); $j++) {
+
+			$name  = lc($words[0]);
+			$VALUE[$name]["NAME"] = $words[0];
+
+			for($j=1; $j < count($words); $j++) {
 			  $VALUE["ALIAS"][$name][] = $words[$j];
 			  $VALUE["ALIAS"][$words[$j]][] = $name;
 			  
 			  $VALUE[$name]["ALIAS"][] = $words[$j];
 			}
 		  } else {
-			$words = explode("\' ", $words[1]);
-			$words = explode(" \'", $words[0]);
-			$name  = lc($words[1]);
+			$words = preg_replace("/^'(.*?)' .*/", "$1", $words[1]);
 			
-			$VALUE[$name]["NAME"] = $words[1];
+			$name = lc($words);
+			$VALUE[$name]["NAME"] = $words;
 		  }
 		} elseif($attrib == 'ldapsyntaxes') {
 		  $words = explode(" ", $entry[0][$attrib][$i]);
+
 		  $name  = lc($words[1]);
 		}
 		// }}}
@@ -657,118 +657,95 @@ function pql_get_subschema($attrib) {
 		// }}}
 		
 		// {{{ Retreive DESC
-		$words = explode("DESC", $entry[0][$attrib][$i]);
+		$words = explode("DESC ", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
-		  $words = explode("\' ", $words[1]);
-		  $words = explode(" \'", $words[0]);
-		  
-		  $VALUE[$name]["DESC"] = $words[1];
+		  $words = preg_replace("/^'(.*?)' .*/", "$1", $words[1]);
+		  $VALUE[$name]["DESC"] = $words;
 		}
 		// }}}
 		
 		// {{{ Retreive MAY's
-		$words = explode("MAY", $entry[0][$attrib][$i]);
-		if(! empty($words[1])) {
-		  if(preg_match("/\(/", $words[1])) {
-			$words = explode("\(", $words[1]);
-			$words = explode("\)", $words[1]);
-		  } else {
-			$words = explode("\)", $words[1]);
-		  }
-		  
-		  // Remove spaces
-		  $words = ereg_replace(" ", "", $words[0]);
-		  $words = explode('\$', $words);
-		  
-		  $j = 0;
-		  foreach($words as $may) {
-			$VALUE[$name]["MAY"][] = $may;
-			$j++;
-		  }
-		  $VALUE[$name]["MAY"]["count"] = $j;
-		}
-		// }}}
-		
-		// {{{ Retreive MUST's
-		$words = explode("MUST", $entry[0][$attrib][$i]);
-		if(! empty($words[1])) {
-		  if(preg_match("/^ \(/", $words[1])) {
-			$words = explode("\(", $words[1]);
-			$words = explode("\)", $words[1]);
-			$word  = $words[0];
-		  } else {
-			$words = explode(" ", $words[1]);
-			$word  = $words[1];
-		  }
-		  
-		  // Remove spaces
-		  $words = ereg_replace(" ", "", $word);
-		  $words = explode('\$', $words);
-		  
-		  $j = 0;
-		  foreach($words as $must) {
-			$VALUE[$name]["MUST"][] = $must;
-			$j++;
-		  }
-		  $VALUE[$name]["MUST"]["count"] = $j;
-		}
-		// }}}
-		
-		// {{{ Retreive EQUALITY
-		$words = explode("EQUALITY", $entry[0][$attrib][$i]);
-		if(! empty($words[1])) {
-		  $words = explode(" ", $words[1]);
-		  $VALUE[$name]["EQUALITY"] = $words[1];
-		}
-		// }}}
-		
-		// {{{ Retreive SYNTAX
-		$words = explode("SYNTAX", $entry[0][$attrib][$i]);
-		if(! empty($words[1])) {
-		  $words = explode(" ", $words[1]);
-		  $VALUE[$name]["SYNTAX"] = $words[1];
-		}
-		// }}}
-
-		// {{{ Retreive USAGE
-		$words = explode("USAGE", $entry[0][$attrib][$i]);
-		if(! empty($words[1])) {
-		  $words = explode(" ", $words[1]);
-		  $VALUE[$name]["USAGE"] = $words[1];
-		}
-		// }}}
-		
-		// {{{ Retreive SUP
-		if(preg_match("/SUP/i", $entry[0][$attrib][$i])) {
-		  $words = explode("SUP", $entry[0][$attrib][$i]);
+		if(preg_match("/MAY/", $entry[0][$attrib][$i])) {
+		  $words = explode("MAY ", $entry[0][$attrib][$i]);
 		  if(! empty($words[1])) {
-			if(preg_match("/^ \(/", $words[1])) {
-			  $words = explode("\(", $words[1]);
-			  $words = explode("\)", $words[1]);
-			  
-			  // Remove spaces
-			  $words = ereg_replace(" ", "", $words[0]);
-			  $words = explode('\$', $words);
-			  
-			  for($j=0; $j < count($words); $j++)
-				$VALUE[$name]["SUP"][] = $words[$j];
+			if(preg_match("/^\(/", $words[1])) {
+			  $words = preg_replace("/^\( (.*?) \) .*/", "$1", $words[1]);
+			  $words = preg_replace("/ \\$ /", " ", $words);
+			  $words = explode(" ", $words);
 			} else {
-			  $words = explode(" ",  $words[1]);
-			  
-			  // Remove spaces
-			  $VALUE[$name]["SUP"] = ereg_replace(" ", "", $words[1]);
+			  $words = array(preg_replace("/^(\w+) .*/", "$1", $words[1]));
+			}
+
+			if(@is_array($words)) {
+			  $VALUE[$name]["MAY"] = $words;
+			  $VALUE[$name]["MAY"]["count"] = count($VALUE[$name]["MAY"]);
 			}
 		  }
 		}
 		// }}}
 		
+		// {{{ Retreive MUST's
+		if(preg_match("/MUST/", $entry[0][$attrib][$i])) {
+		  $words = explode("MUST ", $entry[0][$attrib][$i]);
+		  if(! empty($words[1])) {
+			if(preg_match("/^\(/", $words[1])) {
+			  $words = preg_replace("/^\( (.*?) \) .*/", "$1", $words[1]);
+			  $words = preg_replace("/ \\$ /", " ", $words);
+			  $words = explode(" ", $words);
+			} else {
+			  $words = array(preg_replace("/^(\w+) .*/", "$1", $words[1]));
+			}
+
+			if(@is_array($words)) {
+			  $VALUE[$name]["MUST"] = $words;
+			  $VALUE[$name]["MUST"]["count"] = count($VALUE[$name]["MUST"]);
+			}
+		  }
+		}
+		// }}}
+		
+		// {{{ Retreive EQUALITY
+		if(preg_match("/EQUALITY/", $entry[0][$attrib][$i])) {
+		  $words = explode("EQUALITY ", $entry[0][$attrib][$i]);
+		  if(! empty($words[1]))
+			$VALUE[$name]["EQUALITY"] = preg_replace("/(.*?) .*/", "$1", $words[1]);
+		}
+		// }}}
+		
+		// {{{ Retreive SYNTAX
+		if(preg_match("/SYNTAX/", $entry[0][$attrib][$i])) {
+		  $words = explode("SYNTAX ", $entry[0][$attrib][$i]);
+		  if(! empty($words[1]))
+			$VALUE[$name]["SYNTAX"] = preg_replace("/ .*/", "", $words[1]);
+		}
+		// }}}
+
+		// {{{ Retreive USAGE
+		if(preg_match("/USAGE/", $entry[0][$attrib][$i])) {
+		  $words = explode("USAGE ", $entry[0][$attrib][$i]);
+		  if(! empty($words[1]))
+			$VALUE[$name]["USAGE"] = preg_replace("/ .*/", "", $words[1]);
+		}
+		// }}}
+		
+		// {{{ Retreive SUP
+		if(preg_match("/SUP /i", $entry[0][$attrib][$i])) {
+		  $words = explode("SUP ", $entry[0][$attrib][$i]);
+		  if(! empty($words[1]))
+			$VALUE[$name]["SUP"] = preg_replace("/^(\w+) .*/", "$1", $words[1]);
+		}
+		// }}}
+		
 		// {{{ Retreive X-ORIGIN (Fedora Directory Server)
-		$words = explode("X-ORIGIN", $entry[0][$attrib][$i]);
-		if(! empty($words[1])) {
-		  $words = explode("\' ", $words[1]);
-		  $words = explode(" \'", $words[0]);
-		  
-		  $VALUE[$name]["X-ORIGIN"] = $words[1];
+		// TODO: Check code !!
+		if(preg_match("/X-ORIGIN/i", $entry[0][$attrib][$i])) {
+		  $words = explode("X-ORIGIN", $entry[0][$attrib][$i]);
+		  if(! empty($words[1])) {
+			$words = explode("\' ", $words[1]);
+			$words = explode(" \'", $words[0]);
+
+			$VALUE[$name]["X-ORIGIN"] = $words[1];
+		  }
 		}
 		// }}}
 
