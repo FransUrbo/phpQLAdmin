@@ -51,7 +51,7 @@ if($_REQUEST["submit"]) {
 		$error_text["serverurl"] = $LANG->_('Missing');
 	  }
 	  // ----------------------------------------------------
-	  //	  } elseif(!ereg('\/$', $_REQUEST["serverurl"]))
+	  //	  } elseif(!preg_match('/\/$/', $_REQUEST["serverurl"]))
 	  //		$_REQUEST["serverurl"] .= '/';
 	  // BUG: Have no idea where this came from!
 	  // 		Entered 'www.bayour.com' in the 'Server FQDN'
@@ -63,7 +63,7 @@ if($_REQUEST["submit"]) {
 		if(!$_REQUEST["serveradmin"]) {
 		  $error = true;
 		  $error_text["serveradmin"] = $LANG->_('Missing');
-		} elseif(!ereg('@', $_REQUEST["serveradmin"])) {
+		} elseif(!preg_match('/@/', $_REQUEST["serveradmin"])) {
 		  $error = true;
 		  $error_text["serveradmin"] = $LANG->_('Invalid');
 		}
@@ -71,10 +71,10 @@ if($_REQUEST["submit"]) {
 		if(!$_REQUEST["documentroot"]) {
 		  $error = true;
 		  $error_text["documentroot"] = $LANG->_('Missing');
-		} elseif(!ereg('^\/', $_REQUEST["documentroot"])) {
+		} elseif(!preg_match('/^\//', $_REQUEST["documentroot"])) {
 		  $error = true;
 		  $error_text["documentroot"] = $LANG->_('Invalid');
-		} elseif(!ereg('\/$',  $_REQUEST["documentroot"]))
+		} elseif(!preg_match('/\/$/',  $_REQUEST["documentroot"]))
 		  $_REQUEST["documentroot"] .= '/';
 	  }
 	}
@@ -425,7 +425,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		}
 		
 		// Remove any port from the server IP
-		if(ereg(':', $_REQUEST["serverip"]))
+		if(preg_match('/:/', $_REQUEST["serverip"]))
 		  $serverip =  ereg_replace(':.*', '', $_REQUEST["serverip"]);
 		elseif(@$_REQUEST["serverip"])
 		  $serverip = $_REQUEST["serverip"];
@@ -606,12 +606,12 @@ if(($error == 'true') or !$_REQUEST["type"] or
   if(@$_REQUEST["rootdn"] and @$_REQUEST["domain"]) 
 	// Values already URL encoded...
 	$url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
-  elseif(@$_REQUEST["host"] and !ereg('%3D', $_REQUEST["host"]))
+  elseif(@$_REQUEST["host"] and !preg_match('/%3D/i', $_REQUEST["host"]))
 	$url = "host_detail.php?host=".urlencode($_REQUEST["host"]);
   else
 	$url = "host_detail.php?host=".$_REQUEST["host"];
 
-  if(@$_REQUEST["server"] and !ereg('%3D', $_REQUEST["server"]))
+  if(@$_REQUEST["server"] and !preg_match('/%3D/i', $_REQUEST["server"]))
 	$url .= "&server=".urlencode($_REQUEST["server"]);
   elseif(!@$_REQUEST["rootdn"] and !@$_REQUEST["domain"])
 	$url .= "&server=".$_REQUEST["server"];

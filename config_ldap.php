@@ -57,7 +57,7 @@ if($_REQUEST["type"] == 'config') {
 	  $filter .= '(reqSession='.$_REQUEST["session"].')';
 
 	// Filter on LDAP result (is or is not)
-	if(ereg('^[0-9]', $_REQUEST["result"])) {
+	if(preg_match('/^[0-9]/', $_REQUEST["result"])) {
 	  if($_REQUEST["result_type"] == 'is')
 		$filter .= '(reqResult='.$_REQUEST["result"].')';
 	  elseif($_REQUEST["result_type"] == 'not')

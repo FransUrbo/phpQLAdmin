@@ -211,7 +211,7 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["mail"] = strtolower(user_generate_email($_REQUEST["uid"], "", "",
 																$_REQUEST["domain"], $_REQUEST["template"]));
 			
-			if(ereg(" ", $_REQUEST["mail"]))
+			if(preg_match("/ /", $_REQUEST["mail"]))
 			  // Replace spaces with underscore
 			  $_REQUEST["mail"] = preg_replace(" ", "_", $_REQUEST["mail"], -1);
 		}
@@ -457,7 +457,7 @@ switch($_REQUEST["page_curr"]) {
 			(empty($_REQUEST["mail"]) and
 			 pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_MAIL"), 'MUST'))))
 		{
-		  if(!ereg("@", $_REQUEST["mail"])) {
+		  if(!preg_match("/@/", $_REQUEST["mail"])) {
 			if($_REQUEST["email_domain"])
 			  $_REQUEST["mail"] .= "@" . $_REQUEST["email_domain"];
 			else
@@ -651,7 +651,7 @@ switch($_REQUEST["page_curr"]) {
 			  if($_REQUEST[$ref]) {
 				if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"])
 				   or
-				   (!pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]) and !ereg('^/', $basemaildir)))
+				   (!pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]) and !preg_match('/^\//', $basemaildir)))
 				{
 				  // Absolute path is ok
 				  // or
@@ -740,7 +740,7 @@ switch($_REQUEST["page_curr"]) {
 		  $_REQUEST["page_next"] = 'one';
 		} else {
 		  if($error and !empty($error_text)) {
-			if(ereg("mx", $error)) {
+			if(preg_match("/mx/i", $error)) {
 			  // This is the only case where we really SHOULD go to the next page - MX problems.
 			  $_REQUEST["page_next"] = 'two';
 			} else {

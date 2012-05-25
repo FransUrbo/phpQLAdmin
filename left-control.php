@@ -277,7 +277,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 // }}}
 
 		  // {{{ Extract the port number
-		  if(ereg(':', $container))
+		  if(preg_match('/:/', $container))
 			$port = ' - ' . $LANG->_('port') . ' ' . preg_replace('/.*:/', '', $container);
 		  elseif($physical_dn == 'Global')
 			$port = ' - Global';

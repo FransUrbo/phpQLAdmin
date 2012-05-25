@@ -261,7 +261,7 @@ if(!function_exists("ldap_connect")){
 		
 		// Add the ACI entries to the object
 		$ol_ver = $_pql->find_ldap_version();
-		if(ereg('^2\.[34]', $ol_ver))
+		if(preg_match('/^2\.[34]/', $ol_ver))
 		  // Actually this is a little wrong. There was a bug on <2.3.32 which was
 		  // fixed 20070214 (re23), so it should be ok in 2.3.33 when/if that is
 		  // released. Also 2.4 will use this format (fix actually backported from 2.4)...

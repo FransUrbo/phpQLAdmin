@@ -44,7 +44,7 @@ for($i = 0; $i < strlen($string); $i++) {
     $tmp = pql_format_international($string[$i]);
 
     // Correct: The letter 'I' is NOT counted here! It's wide as a small character.
-    if(ereg("[ABCDEFGHJKLMNOPQRSTUVWXYZ]", $tmp))
+    if(preg_match("/[ABCDEFGHJKLMNOPQRSTUVWXYZ]/", $tmp))
       $upper_case_chars++;
     else
       $lower_case_chars++;

@@ -42,7 +42,7 @@ if(!is_array($aci)) {
 
 <?php 	foreach($aci[$i]["RIGHTS"] as $right) {
 	 	   if(is_array($right)) {
-			   if(ereg('\[', $right[0]) and ereg('\]', $right[0])) {
+			   if(preg_match('/\[/', $right[0]) and preg_match('/\]/', $right[0])) {
 				   $right = ereg_replace('\[', '', $right[0]);
 				   $right = ereg_replace('\]', '', $right);
 				   

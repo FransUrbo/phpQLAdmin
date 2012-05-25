@@ -28,7 +28,7 @@
 							}
 
 							foreach($records as $record) {
-								if(($TYPE == 'CNAME') and !ereg('\.$', $record) and !ereg('[0-9]$', $record))
+								if(($TYPE == 'CNAME') and !preg_match('/\.$/', $record) and !preg_match('/[0-9]$/', $record))
 									$record .= '.'.pql_maybe_idna_decode($dns_domain_name).'.';
 
 								if($TYPE == 'PTR') {

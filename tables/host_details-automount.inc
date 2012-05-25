@@ -43,7 +43,7 @@ function table_go_through_details($host, $mnt_pnt, $mnt_data) {
     // {{{ A submount - call ourself recursivly to get the submounts information
     foreach($mnt_data as $sub_pnt => $sub_data) {
       $mount_point = $mnt_pnt;
-      if(!ereg('/$', $mnt_pnt) and !ereg('^/', $sub_pnt))
+      if(!preg_match('/\/$/', $mnt_pnt) and !preg_match('/^\//', $sub_pnt))
 	$mount_point .= '/'.$sub_pnt;
       else
 	$mount_point .= $sub_pnt;
