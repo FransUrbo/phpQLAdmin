@@ -29,7 +29,7 @@ class pql_cache {
 	
 	if(@is_array($this->cache)) {
 	  // Global variable storage
-	  if((($this->cache[$key] == '') or ($this->cache[$key] != $value) or ($key == 'PQL_CONF_DEBUG_ME')) and
+	  if((@($this->cache[$key] == '') or @($this->cache[$key] != $value) or ($key == 'PQL_CONF_DEBUG_ME')) and
 		 !@$_SESSION["loading_resonable_defaults"])
 	  {
 		$this->cache[$key] = $value;
