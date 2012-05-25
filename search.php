@@ -300,7 +300,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			// {{{ NOT DNS hostname
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="<?php echo $HREF?>" target="_new"><?php echo $cn?></a></td>
+			  <td><a href="<?php if($HREF) { echo $HREF.'\" target=\"_new\"'; } else { echo "user_detail.php?rootdn=$rootdn&domain=".$_REQUEST["domain"]."&user=".urlencode($entry); } ?>"><?php echo $cn?></a></td>
         <td><?php echo $uid?></td>
         <td><?php echo $mail?></td>
         <td><?php echo $status?></td>
