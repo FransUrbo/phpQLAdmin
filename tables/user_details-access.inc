@@ -77,7 +77,7 @@ if(!$super_admin) {
 
   // {{{ Go through and show all the domains that the user is MAILINGLIST administrator of
   $class=pql_format_table(0);
-  if(isset($domains_ezmlm)) {
+  if(pql_get_define("PQL_CONF_EZMLM_USER") && isset($domains_ezmlm)) {
 	asort($domains_ezmlm);
 	
 	$class = pql_format_table(0);
@@ -96,7 +96,7 @@ if(!$super_admin) {
 
   // {{{ Go through and show all the domains that the user is WEBSERVER administrator of
   $class=pql_format_table(0);
-  if(isset($domains_websrv)) {
+  if(pql_get_define("PQL_CONF_WEBSRV_USE") && isset($domains_websrv)) {
 	asort($domains_websrv);
 	
 	$class = pql_format_table(0);
@@ -115,7 +115,7 @@ if(!$super_admin) {
 
   // {{{ Go through and show all the domains that the user is DNS administrator of
   $class=pql_format_table(0);
-  if(isset($domains_dns)) {
+  if(pql_get_define("PQL_CONF_BIND9_USE") && isset($domains_dns)) {
 	asort($domains_dns);
 	
 	$class = pql_format_table(0);
@@ -160,6 +160,7 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 // }}}
 
 // {{{ Are the user allowed to administrate mailserver information?
+if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 ?>
       <tr class="<?php echo $class?>">
         <td class="title"><?php echo $LANG->_('Administrate global mailservers')?></td>
@@ -190,9 +191,11 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
       </tr>
 
 <?php
+}
 // }}}
 
 // {{{ Are the user allowed to administrate webserver information?
+if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
 ?>
       <tr class="<?php echo $class?>">
         <td class="title"><?php echo $LANG->_('Administrate global webservers')?></td>
@@ -223,6 +226,7 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
       </tr>
 
 <?php
+}
 // }}}
 ?>
     </th>
