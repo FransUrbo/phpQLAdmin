@@ -145,7 +145,7 @@ function pql_get_domains() {
 	unset($tmp); // I'm reusing this variable below...
 	foreach($dom as $dn => $value) {
 	  for($i=0; $i < count($domains); $i++) {
-		if((lc($dn) == lc($domains[$i])) and !preg_match('/^ou=Computers/i,', lc($dn)))
+		if((lc($dn) == lc($domains[$i])) and !preg_match('/^ou=Computers/i', lc($dn)))
 		  $tmp[] = $dn;
 	  }
 	}
