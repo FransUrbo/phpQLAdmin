@@ -101,7 +101,9 @@ function pql_get_templates() {
 	$i = 0;
 
   // Add the group template to the list of templates
-  $TEMPLATE[$i] = pql_templates_group();
+  $group_template = pql_templates_group();
+  if(is_array($group_template))
+	$TEMPLATE[$i] = $group_template;
 
   return($TEMPLATE);
 }
