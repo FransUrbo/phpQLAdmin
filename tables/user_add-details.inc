@@ -295,9 +295,9 @@
             <?php echo pql_format_error_span($error["loginshell"]); ?>
             &nbsp;&nbsp;
             <select name="loginshell">
-              <option value="/bin/false"<?php if(empty($_REQUEST["loginshell"])) { ?> SELECTED<? } ?>>/bin/false</option>
+              <option value="/bin/false"<?php if(empty($_REQUEST["loginshell"])) { ?> SELECTED<?php } ?>>/bin/false</option>
 <?php	  foreach($shells as $shell) { ?>
-              <option value="<?php echo $shell?>"<?php if(@($_REQUEST["loginshell"] == $shell)) { ?> SELECTED<? } ?>><?php echo $shell?></option>
+              <option value="<?php echo $shell?>"<?php if(@($_REQUEST["loginshell"] == $shell)) { ?> SELECTED<?php } ?>><?php echo $shell?></option>
 <?php	  } ?>
             </select>
           </td>
