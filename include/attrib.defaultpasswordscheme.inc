@@ -27,7 +27,7 @@ function attribute_print_form($type = "modify") {
 	  // Make some up...
 	  $schemes = array('SSHA', 'SHA', 'MD5', 'CRYPT', 'NTPASSWD', 'LMPASSWD');
 ?>
-  <form action="<?$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo $LANG->_('Password scheme to use if not specifically specified')?></th>
         <tr class="<?php pql_format_table(); ?>">

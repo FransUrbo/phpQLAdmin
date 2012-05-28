@@ -73,7 +73,7 @@ function queuelifetime_print_view($host) {
 function queuelifetime_print_form() {
 	global $error, $LANG;
 ?>
-  <form action="<?$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">queuelifetime (<?php echo $LANG->_('Max lifetime of a message in queue')?>)</th>
         <tr class="<?php pql_format_table(); ?>">

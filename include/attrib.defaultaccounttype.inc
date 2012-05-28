@@ -27,7 +27,7 @@ function attribute_print_form($type = "modify") {
 	require($_SESSION["path"]."/include/pql_templates.inc");
 	$templates = pql_get_templates();
 ?>
-  <form action="<?$_SERVER["PHP_SELF"]?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo $LANG->_('Account type to use if not specifically specified')?></th>
         <tr class="<?php pql_format_table(); ?>">
