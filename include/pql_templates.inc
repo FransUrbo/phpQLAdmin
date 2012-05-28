@@ -8,7 +8,7 @@
 
 // {{{ Generate the group template (hardcoded for the moment)
 function pql_templates_group() {
-  if($_SESSION["NEW_STYLE_QUOTA"]) {
+  if(@$_SESSION["NEW_STYLE_QUOTA"]) {
 	$TEMPLATE["dn"]    = 'internal';
 	$TEMPLATE["name"]  = 'internal_group';
 	$TEMPLATE["short"] = 'Internal group account';
@@ -26,7 +26,10 @@ function pql_templates_group() {
 	  $TEMPLATE["userobjectclass"] = array('person', 'qmailUser', 'qmailGroup');
   }
 
-  return($TEMPLATE);
+  if(is_array($TEMPLATE))
+	return($TEMPLATE);
+  else
+	return(false);
 }
 // }}}
 
