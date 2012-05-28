@@ -1,4 +1,4 @@
-<? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
+<?php // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
 // $Id: navbutton.php,v 2.23 2006-12-16 12:03:17 turbo Exp $
 
 require("../include/pql_formating.inc");
