@@ -79,7 +79,27 @@
         <td></td>
 <?php } ?>
       </tr>
-  
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?php echo $LANG->_('Minimum UID Number to be used for shell and system accounts')?></td>
+        <td><?php if($minimumuidnumber){echo $minimumuidnumber;}else{echo $LANG->_('Not set');} ?></td>
+<?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
+        <td><?php echo $minimumuidnumber_link?></td>
+<?php } else { ?>
+        <td></td>
+<?php } ?>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?php echo $LANG->_('Minimum GID Number to be used for shell and system accounts')?></td>
+        <td><?php if($minimumgidnumber){echo $minimumgidnumber;}else{echo $LANG->_('Not set');} ?></td>
+<?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
+        <td><?php echo $minimumgidnumber_link?></td>
+<?php } else { ?>
+        <td></td>
+<?php } ?>
+      </tr>
+
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $LANG->_('Maximum allowed users in branch')?></td>

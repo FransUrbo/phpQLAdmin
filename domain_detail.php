@@ -81,7 +81,9 @@ if($_REQUEST["view"] == 'default') {
 				   "autocreatepassword"			=> pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
 				   "lockpassword"				=> pql_get_define("PQL_ATTR_LOCK_PASSWORD"),
 				   "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
-				   "startinmyaccount"			=> pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"));
+				   "startinmyaccount"			=> pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"),
+				   "minimumuidnumber"			=> pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER"),
+				   "minimumgidnumber"			=> pql_get_define("PQL_ATTR_MINIMUM_GIDNUMBER"));
 } elseif($_REQUEST["view"] == 'owner') {
   $attribs = array("o"							=> pql_get_define("PQL_ATTR_O"),
 				   "vatnumber"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
