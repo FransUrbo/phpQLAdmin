@@ -57,9 +57,11 @@ function attribute_forward($msg) {
 // {{{ Select and load attribute plugin file
 $plugin = pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"]));
 if(!$plugin) {
-    die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
+	die("<span class=\"error\">".pql_complete_constant($LANG->_('ERROR: No plugin file defined for attribute \i%attrib%\I'),
+													   array('attrib' => $_REQUEST["attrib"]))."</span>");
 } elseif(!file_exists($_SESSION["path"]."/include/$plugin")) {
-    die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
+  die("<span class=\"error\">".pql_complete_constant($LANG->_('ERROR: Plugin file defined for attribute \i%attrib%\I does not exists'),
+													 array('attrib' => $_REQUEST["attrib"]))."!</span>");
 }
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "include: include/$plugin<br>";
