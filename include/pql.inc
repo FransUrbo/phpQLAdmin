@@ -960,6 +960,17 @@ function pql_get_next_ugidnumber($type, $rootdn) {
   elseif(!$minimum)
 	$minimum = array(100);
   
+  // Possibly overwrite the minimum UID number from the branch
+  if($_REQUEST["domain"]) {
+	if($type == 'uid')
+	  $results = $_pql->search($_REQUEST["domain"], pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER")."=*");
+	else
+	  $results = $_pql->search($_REQUEST["domain"], pql_get_define("PQL_ATTR_MINIMUM_GIDNUMBER")."=*");
+
+	if($results[pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER")])
+	  $minimum = array($results[pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER")]);
+  }
+
   $min_id_val = 100;			// Set an absolute min so no one becomes root.
   foreach ($minimum as $min) {
 	if ($min > $min_id_val) {
@@ -968,8 +979,15 @@ function pql_get_next_ugidnumber($type, $rootdn) {
   }
   
   // Make a list of all the already used IDs.
-  $filter = "(&($attrib=*)(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=posixaccount))";
-  
+  if($type == 'uid')
+	$filter = "(&($attrib=*)(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=posixAccount))";
+  else {
+	// Complicated - need to make absolutly sure that:
+	// 1. We don't have a user with the gidNumber=x
+	// 2. We don't have a group with the gidNumber=x
+	$filter = "(&($attrib=*)(|(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=posixAccount)(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=posixGroup)))";
+  }
+
   $ids = array();
   foreach($_SESSION["BASE_DN"] as $dn) {
 	$results = $_pql->search($dn, $filter);
@@ -988,7 +1006,7 @@ function pql_get_next_ugidnumber($type, $rootdn) {
 	sort($ids, SORT_NUMERIC);
 	$prev_id = $ids[0];
 	foreach ($ids as $id) {
-	  if ($id > $prev_id + 1) {
+	  if(($id > $min_id_val) && ($id > $prev_id + 1)) {
 		$found_id = $prev_id + 1;
 		break;
 	  }
