@@ -711,8 +711,12 @@ switch($_REQUEST["page_curr"]) {
 			  if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"])) {
 				// Absolute path is ok - create 'baseHomeDir/username/'
 				$ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
-				if($_REQUEST[$ref])
-				  $_REQUEST["homedirectory"] = $basehomedir.$_REQUEST[$ref]."/";
+				if($_REQUEST[$ref]) {
+				  $_REQUEST["homedirectory"] = $basehomedir;
+				  if(!preg_match('/\/$/', $basehomedir))
+					$_REQUEST["homedirectory"] .= '/';
+				  $_REQUEST["homedirectory"] .= $_REQUEST[$ref]."/";
+				}
 			  } else
 				// We're not allowing an absolute path - don't use the baseHomeDir.
 				$_REQUEST["homedirectory"] = $_REQUEST["uid"]."/";
