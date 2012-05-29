@@ -73,11 +73,27 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	  foreach($_SESSION["BASE_DN"] as $dn) {
 		$filter = '(cn='.$results[pql_get_define("PQL_ATTR_UID")].')';
 		$results = $_pql->search($dn, $filter);
-		if(@$results["dn"] && $_pql->delete($results["dn"])) {
-		  $msg = $LANG->_('Successfully removed group').'<br>';
-		  $DNs[] = $results["dn"];
-		} else
-		  $msg = $LANG->_('Failed to removed group').'<br>';
+		if(@$results["dn"]) {
+		  // Flat object - only one hit
+		  if($_pql->delete($results["dn"])) {
+			$msg = pql_complete_constant($LANG->_('Successfully removed group %dn%'),
+										 array('dn' => $results["dn"])).'<br>';
+			$DNs[] = $results["dn"];
+		  } else
+			$msg = pql_complete_constant($LANG->_('Failed to remove group %dn%'),
+										 array('dn' => $results["dn"])).'<br>';
+		} elseif(@$results[0]["dn"]) {
+		  // Multiple objects
+		  for($i=0; $results[$i]["dn"]; $i++) {
+			if($_pql->delete($results[$i]["dn"])) {
+			  $msg = pql_complete_constant($LANG->_('Successfully removed group %dn%'),
+										   array('dn' => $results[$i]["dn"])).'<br>';
+			  $DNs[] = $results[$i]["dn"];
+			} else
+			  $msg = pql_complete_constant($LANG->_('Failed to remove group %dn%'),
+										   array('dn' => $results[$i]["dn"])).'<br>';
+		  }
+		}
 	  }
 	}
 // }}}
