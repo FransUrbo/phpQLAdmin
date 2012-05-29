@@ -321,6 +321,11 @@ pql_plugin_register(pql_get_define("PQL_ATTR_DHCP3_RANGE"), "",
 					"attrib.dhcprange.inc",
 					pql_get_define("PQL_ATTR_DHCP3_RANGE"));
 
+pql_plugin_register(pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER"), "",
+					"attrib.minimumugidnumber.inc",
+					array(pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER"),
+						  pql_get_define("PQL_ATTR_MINIMUM_GIDNUMBER")));
+
 /* This is actually a fake, but it's the easiest way 
  * Used in [domain]->[user]->Antispam configuration->Add header line to mail */
 pql_plugin_register("add_header", "",
