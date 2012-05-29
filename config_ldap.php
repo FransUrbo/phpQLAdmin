@@ -100,23 +100,30 @@ if($_REQUEST["type"] == 'config') {
 	}
   }
 
-  if($_REQUEST["start"]) {
+  // -------------------------------
+  if($_REQUEST["start"] && !@$_REQUEST["limit"]) {
 	// Filter on reqStart - must do this manually because of
 	// schema limitations...
-	$tmp = array();
 
 	$start_len = strlen($_REQUEST["start"]);
 //	$_REQUEST["start"] = sprintf("%.14d", $_REQUEST["start"]); // Make sure we have the format: YYYYMMDDHHMMSS
 	for($j=$start_len+1; $j <= 14; $j++)
 	  $_REQUEST["start"] .= '0';
+  }
 
-	if($_REQUEST["end"]) {
-	  $end_len   = strlen($_REQUEST["end"]);
+  // -------------------------------
+  if($_REQUEST["end"] && !@$_REQUEST["limit"]) {
+	// Filter on reqEnd
+	$end_len   = strlen($_REQUEST["end"]);
 
-//	  $_REQUEST["end"] = sprintf("%.14d", $_REQUEST["end"]); // Make sure we have the format: YYYYMMDDHHMMSS
-	  for($j=$start_len+1; $j <= 14; $j++)
-		$_REQUEST["end"] .= '0';
-	}
+//	$_REQUEST["end"] = sprintf("%.14d", $_REQUEST["end"]); // Make sure we have the format: YYYYMMDDHHMMSS
+	for($j=$start_len+1; $j <= 14; $j++)
+	  $_REQUEST["end"] .= '0';
+  }
+
+  // -------------------------------
+  if(($_REQUEST["start"] || $_REQUEST["end"]) && !@$_REQUEST["limit"]) {
+	$tmp = array();
 
 	// Go through each object, check the 'reqStart' attribute
 	for($i=0; $log[$i]; $i++) {

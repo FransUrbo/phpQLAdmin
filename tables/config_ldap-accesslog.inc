@@ -43,9 +43,11 @@
                   <tr>
                     <td><?php echo $LANG->_('Timeperiod')?></td>
 		      <td>&nbsp;&nbsp;
-                        <input type="text" name="start" size="14" value="<?php echo $_REQUEST["start"]?>">
+                        <input type="text" name="start" size="14" value="<?php if(!@$_REQUEST["limit"]) { echo $_REQUEST["start"]; } ?>">
                         <br>&nbsp;&nbsp;
-                        <input type="text" name="end"   size="14" value="<?php echo $_REQUEST["end"]?>">
+                        <input type="text" name="end"   size="14" value="<?php if(!@$_REQUEST["limit"]) { echo $_REQUEST["end"]; } ?>">
+			<br>&nbsp;&nbsp;
+                        <?php echo $LANG->_('Usage').": ".$LANG->_('YYYYMMDDHHMMSS')." (".$LANG->_('MM, DD, HH, MM and SS can be 0').")"; ?>
                     </td>
                   </tr>
                 </th>
@@ -65,6 +67,23 @@
       <input type="hidden" name="type"   value="<?php echo $_REQUEST["type"]?>">
     </form>
 
+<?php
+    if(count($log) > 2000) {
+      if(!@$_REQUEST["cnt_start"]) {
+	echo "<b>".$LANG->_('NOTE').": </b>".$LANG->_('Showing only the first 2000 records. Total:').count($log);
+      } else {
+	if(($_REQUEST["cnt_start"]+2000-1) > count($log))
+	  $to = count($log);
+	else
+	  $to = $_REQUEST["cnt_start"]+2000-1;
+
+	echo "<b>".$LANG->_('NOTE').": </b>".pql_complete_constant($LANG->_('Showing records between %from% and %to%. Total: %total%'),
+								   array('from'  => $_REQUEST["cnt_start"],
+									 'to'    => $to,
+									 'total' => count($log)));
+      }
+    }
+?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <tr class="title">
@@ -76,7 +95,23 @@
           <td><?php echo $LANG->_('Result')?></td>
           <td><?php echo $LANG->_('Who')?>/<?php echo $LANG->_('What')?></td>
         </tr>
-<?php for($i=$_REQUEST["start"]; $log[$i]; $i++) {
+<?php
+    // What records to output (how many)
+    if(!@$_REQUEST["filter"] && @$_REQUEST["start"]) {
+      $start = $_REQUEST["start"];
+      if(@$_REQUEST["end"])
+	$end = $_REQUEST["end"];
+      else
+	$end = 2000;
+    } elseif(@$_REQUEST["cnt_start"]) {
+      $start = $_REQUEST["cnt_start"];
+      $end   = $start + 2000;
+    } else {
+      $start = 0;
+      $end   = 2000;
+    }
+
+    for($i=$start; $log[$i] && ($i < $end); $i++) {
 	$reqstart = pql_format_timestamp($log[$i]["reqstart"]);
 	$reqstart = preg_replace('/ /', '&nbsp;', $reqstart);
 	$reqstart = preg_replace('/\+.*/', '', $reqstart);
@@ -87,7 +122,7 @@
 ?>
 
         <tr class="<?php echo pql_format_table()?>">
-          <td align="right"><?php echo $i?></td>
+          <td align="right"><!-- counter = <?php echo $i?> --></td>
           <td><?php echo $reqstart?>&nbsp;&nbsp;</td>
           <td><?php echo $reqend?>&nbsp;&nbsp;</td>
           <td><?php echo $log[$i]["reqsession"]?></td>
@@ -109,10 +144,31 @@
           </td>
         </tr>
 <?php
-       if(($_REQUEST["start"] > 0) && ($i >= ($_REQUEST["start"]*500))) {
+	if(!@$_REQUEST["limit"] &&
+	   ($_REQUEST["start"] > 0) &&
+	   ($i >= ($_REQUEST["start"]*500))) {
+	  // No limit set,
+	  // ... Start is > 0
+	  // ... check $i against max start
+	  echo "!_REQUEST[limit] && (_REQUEST[start] > 0) && (i >= _REQUEST[start]*500)<br>";
 	  break;
 	}
       }
 ?>
       </th>
     </table>
+
+<?php if((count($log) > 2000) && ($i < count($log))) { ?>
+    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post">
+      <input type="hidden" name="type"        value="<?php echo $_REQUEST["type"]?>">
+<?php if(@$_REQUEST["filter"]) { ?>
+      <input type="hidden" name="result_type" value="<?php echo $_REQUEST["result_type"]?>">
+      <input type="hidden" name="result"      value="<?php echo $_REQUEST["result"]?>">
+      <input type="hidden" name="start"       value="<?php echo $_REQUEST["start"]?>">
+      <input type="hidden" name="end"         value="<?php echo $_REQUEST["end"]?>">
+      <input type="hidden" name="filter"      value="<?php echo $_REQUEST["filter"]?>">
+<?php } ?>
+      <input type="hidden" name="cnt_start"   value="<?php echo $start+2000?>">
+      <input type="submit" value="<?php echo $LANG->_('Next 2000 entries')?>">
+    </form>
+<?php } ?>
