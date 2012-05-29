@@ -138,10 +138,18 @@ if(pql_templates_check_attribute($template_attribs, pql_get_define("PQL_ATTR_QMA
   if($uidnr > 0)
 	$entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
   
-  // Get a free GroupID number
-  $gidnr = pql_get_next_ugidnumber('gid', $_REQUEST["rootdn"]);
-  if($gidnr > 0)
-	$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
+  // Can we reuse the same uidNumber as gidNumber - i.e., is there a group with this number?
+  foreach($_SESSION["BASE_DN"] as $dn) {
+	$results = $_pql->search($dn, pql_get_define("PQL_ATTR_QMAILGID")."=$uidnr");
+	if(is_array($results)) {
+	  // Exists - get a free GroupID number
+	  $gidnr = pql_get_next_ugidnumber('gid', $_REQUEST["rootdn"]);
+	  if($gidnr > 0) {
+		$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
+		break;
+	  }
+	}
+  }
   
   // Gecos is needed to do PAM/NSS LDAP login 
   if(!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]) and
