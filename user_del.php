@@ -12,6 +12,12 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 include($_SESSION["path"]."/header.html");
 
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+  echo "<pre>";
+  echo "Request array: "; printr($_REQUEST);
+  echo "</pre>";
+}
+
 $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
@@ -58,9 +64,28 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	}	
 // }}}
 
+	$msg = '';
+
+	// {{{ Is there a matching group object?
+	// Get the 'uid' value from the user
+	$results = $_pql->search($_REQUEST["user"], 'objectClass=*', 'BASE');
+	if($results[pql_get_define("PQL_ATTR_UID")]) {
+	  foreach($_SESSION["BASE_DN"] as $dn) {
+		$filter = '(cn='.$results[pql_get_define("PQL_ATTR_UID")].')';
+		$results = $_pql->search($dn, $filter);
+		if(@$results["dn"] && $_pql->delete($results["dn"])) {
+		  $msg = $LANG->_('Successfully removed group').'<br>';
+		  $DNs[] = $results["dn"];
+		} else
+		  $msg = $LANG->_('Failed to removed group').'<br>';
+	  }
+	}
+// }}}
+
 	// {{{ Delete the user
 	if(pql_user_del($_REQUEST["domain"], $_REQUEST["user"], $delete_forwards)) {
-		$msg = $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
+		$msg .= $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
+		$DNs[] = $_REQUEST["user"];
 		$rlnb = "&rlnb=1";
 
 		// ----------------------------------------
@@ -121,7 +146,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 			break;
 		}
 	} else
-	  $msg = $LANG->_('Failed to remove user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg .= $LANG->_('Failed to remove user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 // }}}
 
 	// {{{ Now it's time to run the special user removal script
@@ -135,12 +160,12 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	  if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_DELETE_USER", $_REQUEST["rootdn"]), 0)) {
 		echo pql_complete_constant($LANG->_('The %what% removal script failed'),
 								   array('what' => $LANG->_('user'))) . "!<br>";
-		$msg = urlencode(pql_complete_constant($LANG->_('The %what% removal script failed'),
+		$msg .= urlencode(pql_complete_constant($LANG->_('The %what% removal script failed'),
 											   array('what' => $LANG->_('user'))) ."!") . ".&nbsp;<br>";
 	  } else {
 		echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% removal script'),
 										   array('what' => $LANG->_('user'))) . "</b><br>";
-		$msg = urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% removal script'),
+		$msg .= urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% removal script'),
 											   array('what' => $LANG->_('user')))) . ".&nbsp;<br>";
 	  }
 	}
@@ -149,6 +174,11 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	// {{{ Redirect to domain-detail page
 	$msg = urlencode($msg);
 	$link = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg$rlnb";
+
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+	  echo "<p>DNs removed: ";
+	  printr($DNs);
+	}
 
 	pql_header($link);
 // }}}
