@@ -66,6 +66,7 @@
 #            useDHCP3                        42
 #            disableAdvancedMode             43
 #            forceFQDN                       44
+#            useUserMailInformation          45
 #
 #          System texts                     2
 #            whoAreWe                         1
@@ -441,6 +442,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.43 NAME 'disableAdvancedMode'
 # PQL_ATTR_FORCE_FQDN (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.44 NAME 'forceFQDN'
         DESC 'Force Fully Qualified Domain Names in host objects [True/False]?'
+        EQUALITY booleanMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+        SINGLE-VALUE )
+
+# PQL_ATTR_MAIL_INFORMATION (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.45 NAME 'useUserMailInformation'
+        DESC 'Should phpQLAdmin deal with mail information [True/False]?'
         EQUALITY booleanMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
         SINGLE-VALUE )
@@ -867,7 +875,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
         simScanTrophie $ simScanSpamAssassinHits $
         simScanAttachmentSuffix $ defaultAccountType $
         useRadius $ webSrvAdministrator $ runInDebugMode $
-        useStrongPasswd $ useSamba $ useDHCP3 )
+        useStrongPasswd $ useSamba $ useDHCP3 $ useUserMailInformation )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.3

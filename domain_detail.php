@@ -206,8 +206,8 @@ $new = array('users'	=> 'Registred Users',
 $buttons = $buttons + $new;
 
 if($_SESSION["ADVANCED_MODE"]) {
-	if(pql_validate_administrator($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
-	   $_SESSION["ALLOW_BRANCH_CREATE"])
+	if((pql_validate_administrator($_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
+		$_SESSION["ALLOW_BRANCH_CREATE"]) && pql_get_define("PQL_CONF_MAIL_INFORMATION"))
 	{
 		$new = array('dnsinfo'	=> 'MX Information');
 		$buttons = $buttons + $new;
@@ -222,7 +222,7 @@ if($_SESSION["ADVANCED_MODE"]) {
 		$buttons = $buttons + $new;
 	}
 
-	if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"]) {
+	if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
 		$new = array('options' => 'Mailserver Administration');
 		$buttons = $buttons + $new;
 	}

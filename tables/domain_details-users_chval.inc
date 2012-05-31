@@ -8,7 +8,7 @@
       <tr class="<?php pql_format_table(); ?>">
         <td><?php echo $LANG->_('Status')?></td>
         <td><a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&set=active&view=<?php echo $_REQUEST["view"]?>"><?php echo $LANG->_('Activate accounts')?></a>
-<?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
+<?php if(!$_SESSION["NEW_STYLE_QUOTA"] && pql_get_define("PQL_CONF_MAIL_INFORMATION"))  { ?>
   	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&set=nopop&view=<?php echo $_REQUEST["view"]?>"><?php echo $LANG->_('Lock POP accounts')?></a>
 <?php } else { ?>
   	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&set=noaccess&view=<?php echo $_REQUEST["view"]?>"><?php echo $LANG->_('Lock accounts')?></a>
@@ -16,7 +16,8 @@
   	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&set=disabled&view=<?php echo $_REQUEST["view"]?>"><?php echo $LANG->_('Disable accounts')?></a>
         </td>
       </tr>
-  
+<?php if(pql_get_define("PQL_CONF_MAIL_INFORMATION")) { ?>
+
       <tr class="<?php pql_format_table(); ?>">
         <td><?php echo $LANG->_('Default quota')?></td>
         <td><a href="domain_edit_attributes.php?attrib=mailquota&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
@@ -31,6 +32,7 @@
         <td><?php echo $LANG->_('Deliverymode')?></td>
         <td><a href="domain_edit_attributes.php?attrib=deliverymode&rootdn=<?php echo $url["rootdn"]?>&domain=<?php echo $url["domain"]?>&view=<?php echo $_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
+<?php } ?>
     </th>
   </table>
 

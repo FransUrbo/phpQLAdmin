@@ -45,8 +45,8 @@ Install:
    LDAP database (have a look at the configuration section in the
    documentation)
 
-3. Add the 'userReference' and 'administrator' attributes to the LDAP
-   database - as described in the doc/README file.
+3. Add the 'userReference', 'useUserMailInformation' and 'administrator'
+   attributes to the LDAP database - as described in the doc/README file.
 
 4. Configure your webserver to answer to PHP calls, setup a directory
    configuration and alias for the URL you want phpQLAdmin.
