@@ -1542,11 +1542,7 @@ function pql_add2array(&$old, $new) {
 	$new = array($new);
   
   // Add all entries in 'new' to 'old'
-  foreach($new as $entry) {
-	if(!@in_array($entry, $old))
-	  // This is a unique entry, add it
-	  $old[] = $entry;
-  }
+  $old = array_merge($old, $new);
   
   return($old);
 }
