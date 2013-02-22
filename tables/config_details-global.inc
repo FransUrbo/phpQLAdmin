@@ -90,6 +90,13 @@ if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
 <?php	$class=pql_format_table(0); ?>
       <tr>
+        <td class="title"><?php echo $LANG->_('Deal with and show mail information')?></td>
+        <td class="<?php echo $class?>"><?php if(pql_get_define("PQL_CONF_MAIL_INFORMATION")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
+        <td class="<?php echo $class?>"><a href="config_edit_attribute.php?view=default&toggle=1&attrib=<?php echo pql_get_define("PQL_ATTR_MAIL_INFORMATION")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?php echo pql_get_define("PQL_ATTR_MAIL_INFORMATION")?>"></a></td>
+      </tr>
+
+<?php	$class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?php echo $LANG->_('Access Control Information (ACI)')?></td>
         <td class="<?php echo $class?>"><?php if(pql_get_define("PQL_CONF_ACI_USE")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
         <td class="<?php echo $class?>"><a href="config_edit_attribute.php?view=default&toggle=1&attrib=<?php echo pql_get_define("PQL_ATTR_ACI_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?php echo pql_get_define("PQL_ATTR_ACI_USE")?>"></a></td>

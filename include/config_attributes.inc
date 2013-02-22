@@ -614,6 +614,7 @@ pql_set_define("PQL_ATTR_START_IN_MY_ACCOUNT",				strtolower('startinmyaccount')
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME",	 		strtolower('autoAddHostName'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDLOCALS", 			strtolower('autoAddLocals'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS", 		strtolower('autoAddRCPTHosts'),				false);
+pql_set_define("PQL_ATTR_FORCE_FQDN",                       strtolower('forceFQDN'),                    false);
 
 // Setup
 pql_set_define("PQL_ATTR_SEEALSO",							strtolower('seeAlso'),						false);
@@ -768,7 +769,8 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_RADIUS_CONFIG_IDENTITY"		=> pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"),
 								 "PQL_CONF_SAMBASID"					=> pql_get_define("PQL_ATTR_SAMBASID"),
 								 "PQL_CONF_DAYSUNTILEXPIRE"				=> pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"),
-								 "PQL_CONF_USER_FILTER"					=> pql_get_define("PQL_ATTR_USER_FILTER"));
+								 "PQL_CONF_USER_FILTER"					=> pql_get_define("PQL_ATTR_USER_FILTER"),
+								 "PQL_CONF_FORCE_FQDN"                  => pql_get_define("PQL_ATTR_FORCE_FQDN"));
 // }}}
 
 // {{{ Map attribute to configuration define - USER

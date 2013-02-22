@@ -286,19 +286,25 @@ if(@empty($USER_IS_GROUP)) {
 	  $buttons = $buttons + $new;
 	}
 
-	$new = array('status'			=> 'Account status',
-				 'delivery'			=> 'Delivery mode');
+	$new = array('status'			=> 'Account status');
 	$buttons = $buttons + $new;
+
+	if(pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
+	  $new = array('delivery'		=> 'Delivery mode');
+	  $buttons = $buttons + $new;
+	}
 } else {
 	$new = array('group'			=> 'Group stuff');
 	$buttons = $buttons + $new;
 }
 
-$new = array('email'				=> 'Registred addresses',
-			 'forwards_from'		=> 'Forwarders from other accounts');
-$buttons = $buttons + $new;
+if(pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
+  $new = array('email'				=> 'Registred addresses',
+			   'forwards_from'		=> 'Forwarders from other accounts');
+  $buttons = $buttons + $new;
+}
 
-if(empty($USER_IS_GROUP)) {
+if(empty($USER_IS_GROUP) && pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
 	$new = array('forwards_to'		=> 'Mail forwarding',
 				 'antispam'			=> 'Antispam configuration');
 	$buttons = $buttons + $new;
@@ -310,12 +316,16 @@ if(pql_get_define("PQL_CONF_SAMBA_USE")) {
 }
 
 if(!@empty($_SESSION["ADVANCED_MODE"]) and empty($USER_IS_GROUP)) {
-	$new = array('delivery_advanced'=> 'Advanced delivery properties',
-				 'mailbox'			=> 'Mailbox properties',
-				 'access'			=> 'User access');
+	if(pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
+	  $new = array('delivery_advanced'	=> 'Advanced delivery properties',
+				   'mailbox'			=> 'Mailbox properties');
+	  $buttons = $buttons + $new;
+	}
+
+	$new = array('access'			=> 'User access');
 	$buttons = $buttons + $new;
 
-	if($_SESSION["ALLOW_BRANCH_CREATE"] && $_SESSION["ACI_SUPPORT_ENABLED"]) {
+	if($_SESSION["ALLOW_BRANCH_CREATE"] && $_SESSION["ACI_SUPPORT_ENABLED"] && pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
 		$new = array('aci'			=> 'Access Control Information');
 		$buttons = $buttons + $new;
 	}

@@ -289,12 +289,17 @@ function pql_user_add($domain, $dn, $entry, $type, $branch) {
 // }}}
 
 // {{{ pql_add_computer(hostname, ip)
-function pql_add_computer($hostname, $ip) {
+function pql_add_computer($hostname, $ip, $branch = NULL) {
   global $_pql;
 
   $objectclasses = pql_get_subschema('objectclasses');
+
+  if(isset($branch))
+	$dn = $branch;
+  else
+	$dn = $_SESSION["USER_SEARCH_DN_CTR"];
   
-  $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $_SESSION["USER_SEARCH_DN_CTR"];
+  $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $dn;
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'ipHost';
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
   if(array_key_exists('dhcpserver', $objectclasses))

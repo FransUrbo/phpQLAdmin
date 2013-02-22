@@ -26,9 +26,18 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
   $div_counter = 1;
 
   // {{{ Retreive all physical hosts
-  $hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"],
-						 '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))',
-						 'ONELEVEL');
+  $filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+  if(is_array($_SESSION["USER_SEARCH_DN_CTR"])) {
+	foreach($_SESSION["USER_SEARCH_DN_CTR"] as $dn) {
+	  $tmp = $_pql->get_dn($dn, $filter);
+	  if(@is_array($hosts))
+		pql_add2array($hosts, $tmp);
+	  else
+		$hosts = $tmp;
+	}
+  } else
+	$hosts = $_pql->get_dn($_SESSION["USER_SEARCH_DN_CTR"], $filter);
+  sort($hosts, SORT_STRING);
   // }}}
 
   // {{{ Check if user is controls admin in any of the root DN's
@@ -45,10 +54,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	// Only do this if:
 	//	1. User is super admin
 	//	2. User is global controls administrator
-	$tmp[] = "Global";
-	foreach($hosts as $host)
-	  $tmp[] = $host;
-	$hosts = $tmp;
+	$hosts = array_merge(array("Global"), $hosts);
   }
 // }}}
 
@@ -127,6 +133,18 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 		$host = 'Global';
 	  else
 		$host = $_pql->get_attribute($physical_dn, pql_get_define("PQL_ATTR_CN"));
+
+	  if(is_array($host)) {
+		$tmp = $host[0]." (";
+		for($i=1; $host[$i]; $i++) {
+		  $tmp .= $host[$i];
+		  if($host[$i+1])
+			$tmp .= ", ";
+		}
+		$tmp .= ")";
+
+		$host = $tmp;
+	  }
 // }}}
 
 	  // {{{ Root of host tree
