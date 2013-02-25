@@ -1,0 +1,121 @@
+This is called phpQLAdmin because originally this software was written
+by adfinis GmbH (Bern, Switzerland) - http://adfinis-sygroup.ch/ and
+was intended to only manage mail information in use by QmailLDAP -
+http://www.lifewithqmail.org/ldap/.
+
+I started writing patches and additions to this in 2001/2002, but at
+the at the end of October 2002, I took it over officially becaue they
+had no real interest in it and my intention with where this could go
+where to big for them.
+
+
+It now manages most IT services needed, all configured and stored in
+an LDAP server - only OpenLDAP have been verified to work, but it
+should be possible to configure it to be used with any LDAP server due
+to it's modular and highly configurable design.
+
+It now (as of 2013) supports the following services:
+
+   * DNS zones (Bind9 tested and verified)
+   * Mailinglists (ezmlm)
+   * Apache virtual hosts configuration
+   * SimScan (anti virus/spam)
+   * Host ACL (allowing/disallowing users
+     from certain hosts), sudo, automount
+   * Sudo information
+   * Automount information
+   * RADIUS data
+   * Samba shares and access
+   * DHCP3 'shares'
+
+   * UNIX user information
+     Information such as shell, homedirectory, gecos - first and last
+     name and it also supports full user information such as role and/or
+     organization, title, telephone and address information including
+     the possibility to have a photo stored on the user(s) if this is
+     needed/wanted.
+
+   * Access Control Information
+     This is access rules stored in the database object itself).
+
+   * User templates
+     Controlling how/what a 'user' is to phpQLAdmin can be defined by
+     creating a global User Template, where objectclass are selected
+     (and any attribues required - MUST is highlighted and required when
+     creating a user using that template) and encryption scheme. Then to
+     create a user, one only selects that template, and all required
+     options are asked for in the Create User link.
+
+   * Password policies
+     This is an OpenLDAP overlay to make sure that passwords (and the
+     corresponding LDAP authentication) conform to a certain rule/standard
+     set (length, strenght, expiration, history etc).
+
+   * Mailserver information (QmailLDAP/Controls)
+     Due to it's original intention to be a tool for QmailLDAP, with
+     my own patch (QmailLDAP/Controls) to have the qmail control information
+     in LDAP as well, phpQLAdmin naturally gives you the oppurtunity to manage
+     that from the same tool as well.
+
+   * OpenLDAP cn=config backend manager
+     Currently (Feb 2013), one can only VIEW the information, but editing
+     will require more work before it can be officially released. It is
+     however already possible to view the LDAP access logs (and search within
+     them!), view the LDAP schema information (matching rules, attributes and
+     objectclasses etc) in a simple and easy to understand format. It (phpQLAdmin)
+     can also give you LDAP status information (such as version, startup time,
+     uptime and a range of LDAP connection information, including number of binds,
+     adds, deletes, searches etc, etc).
+
+
+Defaults (for users and branches) could be set globaly or for
+individual branch(es). Such defaults includes base homedirectory,
+automatic username and email generation (when creating a user), quota,
+password scheme, minimum UID/GID number, maximum allowed
+users/mailinglists allowed in branch, default user template, how to
+generate a username/mail address within the branch/globaly etc.
+
+
+Since this is (was) a (intended) to be a tool for an ISP or larger
+organization, distributing access (allowing certain users more or less
+access) globally, branch wise or on individuall user(s) is
+possible. For example, one could give one user access to only modify
+one branch ("it's branch"), not seeing any other. In this branch they
+could have full access, or limited access (such as access to the DNS
+information, mailinglists and/or the apache virtual hosts). This is of
+course more of interessts in ISPs, where one customer can give one (or
+more) employees full access to the company branch, but although this
+was phpQLAdmins original purpose, I have personaly deployed it in
+smaller organizations with only a handfull users, only managing the
+UNIX information.
+
+
+
+As stated above, phpQLAdmin is fully customizable and modular -
+enabling or disabling a module is a simple click-an-icon in the global
+configuration page. However, a special schema needs to be loaded,
+access controls needs to be tailored somewhat (more so if this will be
+an ISP tool with distributed access) and  User templates and/or
+password policies needs to be created and default information needs to
+be defined, so it's not something done on a coffey break.
+
+It can be somewhat cumbersome to setup to fully utilize all it's
+functionality. Unfortunatly, documentation is somewhat lacking, but
+enouch information is there to be able to set it up for basic use
+within minutes. To fully utilize ALL it's functioanlity and strength
+require a little more knowledge but most info should be in the
+documentation.  I hope. If not, "ask and it will be reveiled" :)
+
+
+I will be more than happy/willing to accept patches, improvenments
+(especially regarding the documentation and/or setup examples) and/or
+wish lists. If you like to contribute code, just fork the phpQLAdmin
+repository on github and then send me a Pull Request when you have
+something to share and I will be (very!) happy to take a look at it.
+
+Although, at times there is long between updates or commits, this in
+no way means the project is dead! It just means that I have not had
+any bugs or wishlists to fix...
+
+
+/Turbo Fredriksson
