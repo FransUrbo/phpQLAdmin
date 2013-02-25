@@ -99,6 +99,10 @@ an ISP tool with distributed access) and  User templates and/or
 password policies needs to be created and default information needs to
 be defined, so it's not something done on a coffey break.
 
+phpQLAdmin is also fully localized, meaning that you can have it in
+any language you like, if English or Brazilian Portuguese (might be
+behind in translation) is not your fortee.
+
 It can be somewhat cumbersome to setup to fully utilize all it's
 functionality. Unfortunatly, documentation is somewhat lacking, but
 enouch information is there to be able to set it up for basic use
