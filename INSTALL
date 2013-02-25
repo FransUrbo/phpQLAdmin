@@ -35,6 +35,9 @@ Additional Requirements for Qmail-LDAP/Controls patch support:
 - LDAP server with support for the "sambaSamAccount" objectclass
   (see doc/README.samba for more information).
 
+In addition to all this, a webbrowser that can understand frames, tables and
+java scripts is needed.
+
 Install:
 --------
 1. Untar the distribution (tar -zxf phpQLAdmin-x.x.x.tgz) to a directory
