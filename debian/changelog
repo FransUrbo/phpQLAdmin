@@ -4,7 +4,7 @@ phpqladmin (2.3.8-1) unstable; urgency=low
   * NL po-debconf by Bart Cornelis.
     Closes: #449413
 
- --
+ -- Turbo Fredriksson <turbo@debian.org>  Fri,  23 Nov 2007 11:06:33 +0000
 
 phpqladmin (2.3.7-1) unstable; urgency=low
 
