@@ -1,6 +1,6 @@
 phpQLAdmin 2.3 Change Log
 
-phpQLAdmin 2.3.8 TO BE ANNOUNCED
+phpQLAdmin 2.3.8 Release (Feb 22 2013)
 	Bug fixes
 	  - Make sure any 'Home->phpQLAdmin Configuration->Global configuration' changes
 	    goes back to the 'Global configuration' view.
@@ -65,6 +65,7 @@ phpQLAdmin 2.3.8 TO BE ANNOUNCED
 	  - Faulty use of pql_get_define("PQL_CONF_BIND9_USE") - was: PQL_ATTR_BIND9_USE.
 
  	GUI layout changes
+	  - Add support to view cn=config information. Editing it will be a later project.
 	  - Add the string 'characters' after the 'Minimum password length' in 'Add ppolicy'
 	    form.
 	  - Rewrite of the DHCP3 manager - domain oriented instead of host. DHCP information

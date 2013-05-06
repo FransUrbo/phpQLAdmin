@@ -140,15 +140,25 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "sambauserworkstations"=> pql_get_define("PQL_ATTR_SAMBAUSERWORKSTATIONS"),
 				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"),
 				 "disableadvancedmode"	=> pql_get_define("PQL_ATTR_DISABLE_ADVANCED_MODE"),
-				 "ppolicy_entry"		=> pql_get_define("PQL_ATTR_PPOLICY_ENTRY"),);
+				 "ppolicy_entry"		=> pql_get_define("PQL_ATTR_PPOLICY_ENTRY"),
+				 "authtimestamp"		=> pql_get_define("PQL_ATTR_AUTH_TIMESTAMP"));
 foreach($attribs as $key => $attrib) {
 	if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]))
 	  $got_user_reference_attribute = 1;
 
-    $value = $_pql->get_attribute($_GET["user"], $attrib);
+	if($attrib == pql_get_define("PQL_ATTR_AUTH_TIMESTAMP"))
+	  $value = $_pql->get_attribute($_GET["user"], $attrib, 1);
+	else
+	  $value = $_pql->get_attribute($_GET["user"], $attrib);
+
 	if(is_array($value) and ($attrib != 'cn'))
 	  // Only 'cn' is allowed to be multi-valued
 	  $value = $value[0];
+	elseif($attrib == pql_get_define("PQL_ATTR_AUTH_TIMESTAMP"))
+	  if($value)
+		$value = pql_format_timestamp($value);
+	  else
+		$value = '<i>'.$LANG->_('Unknown').'</i>';
 	elseif(!is_array($value) and ($attrib == 'cn'))
 	  // He! 'cn' MUST be an array for the view to work!
 	  $value = array($value);
@@ -276,19 +286,25 @@ if(@empty($USER_IS_GROUP)) {
 	  $buttons = $buttons + $new;
 	}
 
-	$new = array('status'			=> 'Account status',
-				 'delivery'			=> 'Delivery mode');
+	$new = array('status'			=> 'Account status');
 	$buttons = $buttons + $new;
+
+	if(pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
+	  $new = array('delivery'		=> 'Delivery mode');
+	  $buttons = $buttons + $new;
+	}
 } else {
 	$new = array('group'			=> 'Group stuff');
 	$buttons = $buttons + $new;
 }
 
-$new = array('email'				=> 'Registred addresses',
-			 'forwards_from'		=> 'Forwarders from other accounts');
-$buttons = $buttons + $new;
+if(pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
+  $new = array('email'				=> 'Registred addresses',
+			   'forwards_from'		=> 'Forwarders from other accounts');
+  $buttons = $buttons + $new;
+}
 
-if(empty($USER_IS_GROUP)) {
+if(empty($USER_IS_GROUP) && pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
 	$new = array('forwards_to'		=> 'Mail forwarding',
 				 'antispam'			=> 'Antispam configuration');
 	$buttons = $buttons + $new;
@@ -300,12 +316,16 @@ if(pql_get_define("PQL_CONF_SAMBA_USE")) {
 }
 
 if(!@empty($_SESSION["ADVANCED_MODE"]) and empty($USER_IS_GROUP)) {
-	$new = array('delivery_advanced'=> 'Advanced delivery properties',
-				 'mailbox'			=> 'Mailbox properties',
-				 'access'			=> 'User access');
+	if(pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
+	  $new = array('delivery_advanced'	=> 'Advanced delivery properties',
+				   'mailbox'			=> 'Mailbox properties');
+	  $buttons = $buttons + $new;
+	}
+
+	$new = array('access'			=> 'User access');
 	$buttons = $buttons + $new;
 
-	if($_SESSION["ALLOW_BRANCH_CREATE"] && $_SESSION["ACI_SUPPORT_ENABLED"]) {
+	if($_SESSION["ALLOW_BRANCH_CREATE"] && $_SESSION["ACI_SUPPORT_ENABLED"] && pql_get_define("PQL_CONF_MAIL_INFORMATION")) {
 		$new = array('aci'			=> 'Access Control Information');
 		$buttons = $buttons + $new;
 	}

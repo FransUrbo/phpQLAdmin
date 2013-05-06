@@ -110,6 +110,7 @@ pql_set_define("PQL_ATTR_RBLLIST",							strtolower("rblList"),						false);
 pql_set_define("PQL_ATTR_GOODADDRESS",						strtolower("goodMailAddr"),					false);
 pql_set_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS",			strtolower("nonPrimaryRcptHosts"),			false);
 pql_set_define("PQL_ATTR_MAILSIZEMAX",						strtolower("mailSizeMax"),					false);
+pql_set_define("PQL_ATTR_MAIL_INFORMATION",				strtolower("useUserMailInformation"),		false);
 // }}}
 
 // {{{ Qmail-Group attributes in QmailLDAP
@@ -176,6 +177,7 @@ pql_set_define("PQL_ATTR_TITLE",							strtolower("title"),						false);
 pql_set_define("PQL_ATTR_ADDITIONAL_GROUP",					strtolower("memberUid"),					false);
 pql_set_define("PQL_ATTR_UNIQUE_GROUP",						strtolower("uniqueMember"),					false);
 pql_set_define("PQL_ATTR_IPHOSTNUMBER",						strtolower("ipHostNumber"),					false);
+pql_set_define("PQL_ATTR_AUTH_TIMESTAMP",					strtolower("authTimestamp"),				false);
 // }}}
 
 // {{{ Attributes used by the Bind9/LDAP sdb driver
@@ -479,12 +481,103 @@ pql_set_define("PQL_ATTR_PHOTO",							strtolower('jpegPhoto'),					false);
 // }}}
 
 
+// {{{ Attributes used by the cn=config branch
+pql_set_define("PQL_ATTR_OLC_ALLOWS", 						strtolower('olcAllows'),					false);
+pql_set_define("PQL_ATTR_OLC_ARGS_FILE", 					strtolower('olcArgsFile'),					false);
+pql_set_define("PQL_ATTR_OLC_ATTRS_OPTS", 					strtolower('olcAttributeOptions'),			false);
+pql_set_define("PQL_ATTR_OLC_AUTHZ_POLICY", 				strtolower('olcAuthzPolicy'),				false);
+pql_set_define("PQL_ATTR_OLC_AUTHZ_REGEXP", 				strtolower('olcAuthzRegexp'),				false);
+pql_set_define("PQL_ATTR_OLC_CONCURRENCY", 					strtolower('olcConcurrency'),				false);
+pql_set_define("PQL_ATTR_OLC_CONFIG_DIR", 					strtolower('olcConfigDir'),					false);
+pql_set_define("PQL_ATTR_OLC_CONFIG_FILE", 					strtolower('olcConfigFile'),				false);
+pql_set_define("PQL_ATTR_OLC_CONN_MAX_PEND", 				strtolower('olcConnMaxPending'),			false);
+pql_set_define("PQL_ATTR_OLC_CONN_MAX_PEND_AUTH", 			strtolower('olcConnMaxPendingAuth'),		false);
+pql_set_define("PQL_ATTR_OLC_GENTLE_HUP", 					strtolower('olcGentleHUP'),					false);
+pql_set_define("PQL_ATTR_OLC_IDLE_TIMEOUT", 				strtolower('olcIdleTimeout'),				false);
+pql_set_define("PQL_ATTR_OLC_INDEX_INT_LEN", 				strtolower('olcIndexIntLen'),				false);
+pql_set_define("PQL_ATTR_OLC_INDEX_SUBSTR_ANY_LEN", 		strtolower('olcIndexSubstrAnyLen'),			false);
+pql_set_define("PQL_ATTR_OLC_INDEX_SUBSTR_ANY_STEP", 		strtolower('olcIndexSubstrAnyStep'),		false);
+pql_set_define("PQL_ATTR_OLC_INDEX_SUBSTR_IF_MAX_LEN", 		strtolower('olcIndexSubstrIfMaxLen'),		false);
+pql_set_define("PQL_ATTR_OLC_INDEX_SUBSTR_IF_MIN_LEN", 		strtolower('olcIndexSubstrIfMinLen'),		false);
+pql_set_define("PQL_ATTR_OLC_LOCAL_SSF", 					strtolower('olcLocalSSF'),					false);
+pql_set_define("PQL_ATTR_OLC_LOG_LEVEL", 					strtolower('olcLogLevel'),					false);
+pql_set_define("PQL_ATTR_OLC_PID_FILE", 					strtolower('olcPidFile'),					false);
+pql_set_define("PQL_ATTR_OLC_READ_ONLY", 					strtolower('olcReadOnly'),					false);
+pql_set_define("PQL_ATTR_OLC_REVERSE_LOOKUP", 				strtolower('olcReverseLookup'),				false);
+pql_set_define("PQL_ATTR_OLC_SASL_HOST", 					strtolower('olcSaslHost'),					false);
+pql_set_define("PQL_ATTR_OLC_SASL_REALM", 					strtolower('olcSaslRealm'),					false);
+pql_set_define("PQL_ATTR_OLC_SASL_SEC_PROPS", 				strtolower('olcSaslSecProps'),				false);
+pql_set_define("PQL_ATTR_OLC_SIZE_LIMIT", 					strtolower('olcSizeLimit'),					false);
+pql_set_define("PQL_ATTR_OLC_SOCK_BUFF_MAX_INCOMING", 		strtolower('olcSockbufMaxIncoming'),		false);
+pql_set_define("PQL_ATTR_OLC_SOCK_BUFF_MAX_INCOMING_AUTH",	strtolower('olcSockbufMaxIncomingAuth'),	false);
+pql_set_define("PQL_ATTR_OLC_TLS_CA_CERT_FILE", 			strtolower('olcTLSCACertificateFile'),		false);
+pql_set_define("PQL_ATTR_OLC_TLS_CRL_CHECK", 				strtolower('olcTLSCRLCheck'),				false);
+pql_set_define("PQL_ATTR_OLC_TLS_CERT_FILE", 				strtolower('olcTLSCertificateFile'),		false);
+pql_set_define("PQL_ATTR_OLC_TLS_CERT_KEY_FILE", 			strtolower('olcTLSCertificateKeyFile'),		false);
+pql_set_define("PQL_ATTR_OLC_TLS_VERIFY_CLIENT", 			strtolower('olcTLSVerifyClient'),			false);
+pql_set_define("PQL_ATTR_OLC_THREADS", 						strtolower('olcThreads'),					false);
+pql_set_define("PQL_ATTR_OLC_TIME_LIMIT", 					strtolower('olcTimeLimit'),					false);
+pql_set_define("PQL_ATTR_OLC_TOOL_THREADS", 				strtolower('olcToolThreads'),				false);
+// }}}
+
+// {{{ Attributes used in branches _below_ the cn=config base branch
+pql_set_define("PQL_ATTR_OLC_MODULE_PATH", 					strtolower('olcModulePath'),				false);
+pql_set_define("PQL_ATTR_OLC_MODULE_LOAD", 					strtolower('olcModuleLoad'),				false);
+
+pql_set_define("PQL_ATTR_OLC_DB", 							strtolower('olcDatabase'),					false);
+pql_set_define("PQL_ATTR_OLC_DB_URI", 						strtolower('olcDbUri'),						false);
+pql_set_define("PQL_ATTR_OLC_DB_DIRECTORY", 				strtolower('olcDbDirectory'),				false);
+pql_set_define("PQL_ATTR_OLC_DB_CACHE_SIZE", 				strtolower('olcDbCacheSize'),				false);
+pql_set_define("PQL_ATTR_OLC_DB_CACHE_FREE", 				strtolower('olcDbCacheFree'),				false);
+pql_set_define("PQL_ATTR_OLC_DB_CHECK_POINT", 				strtolower('olcDbCheckPoint'),				false);
+pql_set_define("PQL_ATTR_OLC_DB_CONFIG", 					strtolower('olcDbConfig'),					false);
+pql_set_define("PQL_ATTR_OLC_DB_NO_SYNC", 					strtolower('olcDbNoSync'),					false);
+pql_set_define("PQL_ATTR_OLC_DB_DIRTY_READ", 				strtolower('olcDbDirtyRead'),				false);
+pql_set_define("PQL_ATTR_OLC_DB_IDL_CACHE_SIZE", 			strtolower('olcDbIDLcacheSize'),			false);
+pql_set_define("PQL_ATTR_OLC_DB_SUFFIX", 					strtolower('olcSuffix'),					false);
+pql_set_define("PQL_ATTR_OLC_DB_INDEX", 					strtolower('olcDbIndex'),					false);
+pql_set_define("PQL_ATTR_OLC_DB_LINEAR_INDEX", 				strtolower('olcDbLinearIndex'),				false);
+pql_set_define("PQL_ATTR_OLC_DB_MODE", 						strtolower('olcDbMode'),					false);
+pql_set_define("PQL_ATTR_OLC_DB_SEARCH_STACK", 				strtolower('olcDbSearchStack'),				false);
+pql_set_define("PQL_ATTR_OLC_DB_SHM_KEY", 					strtolower('olcDbShmKey'),					false);
+pql_set_define("PQL_ATTR_OLC_DB_DN_CACHE_SIZE", 			strtolower('olcDbDNcacheSize'),				false);
+
+pql_set_define("PQL_ATTR_OLC_ACCESS", 						strtolower('olcAccess'),					false);
+pql_set_define("PQL_ATTR_OLC_ROOT_DN", 						strtolower('olcRootDN'),					false);
+pql_set_define("PQL_ATTR_OLC_SCHEMA_DN", 					strtolower('olcSchemaDN'),					false);
+pql_set_define("PQL_ATTR_OLC_DEFAULT_SEARCH_BASE", 			strtolower('olcDefaultSearchBase'),			false);
+pql_set_define("PQL_ATTR_OLC_PASSWORD_HASH", 				strtolower('olcPasswordHash'),				false);
+
+pql_set_define("PQL_ATTR_OLC_ADD_CONNTENT_ACL", 			strtolower('olcAddContentAcl'),				false);
+pql_set_define("PQL_ATTR_OLC_LAST_MOD", 					strtolower('olcLastMod'),					false);
+pql_set_define("PQL_ATTR_OLC_MAX_DEREF_DEPTH", 				strtolower('olcMaxDerefDepth'),				false);
+pql_set_define("PQL_ATTR_OLC_MONITORING", 					strtolower('olcMonitoring'),				false);
+pql_set_define("PQL_ATTR_OLC_OVERLAY", 						strtolower('olcOverlay'),					false);
+pql_set_define("PQL_ATTR_OLC_REFINT_ATTRS", 				strtolower('olcRefintAttribute'),			false);
+pql_set_define("PQL_ATTR_OLC_UNIQ_BASE", 					strtolower('olcUniqueBase'),				false);
+pql_set_define("PQL_ATTR_OLC_UNIQ_ATTR", 					strtolower('olcUniqueAttribute'),			false);
+
+pql_set_define("PQL_ATTR_OLC_PPOLICY_DEFAULT", 				strtolower('olcPPolicyDefault'),			false);
+pql_set_define("PQL_ATTR_OLC_PPOLICY_HASH_CLEARTEXT", 		strtolower('olcPPolicyHashCleartext'),		false);
+pql_set_define("PQL_ATTR_OLC_PPOLICY_USE_LOCKOUT", 			strtolower('olcPPolicyUseLockout'),			false);
+pql_set_define("PQL_ATTR_OLC_VAL_SORT_ATTR", 				strtolower('olcValSortAttr'),				false);
+pql_set_define("PQL_ATTR_OLC_AUDIT_LOG_FILE", 				strtolower('olcAuditLogFile'),				false);
+pql_set_define("PQL_ATTR_OLC_ACCESSLOG_DB", 				strtolower('olcAccessLogDB'),				false);
+pql_set_define("PQL_ATTR_OLC_ACCESSLOG_OPS", 				strtolower('olcAccessLogOps'),				false);
+pql_set_define("PQL_ATTR_OLC_ACCESSLOG_PURGE", 				strtolower('olcAccessLogPurge'),			false);
+pql_set_define("PQL_ATTR_OLC_ACCESSLOG_OLD", 				strtolower('olcAccessLogOld'),				false);
+
+pql_set_define("PQL_ATTR_OLC_ATTRIBUTE_TYPES", 				strtolower('olcAttributeTypes'),			false);
+pql_set_define("PQL_ATTR_OLC_OBJECT_CLASSES", 				strtolower('olcObjectClasses'),				false);
+
+// }}}
+
+
 // {{{ These are the internal phpQLAdmin attributes - GLOBAL configuration
 // Toggles
 pql_set_define("PQL_ATTR_CONTROL_USE", 						strtolower('useControls'),					false);
 pql_set_define("PQL_ATTR_EZMLM_USE", 						strtolower('useEzmlm'),						false);
 pql_set_define("PQL_ATTR_BIND9_USE", 						strtolower('useBind9'),						false);
-pql_set_define("PQL_ATTR_ACI_USE", 							strtolower('useACI'),						false);
 pql_set_define("PQL_ATTR_AUTO_RELOAD", 						strtolower('autoReload'),					false);
 pql_set_define("PQL_ATTR_CHANGE_SERVER", 					strtolower('allowServerChange'),			false);
 pql_set_define("PQL_ATTR_CREATE_MBOX", 						strtolower('useMBox'),						false);
@@ -521,6 +614,7 @@ pql_set_define("PQL_ATTR_START_IN_MY_ACCOUNT",				strtolower('startinmyaccount')
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME",	 		strtolower('autoAddHostName'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDLOCALS", 			strtolower('autoAddLocals'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS", 		strtolower('autoAddRCPTHosts'),				false);
+pql_set_define("PQL_ATTR_FORCE_FQDN",                       strtolower('forceFQDN'),                    false);
 
 // Setup
 pql_set_define("PQL_ATTR_SEEALSO",							strtolower('seeAlso'),						false);
@@ -616,7 +710,8 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_EZMLM_REMOTE_HOST"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST"),
 								 "PQL_CONF_EZMLM_REMOTE_USER"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER"),
 								 "PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT"=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT"),
-								 "PQL_CONF_DHCP3_USE"					=> pql_get_define("PQL_ATTR_DHCP3_USE"));
+								 "PQL_CONF_DHCP3_USE"					=> pql_get_define("PQL_ATTR_DHCP3_USE"),
+								 "PQL_CONF_MAIL_INFORMATION"			=> pql_get_define("PQL_ATTR_MAIL_INFORMATION"));
 
 // }}}
 
@@ -675,7 +770,8 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_RADIUS_CONFIG_IDENTITY"		=> pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"),
 								 "PQL_CONF_SAMBASID"					=> pql_get_define("PQL_ATTR_SAMBASID"),
 								 "PQL_CONF_DAYSUNTILEXPIRE"				=> pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"),
-								 "PQL_CONF_USER_FILTER"					=> pql_get_define("PQL_ATTR_USER_FILTER"));
+								 "PQL_CONF_USER_FILTER"					=> pql_get_define("PQL_ATTR_USER_FILTER"),
+								 "PQL_CONF_FORCE_FQDN"                  => pql_get_define("PQL_ATTR_FORCE_FQDN"));
 // }}}
 
 // {{{ Map attribute to configuration define - USER

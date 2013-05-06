@@ -188,6 +188,12 @@
         </td>
 <?php	} ?>
       </tr>
+
+      <tr class="<?php echo $class?>">
+        <td class="title"><?php echo $LANG->_('Last authenticated connection')?></td>
+        <td><?php echo $authtimestamp ?></td>
+        <td></td>
+      </tr>
 <?php }
 // }}}
 ?>

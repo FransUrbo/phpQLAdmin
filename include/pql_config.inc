@@ -82,21 +82,25 @@ function pql_get_define($define, $dn = NULL) {
 }
 // }}}
 
+// {{{ Do any debugging?
 if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
   pql_set_define("PQL_CONF_DEBUG_ME", true);
 }
 
-// ----------------------------
-// 1. Load site specific configuration
 if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !preg_match('/index2\.php$/i', $_SERVER["SCRIPT_FILENAME"])) {
   echo "<b>*</b> Loading base config<br>\n";
 }
+// }}}
+
+// ----------------------------
+
+// 1. Load site specific configuration
 require($_SESSION["path"]."/include/config.inc");
 
 // 2. Include the attribute configuration
 require($_SESSION["path"]."/include/config_attributes.inc");
 
-// Get the LDAP host and port
+// {{{ Get the LDAP host and port
 if(empty($_SESSION["USER_HOST"]) or ($_SESSION["USER_HOST"] == ';;')) {
   if(! preg_match('/\+/i', pql_get_define("PQL_CONF_HOST")))
 	$host = explode(';', pql_get_define("PQL_CONF_HOST"));
@@ -110,9 +114,10 @@ if(empty($_SESSION["USER_HOST"]) or ($_SESSION["USER_HOST"] == ';;')) {
   $_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
   unset($host);
 }
+// }}}
 
+// {{{ (Possibly) open a connection to the LDAP server
 if(empty($_pql)) {
-  // Open a connection to the LDAP server
   $binddn = (!empty($_SESSION["USER_DN"]))   ? $_SESSION["USER_DN"]   : '';
   $bindpw = (!empty($_SESSION["USER_PASS"])) ? $_SESSION["USER_PASS"] : '';
 
@@ -125,15 +130,17 @@ if(empty($_pql)) {
 	die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
   }
 }
+// }}}
 
-// Initalize some session variable - either with the old OR with an empty value
+// {{{ Initalize some session variable - either with the old OR with an empty value
 $_SESSION["ALLOW_BRANCH_CREATE"]	= (!empty($_SESSION["ALLOW_BRANCH_CREATE"]))	? $_SESSION["ALLOW_BRANCH_CREATE"]	: '';
 $_SESSION["ALLOW_CONTROL_CREATE"]	= (!empty($_SESSION["ALLOW_CONTROL_CREATE"]))	? $_SESSION["ALLOW_CONTROL_CREATE"]	: '';
 $_SESSION["ALLOW_EZMLM_CREATE"]		= (!empty($_SESSION["ALLOW_EZMLM_CREATE"]))		? $_SESSION["ALLOW_EZMLM_CREATE"]	: '';
 $_SESSION["ADVANCED_MODE"]			= (!empty($_SESSION["ADVANCED_MODE"]))			? $_SESSION["ADVANCED_MODE"]		: '';
 $_SESSION["SINGLE_USER"]			= (!empty($_SESSION["SINGLE_USER"]))			? $_SESSION["SINGLE_USER"]			: '';
+// }}}
 
-// Load configuration from the database...
+// {{{ Load configuration from the database...
 foreach($_pql->ldap_basedn as $dn)  {
   $dn = pql_format_normalize_dn($dn);
   unset($info);
@@ -254,6 +261,7 @@ foreach($_pql->ldap_basedn as $dn)  {
   }
 }
 unset($dn);
+// }}}
 
 // 5. Check the Control DN if the user is there -> Allow management of Controls information
 if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"])) {
@@ -278,7 +286,7 @@ require($_SESSION["path"]."/include/pql_plugins.inc");
 if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
   $ocs = pql_get_subschema('attributeTypes');
   
-  // 9a. Check ifthe attribute OpenLDAPaci exists - ACI support is enabled in the LDAP server.
+  // {{{ 9a. Check ifthe attribute OpenLDAPaci exists - ACI support is enabled in the LDAP server.
   //     OR: We've specified (manually) to (en)force the use of ACI's via the baseDN attribute
   //         'useACI'.
   //     -> Just make sure that useACI isn't equal to 'FALSE' which means the user/admin have
@@ -287,13 +295,15 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
 	 (!empty($ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"]) or pql_get_define("PQL_CONF_ACI_USE")) and
 	 (pql_get_define("PQL_CONF_ACI_USE") != 'FALSE'))
 	$_SESSION["ACI_SUPPORT_ENABLED"] = 1;
+// }}}
   
-  // 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
+  // {{{ 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
   if(!empty($ocs[pql_get_define("PQL_ATTR_QUOTA_SIZE")]["OID"]) and
 	 !empty($ocs[pql_get_define("PQL_ATTR_QUOTA_COUNT")]["OID"]))
 	$_SESSION["NEW_STYLE_QUOTA"] = 1;
-  
-  // 9c. Do we support old style quota, even if new style is enabled?
+// }}}
+
+  // {{{ 9c. Do we support old style quota, even if new style is enabled?
   if(empty($ocs[pql_get_define("PQL_ATTR_QUOTA_VALUE")]["OID"])) {
 	// The old style quota attribute isn't defined - don't support it
 	$_SESSION["OLD_STYLE_QUOTA"] = 0;
@@ -301,16 +311,18 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
 	// It's defined so support old style quota
 	$_SESSION["OLD_STYLE_QUOTA"] = 1;
   }
+// }}}
 }
 
 if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
   require($_SESSION["path"]."/include/pql_aci.inc");
 }
 
-// Remove some variables so we don't clutter the global variable name space!
+// {{{ Remove some variables so we don't clutter the global variable name space!
 unset($host); unset($servers); unset($i);
 unset($define_attribute); unset($sr); unset($info);
 unset($v); unset($nkey); unset($k); unset($ref);
+// }}}
 
 // See bug #203...
 // This created an empty '$_REQUEST["domain"]' value sometimes...

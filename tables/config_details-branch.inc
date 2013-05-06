@@ -59,6 +59,18 @@
       <!-- -------------------- -->
 <?php $class=pql_format_table(0); ?>
       <tr>
+        <td class="title"><?php echo $LANG->_('Force Fully Qualified Domain Names in host objects')?></td>
+        <td class="<?php echo $class?>"><?php if(pql_get_define("PQL_CONF_FORCE_FQDN", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
+        <td class="<?php echo $class?>">
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
+          <a href="config_edit_attribute.php?rootdn=<?php echo $_REQUEST["branch"]?>&toggle=1&attrib=<?php echo pql_get_define("PQL_ATTR_FORCE_FQDN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo $LANG->_('Toggle')?><?php echo pql_get_define("PQL_CONF_FORCE_FQDN", $_REQUEST["branch"])?>"></a>
+<?php } ?>
+        </td>
+      </tr>
+
+      <!-- -------------------- -->
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('users'))); ?></td>
         <td class="<?php echo $class?>">
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["branch"])) { ?>
