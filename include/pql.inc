@@ -48,7 +48,7 @@ class pql {
 	  $val[] = urlencode(pql_maybe_encode($entry[$attrib], $attrib, $this->ldap_linkid));
 
 	// If we got at least one DN, return the array. Else return false
-	if(is_array($val)) {
+	if(isset($val) && is_array($val)) {
 	  $new = NULL;
 	  
 	  // Remove any spaces after the RDN separator
@@ -98,7 +98,10 @@ class pql {
 	  }
 	}
 
-	return $tmp;
+	if(isset($tmp))
+		return $tmp;
+	else
+		return 0;
   }
   // }}}
   
@@ -325,19 +328,23 @@ class pql {
   //		BASE
   function search($dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0, $encode = 0) {
 # Can't enable this, other on login issues...
-#	  echo "search($dn, $filter, $level, $referals, $operational, $encode)<br>";
+#    echo "search($dn, $filter, $level, $referrals, $operational, $encode)<br>";
 
 	global $_SESSION, $pql_cache;
 	
 	// Normalize the DN
-	$dn = pql_format_normalize_dn($dn);
+    if(!isset($dn))
+        $dn = "";
+    else {
+        $dn = pql_format_normalize_dn($dn);
 	
-	// {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
-	if(preg_match("/^dNSTTL=/i", $dn))
-	  // FROM: dNSTTL=3600 relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
-	  // TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
-	  $dn = pql_recreate_dnsttl($dn);
-	// }}}
+        // {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
+        if(preg_match("/^dNSTTL=/i", $dn))
+            // FROM: dNSTTL=3600 relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
+            // TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
+            $dn = pql_recreate_dnsttl($dn);
+        // }}}
+    }
 	
 	// {{{ Which ldap_{search,list,read}() function to use and should cache be used?
 	switch($level) {
@@ -392,7 +399,7 @@ class pql {
 		echo "|Returning cached object '$dn'<br>";
 		echo "\<b>--------------------</b><p>";
 // Disable this - to much data!
-//		printr($object);
+//		echo "cache object:"; printr($object);
 	  } 
 	  
 	  return($object);
@@ -578,7 +585,7 @@ class pql {
 	$object = $this->search($dn, $filter, $scope, 1, $operational);
 	if(!empty($object)) {
 	  if(!empty($object[0])) {
-		if(!empty($object[0][$attribute]))
+        if(!empty($object[0][$attribute]))
 		  return($object[0][$attribute]);
 	  } elseif(!empty($object[$attribute]))
 		// Most likley returned from a cached object...

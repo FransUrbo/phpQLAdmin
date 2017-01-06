@@ -6,7 +6,7 @@
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
 //apd_set_pprof_trace();
 require_once("./include/dlw_porting.inc");
-if(!$_REQUEST["reason"]) {
+if(!isset($_REQUEST["reason"])) {
   require("./include/pql_session.inc");
 }
 

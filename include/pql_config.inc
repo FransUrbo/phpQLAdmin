@@ -101,7 +101,7 @@ require($_SESSION["path"]."/include/config.inc");
 require($_SESSION["path"]."/include/config_attributes.inc");
 
 // {{{ Get the LDAP host and port
-if(empty($_SESSION["USER_HOST"]) or ($_SESSION["USER_HOST"] == ';;')) {
+if(empty($_SESSION["USER_HOST"]) or ($_SESSION["USER_HOST"] == ';;') or ($_SESSION["USER_HOST"] == '0;;')) {
   if(! preg_match('/\+/i', pql_get_define("PQL_CONF_HOST")))
 	$host = explode(';', pql_get_define("PQL_CONF_HOST"));
   else {
