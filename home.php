@@ -44,7 +44,7 @@ if(isset($submit)) {
   
   // Change LDAP server
   if($ldapserver) {
-	$host = split(';', $ldapserver);
+	$host = explode(';', $ldapserver);
 	
 	$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
   }
@@ -60,7 +60,7 @@ if(isset($submit)) {
 if($_SESSION["ADVANCED_MODE"] == 1) {
   // Should we show the 'change server' choices
   if(pql_get_define("PQL_CONF_CHANGE_SERVER") and preg_match('/\+/', pql_get_define("PQL_CONF_HOST"))) {
-	$servers = split('\+', pql_get_define("PQL_CONF_HOST"));
+	$servers = explode('\+', pql_get_define("PQL_CONF_HOST"));
 ?>
 
   <ul>
@@ -69,7 +69,7 @@ if($_SESSION["ADVANCED_MODE"] == 1) {
 	Change LDAP server<br>
         <select name="ldapserver">
 <?php	foreach($servers as $server) {
-			$host = split(';', $server);
+			$host = explode(';', $server);
 ?>
           <option value="<?php echo $server?>"><?php echo pql_maybe_idna_decode(urldecode($host[0]))?><?php if(!preg_match('/^ldapi:/i', $host[0])) { echo ":".$host[1]; } ?></option>
 <?php	} ?>

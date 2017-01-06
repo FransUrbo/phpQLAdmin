@@ -118,7 +118,7 @@ foreach($ldap as $x => $array) {
 				  echo $attributetypes[lc($value['MUST'][$i])]['OID'];
 				} else {
 				  // It's an alias
-				  $alias_attribs = split(':', $value['MUST'][$i]);
+				  $alias_attribs = explode(':', $value['MUST'][$i]);
 
 				  foreach($attributetypes as $attrib) {
 					if(isset($attrib['ALIAS'][0])) {
@@ -142,7 +142,7 @@ foreach($ldap as $x => $array) {
 				  echo $attributetypes[lc($value['MAY'][$i])]['OID'];
 				} else {
 				  // It's an alias
-				  $alias_attribs = split(':', $value['MAY'][$i]);
+				  $alias_attribs = explode(':', $value['MAY'][$i]);
 
 				  foreach($attributetypes as $attrib) {
 					if(isset($attrib['ALIAS'][0])) {

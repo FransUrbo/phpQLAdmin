@@ -1,7 +1,7 @@
 <?php $email   = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_MAIL"));
       $aliases = $_pql->get_attribute($_GET["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
 
-	  $tmp     = split('@', $email);
+	  $tmp     = explode('@', $email);
 	  $mail	   = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 ?>
   <!-- Addresses (mail, mailalternateaddress) -->
@@ -40,7 +40,7 @@ if(is_array($aliases)) {
 
     asort($aliases);
     foreach($aliases as $alias) {
-		$tmp     = split('@', $alias);
+		$tmp     = explode('@', $alias);
 		$mail	 = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 ?>
       <tr class="<?php pql_format_table(); ?>">
@@ -54,7 +54,7 @@ if(is_array($aliases)) {
     }
 } elseif($aliases) {
 	// Only one value
-	$tmp  = split('@', $aliases);
+	$tmp  = explode('@', $aliases);
 	$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 ?>
       <tr class="<?php pql_format_table(); ?>">

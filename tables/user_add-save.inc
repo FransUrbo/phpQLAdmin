@@ -86,7 +86,7 @@ if(!empty($_REQUEST["mail"]) and
 	// }}}
 
 	// {{{ Add the additional email addresses as well
-	$email_temp = split('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
+	$email_temp = explode('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
 	
 	if($_REQUEST["template"] == "internal_group") {
 		// For group objects, we need a 'catchall' mail alias as well.

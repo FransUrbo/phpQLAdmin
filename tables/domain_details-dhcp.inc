@@ -164,7 +164,7 @@ if(is_array($dhcp_config)) {
 	foreach($DATA as $attrib => $data) {
 	  if(is_array($data)) {
 		for($i=0; $data[$i]; $i++) {
-		  $info = split(' ', $data[$i]);
+		  $info = explode(' ', $data[$i]);
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo $info[0]?>&nbsp;&nbsp;</td>

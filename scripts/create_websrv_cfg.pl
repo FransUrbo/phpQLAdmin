@@ -40,12 +40,12 @@ foreach $basedn (@DNS) {
 	$line = <SEARCH>; chomp($line);
 	next if($line =~ /^$/);
 	if($line =~ /^dn: /) {
-	    @tmp  = split(',', $line);
-	    @tmp  = split('=', $tmp[0]);
+	    @tmp  = explode(',', $line);
+	    @tmp  = explode('=', $tmp[0]);
 	    $name = $tmp[1];
 	}
 
-	($attrib, $value) = split(': ', $line);
+	($attrib, $value) = explode(': ', $line);
 	$attrib = lc($attrib);
 
 	if($value) {
@@ -69,7 +69,7 @@ foreach $srv (sort(keys(%ENTRY))) {
 	} elsif($attr eq $SRV_ADM) {
 	    print "\tServerAdmin ".$ENTRY{$srv}{$attr}."\n";
 	} elsif($attr eq $SRV_ALIAS) {
-	    @aliases = split(';', $ENTRY{$srv}{$attr});
+	    @aliases = explode(';', $ENTRY{$srv}{$attr});
 	    foreach $alias (sort(@aliases)) {
 		print "\tServerAlias $alias\n";
 	    }

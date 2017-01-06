@@ -38,7 +38,7 @@ $ENV{PATH} = "/bin:/usr/bin:/usr/sbin";
 # Create the mail directory: $PQL_MAILMESSAGESTORE
 if($ENV{"PQL_MAILMESSAGESTORE"}) {
     $DIR = $ENV{"PQL_MAILMESSAGESTORE"};
-    @dirs = split('/', $DIR);
+    @dirs = explode('/', $DIR);
 
     $directory = '/' . $dirs[1] . '/';
     for($i=1; $i < count($dirs); $i++) {
@@ -64,7 +64,7 @@ if($ENV{"PQL_MAILMESSAGESTORE"}) {
 # Create the home directory: $PQL_HOMEDIRECTORY
 if($ENV{"PQL_HOMEDIRECTORY"}) {
     $DIR = $ENV{"PQL_HOMEDIRECTORY"};
-    @dirs = split('/', $DIR);
+    @dirs = explode('/', $DIR);
 
     $directory = '/' . $dirs[1] . '/';
     for($i=1; $i < count($dirs); $i++) {

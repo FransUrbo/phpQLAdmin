@@ -197,7 +197,7 @@ if(empty($userpassword)) {
     $userpassword = $LANG->_('None');
 } else {
     if(preg_match("/\{KERBEROS\}/i", $userpassword) or preg_match("/\{SASL\}/i", $userpassword)) {
-		$princ = split("\}", $userpassword);
+		$princ = explode("\}", $userpassword);
 		$userpassword = $princ[1] . " (Kerberos V)";
     } else {
 		$userpassword = $LANG->_('Encrypted');

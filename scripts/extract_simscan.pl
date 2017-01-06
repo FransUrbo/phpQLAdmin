@@ -57,7 +57,7 @@ if($use_simscan) {
 	    $line =~ s/^ //;
 	    $DNs[$i-1] .= $line;
 	} else {
-	    ($attr, $value) = split(': ', $line);
+	    ($attr, $value) = explode(': ', $line);
 	    $attr = lc($attr);
 	    print "$attr = $value\n";
 

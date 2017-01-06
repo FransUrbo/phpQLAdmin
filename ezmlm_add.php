@@ -104,7 +104,7 @@ if(empty($_REQUEST["domainname"])) {
 
 	// {{{ Get domain branch and root DN(s)
 	if(empty($_REQUEST["rootdn"]) and empty($_REQUEST["domain"]) and !empty($_REQUEST["domainname"])) {
-		$tmp = split(';', $_REQUEST["domainname"]);
+		$tmp = explode(';', $_REQUEST["domainname"]);
 
 		$_REQUEST["domain"]     = $tmp[0];
 		$_REQUEST["domainname"] = $tmp[1];

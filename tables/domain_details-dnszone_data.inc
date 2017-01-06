@@ -38,7 +38,7 @@
 									$zone = preg_replace('/\.in-addr\.arpa/', '', $data["ZONE"]);
 
 									// Reverse what's left => '192.168'
-									$tmp = split('\.', $zone);
+									$tmp = explode('\.', $zone);
 									$count = count($tmp);
 									for($i=$count-1; $tmp[$i]; $i--) {
 										$rev .= $tmp[$i];
@@ -47,7 +47,7 @@
 									}
 
 									// Add what's missing in reverse order => '192.168'+'.1.10'
-									$tmp = split('\.', $record);
+									$tmp = explode('\.', $record);
 									for($i=3; $i >= $count; $i--) {
 										$rev .= '.'.$tmp[$i];
 									}

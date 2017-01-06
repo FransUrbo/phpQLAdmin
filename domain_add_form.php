@@ -8,7 +8,7 @@ require($_SESSION["path"]."/include/pql_config.inc");
 include($_SESSION["path"]."/header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-$server = split(';', $_SESSION["USER_HOST"]);
+$server = explode(';', $_SESSION["USER_HOST"]);
 $server = urldecode($server[0]);
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create domain branch in LDAP server %server%'), array('server' => $server)); ?></span>

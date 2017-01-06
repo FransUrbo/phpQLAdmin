@@ -32,7 +32,7 @@ if($_REQUEST["advanced"] == 1) {
   </div>
 
 <?php if($_SESSION["ADVANCED_MODE"]) {
-		$host = split(';', $_SESSION["USER_HOST"]);
+		$host = explode(';', $_SESSION["USER_HOST"]);
 
 		// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 		$host[0] = urldecode($host[0]);

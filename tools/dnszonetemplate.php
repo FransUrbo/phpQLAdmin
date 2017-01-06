@@ -28,11 +28,11 @@ if(is_array($zone)) {
 
     if(is_array($zone[$defaultdomain]["@"]["MX"])) {
 	foreach($zone[$defaultdomain]["@"]["MX"] as $mx) {
-	    $tmp = split(' ', $mx);
+	    $tmp = explode(' ', $mx);
 	    $mailservers[$tmp[0]] = $tmp[1];
 	}
     } else {
-	$tmp = split(' ', $zone[$defaultdomain]["@"]["MX"]);
+	$tmp = explode(' ', $zone[$defaultdomain]["@"]["MX"]);
 	$mailservers[$tmp[1]] = $tmp[0];
     }
     
@@ -84,7 +84,7 @@ if(!$primaryip) {
 }
 
 // Create a template (empty) zone file
-$dnsparts = split('\.', $defaultdomain);
+$dnsparts = explode('\.', $defaultdomain);
 for($i=0; $i < count($dnsparts); $i++) {
     $origin = $dnsparts[$i];
 }

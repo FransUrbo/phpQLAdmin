@@ -93,11 +93,11 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
         <td align="left">
 <?php
 	if(preg_match('/\+/', pql_get_define("PQL_CONF_HOST"))) {
-		$servers = split('\+', pql_get_define("PQL_CONF_HOST"));
+		$servers = explode('\+', pql_get_define("PQL_CONF_HOST"));
 ?>
           <select name="server">
 <?php	foreach($servers as $server) {
-			$host = split(';', $server);
+			$host = explode(';', $server);
 
 			// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 			$host[0] = urldecode($host[0]);
@@ -107,7 +107,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
           </select>
 <?php
 	} else {
-		$server = split(';', $_SESSION["USER_HOST"]);
+		$server = explode(';', $_SESSION["USER_HOST"]);
 
 		// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 		$server[0] = urldecode($server[0]);

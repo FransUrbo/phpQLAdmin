@@ -19,7 +19,7 @@ $ENV{PATH} = "/bin:/usr/bin";
 #
 if($ENV{"PQL_MAILDIRS"} && $ENV{"PQL_WEBUSER"}) {
     $DIR = $ENV{PQL_MAILDIRS}."mailinglists";
-    @dirs = split('/', $DIR);
+    @dirs = explode('/', $DIR);
 
     $directory = '/' . $dirs[1] . '/';
     for($i=1; $i < count($dirs); $i++) {
@@ -38,7 +38,7 @@ if($ENV{"PQL_MAILDIRS"} && $ENV{"PQL_WEBUSER"}) {
 
 if($ENV{"PQL_HOMEDIRS"}) {
     $DIR = $ENV{PQL_HOMEDIRS};
-    @dirs = split('/', $DIR);
+    @dirs = explode('/', $DIR);
 
     $directory = '/' . $dirs[1] . '/';
     for($i=1; $i < count($dirs); $i++) {

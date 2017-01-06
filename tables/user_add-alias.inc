@@ -42,7 +42,7 @@
 	  if(isset($domains)) {
 		foreach($domains as $key => $domain) {
 			// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
-			$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
+			$d = explode(',', $domain); $d = split('=', $d[0]); $d = $d[1];
 			$d = pql_maybe_decode($d);
 
 			if($_SESSION["opera"]) {

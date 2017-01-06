@@ -93,10 +93,10 @@ if(@$_REQUEST["save"] and $_REQUEST["server"] and $_REQUEST["virthost"]) {
     foreach($web_container_data as $container => $virtual_hosts) {
       // Get the FQDN and PORT for this webserver container
       // container = cn=aurora.bayour.com:80,cn=aurora.bayour.com,ou=computers,c=se
-      $tmp = split(',', $container);
+      $tmp = explode(',', $container);
 
       // tmp[0]    = cn=aurora.bayour.com:80
-      $tmp = split('=', $tmp[0]);
+      $tmp = explode('=', $tmp[0]);
 
       // tmp[1]    = aurora.bayour.com:80
       $CONTAINERS[$tmp[1]] = $container;
@@ -109,7 +109,7 @@ if(@$_REQUEST["save"] and $_REQUEST["server"] and $_REQUEST["virthost"]) {
     if(is_array($roundrobin)) {
       for($i=0; $roundrobin[$i]; $i++) {
 	// Extract the container from the full DN to the virtual host
-	$vhost_tmp = split(',', $roundrobin[$i]);
+	$vhost_tmp = explode(',', $roundrobin[$i]);
 	$vhost_container = '';
 	for($j=1; $vhost_tmp[$j]; $j++) {
 	  $vhost_container .= $vhost_tmp[$j];

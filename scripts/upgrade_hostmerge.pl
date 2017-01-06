@@ -149,7 +149,7 @@ sub upgrade_hostmerge_check_physical {
 	    # Not the same that we're called with. Better use the one from DNS.
 	    $host = $fqdn; chomp($host);
 
-	    @dn_parts = split(',', $dn);
+	    @dn_parts = explode(',', $dn);
 	    $new_dn = "cn=$host,";
 	    for($i=1; $dn_parts[$i]; $i++) {
 		$new_dn .= $dn_parts[$i];
@@ -315,7 +315,7 @@ for($i=0; $DNS2MOVE[$i]; $i++) {
 if(@DNS2MOVE) {
     print "\nAdding objects to LDIF:\n";
     for($i=0; $DNS2MOVE[$i]; $i++) {
-	@dn_parts = split(',', $DNS2MOVE[$i]);
+	@dn_parts = explode(',', $DNS2MOVE[$i]);
 
 	if($DNS2MOVE[$i] =~ /^ApacheServerName=/i) {
 	    # {{{ A webserver     - 'apacheservername=apache.bayour.com,cn=aurora.bayour.com:80,ou=web,o=bayour.com,c=se'
@@ -389,7 +389,7 @@ if(@DNS2MOVE) {
 	    @LOCATIONS = upgrade_hostmerge_ldapsearch($cmd);
 	    for($j=0; $LOCATIONS[$j]; $j++) {
 		# Extract the location from the DN
-		@dn_parts = split(',', $LOCATIONS[$j]);
+		@dn_parts = explode(',', $LOCATIONS[$j]);
 
 		# Setup the DN to the new webserver location object
 		$location_dn = $dn_parts[0].','.$webserver_dn;
@@ -498,7 +498,7 @@ if(@DNS2MOVE) {
 		@AUTOMOUNT_ENTRIES_1 = upgrade_hostmerge_ldapsearch($cmd);
 		for($j=0; $AUTOMOUNT_ENTRIES_1[$j]; $j++) {
 		    # Extract the location from the DN
-		    @dn_parts = split(',', $AUTOMOUNT_ENTRIES_1[$j]);
+		    @dn_parts = explode(',', $AUTOMOUNT_ENTRIES_1[$j]);
 
 		    # Setup the DN to the new automount entry
 		    $automount_entry_dn_1 = $dn_parts[0].','.$automount_dn;
@@ -544,7 +544,7 @@ if(@DNS2MOVE) {
 			@AUTOMOUNT_ENTRIES_2 = upgrade_hostmerge_ldapsearch($cmd);
 			for($l=0; $AUTOMOUNT_ENTRIES_2[$l]; $l++) {
 			    # Extract the location from the DN
-			    @dn_parts = split(',', $AUTOMOUNT_ENTRIES_2[$l]);
+			    @dn_parts = explode(',', $AUTOMOUNT_ENTRIES_2[$l]);
 			    
 			    # Setup the DN to the new automount entry
 			    $automount_entry_dn_2 = $dn_parts[0].','.$automount_entry_dn_1;
@@ -603,8 +603,8 @@ if(@DNS2MOVE) {
 	    # This line must be modified!
 	    # automountInformation: ldap ldap1.bayour.com:ou=auto.mnt,ou=Automounts,o=Bayour.COM,c=SE
 	    # automountInformation: -fstype=autofs ldap:ou=auto.mnt.cdrom,ou=Automounts,o=Bayour.COM,c=SE
-	    @automountInformation = split(' ', $OBJECT_TO_ADD_LATER[$i]);
-	    @location = split(':', $automountInformation[2]);
+	    @automountInformation = explode(' ', $OBJECT_TO_ADD_LATER[$i]);
+	    @location = explode(':', $automountInformation[2]);
 
 	    # Extract LDAP server
 	    #$location_ldapsrv = $location[0];
@@ -612,7 +612,7 @@ if(@DNS2MOVE) {
 
 	    # Extract DN
 	    #$location_dn = $location[1];
-	    @dn_parts = split(',', $location[1]);
+	    @dn_parts = explode(',', $location[1]);
 
 	    # Go through all DN's scheduled for removal and look for the target
 	    $rm_count = $#ADDED;

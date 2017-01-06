@@ -27,7 +27,7 @@ function attribute_forward($msg) {
 		  . "&view=" . $_REQUEST["view"] . "&msg=$msg";
 	} elseif(preg_match('/^config_detail/', $_REQUEST["view"])) {
 		// Very special sircumstances - we've deleted an administrator from the config_details/ROOTDN page!
-		$tmp  = split('/', $_REQUEST["view"]);
+		$tmp  = explode('/', $_REQUEST["view"]);
 		$link = "config_detail.php?view=".$tmp[1];
 	} elseif($_REQUEST["administrator"]) {
 		// Administrators is _always_ added/change here, NOT from user_edit_attribute.php

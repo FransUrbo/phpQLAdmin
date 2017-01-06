@@ -178,7 +178,7 @@ if($_REQUEST["view"] == 'default') {
   // Split it up into it's parts (SIZE and AMOUNT) and
   // create an array that pql_ldap_mailquota() understands.
   if($basequota) {
-	$temp		= split(',', $basequota);
+	$temp		= explode(',', $basequota);
 	$temp[1]	= eregi_replace("C$", "", $temp[1]);
 	$temp[0]	= eregi_replace("S$", "", $temp[0]);
 	

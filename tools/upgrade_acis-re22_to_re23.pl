@@ -37,8 +37,8 @@ for($i=0; defined($FILE[$i]); $i++) {
     if($FILE[$i] =~ /^OpenLDAPaci: /) {
 	$FILE[$i] =~ s/OpenLDAPaci: //;
 
-	($oid, $scope, $access, $match, $target) = split('#', $FILE[$i]);
-	($rule, $perm, $what) = split(';', $access);
+	($oid, $scope, $access, $match, $target) = explode('#', $FILE[$i]);
+	($rule, $perm, $what) = explode(';', $access);
 
 	if($what =~ /,/) {
 	    #OpenLDAPaci: 1#entry#grant;c,x;userPassword,krb5PrincipalName,cn,mail,mailAlternateAddress#public#
@@ -49,7 +49,7 @@ for($i=0; defined($FILE[$i]); $i++) {
 	    #OpenLDAPaci: 4#entry#grant;c,x;mail#public#
 	    #OpenLDAPaci: 5#entry#grant;c,x;mailAlternateAddress#public#
 
-	    @attrs = split(',', $what);
+	    @attrs = explode(',', $what);
 	    foreach $attr (@attrs) {
 		print "OpenLDAPaci: $OID#$scope#$rule;$perm;".lc($attr)."#$match#";
 		print lc($target) if($target);

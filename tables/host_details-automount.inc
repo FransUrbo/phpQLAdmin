@@ -13,7 +13,7 @@ function table_go_through_details($host, $mnt_pnt, $mnt_data) {
     $tmp = preg_replace('/-fstype=/', '', $mnt_data["automountinformation"]);
     
     $opts = ereg_replace(' :.*', '', $tmp);
-    $opts = split(',', $opts);
+    $opts = explode(',', $opts);
     $fs = $opts[0];
     
     $OPTS = '';

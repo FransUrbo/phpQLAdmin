@@ -70,7 +70,7 @@ if(!$connections_current) {
 // {{{ Get number of threads
 $tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Threads,".$_pql->ldap_monitor, "monitoredInfo");
 for($i=0; $i < count($tmp1); $i++) {
-	$tmp2 = split('=', $tmp1[$i]);
+	$tmp2 = explode('=', $tmp1[$i]);
 
 	if($tmp2[0] == 'max') {
 		$threads['max'] = $tmp2[1];
@@ -313,13 +313,13 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
       </tr>
 
 <?php		for($i=0; $i < count($connections_information); $i++) {
-				$tmp = split(' : ', $connections_information[$i]);
+				$tmp = explode(' : ', $connections_information[$i]);
 
 				$class = pql_format_table(0);
 				$time_opened = pql_format_timestamp($tmp[10]);
 				$time_closed = pql_format_timestamp($tmp[11]);
 
-				$compl = split('/', $tmp[2]);
+				$compl = explode('/', $tmp[2]);
 ?>
       <tr>
         <td class="title" align="right"><?php echo $tmp[0]?>&nbsp;&nbsp;</td>

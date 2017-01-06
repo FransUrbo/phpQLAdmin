@@ -248,14 +248,14 @@
 		// Find the physical host and web container
 		for($i=0; $i < count($roundrobin); $i++) {
 		  unset($physical); unset($container);
-		  $dn_parts = split(',', $roundrobin[$i]);
+		  $dn_parts = explode(',', $roundrobin[$i]);
 
 		  // Web container
-		  $tmp = split('=', $dn_parts[1]);
+		  $tmp = explode('=', $dn_parts[1]);
 		  $container = $tmp[1];
 
 		  // Physical host
-		  $tmp = split('=', $dn_parts[2]);
+		  $tmp = explode('=', $dn_parts[2]);
 		  $physical = $tmp[1];
 
 		  $hosts[] = "$physical => $container";

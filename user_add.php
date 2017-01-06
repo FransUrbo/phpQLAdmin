@@ -104,7 +104,7 @@ function pql_user_add_retreive_encryption_schemes($template, $rootdn) {
 	  $tmp = pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn);
 	  if(preg_match('/,/', $tmp)) {
 		// We got more than one password scheme...
-		$schemes = split(",", $tmp);
+		$schemes = explode(",", $tmp);
 	  } else {
 		$schemes = array($tmp);
 	  }
@@ -372,7 +372,7 @@ switch($_REQUEST["page_curr"]) {
 				$entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])] = $_REQUEST["source"];
 				
 				// Use _this_ host reference in the referral value
-				$host = split(';', $_SESSION["USER_HOST"]);
+				$host = explode(';', $_SESSION["USER_HOST"]);
 				$entry["ref"] = $host[0]."/".urlencode($_REQUEST["destination"]);
 				
 				// Add the object to the database
@@ -484,7 +484,7 @@ switch($_REQUEST["page_curr"]) {
 			// The mail address is perfectly ok, but if user specify an exact email address (which most
 			// likley don't match the email_domain we must change the email_domain request value for
 			// the rest of the checks to work correctly.
-			$tmp = split('@', $_REQUEST["mail"]);
+			$tmp = explode('@', $_REQUEST["mail"]);
 			$_REQUEST["email_domain"] = $tmp[1];
 		  }
 		}
@@ -634,7 +634,7 @@ switch($_REQUEST["page_curr"]) {
 			  elseif($_REQUEST["name"])
 				$reference = $_REQUEST["name"];
 			  elseif($_REQUEST["mail"]) {
-				$reference = split('@', $_REQUEST["mail"]);
+				$reference = explode('@', $_REQUEST["mail"]);
 				$reference = $reference[0];
 			  }
 			  
@@ -697,7 +697,7 @@ switch($_REQUEST["page_curr"]) {
 			  elseif($_REQUEST["name"])
 				$reference = $_REQUEST["name"];
 			  elseif($_REQUEST["mail"]) {
-				$reference = split('@', $_REQUEST["mail"]);
+				$reference = explode('@', $_REQUEST["mail"]);
 				$reference = $reference[0];
 			  }
 			  

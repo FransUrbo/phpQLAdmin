@@ -36,7 +36,7 @@
 
 					// Get registered addresses for this user
 					$email   = $_pql->get_attribute($user, pql_get_define("PQL_ATTR_MAIL"));
-					$tmp     = split('@', $email);
+					$tmp     = explode('@', $email);
 					$mail    = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 
 					if($mail)
@@ -51,7 +51,7 @@
 
 					if($aliases) {
 						foreach($aliases as $alias) {
-							$tmp = split('@', $alias);
+							$tmp = explode('@', $alias);
 							$a   = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 
 							// user_edit_attribute.php

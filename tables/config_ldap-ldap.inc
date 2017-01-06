@@ -52,7 +52,7 @@ foreach($attributes as $type => $attrs) {
     if(($attr == pql_get_define("PQL_ATTR_OLC_SASL_SEC_PROPS")) and
        !is_array($conf[$attr]) and
        preg_match('/,/', $conf[$attr])) {
-      $conf[$attr] = split(',', $conf[$attr]);
+      $conf[$attr] = explode(',', $conf[$attr]);
     }
 
     // ------------------------

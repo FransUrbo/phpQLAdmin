@@ -11,7 +11,7 @@ open(CONFIG, "< /etc/qmail/.restart_qmail.conf")
 while(!eof(CONFIG)) {
     $line = <CONFIG>; chomp($line);
     $line =~ s/\"$//;
-    @conf = split("=\"", $line);
+    @conf = explode("=\"", $line);
     $CONFIG{$conf[0]} = $conf[1];
 }
 close(CONFIG);

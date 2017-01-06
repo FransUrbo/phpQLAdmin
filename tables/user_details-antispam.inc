@@ -16,7 +16,7 @@ if(is_array($spamassassin)) {
 	}
 
 	for($i=0; $i < count($spamassassin); $i++) {
-		unset($values); $values = split(' ', $spamassassin[$i]);
+		unset($values); $values = explode(' ', $spamassassin[$i]);
 		
 		// Convert the flat structure to something that looks like the form.
 		// I.e. array if there's a space in the value (exeption: 'subject_tag'),

@@ -107,10 +107,10 @@ if(!isset($domains) or !is_array($domains)) {
 	// Three steps because pql_get_domains() and pql_get_dn()
 	// returns normalized DN's which isn't as pretty.
 	// 1. Get each part of the DN
-	$dnparts = split(',', $domain);
+	$dnparts = explode(',', $domain);
 	
 	// 2. Extract the attribute from the first RDN
-	$tmp = split('=', $dnparts[0]);
+	$tmp = explode('=', $dnparts[0]);
 	$attrib = $tmp[0];
 	
 	// 3. Get the attribute value from the object
@@ -186,7 +186,7 @@ if(!isset($domains) or !is_array($domains)) {
 		// Three steps because pql_get_domains() and pql_get_dn()
 		// returns normalized DN's which isn't as pretty.
 		$dnparts		= ldap_explode_dn($branches[$i], 0);
-		$tmp			= split('=', $dnparts[0]);
+		$tmp			= explode('=', $dnparts[0]);
 		$attrib		= $tmp[0];
 		$subbranch	= $_pql->get_attribute($branches[$i], $attrib);
 		

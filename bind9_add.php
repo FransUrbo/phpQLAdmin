@@ -227,7 +227,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	  }
 	  
 	  // Reverse the hostname ('192.168.156.1').
-	  $tmp  = split('\.', $ip);
+	  $tmp  = explode('\.', $ip);
 	  $count = count($tmp);
 	  if(empty($tmp[$count-1]))
 		$count = $count - 2;
@@ -286,7 +286,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	  $msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
 
 	  // {{{ Try to figure out the SOA DN here...
-	  $dn_parts = split(',', $dn);
+	  $dn_parts = explode(',', $dn);
 	  for($i=1; $i < count($dn_parts); $i++) {
 		$newdn .= $dn_parts[$i];
 		if($dn_parts[$i+1])

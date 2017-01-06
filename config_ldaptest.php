@@ -93,7 +93,7 @@ if(!function_exists("ldap_connect")){
   if(!$_pql->connect($_SESSION["USER_HOST"])) {
 	$connection = $LANG->_('Failed');
 	
-	$server = split(';', $_SESSION["USER_HOST"]);
+	$server = explode(';', $_SESSION["USER_HOST"]);
 	$server = urldecode($server[0]); 	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 	
 	// do additional tests
@@ -124,8 +124,8 @@ if(!function_exists("ldap_connect")){
 	if(!$_pql_control->connect($_SESSION["USER_HOST"])) {
 	  $connection_control = $LANG->_('Failed');
 	  
-	  $host = split('\+', pql_get_define("PQL_CONF_HOST"));
-	  $host = split(';', $host[0]);
+	  $host = explode('\+', pql_get_define("PQL_CONF_HOST"));
+	  $host = explode(';', $host[0]);
 	  
 	  $fqdn = $host[0];
 	  $port = $host[1];

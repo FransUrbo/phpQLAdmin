@@ -12,8 +12,8 @@ if(@$_REQUEST["subnet"]) {
   // Called from tables/host_details-dhcp3_subnet.inc
   $mask = $_pql->get_attribute($_REQUEST["subnet"], pql_get_define("PQL_ATTR_DHCP3_NETMASK"));
 
-  $tmp = split(',', $_REQUEST["subnet"]);
-  $tmp = split('=', $tmp[0]);
+  $tmp = explode(',', $_REQUEST["subnet"]);
+  $tmp = explode('=', $tmp[0]);
 
   $subnet = $tmp[1].'/'.$mask;
 
@@ -22,8 +22,8 @@ if(@$_REQUEST["subnet"]) {
   $DEL_DN = $_REQUEST["subnet"];
 } elseif(@$_REQUEST["subhost"]) {
   // Called from tables/host_details-dhcp3_subnet.inc
-  $tmp = split(',', $_REQUEST["subhost"]);
-  $tmp = split('=', $tmp[0]);
+  $tmp = explode(',', $_REQUEST["subhost"]);
+  $tmp = explode('=', $tmp[0]);
 
   $subhost = $tmp[1];
   $what = $LANG->_('DHCP subhost').' '.pql_maybe_decode($subhost);

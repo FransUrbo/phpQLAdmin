@@ -368,9 +368,9 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]	= $fqdn;
 
 	  if(count($hosts) > 1) {
-		$tmp = split(',', $hosts[$i]);	// Extract the webserver container
-		$tmp = split('=', $tmp[0]);		// Extract the FQDN:PORT of the webserver container
-		$tmp = split(':', $tmp[1]);		// Separate FQDN and PORT from the webserver container
+		$tmp = explode(',', $hosts[$i]);	// Extract the webserver container
+		$tmp = explode('=', $tmp[0]);		// Extract the FQDN:PORT of the webserver container
+		$tmp = explode(':', $tmp[1]);		// Separate FQDN and PORT from the webserver container
 		$hostname = $tmp[0]; $port = $tmp[1];
 
 		// Find the IP address of this host.
@@ -413,7 +413,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		$soadn = $soadn[0];
 		
 		// From the SOA DN, remove the zone stuff and get the domain/branch
-		$dn_parts = split(',', $soadn);
+		$dn_parts = explode(',', $soadn);
 		
 		// Put toghether the branch DN. It SHOULD start at position 4 (after the 'ou=DNS')
 		// BUG: This is most likley NOT true....

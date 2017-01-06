@@ -1,5 +1,9 @@
 phpQLAdmin 2.3 Change Log
 
+phpQLAdmin 2.4.0 TO BE ANNOUNCED
+	Porting
+	  - Change split() to explode() for PHP7.
+
 phpQLAdmin 2.3.8 Release (Feb 22 2013)
 	Bug fixes
 	  - Make sure any 'Home->phpQLAdmin Configuration->Global configuration' changes

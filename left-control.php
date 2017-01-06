@@ -92,7 +92,7 @@ if($_SESSION["ALLOW_CONTROL_CREATE"] and
 	// Only do this if:
 	//	1. Running in a advanced mode
 	//	2. User is super admin
-	$host = split(';', $_SESSION["USER_HOST"]);
+	$host = explode(';', $_SESSION["USER_HOST"]);
 	
 	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 	$host[0] = urldecode($host[0]);

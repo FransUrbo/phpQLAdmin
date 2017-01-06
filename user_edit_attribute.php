@@ -38,7 +38,7 @@ include($_SESSION["path"]."/header.html");
 if(!$_REQUEST["domain"] && $_REQUEST["user"]) {
     // We're called without branchname - try to reconstruct it
     
-    $tmpdn = split(',', $_REQUEST["user"]);
+    $tmpdn = explode(',', $_REQUEST["user"]);
     if($tmpdn[1]) {
 	unset($tmpdn[0]);
 	$_REQUEST["domain"] = implode(",", $tmpdn);
