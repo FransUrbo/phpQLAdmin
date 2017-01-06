@@ -339,12 +339,12 @@ function attribute_init() {
 
 	// {{{ Extract the device from the automountInfo attribute
 	if(!@ $_REQUEST["device"])
-	  $_REQUEST["device"] = ereg_replace('.* :', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
+	  $_REQUEST["device"] = preg_replace('.* :', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
 	// }}}
 
 	// {{{ Extract the filesystem and mount options from the automountInfo attribute
 	$tmp = preg_replace('/-fstype=/', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
-	$opts = ereg_replace(' :.*', '', $tmp);
+	$opts = preg_replace(' :.*', '', $tmp);
 	$opts = explode(',', $opts);
 	$fs = $opts[0];
 	// }}}
@@ -367,7 +367,7 @@ function attribute_init() {
 
 	  } elseif($_REQUEST["filesystem"] == 'smbfs') {
 		// {{{ Extract SMB server and share
-		$tmp = ereg_replace('.*://', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
+		$tmp = preg_replace('.*://', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
 		$tmp = explode('/', $tmp);
 		
 		$_REQUEST["smbserver"] = $tmp[0];
@@ -381,7 +381,7 @@ function attribute_init() {
 
 	  } elseif(($_REQUEST["filesystem"] == 'nfs') or ($_REQUEST["filesystem"] == 'nfs4')) {
 		// {{{ Extract NFS server and 'share'
-		$tmp = ereg_replace('.*://', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
+		$tmp = preg_replace('.*://', '', $info[pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
 		$tmp = explode('/', $tmp);
 		
 		$_REQUEST["nfsserver"] = $tmp[0];

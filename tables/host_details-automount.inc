@@ -12,7 +12,7 @@ function table_go_through_details($host, $mnt_pnt, $mnt_data) {
     // {{{ Device mounted on mountpoint
     $tmp = preg_replace('/-fstype=/', '', $mnt_data["automountinformation"]);
     
-    $opts = ereg_replace(' :.*', '', $tmp);
+    $opts = preg_replace(' :.*', '', $tmp);
     $opts = explode(',', $opts);
     $fs = $opts[0];
     
@@ -23,7 +23,7 @@ function table_go_through_details($host, $mnt_pnt, $mnt_data) {
 	$OPTS .= ',';
     }
     
-    $MOUNT["Device"]		= ereg_replace('.*:', '', $tmp);
+    $MOUNT["Device"]		= preg_replace('.*:', '', $tmp);
     $MOUNT["Mountpoint"][]	= $mnt_pnt;
     $MOUNT["Filesystem"][]	= $fs;
     $MOUNT["Mount option"][]	= $OPTS;

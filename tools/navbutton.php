@@ -4,13 +4,14 @@
 require("../include/pql_formating.inc");
 
 $string = $_REQUEST["label"];
-$mark   = $_REQUEST["mark"];
+if(isset($_REQUEST["mark"]))
+    $mark = $_REQUEST["mark"];
+else
+    $mark = "";
 //$string = urldecode($string);
 
 // Prepare the text - remove unwanted characters etc
 $string = stripslashes($string);
-$string = ereg_replace("\r\n", "\n", $string) ;
-$string = ereg_replace("%20",  " ", $string);
 
 // Convert the string
 $string = pql_maybe_idna_decode($string);

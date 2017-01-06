@@ -22,7 +22,7 @@ function attribute_forward($msg) {
 	$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
     $server = ldap_explode_dn(urldecode($_REQUEST["server"]), 0);
-    $server = ereg_replace("cn=", "", $server[0]);
+    $server = preg_replace("cn=", "", $server[0]);
 
     // URL Encode the DN values
     $msg    = urlencode($msg);

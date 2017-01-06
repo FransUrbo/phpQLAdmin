@@ -182,7 +182,7 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 
 	foreach($keys as $key) {
 	  if($key != "") {
-	    $key = ereg_replace("\\\\'", "'", $key);
+	    $key = preg_replace("\\\\'", "'", $key);
 	    echo "    <tr>\n";
 	    
 	    printf("      <td align=\"right\">$amount_len</td>\n", $count+1);

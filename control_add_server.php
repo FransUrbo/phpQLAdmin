@@ -48,14 +48,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				  if($val == $_REQUEST["cloneserver"]) {
 					// rcptHosts have the FQDN of the cloned server -
 					// Replace that with the FQDN of the resulting server.
-					$entry[$key][] = ereg_replace($_REQUEST["cloneserver"], $_REQUEST["fqdn"], $val);
+					$entry[$key][] = preg_replace($_REQUEST["cloneserver"], $_REQUEST["fqdn"], $val);
 				  } else
 					$entry[$key][] = $val;
 				} elseif(($key == sprintf("%s", pql_get_define("PQL_ATTR_LOCALS"))) and isset($_REQUEST["include_locals"])) {
 				  if($val == $_REQUEST["cloneserver"]) {
 					// locals have the FQDN of the cloned server -
 					// Replace that with the FQDN of the resulting server.
-					$entry[$key][] = ereg_replace($_REQUEST["cloneserver"], $_REQUEST["fqdn"], $val);
+					$entry[$key][] = preg_replace($_REQUEST["cloneserver"], $_REQUEST["fqdn"], $val);
 				  } else
 					$entry[$key][] = $val;
 				}

@@ -426,7 +426,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		
 		// Remove any port from the server IP
 		if(preg_match('/:/', $_REQUEST["serverip"]))
-		  $serverip =  ereg_replace(':.*', '', $_REQUEST["serverip"]);
+		  $serverip =  preg_replace(':.*', '', $_REQUEST["serverip"]);
 		elseif(@$_REQUEST["serverip"])
 		  $serverip = $_REQUEST["serverip"];
 		

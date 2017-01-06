@@ -901,9 +901,9 @@ function pql_format_urls(&$string) {
   if(preg_match("/\'/", $tmp)) {
 	if(preg_match("/\\\'/", $tmp))
 	  // The string already contains \', remove it
-	  $tmp = ereg_replace("\\\'", "'", $tmp);
+	  $tmp = preg_replace("\\\'", "'", $tmp);
 	else
-	  $tmp = ereg_replace("\'", "'", $tmp);
+	  $tmp = preg_replace("\'", "'", $tmp);
 	
 	// Update the ORIGINAL string!
 	$string = $tmp;
@@ -1034,7 +1034,7 @@ function pql_strip_username($email) {
 // {{{ pql_separate_host_domain(fqdn)
 // Separate the domainname and hostname from the FQDN
 function pql_separate_host_domain($fqdn) {
-  $fqdn = ereg_replace(':.*', '', $fqdn); // Remove any port
+  $fqdn = preg_replace(':.*', '', $fqdn); // Remove any port
   $tmp = explode('\.', $fqdn);
   
   $cnt = count($tmp)-1;
