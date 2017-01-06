@@ -551,7 +551,6 @@ function attribute_save() {
   }
 	
   attribute_forward($msg, $rlnb);
-  break;
   // }}}
 }
 // }}}

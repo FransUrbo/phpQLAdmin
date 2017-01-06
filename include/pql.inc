@@ -72,7 +72,7 @@ class pql {
   function _find_context_rootdns() {
 	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
 	$dns = $this->_find_base_option("namingContexts");
-	for($i=0; $dns[$i]; $i++) {
+	for($i=0; isset($dns[$i]); $i++) {
 	  $value = $this->get_attribute($dns[$i], 'structuralObjectClass', 1);
 	  if(!preg_match('/auditContainer/i', $value) and !preg_match('/cn%3Dlog/i', $dns[$i]))
 		// I'm using the overlay-accesslog on the 'cn=LOG1'
