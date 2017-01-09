@@ -40,7 +40,7 @@ function pql_sudo_add_role($domain, $rolename, $user, $command, $runas, $host) {
   if(isset($host) && $host != 'none')
 	$entry[pql_get_define("PQL_ATTR_SUDOHOST")] = $host;
   
-  if(!$_pql->add($dn, $entry, $type, 'pql_sudo_add_role')) {
+  if(!$_pql->add($dn, $entry, 'sudorole', 'pql_sudo_add_role')) {
 	// Failed to add user
 	pql_format_error(1);
 	die("pql_sudo_add_role(): Failed to create '$dn'");

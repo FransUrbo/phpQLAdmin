@@ -78,6 +78,7 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //
 // NOTE: The DN of the branch/domain will be appended to the
 //       end of this DN when used.
+// NOTE: This _must_ be at the same 'level' as PQL_CONF_SUBTREE_USERS
 //pql_set_define("PQL_CONF_SUBTREE_SUDOERS", "ou=Sudoers");
 
 // ----------------------------
@@ -481,6 +482,16 @@ function user_generate_email($surname, $lastname, $domainname, $domain, $account
 //		;
 //	} elseif($type == 'automount') {
 //		$aci[$i] = "$i#entry#grant;r,s,c;automountInformation#access-id#ENTER_WHOEVER_YOUR_HOST_USES"; $i++;
+//	} elseif($type == 'sudorole') {
+//	    $aci[$i] = "$i#entry#grant;r,s,c;cn#public#"; $i++;
+//	    $aci[$i] = "$i#entry#grant;r,s,c;description#public#"; $i++;
+//	    $aci[$i] = "$i#entry#grant;r,s,c;sudoOption#public#"; $i++;
+//	    $aci[$i] = "$i#entry#grant;r,s,c;sudoOrder#public#"; $i++;
+//	    $aci[$i] = "$i#entry#grant;r,s,c;sudoUser#public#"; $i++;
+//	    $aci[$i] = "$i#entry#grant;r,s,c;sudoHost#public#"; $i++;
+//	    $aci[$i] = "$i#entry#grant;r,s,c;sudoRunAsUser#public#"; $i++;
+//	    $aci[$i] = "$i#entry#grant;r,s,c;sudoRunAsGroup#public#"; $i++;
+//	    $aci[$i] = "$i#entry#grant;r,s,c;sudoCommand#public#"; $i++;
 //	}
 //
 //	// Non-public entries
